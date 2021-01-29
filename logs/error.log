@@ -1,0 +1,24 @@
+2021-01-28 18:25:26,730 [main] INFO  [com.xiliulou.afterserver.AfterServerApplication] StartupInfoLogger.java:55 - Starting AfterServerApplication using Java 15.0.1 on WIN-D4QJ34OADPC with PID 71880 (C:\Users\Administrator\project_src\xxl\afterservice\target\classes started by Administrator in C:\Users\Administrator\project_src\xxl\afterservice)
+2021-01-28 18:25:26,738 [main] INFO  [com.xiliulou.afterserver.AfterServerApplication] SpringApplication.java:660 - No active profile set, falling back to default profiles: default
+2021-01-28 18:25:27,635 [main] WARN  [org.mybatis.spring.mapper.ClassPathMapperScanner] Logger.java:44 - No MyBatis mapper was found in '[com.xiliulou.afterserver]' package. Please check your configuration.
+2021-01-28 18:25:27,870 [main] INFO  [c.a.d.s.b.a.DruidDataSourceAutoConfigure] DruidDataSourceAutoConfigure.java:56 - Init DruidDataSource
+2021-01-28 18:25:27,999 [main] INFO  [com.alibaba.druid.pool.DruidDataSource] DruidDataSource.java:994 - {dataSource-1} inited
+2021-01-28 18:25:28,612 [main] INFO  [com.xiliulou.afterserver.AfterServerApplication] StartupInfoLogger.java:61 - Started AfterServerApplication in 3.766 seconds (JVM running for 5.651)
+2021-01-28 18:25:28,622 [SpringContextShutdownHook] INFO  [com.alibaba.druid.pool.DruidDataSource] DruidDataSource.java:2029 - {dataSource-1} closing ...
+2021-01-28 18:25:28,623 [SpringContextShutdownHook] INFO  [com.alibaba.druid.pool.DruidDataSource] DruidDataSource.java:2101 - {dataSource-1} closed
+2021-01-28 18:25:53,504 [main] INFO  [com.xiliulou.afterserver.AfterServerApplication] StartupInfoLogger.java:55 - Starting AfterServerApplication using Java 15.0.1 on WIN-D4QJ34OADPC with PID 88044 (C:\Users\Administrator\project_src\xxl\afterservice\target\classes started by Administrator in C:\Users\Administrator\project_src\xxl\afterservice)
+2021-01-28 18:25:53,507 [main] INFO  [com.xiliulou.afterserver.AfterServerApplication] SpringApplication.java:660 - No active profile set, falling back to default profiles: default
+2021-01-28 18:25:54,402 [main] WARN  [org.mybatis.spring.mapper.ClassPathMapperScanner] Logger.java:44 - No MyBatis mapper was found in '[com.xiliulou.afterserver]' package. Please check your configuration.
+2021-01-28 18:25:54,623 [main] INFO  [c.a.d.s.b.a.DruidDataSourceAutoConfigure] DruidDataSourceAutoConfigure.java:56 - Init DruidDataSource
+2021-01-28 18:25:54,736 [main] INFO  [com.alibaba.druid.pool.DruidDataSource] DruidDataSource.java:994 - {dataSource-1} inited
+2021-01-28 18:25:55,283 [main] INFO  [com.xiliulou.afterserver.AfterServerApplication] StartupInfoLogger.java:61 - Started AfterServerApplication in 2.701 seconds (JVM running for 3.504)
+2021-01-28 18:25:55,291 [SpringContextShutdownHook] INFO  [com.alibaba.druid.pool.DruidDataSource] DruidDataSource.java:2029 - {dataSource-1} closing ...
+2021-01-28 18:25:55,293 [SpringContextShutdownHook] INFO  [com.alibaba.druid.pool.DruidDataSource] DruidDataSource.java:2101 - {dataSource-1} closed
+2021-01-28 18:26:25,285 [main] INFO  [com.xiliulou.afterserver.AfterServerApplication] StartupInfoLogger.java:55 - Starting AfterServerApplication using Java 1.8.0_152 on WIN-D4QJ34OADPC with PID 87972 (C:\Users\Administrator\project_src\xxl\afterservice\target\classes started by Administrator in C:\Users\Administrator\project_src\xxl\afterservice)
+2021-01-28 18:26:25,291 [main] INFO  [com.xiliulou.afterserver.AfterServerApplication] SpringApplication.java:660 - No active profile set, falling back to default profiles: default
+2021-01-28 18:26:26,283 [main] WARN  [org.mybatis.spring.mapper.ClassPathMapperScanner] Logger.java:44 - No MyBatis mapper was found in '[com.xiliulou.afterserver]' package. Please check your configuration.
+2021-01-28 18:26:26,499 [main] INFO  [c.a.d.s.b.a.DruidDataSourceAutoConfigure] DruidDataSourceAutoConfigure.java:56 - Init DruidDataSource
+2021-01-28 18:26:26,612 [main] INFO  [com.alibaba.druid.pool.DruidDataSource] DruidDataSource.java:994 - {dataSource-1} inited
+2021-01-28 18:26:28,178 [main] INFO  [com.xiliulou.afterserver.AfterServerApplication] StartupInfoLogger.java:61 - Started AfterServerApplication in 3.745 seconds (JVM running for 5.201)
+2021-01-28 18:26:28,184 [SpringContextShutdownHook] INFO  [com.alibaba.druid.pool.DruidDataSource] DruidDataSource.java:2029 - {dataSource-1} closing ...
+2021-01-28 18:26:28,185 [SpringContextShutdownHook] INFO  [com.alibaba.druid.pool.DruidDataSource] DruidDataSource.java:2101 - {dataSource-1} closed

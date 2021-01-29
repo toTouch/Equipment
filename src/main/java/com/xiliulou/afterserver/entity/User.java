@@ -20,4 +20,7 @@ public class User {
     private Integer roleId;
     private Long createTime;
 
+    public static Integer AFTER_USER_ROLE = 1;
+
+
 }

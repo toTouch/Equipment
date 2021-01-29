@@ -15,13 +15,15 @@ spring:
 logging:
   config: classpath:logback-spring.xml
 
+
 mybatis-plus:
-  tenant-enable: ture
-  mapper-locations: classpath:/mapper/*Mapper.xml
+  mapper-locations: classpath:mapper/*.xml
   global-config:
-    banner: false
     db-config:
       id-type: auto
-      field-strategy: NOT_NULL
-      logic-delete-value: 1
-      logic-not-delete-value: 0
+      field-strategy: NOT_EMPTY
+      db-type: MYSQL
+  configuration:
+    map-underscore-to-camel-case: true
+    call-setters-on-nulls: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

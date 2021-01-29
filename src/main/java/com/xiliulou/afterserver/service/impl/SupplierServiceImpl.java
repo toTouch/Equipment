@@ -1,9 +1,16 @@
 package com.xiliulou.afterserver.service.impl;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.Supplier;
 import com.xiliulou.afterserver.mapper.SupplierMapper;
 import com.xiliulou.afterserver.service.SupplierService;
+import com.xiliulou.afterserver.util.PageUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 /**
  * @program: XILIULOU
@@ -11,5 +18,14 @@ import com.xiliulou.afterserver.service.SupplierService;
  * @author: Mr.YG
  * @create: 2021-01-28 19:10
  **/
+@Service
+@Slf4j
 public class SupplierServiceImpl extends ServiceImpl<SupplierMapper, Supplier> implements SupplierService {
+
+
+    @Override
+    public IPage getPage(Long offset, Long size, Supplier supplier) {
+        Page page = PageUtil.getPage(offset, size);
+        return baseMapper.selectPage(page, Wrappers.lambdaQuery(supplier).orderByDesc(Supplier::getCreateTime));
+    }
 }

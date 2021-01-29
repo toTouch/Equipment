@@ -23,4 +23,5 @@ public class Customer {
     private String area;
     private Long createTime;
 
+
 }
