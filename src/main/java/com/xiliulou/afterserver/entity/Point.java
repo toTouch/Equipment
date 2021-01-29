@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 public class Point {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
+    private String city;
     private String name;
     private Long customerId;
     private Integer primaryCabinetNo;

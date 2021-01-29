@@ -19,5 +19,7 @@ public class File {
     private Long createTime;
     private Long bindId;
 
-    public static final Integer type_point = 1;
+    public static final Integer TYPE_POINT = 1;
+
+
 }

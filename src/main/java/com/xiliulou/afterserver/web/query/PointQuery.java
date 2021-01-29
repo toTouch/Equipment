@@ -14,5 +14,6 @@ import java.util.List;
 @Data
 public class PointQuery extends Point {
 
-    private List<String> nameList;
+    private List<String> fileNameList;
+    private List<Long> productIdList;
 }

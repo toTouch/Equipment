@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~
+  ~      Copyright (c) 2018-2025, lengleng All rights reserved.
+  ~
+  ~  Redistribution and use in source and binary forms, with or without
+  ~  modification, are permitted provided that the following conditions are met:
+  ~
+  ~ Redistributions of source code must retain the above copyright notice,
+  ~  this list of conditions and the following disclaimer.
+  ~  Redistributions in binary form must reproduce the above copyright
+  ~  notice, this list of conditions and the following disclaimer in the
+  ~  documentation and/or other materials provided with the distribution.
+  ~  Neither the name of the pig4cloud.com developer nor the names of its
+  ~  contributors may be used to endorse or promote products derived from
+  ~  this software without specific prior written permission.
+  ~  Author: lengleng (wangiegie@gmail.com)
+  ~
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiliulou.afterserver.mapper.PointMapper">
+
+    <resultMap id="pageMap" type="com.xiliulou.afterserver.web.vo.PointVo">
+        <id property="id" column="p_id"/>
+        <id property="name" column="p_name"/>
+        <id property="customerId" column="p_customer_id"/>
+        <id property="city" column="p_city"/>
+        <id property="primaryCabinetNo" column="p_primary_cabinet_no"/>
+        <id property="serialNumber" column="p_serial_number"/>
+        <id property="cardNo" column="p_card_no"/>
+        <id property="remark" column="p_remark"/>
+        <id property="setTime" column="p_set_time"/>
+        <id property="deliverTime" column="p_deliver_time"/>
+        <id property="createTime" column="p_create_time"/>
+        <id property="customerName" column="c_name"/>
+
+        <collection property="fileList" ofType="com.xiliulou.afterserver.entity.File">
+            <id property="id" column="f_id"/>
+            <id property="type" column="f_type"/>
+            <id property="fileName" column="f_file_name"/>
+            <id property="createTime" column="f_create_time"/>
+            <id property="bindId" column="f_bind_id"/>
+
+        </collection>
+        <collection property="productList" ofType="com.xiliulou.afterserver.entity.Product">
+            <id property="id" column="pt_id"/>
+            <id property="name" column="pt_name"/>
+            <id property="type" column="pt_type"/>
+            <id property="code" column="pt_code"/>
+            <id property="boxNumber" column="pt_boxNumber"/>
+            <id property="createTime" column="pt_create_time"/>
+            <id property="info" column="pt_info"/>
+        </collection>
+    </resultMap>
+
+    <select id="pointPage" resultMap="pageMap">
+        SELECT p.id                 as p_id,
+               p.name               as p_name,
+               p.customer_id        as p_customer_id,
+               p.city               as p_city,
+               p.primary_cabinet_no as p_primarty_cabinet_no,
+               p.card_no            as p_card_no,
+               p.remark             as p_remark,
+               p.set_time           as p_set_time,
+               p.deliver_time       as p_deliver_time,
+               p.create_time        as p_create_time,
+               pt.id                as pt_id,
+               pt.name              as pt_name,
+               pt.code              as pt_code,
+               pt.box_number        as pt_box_number,
+               pt.create_time       as pt_create_time,
+               pt.info              as pt_info,
+               f.id                 as f_id,
+               f.bind_id            as f_bind_id,
+               f.type               as f_type,
+               f.file_name          as f_file_name,
+               f.create_time        as f_create_time,
+               c.name               as c_name
+        FROM point p
+                 LEFT JOIN point_bind_product pdp on pdp.point_id = p.id
+                 LEFT JOIN product pt on pdp.product_id = pt.id
+                 LEFT JOIN file f on f.bind_id = p.id
+                 LEFT JOIN customer c on c.id = p.customer_id
+
+        ORDER BY p.create_time DESC
+    </select>
+</mapper>

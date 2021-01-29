@@ -1,15 +1,15 @@
 package com.xiliulou.afterserver.controller.admin;
 
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.server.HttpServerResponse;
+import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.service.FileService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.FileQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -27,6 +27,7 @@ public class AdminJsonFileController {
     @Autowired
     FileService fileService;
 
+
     @PostMapping("/admin/upload")
     public R uploadFile(@RequestParam("file") MultipartFile file) {
 
@@ -38,5 +39,21 @@ public class AdminJsonFileController {
 
         fileService.downLoadFile(fileName, response);
     }
+
+    /**
+     * @return
+     */
+    @PostMapping("admin/bindFile")
+    public R updateFile(@RequestBody FileQuery file) {
+        if (ObjectUtil.equal(FileQuery.FLAG_FALSE, file.getDelFlag())) {
+            file.setCreateTime(System.currentTimeMillis());
+            fileService.save(file);
+        }
+        if (ObjectUtil.equal(FileQuery.FLAG_TRUE, file.getDelFlag())) {
+            fileService.removeById(file.getId());
+        }
+        return R.ok();
+    }
+
 
 }

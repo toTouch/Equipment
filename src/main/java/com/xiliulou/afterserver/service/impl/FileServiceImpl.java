@@ -6,6 +6,7 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.server.HttpServerResponse;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiliulou.afterserver.constant.FileConstant;
 import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.mapper.FileMapper;
 import com.xiliulou.afterserver.service.FileService;
@@ -38,11 +39,12 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     public R uploadFile(MultipartFile file) {
         String fileName = IdUtil.simpleUUID() + StrUtil.DOT + FileUtil.extName(file.getOriginalFilename());
         Map<String, String> resultMap = new HashMap<>(4);
-        resultMap.put("bucketName", "test");
+        resultMap.put("bucketName", FileConstant.BUCKET_NAME);
+
         resultMap.put("fileName", fileName);
 
         try {
-            minioUtil.putObject("test", "test-" + fileName, file.getInputStream());
+            minioUtil.putObject(FileConstant.BUCKET_NAME, FileConstant.BUCKET_NAME + StrUtil.DASHED + fileName, file.getInputStream());
             //文件管理数据记录,收集管理追踪文件
 
         } catch (Exception e) {
@@ -58,7 +60,6 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
 
         int separator = fileName.lastIndexOf(StrUtil.DASHED);
         String bucketName = fileName.substring(0, separator);
-        log.info("filename:{},bucketName:{}", fileName, bucketName);
 
         try (InputStream inputStream = minioUtil.getObject(bucketName, fileName)) {
             response.setContentType("application/octet-stream; charset=UTF-8");

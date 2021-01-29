@@ -5,6 +5,7 @@ import com.xiliulou.afterserver.entity.Product;
 import com.xiliulou.afterserver.service.PointService;
 import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.PointQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -30,13 +31,15 @@ public class AdminJsonPointController {
 
 
     @PostMapping("admin/point")
-    public R insert(@RequestBody Point point) {
-        point.setCreateTime(System.currentTimeMillis());
-        return R.ok(pointService.save(point));
+    public R insert(@RequestBody PointQuery pointQuery) {
+        pointQuery.setCreateTime(System.currentTimeMillis());
+
+        return pointService.savePoint(pointQuery);
     }
 
     @PutMapping("admin/point")
     public R update(@RequestBody Point point) {
+        // TODO: 2021/1/29 0029  怎么修改 产品绑定 
         return R.ok(pointService.updateById(point));
     }
 
