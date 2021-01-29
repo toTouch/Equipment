@@ -41,7 +41,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
         resultMap.put("fileName", fileName);
 
         try {
-            minioUtil.putObject("test", fileName, file.getInputStream());
+            minioUtil.putObject("test", "test-" + fileName, file.getInputStream());
             //文件管理数据记录,收集管理追踪文件
 
         } catch (Exception e) {
