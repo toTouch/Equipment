@@ -102,7 +102,6 @@
 		<appender-ref ref="debug"/>
 	</logger>
 
-	<!--nacos 心跳 INFO 屏蔽-->
 
 	<!-- Level: FATAL 0  ERROR 3  WARN 4  INFO 6  DEBUG 7 -->
 	<root level="info">
