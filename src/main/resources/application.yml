@@ -21,9 +21,20 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
-      field-strategy: NOT_EMPTY
-      db-type: MYSQL
+
   configuration:
     map-underscore-to-camel-case: true
     call-setters-on-nulls: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+
+
+
+
+minio:
+  endpoint: http://172.26.20.230
+  port: 9000
+  accessKey: by-xiliulou
+  secretKey: by123456
+  secure: false
+  bucketName: test

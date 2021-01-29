@@ -22,24 +22,24 @@ public class AdminJsonSupplierController extends BaseController {
     @Autowired
     SupplierService supplierService;
 
-    @GetMapping("supplier/page")
+    @GetMapping("admin/supplier/page")
     public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, Supplier supplier) {
         return R.ok(supplierService.getPage(offset, size, supplier));
     }
 
 
-    @PostMapping("supplier")
+    @PostMapping("admin/supplier")
     public R insert(@RequestBody Supplier supplier) {
         supplier.setCreateTime(System.currentTimeMillis());
         return R.ok(supplierService.save(supplier));
     }
 
-    @PutMapping("supplier")
+    @PutMapping("admin/supplier")
     public R update(@RequestBody Supplier supplier) {
         return R.ok(supplierService.updateById(supplier));
     }
 
-    @DeleteMapping("supplier")
+    @DeleteMapping("admin/supplier")
     public R delete(@RequestParam("id") Long id) {
         return R.ok();
     }

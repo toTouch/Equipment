@@ -22,24 +22,24 @@ public class AdminJsonProductController {
     ProductService productService;
 
 
-    @GetMapping("product/page")
+    @GetMapping("admin/product/page")
     public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, Product product) {
         return R.ok(productService.getPage(offset, size, product));
     }
 
 
-    @PostMapping("product")
+    @PostMapping("admin/product")
     public R insert(@RequestBody Product product) {
         product.setCreateTime(System.currentTimeMillis());
         return R.ok(productService.save(product));
     }
 
-    @PutMapping("product")
+    @PutMapping("admin/product")
     public R update(@RequestBody Product product) {
         return R.ok(productService.updateById(product));
     }
 
-    @DeleteMapping("product")
+    @DeleteMapping("admin/product")
     public R delete(@RequestParam("id") Long id) {
         return R.ok();
     }

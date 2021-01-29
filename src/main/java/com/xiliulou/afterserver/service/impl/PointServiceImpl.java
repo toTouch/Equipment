@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.Point;
 import com.xiliulou.afterserver.mapper.PointMapper;
@@ -16,4 +17,10 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements PointService {
+
+
+    @Override
+    public IPage getPage(Long offset, Long size, Point point) {
+        return null;
+    }
 }
