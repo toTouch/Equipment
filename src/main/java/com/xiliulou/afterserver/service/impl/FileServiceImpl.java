@@ -57,9 +57,10 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
 
         int separator = fileName.lastIndexOf(StrUtil.DASHED);
         String bucketName = fileName.substring(0, separator);
+        log.info("filename:{},bucketName:{}", fileName, bucketName);
 
         try (InputStream inputStream = minioUtil.getObject(bucketName, fileName)) {
-//            response.setContentType("application/octet-stream; charset=UTF-8");
+            response.setContentType("application/octet-stream; charset=UTF-8");
             IoUtil.copy(inputStream, response.getOut());
         } catch (Exception e) {
             log.error("文件读取异常", e);
