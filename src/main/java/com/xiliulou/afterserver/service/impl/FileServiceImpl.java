@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,7 +54,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     }
 
     @Override
-    public void downLoadFile(String fileName, HttpServerResponse response) {
+    public void downLoadFile(String fileName, HttpServletResponse response) {
 
         int separator = fileName.lastIndexOf(StrUtil.DASHED);
         String bucketName = fileName.substring(0, separator);
@@ -61,7 +62,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
 
         try (InputStream inputStream = minioUtil.getObject(bucketName, fileName)) {
             response.setContentType("application/octet-stream; charset=UTF-8");
-            IoUtil.copy(inputStream, response.getOut());
+            IoUtil.copy(inputStream, response.getOutputStream());
         } catch (Exception e) {
             log.error("文件读取异常", e);
         }

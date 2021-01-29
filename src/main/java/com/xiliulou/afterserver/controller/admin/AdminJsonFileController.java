@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @program: XILIULOU
  * @description:
@@ -32,7 +34,7 @@ public class AdminJsonFileController {
     }
 
     @GetMapping("/admin/downLoad")
-    public void getFile(@RequestParam("fileName") String fileName, HttpServerResponse response) {
+    public void getFile(@RequestParam("fileName") String fileName, HttpServletResponse response) {
 
         fileService.downLoadFile(fileName, response);
     }
