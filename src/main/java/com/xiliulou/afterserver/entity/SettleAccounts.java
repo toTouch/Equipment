@@ -23,4 +23,5 @@ public class SettleAccounts {
     private String remark;
     private Long payTime;
     private Long createTime;
+    private Long pointId;
 }

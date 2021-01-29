@@ -53,6 +53,20 @@
             <id property="createTime" column="pt_create_time"/>
             <id property="info" column="pt_info"/>
         </collection>
+        <collection property="settleAccountsList" ofType="com.xiliulou.afterserver.entity.SettleAccounts">
+            <id property="id" column="sa_id"/>
+            <id property="customerId" column="sa_customer_id"/>
+            <id property="totalAmount" column="sa_total_amount"/>
+            <id property="payRate" column="sa_pay_rate"/>
+            <id property="payAmount" column="sa_pay_amount"/>
+            <id property="unPayAmount" column="sa_un_pay_amount"/>
+            <id property="billAmount" column="sa_bill_amount"/>
+            <id property="unBillAmount" column="sa_un_bill_amount"/>
+            <id property="remark" column="sa_remark"/>
+            <id property="payTime" column="sa_pay_time"/>
+            <id property="createTime" column="sa_create_time"/>
+            <id property="pointId" column="sa_point_id"/>
+        </collection>
     </resultMap>
 
     <select id="pointPage" resultMap="pageMap">
@@ -77,12 +91,24 @@
                f.type               as f_type,
                f.file_name          as f_file_name,
                f.create_time        as f_create_time,
-               c.name               as c_name
+               c.name               as c_name,
+               sa.id                as sa_id,
+               sa.customer_id       as sa_customer_id,
+               sa.total_amount      as sa_total_amount,
+               sa.pay_rate          as sa_pay_rate,
+               sa.pay_amount        as sa_pay_amount,
+               sa.un_pay_amount     as sa_un_pay_amount,
+               sa.bill_amount       as sa_un_bill_amount,
+               sa.remark            as sa_remark,
+               sa.pay_time          as sa_pay_time,
+               sa.create_time       as sa_create_time,
+               sa.point_id          as sa_point_id
         FROM point p
                  LEFT JOIN point_bind_product pdp on pdp.point_id = p.id
                  LEFT JOIN product pt on pdp.product_id = pt.id
                  LEFT JOIN file f on f.bind_id = p.id
                  LEFT JOIN customer c on c.id = p.customer_id
+                 LEFT JOIN settle_accounts sa on sa.point_id = p.id
 
         ORDER BY p.create_time DESC
     </select>
