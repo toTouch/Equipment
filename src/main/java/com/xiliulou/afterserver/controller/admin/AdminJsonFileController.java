@@ -31,7 +31,7 @@ public class AdminJsonFileController {
         return fileService.uploadFile(file);
     }
 
-    @PostMapping("/admin/downLoad")
+    @GetMapping("/admin/downLoad")
     public void getFile(@RequestParam("fileName") String fileName, HttpServerResponse response) {
 
         fileService.downLoadFile(fileName, response);
