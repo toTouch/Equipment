@@ -14,7 +14,7 @@ import com.xiliulou.afterserver.web.query.PointQuery;
  * @create: 2021-01-28 19:04
  **/
 public interface PointService extends IService<Point> {
-    IPage getPage(Long offset, Long size, Point point);
+    IPage getPage(Long offset, Long size, PointQuery point);
 
     R savePoint(PointQuery pointQuery);
 }

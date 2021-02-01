@@ -39,7 +39,7 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
     PointBindProductMapper pointBindProductMapper;
 
     @Override
-    public IPage getPage(Long offset, Long size, Point point) {
+    public IPage getPage(Long offset, Long size, PointQuery point) {
         return baseMapper.pointPage(PageUtil.getPage(offset, size), point);
     }
 

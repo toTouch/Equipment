@@ -16,4 +16,7 @@ public class PointQuery extends Point {
 
     private List<String> fileNameList;
     private List<Long> productIdList;
+
+    private Long createTimeStart;
+    private Long createTimeEnd;
 }
