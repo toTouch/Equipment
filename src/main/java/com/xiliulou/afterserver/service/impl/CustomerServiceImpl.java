@@ -28,6 +28,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     public IPage getCustomerPage(Long offset, Long size, Customer customer) {
         Page page = PageUtil.getPage(offset, size);
 
-        return baseMapper.selectPage(page, Wrappers.lambdaQuery(customer).orderByDesc(Customer::getCreateTime));
+        return baseMapper.selectPage(page, Wrappers.lambdaQuery(customer));
     }
 }

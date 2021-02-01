@@ -17,7 +17,6 @@ import java.math.BigDecimal;
 @Data
 @TableName("point")
 public class Point {
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
     private String city;
     private String name;

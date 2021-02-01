@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 
 public class Deliver {
 
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
     private Long customerId;
     private String city;

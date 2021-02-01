@@ -18,7 +18,6 @@ import java.nio.file.LinkOption;
 @Data
 @TableName("purchase")
 public class Purchase {
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
     private long customer;
     private String city;

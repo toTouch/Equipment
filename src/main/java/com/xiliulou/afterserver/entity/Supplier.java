@@ -14,7 +14,6 @@ import lombok.Data;
 @Data
 @TableName("supplier")
 public class Supplier {
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
     private String label;
     private String name;

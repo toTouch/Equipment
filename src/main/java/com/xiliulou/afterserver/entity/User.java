@@ -14,7 +14,6 @@ import lombok.Data;
 @TableName("user")
 @Data
 public class User {
-    @TableId(value = "id", type = IdType.AUTO)
     private String name;
     private String password;
     private Integer roleId;

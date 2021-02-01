@@ -15,7 +15,6 @@ import lombok.Data;
 @Data
 @TableName("product")
 public class Product {
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
     private String name;
     private Integer type;

@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
  **/
 @RestController
 @Slf4j
-public class WorkOrderController {
+public class AdminJsonWorkOrderController {
 
     @Autowired
     WorkOrderService workOrderService;
