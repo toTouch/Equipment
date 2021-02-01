@@ -7,20 +7,22 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xiliulou.afterserver.entity.Customer;
-import com.xiliulou.afterserver.entity.Purchase;
-import com.xiliulou.afterserver.entity.Supplier;
-import com.xiliulou.afterserver.entity.WorkOrder;
+import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
+import com.xiliulou.afterserver.mapper.PurchaseBindProductMapper;
 import com.xiliulou.afterserver.mapper.PurchaseMapper;
 import com.xiliulou.afterserver.service.PurchaseService;
 import com.xiliulou.afterserver.util.PageUtil;
+import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.SavePurchaseQuery;
 import com.xiliulou.afterserver.web.vo.PurchaseExcelVo;
 import com.xiliulou.afterserver.web.vo.PurchaseVo;
 import com.xiliulou.afterserver.web.vo.WorkOrderExcelVo;
 import com.xiliulou.afterserver.web.vo.WorkOrderVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -40,7 +42,8 @@ import java.util.List;
 @Slf4j
 @Service
 public class PurchaseServiceImpl extends ServiceImpl<PurchaseMapper, Purchase> implements PurchaseService {
-
+    @Autowired
+    PurchaseBindProductMapper purchaseBindProductMapper;
 
     @Override
     public IPage getPage(Long offset, Long size, Purchase purchase) {
@@ -48,6 +51,21 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseMapper, Purchase> i
         return baseMapper.getPage(page, purchase);
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public R savePurchase(SavePurchaseQuery savePurchaseQuery) {
+        Purchase purchase = savePurchaseQuery.getPurchase();
+
+        baseMapper.insert(purchase);
+        if (ObjectUtil.isNotEmpty(savePurchaseQuery.getPurchaseBindProductList())) {
+
+            for (PurchaseBindProduct purchaseBindProduct : savePurchaseQuery.getPurchaseBindProductList()) {
+                purchaseBindProduct.setPurchaseId(purchase.getId());
+                purchaseBindProductMapper.insert(purchaseBindProduct);
+            }
+        }
+        return R.ok();
+    }
 
     @Override
     public void exportExcel(Purchase purchase, HttpServletResponse response) {

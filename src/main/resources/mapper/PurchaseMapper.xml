@@ -34,7 +34,7 @@
         <collection property="productBindVoList" ofType="com.xiliulou.afterserver.web.vo.ProductBindVo">
             <id property="name" column="pro_name"/>
             <id property="code" column="pro_code"/>
-            <id property="count" column="pro_count"/>
+            <id property="count" column="pbp_count"/>
         </collection>
     </resultMap>
 

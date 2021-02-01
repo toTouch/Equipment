@@ -15,17 +15,17 @@ import java.math.BigDecimal;
  **/
 @Data
 @TableName("deliver")
-
 public class Deliver {
 
     private Long id;
     private Long customerId;
     private String city;
-    private String destination;
+    private String destination;//终点
     private String bills;
     private BigDecimal deliverCost;
     private Long deliverTime;
     private Long createTime;
-
+    private String expressCompany;
+    private String expressNo;
 
 }

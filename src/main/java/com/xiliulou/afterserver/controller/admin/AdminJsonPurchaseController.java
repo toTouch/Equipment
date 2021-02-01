@@ -4,6 +4,7 @@ import com.xiliulou.afterserver.entity.Product;
 import com.xiliulou.afterserver.entity.Purchase;
 import com.xiliulou.afterserver.service.PurchaseService;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.SavePurchaseQuery;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
  **/
 @RestController
 @Slf4j
-public class AdminJsonpurchaseController {
+public class AdminJsonPurchaseController {
 
     @Autowired
     PurchaseService purchaseService;
@@ -31,9 +32,9 @@ public class AdminJsonpurchaseController {
 
 
     @PostMapping("admin/purchase")
-    public R insert(@RequestBody Purchase purchase) {
-        purchase.setCreateTime(System.currentTimeMillis());
-        return R.ok(purchaseService.save(purchase));
+    public R insert(@RequestBody SavePurchaseQuery savePurchaseQuery) {
+
+        return purchaseService.savePurchase(savePurchaseQuery);
     }
 
     @PutMapping("admin/purchase")

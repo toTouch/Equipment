@@ -19,9 +19,8 @@ import java.nio.file.LinkOption;
 @TableName("purchase")
 public class Purchase {
     private Long id;
-    private long customer;
+    private long customerId;
     private String city;
-    private Integer count;
     private BigDecimal fee;
     private String billsFees;
     private Long settingTime;
