@@ -27,5 +27,5 @@ public class Deliver {
     private Long createTime;
     private String expressCompany;
     private String expressNo;
-
+    private Long pointId;
 }

@@ -5,6 +5,7 @@ import com.xiliulou.afterserver.entity.SettleAccounts;
 import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.service.SettleAccountsService;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.SettleAccountsQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class AdminJsonSettleAccountsController {
 
 
     @GetMapping("admin/settleAccounts/page")
-    public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, SettleAccounts settleAccounts) {
+    public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, SettleAccountsQuery settleAccounts) {
         return R.ok(settleAccountsService.getPage(offset, size, settleAccounts));
     }
 

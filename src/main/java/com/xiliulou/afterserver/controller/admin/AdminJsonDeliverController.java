@@ -5,6 +5,7 @@ import com.xiliulou.afterserver.entity.Product;
 import com.xiliulou.afterserver.service.DeliverService;
 import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.DeliverQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class AdminJsonDeliverController {
 
 
     @GetMapping("admin/deliver/page")
-    public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, Deliver deliver) {
+    public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, DeliverQuery deliver) {
         return R.ok(deliverService.getPage(offset, size, deliver));
     }
 

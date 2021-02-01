@@ -14,6 +14,7 @@ import com.xiliulou.afterserver.mapper.PurchaseMapper;
 import com.xiliulou.afterserver.service.PurchaseService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.PurchaseQuery;
 import com.xiliulou.afterserver.web.query.SavePurchaseQuery;
 import com.xiliulou.afterserver.web.vo.PurchaseExcelVo;
 import com.xiliulou.afterserver.web.vo.PurchaseVo;
@@ -46,7 +47,8 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseMapper, Purchase> i
     PurchaseBindProductMapper purchaseBindProductMapper;
 
     @Override
-    public IPage getPage(Long offset, Long size, Purchase purchase) {
+    public IPage getPage(Long offset, Long size, PurchaseQuery purchase) {
+        log.info("customerId:{}", purchase.getCustomerId());
         Page page = PageUtil.getPage(offset, size);
         return baseMapper.getPage(page, purchase);
     }
@@ -68,7 +70,7 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseMapper, Purchase> i
     }
 
     @Override
-    public void exportExcel(Purchase purchase, HttpServletResponse response) {
+    public void exportExcel(PurchaseQuery purchase, HttpServletResponse response) {
 
         List<PurchaseVo> purchaseList = baseMapper.getList(purchase);
         if (ObjectUtil.isEmpty(purchaseList)) {

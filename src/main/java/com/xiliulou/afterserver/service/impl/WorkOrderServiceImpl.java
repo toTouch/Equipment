@@ -20,6 +20,7 @@ import com.xiliulou.afterserver.service.WorkOrderService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.SaveWorkOrderQuery;
+import com.xiliulou.afterserver.web.query.WorkOrderQuery;
 import com.xiliulou.afterserver.web.vo.ProductExcelVo;
 import com.xiliulou.afterserver.web.vo.WorkOrderExcelVo;
 import com.xiliulou.afterserver.web.vo.WorkOrderVo;
@@ -53,7 +54,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     SupplierService supplierService;
 
     @Override
-    public IPage getPage(Long offset, Long size, WorkOrder workOrder) {
+    public IPage getPage(Long offset, Long size, WorkOrderQuery workOrder) {
         Page page = PageUtil.getPage(offset, size);
         page = baseMapper.getPage(page, workOrder);
         if (ObjectUtil.isNotEmpty(page.getRecords())) {
@@ -97,7 +98,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
 
     @Override
-    public void exportExcel(WorkOrder workOrder, HttpServletResponse response) {
+    public void exportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
 
         List<WorkOrderVo> workOrderVoList = baseMapper.orderList(workOrder);
         if (ObjectUtil.isNotEmpty(workOrderVoList)) {

@@ -6,13 +6,14 @@ import com.xiliulou.afterserver.entity.Product;
 import com.xiliulou.afterserver.entity.WorkOrder;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.SaveWorkOrderQuery;
+import com.xiliulou.afterserver.web.query.WorkOrderQuery;
 
 import javax.servlet.http.HttpServletResponse;
 
 public interface WorkOrderService extends IService<WorkOrder> {
-    IPage getPage(Long offset, Long size, WorkOrder workOrder);
+    IPage getPage(Long offset, Long size, WorkOrderQuery workOrder);
 
     R saveWorkOrder(SaveWorkOrderQuery saveWorkOrderQuery);
 
-    void exportExcel(WorkOrder workOrder, HttpServletResponse response);
+    void exportExcel(WorkOrderQuery workOrder, HttpServletResponse response);
 }

@@ -4,6 +4,7 @@ import com.xiliulou.afterserver.entity.Product;
 import com.xiliulou.afterserver.entity.Purchase;
 import com.xiliulou.afterserver.service.PurchaseService;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.PurchaseQuery;
 import com.xiliulou.afterserver.web.query.SavePurchaseQuery;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,7 @@ public class AdminJsonPurchaseController {
     PurchaseService purchaseService;
 
     @GetMapping("admin/purchase/page")
-    public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, Purchase purchase) {
+    public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, PurchaseQuery purchase) {
         return R.ok(purchaseService.getPage(offset, size, purchase));
     }
 
@@ -49,7 +50,7 @@ public class AdminJsonPurchaseController {
 
 
     @GetMapping("admin/purchase/exportExcel")
-    public void exportExcel(Purchase purchase, HttpServletResponse response) {
+    public void exportExcel(PurchaseQuery purchase, HttpServletResponse response) {
         purchaseService.exportExcel(purchase, response);
     }
 }

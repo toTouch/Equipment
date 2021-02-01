@@ -39,25 +39,39 @@
     </resultMap>
 
     <select id="getPage" resultMap="pageMap">
-        SELECT p.city         as p_city,
-               p.fee          as p_fee,
-               p.bills_fees   as p_bill_fees,
-               p.setting_time as p_setting_time,
-               p.create_time  as p_create_time,
-               po.name        as po_name,
-               c.name         as c_name,
-               pro.name       as pro_name,
-               pro.code       as pro_code,
-               pbp.count      as pbp_count
+        SELECT p.city as p_city,
+        p.fee as p_fee,
+        p.bills_fees as p_bill_fees,
+        p.setting_time as p_setting_time,
+        p.create_time as p_create_time,
+        po.name as po_name,
+        c.name as c_name,
+        pro.name as pro_name,
+        pro.code as pro_code,
+        pbp.count as pbp_count
 
         FROM purchase p
-                 LEFT JOIN customer as c on c.id = p.customer_id
-                 LEFT JOIN point as po on po.id = p.point_id
-                 LEFT JOIN purchase_bind_product as pbp on pbp.purchase_id = p.id
-                 LEFT JOIN product as pro on pro.id = pbp.product_id
+        LEFT JOIN customer as c on c.id = p.customer_id
+        LEFT JOIN point as po on po.id = p.point_id
+        LEFT JOIN purchase_bind_product as pbp on pbp.purchase_id = p.id
+        LEFT JOIN product as pro on pro.id = pbp.product_id
+
+        <where>
+            <if test="query.pointId != null">
+                and p.point_id = #{query.pointId}
+            </if>
+            <if test="query.city != null and query.city != ''">
+                and p.city = #{query.city}
+            </if>
+            <if test="query.customerId != null ">
+                and p.customer_id = #{query.customerId}
+            </if>
+            <if test="query.settingTimeStart != null and query.settingTimeEnd != null">
+                and sa.setting_time BETWEEN #{query.settingTimeStart} and #{query.settingTimeEnd}
+            </if>
+        </where>
         ORDER BY p.create_time DESC
     </select>
-
 
 
     <select id="getList" resultMap="pageMap">
@@ -77,6 +91,20 @@
                  LEFT JOIN point as po on po.id = p.point_id
                  LEFT JOIN purchase_bind_product as pbp on pbp.purchase_id = p.id
                  LEFT JOIN product as pro on pro.id = pbp.product_id
+        <where>
+            <if test="query.pointId != null">
+                and p.point_id = #{query.pointId}
+            </if>
+            <if test="query.city != null and query.city != ''">
+                and p.city = #{query.city}
+            </if>
+            <if test="query.customerId != null ">
+                and p.customer_id = #{query.customerId}
+            </if>
+            <if test="query.settingTimeStart != null and query.settingTimeEnd != null">
+                and sa.setting_time BETWEEN #{query.settingTimeStart} and #{query.settingTimeEnd}
+            </if>
+        </where>
         ORDER BY p.create_time DESC
     </select>
 </mapper>

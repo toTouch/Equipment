@@ -66,6 +66,24 @@
         FROM work_order as wo
                  LEFT JOIN work_order_type as wot on wot.type = wo.type
                  LEFT JOIN work_order_reason as wor on wor.id = wo.work_order_reason_id
+
+        <where>
+            <if test="query.pointId != null">
+                and wo.point_id = #{query.pointId}
+            </if>
+            <if test="query.type != null">
+                and wo.type = #{query.type}
+            </if>
+            <if test="query.status != null">
+                and wo.starus = #{query.status}
+            </if>
+            <if test="query.orderNo != null">
+                and wo.order_no = #{query.orderNo}
+            </if>
+            <if test="query.createTimeStart != null and query.createTimeEnd != null">
+                and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
+            </if>
+        </where>
         ORDER BY wo.create_time DESC
     </select>
     <select id="orderList" resultMap="pageMap">
@@ -90,6 +108,23 @@
         FROM work_order as wo
                  LEFT JOIN work_order_type as wot on wot.type = wo.type
                  LEFT JOIN work_order_reason as wor on wor.id = wo.work_order_reason_id
+        <where>
+            <if test="query.pointId != null">
+                and wo.point_id = #{query.pointId}
+            </if>
+            <if test="query.type != null">
+                and wo.type = #{query.type}
+            </if>
+            <if test="query.status != null">
+                and wo.starus = #{query.status}
+            </if>
+            <if test="query.orderNo != null">
+                and wo.order_no = #{query.orderNo}
+            </if>
+            <if test="query.createTimeStart != null and query.createTimeEnd != null">
+                and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
+            </if>
+        </where>
         ORDER BY wo.create_time DESC
     </select>
 

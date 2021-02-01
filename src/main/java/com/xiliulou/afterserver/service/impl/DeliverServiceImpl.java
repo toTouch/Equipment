@@ -8,6 +8,7 @@ import com.xiliulou.afterserver.entity.Deliver;
 import com.xiliulou.afterserver.mapper.DeliverMapper;
 import com.xiliulou.afterserver.service.DeliverService;
 import com.xiliulou.afterserver.util.PageUtil;
+import com.xiliulou.afterserver.web.query.DeliverQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -23,10 +24,10 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
 
 
     @Override
-    public IPage getPage(Long offset, Long size, Deliver deliver) {
+    public IPage getPage(Long offset, Long size, DeliverQuery deliver) {
 
         Page page = PageUtil.getPage(offset, size);
 
-        return baseMapper.selectPage(page, Wrappers.<Deliver>lambdaQuery(deliver).orderByDesc(Deliver::getCreateTime));
+        return baseMapper.getDeliverPage(page, deliver);
     }
 }

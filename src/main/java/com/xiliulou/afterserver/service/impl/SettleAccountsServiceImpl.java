@@ -8,6 +8,7 @@ import com.xiliulou.afterserver.entity.SettleAccounts;
 import com.xiliulou.afterserver.mapper.SettleAccountsMapper;
 import com.xiliulou.afterserver.service.SettleAccountsService;
 import com.xiliulou.afterserver.util.PageUtil;
+import com.xiliulou.afterserver.web.query.SettleAccountsQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +23,8 @@ import org.springframework.stereotype.Service;
 public class SettleAccountsServiceImpl extends ServiceImpl<SettleAccountsMapper, SettleAccounts> implements SettleAccountsService {
 
     @Override
-    public Page getPage(Long offset, Long size, SettleAccounts settleAccounts) {
+    public Page getPage(Long offset, Long size, SettleAccountsQuery settleAccounts) {
         Page page = PageUtil.getPage(offset, size);
-        return baseMapper.selectPage(page, Wrappers.lambdaQuery(settleAccounts));
+        return baseMapper.settleAccountsPage(page, settleAccounts);
     }
 }

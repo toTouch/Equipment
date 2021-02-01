@@ -7,6 +7,7 @@ import com.xiliulou.afterserver.service.WorkOrderService;
 import com.xiliulou.afterserver.service.WorkOrderTypeService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.SaveWorkOrderQuery;
+import com.xiliulou.afterserver.web.query.WorkOrderQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ public class AdminJsonWorkOrderController {
 
 
     @GetMapping("admin/workOrder/page")
-    public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, WorkOrder workOrder) {
+    public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, WorkOrderQuery workOrder) {
         return R.ok(workOrderService.getPage(offset, size, workOrder));
     }
 
@@ -51,7 +52,7 @@ public class AdminJsonWorkOrderController {
 
 
     @GetMapping("admin/workOrder/exportExcel")
-    public void exportExcel(WorkOrder workOrder, HttpServletResponse response) {
+    public void exportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
         workOrderService.exportExcel(workOrder, response);
     }
 }
