@@ -14,6 +14,7 @@ import java.util.List;
 @Data
 public class SaveWorkOrderQuery {
 
+
     private List<WorkOrder> workOrderList;
     private String processor;
 }
