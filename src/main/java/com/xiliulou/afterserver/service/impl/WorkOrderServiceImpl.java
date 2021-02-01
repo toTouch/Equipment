@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcel;
@@ -58,6 +59,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         if (ObjectUtil.isNotEmpty(page.getRecords())) {
             List<WorkOrderVo> workOrderVoList = page.getRecords();
             for (WorkOrderVo workOrderVo : workOrderVoList) {
+                log.info("work:{}", workOrderVo.getCompanyId());
                 if (ObjectUtil.isNotEmpty(workOrderVo.getCompanyType()) && ObjectUtil.isNotEmpty(workOrderVo.getCompanyId())) {
                     if (ObjectUtil.equal(WorkOrder.COMPANY_TYPE_SUPPLIER, workOrderVo.getCompanyType())) {
                         Supplier supplier = supplierService.getById(workOrderVo.getCompanyId());
@@ -86,11 +88,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrder.setProcessor(saveWorkOrderQuery.getProcessor());
             }
             workOrder.setStatus(WorkOrder.STATUS_FINISHED);
+            workOrder.setOrderNo(String.valueOf(IdUtil.getSnowflake(1, 1).nextId()));
             baseMapper.insert(workOrder);
         }
 
         return R.ok();
     }
+
 
     @Override
     public void exportExcel(WorkOrder workOrder, HttpServletResponse response) {
@@ -126,7 +130,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             BeanUtil.copyProperties(o, workOrderExcelVo);
             workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
-            workOrderExcelVo.setProcessorTimeStr(simpleDateFormat.format(new Date(o.getProcessorTime())));
+            if (ObjectUtil.isNotEmpty(o.getProcessorTime())) {
+                workOrderExcelVo.setProcessorTimeStr(simpleDateFormat.format(new Date(o.getProcessorTime())));
+            }
             workOrderExcelVoList.add(workOrderExcelVo);
         }
 
