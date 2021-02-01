@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.Product;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @program: XILIULOU
  * @description:
@@ -12,4 +14,6 @@ import com.xiliulou.afterserver.entity.Product;
  **/
 public interface ProductService extends IService<Product> {
     IPage getPage(Long offset, Long size, Product product);
+
+    void exportExcel(Product product, HttpServletResponse response);
 }

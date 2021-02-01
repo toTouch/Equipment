@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~
+  ~      Copyright (c) 2018-2025, lengleng All rights reserved.
+  ~
+  ~  Redistribution and use in source and binary forms, with or without
+  ~  modification, are permitted provided that the following conditions are met:
+  ~
+  ~ Redistributions of source code must retain the above copyright notice,
+  ~  this list of conditions and the following disclaimer.
+  ~  Redistributions in binary form must reproduce the above copyright
+  ~  notice, this list of conditions and the following disclaimer in the
+  ~  documentation and/or other materials provided with the distribution.
+  ~  Neither the name of the pig4cloud.com developer nor the names of its
+  ~  contributors may be used to endorse or promote products derived from
+  ~  this software without specific prior written permission.
+  ~  Author: lengleng (wangiegie@gmail.com)
+  ~
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiliulou.afterserver.mapper.PurchaseMapper">
+
+    <resultMap id="pageMap" type="com.xiliulou.afterserver.web.vo.PurchaseVo">
+        <id property="city" column="p_city"/>
+        <id property="fee" column="p_fee"/>
+        <id property="billFees" column="p_bill_fees"/>
+        <id property="settingTime" column="p_setting_time"/>
+        <id property="createTime" column="p_create_time"/>
+        <id property="pointName" column="po_name"/>
+        <id property="customerName" column="c_name"/>
+
+        <collection property="productBindVoList" ofType="com.xiliulou.afterserver.web.vo.ProductBindVo">
+            <id property="name" column="pro_name"/>
+            <id property="code" column="pro_code"/>
+            <id property="count" column="pro_count"/>
+        </collection>
+    </resultMap>
+
+    <select id="getPage" resultMap="pageMap">
+        SELECT p.city         as p_city,
+               p.fee          as p_fee,
+               p.bills_fees   as p_bill_fees,
+               p.setting_time as p_setting_time,
+               p.create_time  as p_create_time,
+               po.name        as po_name,
+               c.name         as c_name,
+               pro.name       as pro_name,
+               pro.code       as pro_code,
+               pbp.count      as pbp_count
+
+        FROM purchase p
+                 LEFT JOIN customer as c on c.id = p.customer_id
+                 LEFT JOIN point as po on po.id = p.point_id
+                 LEFT JOIN purchase_bind_product as pbp on pbp.purchase_id = p.id
+                 LEFT JOIN product as pro on pro.id = pbp.product_id
+        ORDER BY p.create_time DESC
+    </select>
+
+
+
+    <select id="getList" resultMap="pageMap">
+        SELECT p.city         as p_city,
+               p.fee          as p_fee,
+               p.bills_fees   as p_bill_fees,
+               p.setting_time as p_setting_time,
+               p.create_time  as p_create_time,
+               po.name        as po_name,
+               c.name         as c_name,
+               pro.name       as pro_name,
+               pro.code       as pro_code,
+               pbp.count      as pbp_count
+
+        FROM purchase p
+                 LEFT JOIN customer as c on c.id = p.customer_id
+                 LEFT JOIN point as po on po.id = p.point_id
+                 LEFT JOIN purchase_bind_product as pbp on pbp.purchase_id = p.id
+                 LEFT JOIN product as pro on pro.id = pbp.product_id
+        ORDER BY p.create_time DESC
+    </select>
+</mapper>

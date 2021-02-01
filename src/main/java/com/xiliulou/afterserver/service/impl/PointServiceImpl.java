@@ -40,8 +40,6 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
 
     @Override
     public IPage getPage(Long offset, Long size, Point point) {
-
-
         return baseMapper.pointPage(PageUtil.getPage(offset, size), point);
     }
 

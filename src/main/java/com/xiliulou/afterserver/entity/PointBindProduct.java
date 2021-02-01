@@ -5,7 +5,7 @@ import lombok.Data;
 
 /**
  * @program: XILIULOU
- * @description:
+ * @description: 点位绑定产品
  * @author: Mr.YG
  * @create: 2021-01-29 16:44
  **/

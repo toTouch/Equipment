@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @program: XILIULOU
  * @description:
@@ -42,6 +44,11 @@ public class AdminJsonProductController {
     @DeleteMapping("admin/product")
     public R delete(@RequestParam("id") Long id) {
         return R.ok();
+    }
+
+    @GetMapping("admin/product/exportExcel")
+    public void exportExcel(Product product, HttpServletResponse response) {
+        productService.exportExcel(product, response);
     }
 
 }

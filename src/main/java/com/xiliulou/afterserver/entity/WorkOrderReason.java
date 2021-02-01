@@ -5,7 +5,7 @@ import lombok.Data;
 
 /**
  * @program: XILIULOU
- * @description:
+ * @description: 工单原因
  * @author: Mr.YG
  * @create: 2021-01-29 10:47
  **/

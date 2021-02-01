@@ -5,12 +5,12 @@ import lombok.Data;
 
 /**
  * @program: XILIULOU
- * @description:
+ * @description: 工单类型
  * @author: Mr.YG
  * @create: 2021-01-29 10:40
  **/
 @Data
-@TableName("")
+@TableName("work_order_type")
 public class WorkOrderType {
 
     private Long id;

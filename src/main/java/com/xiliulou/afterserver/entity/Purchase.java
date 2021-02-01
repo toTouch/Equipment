@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.nio.file.LinkOption;
 
@@ -26,4 +27,6 @@ public class Purchase {
     private String billsFees;
     private Long settingTime;
     private Long createTime;
+    private Long pointId;
+
 }

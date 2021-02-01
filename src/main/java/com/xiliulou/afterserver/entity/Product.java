@@ -7,7 +7,8 @@ import lombok.Data;
 
 /**
  * @program: XILIULOU
- * @description:
+ * @description: 产品
+ *
  * @author: Mr.YG
  * @create: 2021-01-28 17:03
  **/
