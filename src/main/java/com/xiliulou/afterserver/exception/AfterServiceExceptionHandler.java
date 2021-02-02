@@ -20,7 +20,7 @@ import java.util.List;
  */
 @Slf4j
 @RestControllerAdvice
-public class DeliverExceptionHandler {
+public class AfterServiceExceptionHandler {
 
     /**
      * 处理自定义异常
@@ -40,6 +40,15 @@ public class DeliverExceptionHandler {
         return R.failMsg(ex.getMessage());
     }
 
+    /**
+     * 拒绝授权异常
+     */
+    @ExceptionHandler(CusTomBusinessAccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public R HandelCusTomBusinessAccessDeniedException(CusTomBusinessAccessDeniedException e) {
+        log.error("拒绝授权异常 ex={}", e.getMessage(), e);
+        return R.failMsg(e.getMsg());
+    }
 
     /**
      * validation Exception

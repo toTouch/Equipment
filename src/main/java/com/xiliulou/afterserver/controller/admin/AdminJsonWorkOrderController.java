@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -35,8 +36,10 @@ public class AdminJsonWorkOrderController {
 
 
     @PostMapping("admin/workOrder")
-    public R insert(@RequestBody SaveWorkOrderQuery saveWorkOrderQuery) {
+    public R insert(@RequestBody SaveWorkOrderQuery saveWorkOrderQuery, HttpServletRequest request) {
 
+        Long uid = (Long) request.getAttribute("uid");
+        saveWorkOrderQuery.setUid(uid);
         return workOrderService.saveWorkOrder(saveWorkOrderQuery);
     }
 

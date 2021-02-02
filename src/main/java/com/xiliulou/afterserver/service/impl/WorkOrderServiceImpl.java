@@ -8,14 +8,12 @@ import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xiliulou.afterserver.entity.Customer;
-import com.xiliulou.afterserver.entity.Product;
-import com.xiliulou.afterserver.entity.Supplier;
-import com.xiliulou.afterserver.entity.WorkOrder;
+import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.WorkOrderMapper;
 import com.xiliulou.afterserver.service.CustomerService;
 import com.xiliulou.afterserver.service.SupplierService;
+import com.xiliulou.afterserver.service.UserService;
 import com.xiliulou.afterserver.service.WorkOrderService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
@@ -33,11 +31,13 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.ObjectStreamClass;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @program: XILIULOU
@@ -52,6 +52,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     CustomerService customerService;
     @Autowired
     SupplierService supplierService;
+    @Autowired
+    UserService userService;
 
     @Override
     public IPage getPage(Long offset, Long size, WorkOrderQuery workOrder) {
@@ -83,11 +85,17 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     @Transactional(rollbackFor = Exception.class)
     public R saveWorkOrder(SaveWorkOrderQuery saveWorkOrderQuery) {
+        User user = userService.getUserById(saveWorkOrderQuery.getUid());
+        if (Objects.isNull(user)) {
+            log.error("SAVE_WORK_ORDER ERROR ,NOT FOUND USER BY ID ,ID:{}", saveWorkOrderQuery.getUid());
+            return R.failMsg("用户不存在!");
+        }
         for (WorkOrder workOrder : saveWorkOrderQuery.getWorkOrderList()) {
             workOrder.setCreateTime(System.currentTimeMillis());
             if (!StrUtil.isEmpty(saveWorkOrderQuery.getProcessor())) {
                 workOrder.setProcessor(saveWorkOrderQuery.getProcessor());
             }
+            workOrder.setCreaterId(saveWorkOrderQuery.getUid());
             workOrder.setStatus(WorkOrder.STATUS_FINISHED);
             workOrder.setOrderNo(String.valueOf(IdUtil.getSnowflake(1, 1).nextId()));
             baseMapper.insert(workOrder);

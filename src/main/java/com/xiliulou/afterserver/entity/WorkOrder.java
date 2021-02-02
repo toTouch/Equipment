@@ -28,8 +28,9 @@ public class WorkOrder {
     private Long processorTime;
     private Integer status;
     private String orderNo;
-    private String creater;
+    private Long createrId;
     private Long createTime;
+
     //客户
     public static final Integer COMPANY_TYPE_CUSTOMER = 1;
     //供应商

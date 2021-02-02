@@ -17,4 +17,5 @@ public class SaveWorkOrderQuery {
 
     private List<WorkOrder> workOrderList;
     private String processor;
+    private Long uid;
 }

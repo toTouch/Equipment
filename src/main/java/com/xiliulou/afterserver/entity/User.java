@@ -14,8 +14,9 @@ import lombok.Data;
 @TableName("user")
 @Data
 public class User {
-    private String name;
-    private String password;
+    private Long id;
+    private String userName;
+    private String passWord;
     private Integer roleId;
     private Long createTime;
 
