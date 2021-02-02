@@ -1,9 +1,11 @@
 package com.xiliulou.afterserver.controller.admin;
 
 import com.xiliulou.afterserver.entity.Product;
+import com.xiliulou.afterserver.entity.ProductSerialNumber;
 import com.xiliulou.afterserver.entity.Supplier;
 import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -50,5 +52,23 @@ public class AdminJsonProductController {
     public void exportExcel(Product product, HttpServletResponse response) {
         productService.exportExcel(product, response);
     }
+
+    @PostMapping("admin/product/serialNumber")
+    public R insertSerialNumber(@RequestBody ProductSerialNumberQuery productSerialNumberQuery) {
+
+        return productService.insertSerialNumber(productSerialNumberQuery);
+    }
+
+    @GetMapping("admin/product/serialNumber/page")
+    public R getSerialNumberPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size,
+                                 ProductSerialNumberQuery productSerialNumber) {
+        return R.ok(productService.getSerialNumberPage(offset, size, productSerialNumber));
+    }
+
+    @GetMapping("admin/product/serialNumber/exportExcel")
+    public void serialNumberExportExcel(ProductSerialNumberQuery productSerialNumberQuery, HttpServletResponse response) {
+        productService.serialNumberExportExcel(productSerialNumberQuery, response);
+    }
+
 
 }

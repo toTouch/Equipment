@@ -26,7 +26,7 @@ public class AdminJsonWorkOrderReasonController {
 
 
     @GetMapping("admin/workOrderReason/all")
-    public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, WorkOrderReason workOrderReason) {
+    public R getPage() {
         return R.ok(workOrderReasonService.list());
     }
 

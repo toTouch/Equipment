@@ -3,6 +3,9 @@ package com.xiliulou.afterserver.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.Product;
+import com.xiliulou.afterserver.entity.ProductSerialNumber;
+import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -16,4 +19,10 @@ public interface ProductService extends IService<Product> {
     IPage getPage(Long offset, Long size, Product product);
 
     void exportExcel(Product product, HttpServletResponse response);
+
+    R insertSerialNumber(ProductSerialNumberQuery productSerialNumberQuery);
+
+    IPage getSerialNumberPage(Long offset, Long size, ProductSerialNumberQuery productSerialNumber);
+
+    void serialNumberExportExcel(ProductSerialNumberQuery productSerialNumberQuery, HttpServletResponse response);
 }
