@@ -95,13 +95,13 @@
 		</filter>
 	</appender>
 
-	<logger name="com.alibaba.druid.filter.stat.StatFilter" level="ERROR" additivity="false">
-		<appender-ref ref="Druid_FILE" />
-	</logger>
+
 	<logger name="org.activiti.engine.impl.db" level="DEBUG">
 		<appender-ref ref="debug"/>
 	</logger>
-
+	<logger name="com.xiliulou.afterserver.mapper" level="debug">
+		<appender-ref ref="debug"/>
+	</logger>
 
 	<!-- Level: FATAL 0  ERROR 3  WARN 4  INFO 6  DEBUG 7 -->
 	<root level="info">
