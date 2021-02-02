@@ -62,7 +62,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         if (ObjectUtil.isNotEmpty(page.getRecords())) {
             List<WorkOrderVo> workOrderVoList = page.getRecords();
             for (WorkOrderVo workOrderVo : workOrderVoList) {
-                log.info("work:{}", workOrderVo.getCompanyId());
+
                 if (ObjectUtil.isNotEmpty(workOrderVo.getCompanyType()) && ObjectUtil.isNotEmpty(workOrderVo.getCompanyId())) {
                     if (ObjectUtil.equal(WorkOrder.COMPANY_TYPE_SUPPLIER, workOrderVo.getCompanyType())) {
                         Supplier supplier = supplierService.getById(workOrderVo.getCompanyId());
