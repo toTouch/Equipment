@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.controller.admin;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xiliulou.afterserver.controller.BaseController;
 import com.xiliulou.afterserver.entity.Customer;
 import com.xiliulou.afterserver.service.CustomerService;
@@ -7,6 +8,8 @@ import com.xiliulou.afterserver.util.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.sql.Wrapper;
 
 /**
  * @program: XILIULOU
@@ -45,6 +48,13 @@ public class AdminJsonCustomerController extends BaseController {
     public R delete(@RequestParam("id") Long id) {
         // TODO: 2021/1/29 0029  校验是否可以删,是否绑定其他内容
         return R.ok();
+    }
+
+    @GetMapping("admin/customer/list")
+    public R list() {
+
+        return R.ok(customerService.list(Wrappers.<Customer>lambdaQuery().orderByDesc(Customer::getCreateTime)));
+
     }
 
 }

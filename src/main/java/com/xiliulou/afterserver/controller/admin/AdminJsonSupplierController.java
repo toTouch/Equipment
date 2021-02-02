@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.controller.admin;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xiliulou.afterserver.controller.BaseController;
 import com.xiliulou.afterserver.entity.Supplier;
 import com.xiliulou.afterserver.service.SupplierService;
@@ -42,5 +43,10 @@ public class AdminJsonSupplierController extends BaseController {
     @DeleteMapping("admin/supplier")
     public R delete(@RequestParam("id") Long id) {
         return R.ok();
+    }
+
+    @GetMapping("admin/supplier/list")
+    public R list() {
+        return R.ok(supplierService.list(Wrappers.<Supplier>lambdaQuery().orderByDesc(Supplier::getCreateTime)));
     }
 }

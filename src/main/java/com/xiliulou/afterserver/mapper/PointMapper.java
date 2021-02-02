@@ -26,4 +26,6 @@ public interface PointMapper extends BaseMapper<Point> {
     BigDecimal getWorkOrderCostAmount(@Param("query") IndexDataQuery indexDataQuery);
 
     Long getCabinetAmount(@Param("query") IndexDataQuery indexDataQuery);
+
+    Long getBoxAmount(@Param("query") IndexDataQuery indexDataQuery);
 }

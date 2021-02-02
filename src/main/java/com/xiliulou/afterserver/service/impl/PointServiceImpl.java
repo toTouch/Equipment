@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.entity.Point;
 import com.xiliulou.afterserver.entity.PointBindProduct;
+import com.xiliulou.afterserver.exception.CusTomBusinessAccessDeniedException;
+import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.PointBindProductMapper;
 import com.xiliulou.afterserver.mapper.PointMapper;
 import com.xiliulou.afterserver.service.FileService;
@@ -92,12 +94,20 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
         //工单费用
         BigDecimal workOrderCostAmount = baseMapper.getWorkOrderCostAmount(indexDataQuery);
         indexDataVo.setWorkOrderCostAmount(workOrderCostAmount);
-        indexDataVo.setAllCostAmount(workOrderCostAmount.add(deliverCostAmount));
+        BigDecimal allCostAmount = workOrderCostAmount.add(deliverCostAmount);
+        indexDataVo.setAllCostAmount(allCostAmount);
 
         Long cabinetAmount = baseMapper.getCabinetAmount(indexDataQuery);
-        if (deliverCostAmount.compareTo(BigDecimal.ZERO) == 0 && workOrderCostAmount.compareTo(BigDecimal.ZERO) == 0) {
+        Long boxAmount = baseMapper.getBoxAmount(indexDataQuery);
 
+        if (allCostAmount.compareTo(BigDecimal.ZERO) == 0) {
+            indexDataVo.setSingleBoxCostAmount(BigDecimal.ZERO);
+        } else {
+            if (boxAmount < 1) {
+                throw new CusTomBusinessAccessDeniedException("格口总数小于1");
+            }
+            indexDataVo.setSingleBoxCostAmount(allCostAmount.divide(new BigDecimal(String.valueOf(boxAmount))));
         }
-        return null;
+        return indexDataVo;
     }
 }
