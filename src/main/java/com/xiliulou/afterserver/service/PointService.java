@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.Point;
 import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.IndexDataQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
+import com.xiliulou.afterserver.web.vo.IndexDataVo;
 
 /**
  * @program: XILIULOU
@@ -17,4 +19,6 @@ public interface PointService extends IService<Point> {
     IPage getPage(Long offset, Long size, PointQuery point);
 
     R savePoint(PointQuery pointQuery);
+
+    IndexDataVo getCostIndexData(IndexDataQuery indexDataQuery);
 }

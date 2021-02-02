@@ -5,6 +5,7 @@ import com.xiliulou.afterserver.entity.Product;
 import com.xiliulou.afterserver.service.PointService;
 import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.IndexDataQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,5 +48,11 @@ public class AdminJsonPointController {
     public R delete(@RequestParam("id") Long id) {
         return R.ok();
     }
+
+    @GetMapping("admin/indexData/costAmount")
+    public R getCostIndexData(IndexDataQuery indexDataQuery) {
+        return R.ok(pointService.getCostIndexData(indexDataQuery));
+    }
+
 
 }

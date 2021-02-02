@@ -44,7 +44,7 @@ public class AfterServiceExceptionHandler {
      * 拒绝授权异常
      */
     @ExceptionHandler(CusTomBusinessAccessDeniedException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public R HandelCusTomBusinessAccessDeniedException(CusTomBusinessAccessDeniedException e) {
         log.error("拒绝授权异常 ex={}", e.getMessage(), e);
         return R.failMsg(e.getMsg());

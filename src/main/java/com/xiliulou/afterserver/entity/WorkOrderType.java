@@ -14,6 +14,6 @@ import lombok.Data;
 public class WorkOrderType {
 
     private Long id;
-    private String Type;
+    private String type;
     private String remark;
 }

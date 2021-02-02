@@ -4,6 +4,7 @@ import com.xiliulou.afterserver.entity.Point;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @program: XILIULOU
@@ -15,7 +16,7 @@ import java.util.List;
 public class PointQuery extends Point {
 
     private List<String> fileNameList;
-    private List<Long> productIdList;
+    private Map<Long, Integer> productIdAndCountMap;
 
     private Long createTimeStart;
     private Long createTimeEnd;

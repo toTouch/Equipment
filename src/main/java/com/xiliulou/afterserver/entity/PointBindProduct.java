@@ -15,4 +15,5 @@ public class PointBindProduct {
 
     private Long pointId;
     private Long productId;
+    private Integer count;
 }
