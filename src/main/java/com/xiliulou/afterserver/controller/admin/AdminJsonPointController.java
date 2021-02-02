@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.controller.admin;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xiliulou.afterserver.entity.Point;
 import com.xiliulou.afterserver.entity.Product;
 import com.xiliulou.afterserver.service.PointService;
@@ -28,6 +29,11 @@ public class AdminJsonPointController {
     @GetMapping("admin/point/page")
     public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, PointQuery point) {
         return R.ok(pointService.getPage(offset, size, point));
+    }
+
+    @GetMapping("admin/point/list")
+    public R list() {
+        return R.ok(pointService.list(Wrappers.<Point>lambdaQuery().orderByDesc(Point::getCreateTime)));
     }
 
 

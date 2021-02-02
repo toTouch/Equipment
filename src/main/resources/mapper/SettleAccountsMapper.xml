@@ -35,9 +35,11 @@
         sa.pay_time,
         sa.create_time,
         sa.point_id,
-        p.name as point_name
+        p.name as point_name,
+        c.name  as  customer_name
         FROM settle_accounts AS sa
         LEFT JOIN point AS p ON p.id = sa.point_id
+        LEFT JOIN customer  c on c.id = sa.customer_id
         <where>
             <if test="query.pointId != null">
                 and sa.point_id = #{query.pointId}

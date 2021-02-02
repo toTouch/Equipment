@@ -12,4 +12,5 @@ import lombok.Data;
 @Data
 public class SettleAccountsVo extends SettleAccounts {
     private String pointName;
+    private String customerName;
 }
