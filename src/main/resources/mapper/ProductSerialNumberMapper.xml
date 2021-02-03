@@ -30,8 +30,8 @@
         psu.product_id,
         psu.create_time ,
         p.name as product_name
-        FROM
-        product_serial_umber AS psu
+        FROMn
+        product_serial_number AS psu
         LEFT JOIN product AS p ON p.id = psu.product_id
 
 
@@ -60,7 +60,7 @@
         psu.create_time ,
         p.name as product_name
         FROM
-        product_serial_umber AS psu
+        product_serial_number AS psu
         LEFT JOIN product AS p ON p.id = psu.product_id
 
 
@@ -74,7 +74,7 @@
                 and psu.serial_number like CONCAT('%',#{query.serialNumber},'%')
             </if>
             <if test="query.createTimeStart != null and query.createTimeEnd !=null ">
-                and p.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
+                and psu.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
             </if>
         </where>
 
