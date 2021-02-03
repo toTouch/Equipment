@@ -45,7 +45,7 @@
                 and psu.serial_number like CONCAT('%',#{query.serialNumber},'%')
             </if>
             <if test="query.createTimeStart != null and query.createTimeEnd !=null ">
-                and p.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
+                and psu.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
             </if>
         </where>
 
