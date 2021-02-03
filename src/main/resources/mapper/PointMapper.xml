@@ -83,6 +83,7 @@
         p.set_time as p_set_time,
         p.deliver_time as p_deliver_time,
         p.create_time as p_create_time,
+        p.canopy_count    as p_canopy_count,
         pt.id as pt_id,
         pt.name as pt_name,
         pt.code as pt_code,

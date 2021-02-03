@@ -29,6 +29,7 @@ public class Point {
     private Long deliverTime;
     private Long createTime;
     private Integer status;
+    private Integer canopyCount;
     //正常
     public static final Integer STATUS_NORMAL = 1;
     //已移机
