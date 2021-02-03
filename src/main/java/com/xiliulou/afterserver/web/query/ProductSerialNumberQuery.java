@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.web.query;
 
+import com.xiliulou.afterserver.entity.ProductSerialNumber;
 import lombok.Data;
 
 /**
@@ -9,14 +10,14 @@ import lombok.Data;
  * @create: 2021-02-02 14:16
  **/
 @Data
-public class ProductSerialNumberQuery {
+public class ProductSerialNumberQuery extends ProductSerialNumber {
 
     private String prefix;
     //左区间
     private Long leftInterval;
     //右区间
     private Long rightInterval;
-    private Long productId;
+
 
     private Long createTimeStart;
     private Long createTimeEnd;

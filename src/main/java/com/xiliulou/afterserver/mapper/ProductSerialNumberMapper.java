@@ -19,7 +19,7 @@ import java.util.List;
 
 public interface ProductSerialNumberMapper extends BaseMapper<ProductSerialNumber> {
 
-    IPage<ProductSerialNumberVo> getSerialNumberPage(Page page, @Param("query") ProductSerialNumber productSerialNumber);
+    IPage<ProductSerialNumberVo> getSerialNumberPage(Page page, @Param("query") ProductSerialNumberQuery productSerialNumber);
 
     List<ProductSerialNumberVo> getSerialNumberList(@Param("query") ProductSerialNumberQuery productSerialNumberQuery);
 }
