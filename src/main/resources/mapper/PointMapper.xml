@@ -31,6 +31,7 @@
         <id property="serialNumber" column="p_serial_number"/>
         <id property="cardNo" column="p_card_no"/>
         <id property="remark" column="p_remark"/>
+        <id property="status" column="p_status"/>
         <id property="setTime" column="p_set_time"/>
         <id property="deliverTime" column="p_deliver_time"/>
         <id property="createTime" column="p_create_time"/>
@@ -77,6 +78,7 @@
         p.primary_cabinet_no as p_primarty_cabinet_no,
         p.card_no as p_card_no,
         p.remark as p_remark,
+        p.status as p_status,
         p.set_time as p_set_time,
         p.deliver_time as p_deliver_time,
         p.create_time as p_create_time,

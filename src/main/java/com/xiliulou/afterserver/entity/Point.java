@@ -28,5 +28,6 @@ public class Point {
     private Long setTime;
     private Long deliverTime;
     private Long createTime;
+    private String status;
 
 }
