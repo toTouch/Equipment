@@ -13,7 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 public interface WorkOrderService extends IService<WorkOrder> {
     IPage getPage(Long offset, Long size, WorkOrderQuery workOrder);
 
+    @Deprecated
     R saveWorkOrder(SaveWorkOrderQuery saveWorkOrderQuery);
 
     void exportExcel(WorkOrderQuery workOrder, HttpServletResponse response);
+
+    R insertWorkOrder(WorkOrder workOrder);
 }

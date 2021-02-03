@@ -41,7 +41,7 @@
         <id property="workOrderType" column="wot_remark"/>
         <id property="workOrderReasonName" column="wor_name"/>
         <id property="creater" column="u_user_name"/>
-
+        <id property="pointName" column="p_name"/>
     </resultMap>
 
     <select id="getPage" resultMap="pageMap">
@@ -60,14 +60,15 @@
         wo.status as wo_status,
         wo.order_no as wo_order_no,
         wo.create_time as wo_create_time,
-        wo.creater_id as wo_creater_id,
         wot.remark as wot_remark,
         wor.name as wor_name,
-        u.user_name as u_user_name
+        u.user_name as u_user_name,
+        p.name as p_name
         FROM work_order as wo
         LEFT JOIN work_order_type as wot on wot.type = wo.type
         LEFT JOIN work_order_reason as wor on wor.id = wo.work_order_reason_id
         LEFT JOIN user u on u.id =wo.creater_id
+        LEFT JOIN point as p on p.id = wo.point_id
         <where>
             <if test="query.pointId != null">
                 and wo.point_id = #{query.pointId}

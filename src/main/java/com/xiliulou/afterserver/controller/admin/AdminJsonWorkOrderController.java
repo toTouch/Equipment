@@ -36,11 +36,11 @@ public class AdminJsonWorkOrderController {
 
 
     @PostMapping("admin/workOrder")
-    public R insert(@RequestBody SaveWorkOrderQuery saveWorkOrderQuery, HttpServletRequest request) {
+    public R insert(@RequestBody WorkOrder workOrder, HttpServletRequest request) {
 
         Long uid = (Long) request.getAttribute("uid");
-        saveWorkOrderQuery.setUid(uid);
-        return workOrderService.saveWorkOrder(saveWorkOrderQuery);
+        workOrder.setCreaterId(uid);
+        return workOrderService.insertWorkOrder(workOrder);
     }
 
     @PutMapping("admin/workOrder")

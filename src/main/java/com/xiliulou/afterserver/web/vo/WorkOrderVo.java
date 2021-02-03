@@ -15,5 +15,5 @@ public class WorkOrderVo extends WorkOrder {
     private String workOrderReasonName;
     private String workOrderType;
     private String creater;
-
+    private String pointName;
 }

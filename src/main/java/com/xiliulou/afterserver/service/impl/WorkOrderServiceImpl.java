@@ -84,6 +84,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @Deprecated
     public R saveWorkOrder(SaveWorkOrderQuery saveWorkOrderQuery) {
         User user = userService.getUserById(saveWorkOrderQuery.getUid());
         if (Objects.isNull(user)) {
@@ -176,5 +177,21 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         return statusStr;
     }
 
+    @Override
+    public R insertWorkOrder(WorkOrder workOrder) {
+        User user = userService.getUserById(workOrder.getCreaterId());
+        if (Objects.isNull(user)) {
+            log.error("SAVE_WORK_ORDER ERROR ,NOT FOUND USER BY ID ,ID:{}", workOrder.getCreaterId());
+            return R.failMsg("用户不存在!");
+        }
 
+        workOrder.setCreateTime(System.currentTimeMillis());
+
+
+        workOrder.setStatus(WorkOrder.STATUS_FINISHED);
+        workOrder.setOrderNo(String.valueOf(IdUtil.getSnowflake(1, 1).nextId()));
+        baseMapper.insert(workOrder);
+
+        return R.ok();
+    }
 }
