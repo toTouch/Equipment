@@ -16,4 +16,6 @@ public class ProductSerialNumber {
     private String serialNumber;
     private Long productId;
     private Long createTime;
+    private Integer setNo;
+    private Long pointId;
 }

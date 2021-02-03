@@ -12,4 +12,10 @@ import lombok.Data;
 @Data
 public class ProductSerialNumberVo extends ProductSerialNumber {
     private String productName;
+    private String name;
+    private Integer type;
+    private String code;
+    private Integer boxNumber;
+
+    private String info;
 }

@@ -20,5 +20,5 @@ public class PointVo extends Point {
     private List<Product> productList;
     private List<SettleAccounts> settleAccountsList;
     private String customerName;
-
+    private List<ProductSerialNumberVo> productSerialNumberVoList;
 }

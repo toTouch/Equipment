@@ -16,7 +16,7 @@ import java.util.Map;
 public class PointQuery extends Point {
 
     private List<String> fileNameList;
-    private Map<Long, Integer> productIdAndCountMap;
+    private Map<Long, Integer> productSerialNumberIdAndSetNoMap;
 
     private Long createTimeStart;
     private Long createTimeEnd;

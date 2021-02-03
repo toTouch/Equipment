@@ -3,13 +3,16 @@ package com.xiliulou.afterserver.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.sun.xml.bind.v2.model.core.ID;
 import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.entity.Point;
 import com.xiliulou.afterserver.entity.PointBindProduct;
+import com.xiliulou.afterserver.entity.ProductSerialNumber;
 import com.xiliulou.afterserver.exception.CusTomBusinessAccessDeniedException;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.PointBindProductMapper;
 import com.xiliulou.afterserver.mapper.PointMapper;
+import com.xiliulou.afterserver.mapper.ProductSerialNumberMapper;
 import com.xiliulou.afterserver.service.FileService;
 import com.xiliulou.afterserver.service.PointService;
 import com.xiliulou.afterserver.util.PageUtil;
@@ -28,6 +31,7 @@ import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @program: XILIULOU
@@ -43,6 +47,8 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
     FileServiceImpl fileService;
     @Autowired
     PointBindProductMapper pointBindProductMapper;
+    @Autowired
+    ProductSerialNumberMapper productSerialNumberMapper;
 
     @Override
     public IPage getPage(Long offset, Long size, PointQuery point) {
@@ -68,13 +74,20 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
             }
             fileService.saveBatch(filList);
         }
-        if (ObjectUtil.isNotEmpty(pointQuery.getProductIdAndCountMap())) {
-            for (Map.Entry<Long, Integer> entry : pointQuery.getProductIdAndCountMap().entrySet()) {
-                PointBindProduct productBindProduct = new PointBindProduct();
-                productBindProduct.setPointId(point.getId());
-                productBindProduct.setProductId(entry.getKey());
-                productBindProduct.setCount(entry.getValue());
-                pointBindProductMapper.insert(productBindProduct);
+        if (ObjectUtil.isNotEmpty(pointQuery.getProductSerialNumberIdAndSetNoMap())) {
+            for (Map.Entry<Long, Integer> entry : pointQuery.getProductSerialNumberIdAndSetNoMap().entrySet()) {
+                ProductSerialNumber productSerialNumber = productSerialNumberMapper.selectById(entry.getKey());
+                if (Objects.isNull(productSerialNumber)) {
+                    log.error("not found productSerialNumber by id:{}", entry.getKey());
+                    throw new CustomBusinessException("未找到产品序列号!");
+                }
+                if (Objects.nonNull(productSerialNumber.getPointId())) {
+                    log.error("this productSerialNumber is binding other point productSerialNumberId:{}", entry.getKey());
+                    throw new CustomBusinessException("产品已被使用!");
+                }
+                productSerialNumber.setPointId(point.getId());
+                productSerialNumber.setSetNo(entry.getValue());
+                productSerialNumberMapper.updateById(productSerialNumber);
             }
         }
         return R.ok();

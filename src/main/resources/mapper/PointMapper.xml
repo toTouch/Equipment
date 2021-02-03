@@ -45,14 +45,15 @@
             <id property="bindId" column="f_bind_id"/>
 
         </collection>
-        <collection property="productList" ofType="com.xiliulou.afterserver.entity.Product">
-            <id property="id" column="pt_id"/>
+        <collection property="productList" ofType="com.xiliulou.afterserver.web.vo.ProductSerialNumberVo">
+            <id property="id" column="psn_id"/>
             <id property="name" column="pt_name"/>
             <id property="type" column="pt_type"/>
             <id property="code" column="pt_code"/>
             <id property="boxNumber" column="pt_boxNumber"/>
-            <id property="createTime" column="pt_create_time"/>
             <id property="info" column="pt_info"/>
+            <id property="setNo" column="psn_set_no"/>
+            <id property="serialNumber" column="psn_serial_number"/>
         </collection>
         <collection property="settleAccountsList" ofType="com.xiliulou.afterserver.entity.SettleAccounts">
             <id property="id" column="sa_id"/>
@@ -88,6 +89,9 @@
         pt.box_number as pt_box_number,
         pt.create_time as pt_create_time,
         pt.info as pt_info,
+        psn.id as psn_id,
+        psn.serial_number as psn_serial_number,
+        psn.set_no as psn_set_no,
         f.id as f_id,
         f.bind_id as f_bind_id,
         f.type as f_type,
@@ -106,8 +110,8 @@
         sa.create_time as sa_create_time,
         sa.point_id as sa_point_id
         FROM point p
-        LEFT JOIN point_bind_product pdp on pdp.point_id = p.id
-        LEFT JOIN product pt on pdp.product_id = pt.id
+        LEFT JOIN product_serial_number psn on psn.point_id =p.id
+        LEFT JOIN product pt on psn.product_id = pt.id
         LEFT JOIN file f on f.bind_id = p.id
         LEFT JOIN customer c on c.id = p.customer_id
         LEFT JOIN settle_accounts sa on sa.point_id = p.id
