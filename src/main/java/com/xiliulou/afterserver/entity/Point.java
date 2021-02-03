@@ -28,6 +28,10 @@ public class Point {
     private Long setTime;
     private Long deliverTime;
     private Long createTime;
-    private String status;
+    private Integer status;
+    //正常
+    public static final Integer STATUS_NORMAL = 1;
+    //已移机
+    public static final Integer STATUS_TRANSFER = 2;
 
 }
