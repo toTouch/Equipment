@@ -40,7 +40,7 @@
         <id property="createTime" column="wo_create_time"/>
         <id property="workOrderType" column="wot_remark"/>
         <id property="workOrderReasonName" column="wor_name"/>
-
+        <id property="creater" column="u_user_name"/>
 
     </resultMap>
 

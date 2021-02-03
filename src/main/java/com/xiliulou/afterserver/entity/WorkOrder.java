@@ -36,9 +36,11 @@ public class WorkOrder {
     //供应商
     public static final Integer COMPANY_TYPE_SUPPLIER = 2;
 
-
+    //待处理
     public static final Integer STATUS_INIT = 1;
+    //处理中
     public static final Integer STATUS_PROCESSING = 2;
+    //已完成
     public static final Integer STATUS_FINISHED = 3;
 
 
