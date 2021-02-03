@@ -25,7 +25,7 @@ public class WorkOrder {
     private BigDecimal thirdPartyPay;
     private Long workOrderReasonId;
     private String processor;
-    private Long processorTime;
+    private Long processTime;
     private Integer status;
     private String orderNo;
     private Long createrId;
