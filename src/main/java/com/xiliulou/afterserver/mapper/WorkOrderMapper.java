@@ -18,4 +18,6 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
     List<WorkOrderVo> orderList(@Param("query") WorkOrderQuery workOrder);
 
     List<ReconciliationSummaryVo> reconciliationSummary(@Param("query") WorkOrderQuery workOrder);
+
+    List<WorkOrderVo> reconciliationPreview(@Param("query") WorkOrderQuery workOrder);
 }

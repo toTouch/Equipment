@@ -63,5 +63,9 @@ public class AdminJsonWorkOrderController {
     public R reconciliationSummary(WorkOrderQuery workOrder) {
         return workOrderService.reconciliationSummary(workOrder);
     }
+    @GetMapping("admin/workOrder/reconciliationPreview")
+    public R reconciliationPreview(WorkOrderQuery workOrder) {
+        return workOrderService.reconciliationPreview(workOrder);
+    }
 
 }

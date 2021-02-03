@@ -21,4 +21,6 @@ public interface WorkOrderService extends IService<WorkOrder> {
     R insertWorkOrder(WorkOrderQuery workOrder);
 
     R reconciliationSummary(WorkOrderQuery workOrder);
+
+    R reconciliationPreview(WorkOrderQuery workOrder);
 }

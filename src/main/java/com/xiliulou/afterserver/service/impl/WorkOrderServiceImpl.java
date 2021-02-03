@@ -239,4 +239,16 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
         return R.ok(reconciliationSummaryVoList);
     }
+
+    /**
+     * 预览
+     *
+     * @param workOrder
+     * @return
+     */
+    @Override
+    public R reconciliationPreview(WorkOrderQuery workOrder) {
+
+        return R.ok(baseMapper.reconciliationPreview(workOrder););
+    }
 }
