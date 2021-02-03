@@ -11,10 +11,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.WorkOrderMapper;
-import com.xiliulou.afterserver.service.CustomerService;
-import com.xiliulou.afterserver.service.SupplierService;
-import com.xiliulou.afterserver.service.UserService;
-import com.xiliulou.afterserver.service.WorkOrderService;
+import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.SaveWorkOrderQuery;
@@ -54,6 +51,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     SupplierService supplierService;
     @Autowired
     UserService userService;
+    @Autowired
+    FileService fileService;
 
     @Override
     public IPage getPage(Long offset, Long size, WorkOrderQuery workOrder) {
@@ -178,7 +177,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     @Override
-    public R insertWorkOrder(WorkOrder workOrder) {
+    public R insertWorkOrder(WorkOrderQuery workOrder) {
         User user = userService.getUserById(workOrder.getCreaterId());
         if (Objects.isNull(user)) {
             log.error("SAVE_WORK_ORDER ERROR ,NOT FOUND USER BY ID ,ID:{}", workOrder.getCreaterId());
@@ -191,6 +190,18 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         workOrder.setStatus(WorkOrder.STATUS_FINISHED);
         workOrder.setOrderNo(String.valueOf(IdUtil.getSnowflake(1, 1).nextId()));
         baseMapper.insert(workOrder);
+        if (ObjectUtil.isNotEmpty(workOrder.getFileNameList())) {
+            List<File> filList = new ArrayList();
+            for (String name : workOrder.getFileNameList()) {
+                File file = new File();
+                file.setFileName(name);
+                file.setBindId(workOrder.getId());
+                file.setType(File.TYPE_WORK_ORDER);
+                file.setCreateTime(System.currentTimeMillis());
+                filList.add(file);
+            }
+            fileService.saveBatch(filList);
+        }
 
         return R.ok();
     }

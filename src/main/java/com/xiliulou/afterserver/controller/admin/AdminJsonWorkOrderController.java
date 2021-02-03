@@ -36,7 +36,7 @@ public class AdminJsonWorkOrderController {
 
 
     @PostMapping("admin/workOrder")
-    public R insert(@RequestBody WorkOrder workOrder, HttpServletRequest request) {
+    public R insert(@RequestBody WorkOrderQuery workOrder, HttpServletRequest request) {
 
         Long uid = (Long) request.getAttribute("uid");
         workOrder.setCreaterId(uid);

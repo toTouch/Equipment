@@ -20,6 +20,6 @@ public class File {
     private Long bindId;
 
     public static final Integer TYPE_POINT = 1;
-
+    public static final Integer TYPE_WORK_ORDER = 2;
 
 }

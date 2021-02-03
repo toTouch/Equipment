@@ -1,7 +1,10 @@
 package com.xiliulou.afterserver.web.vo;
 
+import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.entity.WorkOrder;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * @program: XILIULOU
@@ -16,4 +19,5 @@ public class WorkOrderVo extends WorkOrder {
     private String workOrderType;
     private String creater;
     private String pointName;
+    private List<File> fileList;
 }
