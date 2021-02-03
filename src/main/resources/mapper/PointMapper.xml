@@ -176,10 +176,9 @@
     </select>
 
     <select id="getCabinetAmount" resultType="java.lang.Long">
-        SELECT SUM(pbp.count)
-        FROM point p
-        LEFT JOIN point_bind_product pbp on pbp.point_id = p.id
-        LEFT JOIN product pro on pro.id = pbp.product_id
+        SELECT count(1) FROM product_serial_number psn
+        LEFT JOIN  point as p on p.id = psn.product_id
+        LEFT JOIN  product as pro on pro.id =psn.product_id
         WHERE pro.type in (1, 2)
         <if test="query.city != null and query.city != ''">
             and p.city =#{query.city}
@@ -195,11 +194,10 @@
     </select>
 
     <select id="getBoxAmount" resultType="java.lang.Long">
-        SELECT
-        SUM(pbp.count * pro.box_number)
-        FROM point p
-        LEFT JOIN point_bind_product pbp on pbp.point_id = p.id
-        LEFT JOIN product pro on pro.id = pbp.product_id
+        SELECT sum(pro.box_number) FROM product_serial_number psn
+        LEFT JOIN  point as p on p.id = psn.product_id
+        LEFT JOIN  product as pro on pro.id =psn.product_id
+        WHERE p.id=1
         WHERE pro.type in (1,2)
         <if test="query.city != null and query.city != ''">
             and p.city =#{query.city}
