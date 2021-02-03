@@ -150,5 +150,19 @@
         ORDER BY wo.create_time DESC
     </select>
 
+    <select id="reconciliationSummary" resultType="com.xiliulou.afterserver.web.vo.ProductSerialNumberVo">
+        SELECT wo.company_type, wo.company_id, sum(wo.third_party_pay)
+        FROM work_order wo
+        WHERE 1 = 1
+        <if test="query.companyType != null">
+            and wo.company_type = #{query.companyType}
+        </if>
+        <if test="query.companyId != null">
+            and wo.company_id= #{query.companyId}
+        </if>
+        and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
+        GROUP BY wo.company_type, wo.company_id
+    </select>
+
 </mapper>
 

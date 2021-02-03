@@ -17,6 +17,7 @@ import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.SaveWorkOrderQuery;
 import com.xiliulou.afterserver.web.query.WorkOrderQuery;
 import com.xiliulou.afterserver.web.vo.ProductExcelVo;
+import com.xiliulou.afterserver.web.vo.ReconciliationSummaryVo;
 import com.xiliulou.afterserver.web.vo.WorkOrderExcelVo;
 import com.xiliulou.afterserver.web.vo.WorkOrderVo;
 import lombok.extern.slf4j.Slf4j;
@@ -204,5 +205,38 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         return R.ok();
+    }
+
+    /**
+     * @param workOrder
+     * @return
+     */
+    @Override
+    public R reconciliationSummary(WorkOrderQuery workOrder) {
+        List<ReconciliationSummaryVo> reconciliationSummaryVoList = baseMapper.reconciliationSummary(workOrder);
+        if (ObjectUtil.isEmpty(reconciliationSummaryVoList)) {
+            return R.ok(new ArrayList<>());
+        }
+        for (ReconciliationSummaryVo reconciliationSummaryVo : reconciliationSummaryVoList) {
+            if (ObjectUtil.equal(reconciliationSummaryVo.getCompanyType(), WorkOrder.COMPANY_TYPE_CUSTOMER)) {
+                Customer customer = customerService.getById(reconciliationSummaryVo.getCompanyId());
+                if (Objects.isNull(customer)) {
+                    log.warn("reconciliationSummary warn ,not found customer customerId:{}", reconciliationSummaryVo.getCompanyId());
+                } else {
+                    reconciliationSummaryVo.setCompanyName(customer.getName());
+                }
+            }
+            if (ObjectUtil.equal(reconciliationSummaryVo.getCompanyType(), WorkOrder.COMPANY_TYPE_SUPPLIER)) {
+                Supplier supplier = supplierService.getById(reconciliationSummaryVo.getCompanyId());
+                if (Objects.isNull(supplier)) {
+                    log.warn("reconciliationSummary warn ,not found supplier supplierId:{}", reconciliationSummaryVo.getCompanyId());
+                } else {
+                    reconciliationSummaryVo.setCompanyName(supplier.getName());
+                }
+            }
+            reconciliationSummaryVo.setCreateTimeStart(workOrder.getCreateTimeStart());
+            reconciliationSummaryVo.setCreateTimeEnd(workOrder.getCreateTimeEnd());
+        }
+        return R.ok(reconciliationSummaryVoList);
     }
 }

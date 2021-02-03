@@ -58,4 +58,10 @@ public class AdminJsonWorkOrderController {
     public void exportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
         workOrderService.exportExcel(workOrder, response);
     }
+
+    @GetMapping("admin/workOrder/reconciliationSummary")
+    public R reconciliationSummary(WorkOrderQuery workOrder) {
+        return workOrderService.reconciliationSummary(workOrder);
+    }
+
 }
