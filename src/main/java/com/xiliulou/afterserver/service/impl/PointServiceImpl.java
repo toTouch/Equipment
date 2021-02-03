@@ -119,7 +119,7 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
             if (boxAmount < 1) {
                 throw new CusTomBusinessAccessDeniedException("格口总数小于1");
             }
-            indexDataVo.setSingleBoxCostAmount(allCostAmount.divide(new BigDecimal(String.valueOf(boxAmount))));
+            indexDataVo.setSingleBoxCostAmount(allCostAmount.divide(new BigDecimal(String.valueOf(boxAmount)), 2, BigDecimal.ROUND_HALF_UP));
         }
         return indexDataVo;
     }
