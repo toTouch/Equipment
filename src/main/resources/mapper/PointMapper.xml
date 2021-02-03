@@ -45,7 +45,7 @@
             <id property="bindId" column="f_bind_id"/>
 
         </collection>
-        <collection property="productList" ofType="com.xiliulou.afterserver.web.vo.ProductSerialNumberVo">
+        <collection property="productSerialNumberVoList" ofType="com.xiliulou.afterserver.web.vo.ProductSerialNumberVo">
             <id property="id" column="psn_id"/>
             <id property="name" column="pt_name"/>
             <id property="type" column="pt_type"/>
