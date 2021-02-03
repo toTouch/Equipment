@@ -12,6 +12,7 @@ import lombok.Data;
 @Data
 @TableName("product_serial_number")
 public class ProductSerialNumber {
+    private Long id;
     private String serialNumber;
     private Long productId;
     private Long createTime;

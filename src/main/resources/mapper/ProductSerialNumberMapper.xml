@@ -49,7 +49,7 @@
             </if>
         </where>
 
-        ORDER BY p.create_time DESC
+        ORDER BY psu.id DESC
     </select>
 
     <select id="getSerialNumberList" resultType="com.xiliulou.afterserver.web.vo.ProductSerialNumberVo">
@@ -78,6 +78,6 @@
             </if>
         </where>
 
-        ORDER BY p.create_time DESC
+        ORDER BY psu.id DESC
     </select>
 </mapper>
