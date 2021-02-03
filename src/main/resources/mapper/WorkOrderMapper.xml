@@ -38,7 +38,7 @@
         <id property="status" column="wo_status"/>
         <id property="orderNo" column="wo_order_no"/>
         <id property="createTime" column="wo_create_time"/>
-        <id property="workOrderType" column="wot_remark"/>
+        <id property="workOrderType" column="wot_type"/>
         <id property="workOrderReasonName" column="wor_name"/>
         <id property="creater" column="u_user_name"/>
         <id property="pointName" column="p_name"/>
@@ -60,7 +60,7 @@
         wo.status as wo_status,
         wo.order_no as wo_order_no,
         wo.create_time as wo_create_time,
-        wot.remark as wot_remark,
+        wot.type as wot_type,
         wor.name as wor_name,
         u.user_name as u_user_name,
         p.name as p_name
