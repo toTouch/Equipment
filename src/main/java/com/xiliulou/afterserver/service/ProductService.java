@@ -22,7 +22,7 @@ public interface ProductService extends IService<Product> {
 
     R insertSerialNumber(ProductSerialNumberQuery productSerialNumberQuery);
 
-    IPage getSerialNumberPage(Long offset, Long size, ProductSerialNumberQuery productSerialNumber);
+    IPage getSerialNumberPage(Long offset, Long size, ProductSerialNumber productSerialNumber);
 
     void serialNumberExportExcel(ProductSerialNumberQuery productSerialNumberQuery, HttpServletResponse response);
 }

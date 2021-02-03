@@ -44,7 +44,7 @@ public class PasswordUtils {
 
 
 	/*public static void main(String[] args) {
-		String str = "123456";
+		String str = "xiliulou";
 		String password = encode(str);
 
 		System.out.println(password);

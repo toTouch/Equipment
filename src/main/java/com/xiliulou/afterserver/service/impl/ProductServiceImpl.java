@@ -146,7 +146,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     }
 
     @Override
-    public IPage getSerialNumberPage(Long offset, Long size, ProductSerialNumberQuery productSerialNumber) {
+    public IPage getSerialNumberPage(Long offset, Long size, ProductSerialNumber productSerialNumber) {
         return productSerialNumberMapper.getSerialNumberPage(PageUtil.getPage(offset, size), productSerialNumber);
     }
 }
