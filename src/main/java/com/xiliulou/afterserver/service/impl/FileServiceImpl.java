@@ -41,7 +41,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
         Map<String, String> resultMap = new HashMap<>(4);
         resultMap.put("bucketName", FileConstant.BUCKET_NAME);
 
-        resultMap.put("fileName", fileName);
+        resultMap.put("fileName", FileConstant.BUCKET_NAME + StrUtil.DASHED + fileName);
 
         try {
             minioUtil.putObject(FileConstant.BUCKET_NAME, FileConstant.BUCKET_NAME + StrUtil.DASHED + fileName, file.getInputStream());
@@ -68,4 +68,11 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
             log.error("文件读取异常", e);
         }
     }
+
+//    public static void main(String[] args) {
+//        String fileName = "after-service-2268b3eecafc4305b37b5b7f4a08765e.jpg";
+//        int separator = fileName.lastIndexOf(StrUtil.DASHED);
+//        String bucketName = fileName.substring(0, separator);
+//        System.out.println(bucketName);
+//    }
 }
