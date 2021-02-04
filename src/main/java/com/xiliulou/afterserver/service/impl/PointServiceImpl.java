@@ -109,7 +109,8 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
 
         //运单费用
         BigDecimal deliverCostAmount = baseMapper.getDeliverCostAmount(indexDataQuery);
-        indexDataVo.setDeliverCostAmount(Objects.isNull(deliverCostAmount) ? BigDecimal.ZERO : deliverCostAmount);
+        deliverCostAmount = Objects.isNull(deliverCostAmount) ? BigDecimal.ZERO : deliverCostAmount;
+        indexDataVo.setDeliverCostAmount(deliverCostAmount);
         //工单费用
         BigDecimal workOrderCostAmount = baseMapper.getWorkOrderCostAmount(indexDataQuery);
         workOrderCostAmount = Objects.isNull(workOrderCostAmount) ? BigDecimal.ZERO : workOrderCostAmount;
