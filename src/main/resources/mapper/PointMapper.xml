@@ -148,7 +148,7 @@
     </select>
     <select id="getWorkOrderCostAmount" resultType="java.math.BigDecimal">
         SELECT
-        SUM(wo.fee-wo.third_party_pay)
+        SUM(wo.fee-wo.third_company_pay)
         FROM work_order wo
         LEFT JOIN point as p on p.id = wo.point_id
         <where>
