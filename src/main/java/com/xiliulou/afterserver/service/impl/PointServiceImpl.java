@@ -120,8 +120,8 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
 
         CabinetAndBoxAmountVo cabinetAndBoxAmountVo = baseMapper.getCabinetAmount(indexDataQuery);
 //        Long boxAmount = baseMapper.getBoxAmount(indexDataQuery);
-        indexDataVo.setCabinetAmount(Objects.isNull(cabinetAndBoxAmountVo.getCabinetAmount()) ? 0L : cabinetAndBoxAmountVo.getCabinetAmount());
-        indexDataVo.setBoxAmount(Objects.isNull(cabinetAndBoxAmountVo.getBoxAmount()) ? 0L : cabinetAndBoxAmountVo.getBoxAmount());
+        indexDataVo.setCabinetAmount(Objects.isNull(cabinetAndBoxAmountVo) || Objects.isNull(cabinetAndBoxAmountVo.getCabinetAmount()) ? 0L : cabinetAndBoxAmountVo.getCabinetAmount());
+        indexDataVo.setBoxAmount(Objects.isNull(cabinetAndBoxAmountVo) || Objects.isNull(cabinetAndBoxAmountVo.getBoxAmount()) ? 0L : cabinetAndBoxAmountVo.getBoxAmount());
         if (allCostAmount.compareTo(BigDecimal.ZERO) == 0) {
             indexDataVo.setSingleBoxCostAmount(BigDecimal.ZERO);
         } else {
