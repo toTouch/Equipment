@@ -62,11 +62,11 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
         BeanUtils.copyProperties(pointQuery, point);
         baseMapper.insert(point);
 
-        if (ObjectUtil.isNotEmpty(pointQuery.getFileNameList())) {
+        if (ObjectUtil.isNotEmpty(pointQuery.getFileList())) {
             List<File> filList = new ArrayList();
-            for (String name : pointQuery.getFileNameList()) {
-                File file = new File();
-                file.setFileName(name);
+            for (File file : pointQuery.getFileList()) {
+
+
                 file.setBindId(point.getId());
                 file.setType(File.TYPE_POINT);
                 file.setCreateTime(System.currentTimeMillis());

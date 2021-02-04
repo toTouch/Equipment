@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.web.query;
 
+import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.entity.Point;
 import lombok.Data;
 
@@ -15,7 +16,7 @@ import java.util.Map;
 @Data
 public class PointQuery extends Point {
 
-    private List<String> fileNameList;
+    private List<File> fileList;
     private Map<Long, Integer> productSerialNumberIdAndSetNoMap;
 
     private Long createTimeStart;
