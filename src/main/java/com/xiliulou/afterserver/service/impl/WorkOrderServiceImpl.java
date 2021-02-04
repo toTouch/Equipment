@@ -249,6 +249,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     public R reconciliationPreview(WorkOrderQuery workOrder) {
 
-        return R.ok(baseMapper.reconciliationPreview(workOrder););
+        return R.ok(baseMapper.reconciliationPreview(workOrder));
     }
 }
