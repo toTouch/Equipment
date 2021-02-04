@@ -7,12 +7,8 @@ import com.xiliulou.afterserver.entity.Server;
 import com.xiliulou.afterserver.mapper.ServerMapper;
 import com.xiliulou.afterserver.service.ServerService;
 import com.xiliulou.afterserver.util.PageUtil;
-import com.xiliulou.afterserver.util.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import javax.jnlp.ServiceManager;
-import java.util.List;
 
 /**
  * @program: XILIULOU
