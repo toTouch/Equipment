@@ -41,6 +41,9 @@
         <id property="deviceAmount" column="p_device_amount"/>
         <id property="paiedAmount" column="p_paied_amount"/>
         <id property="serverAmount" column="p_server_amount"/>
+        <id property="serialNumber" column="p_serial_number"/>
+
+
 
 
         <id property="customerName" column="c_name"/>
@@ -83,6 +86,7 @@
         p.deliver_time as p_deliver_time,
         p.create_time as p_create_time,
         p.canopy_count as p_canopy_count,
+               p.serial_number as p_serial_number,
         p.primary_cabinet_count as p_primary_cabinet_count,
         p.deputy_cabinet_count as p_deputy_cabinet_count,
         p.device_amount as p_device_amount,

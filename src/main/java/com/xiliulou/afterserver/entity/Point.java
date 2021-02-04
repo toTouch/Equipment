@@ -32,9 +32,9 @@ public class Point {
     private Integer canopyCount;
     private Integer primaryCabinetCount;
     private Integer deputyCabinetCount;
-    private BigDecimal deviceAmount;
-    private BigDecimal paiedAmount;
-    private BigDecimal serverAmount;
+    private BigDecimal deviceAmount;//设备费用
+    private BigDecimal paiedAmount;//已支付费用
+    private BigDecimal serverAmount;//点位费
     //正常
     public static final Integer STATUS_NORMAL = 1;
     //已移机
