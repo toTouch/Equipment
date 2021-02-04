@@ -170,48 +170,67 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         return R.ok();
     }
 
-    /**
-     * @param workOrder
-     * @return
-     */
+
     @Override
-    public R reconciliationSummary(WorkOrderQuery workOrder) {
-        List<ReconciliationSummaryVo> reconciliationSummaryVoList = baseMapper.reconciliationSummary(workOrder);
-        if (ObjectUtil.isEmpty(reconciliationSummaryVoList)) {
-            return R.ok(new ArrayList<>());
-        }
-        for (ReconciliationSummaryVo reconciliationSummaryVo : reconciliationSummaryVoList) {
-            if (ObjectUtil.equal(reconciliationSummaryVo.getCompanyType(), WorkOrder.COMPANY_TYPE_CUSTOMER)) {
-                Customer customer = customerService.getById(reconciliationSummaryVo.getCompanyId());
-                if (Objects.isNull(customer)) {
-                    log.warn("reconciliationSummary warn ,not found customer customerId:{}", reconciliationSummaryVo.getCompanyId());
-                } else {
-                    reconciliationSummaryVo.setCompanyName(customer.getName());
-                }
-            }
-            if (ObjectUtil.equal(reconciliationSummaryVo.getCompanyType(), WorkOrder.COMPANY_TYPE_SUPPLIER)) {
-                Supplier supplier = supplierService.getById(reconciliationSummaryVo.getCompanyId());
-                if (Objects.isNull(supplier)) {
-                    log.warn("reconciliationSummary warn ,not found supplier supplierId:{}", reconciliationSummaryVo.getCompanyId());
-                } else {
-                    reconciliationSummaryVo.setCompanyName(supplier.getName());
-                }
-            }
-            reconciliationSummaryVo.setCreateTimeStart(workOrder.getCreateTimeStart());
-            reconciliationSummaryVo.setCreateTimeEnd(workOrder.getCreateTimeEnd());
-        }
-        return R.ok(reconciliationSummaryVoList);
+    public R reconciliation(WorkOrderQuery workOrder) {
+        return R.ok(baseMapper.getPage(PageUtil.getPage(workOrder.getOffset(), workOrder.getSize()), workOrder));
     }
 
-    /**
-     * 预览
-     *
-     * @param workOrder
-     * @return
-     */
     @Override
-    public R reconciliationPreview(WorkOrderQuery workOrder) {
+    public void reconciliationExportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
+        List<WorkOrderVo> workOrderVoList = baseMapper.orderList(workOrder);
 
-        return R.ok(baseMapper.reconciliationPreview(workOrder));
+        if (ObjectUtil.isEmpty(workOrderVoList)) {
+            throw new CustomBusinessException("没有查询到工单!无法导出！");
+        }
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        List<WorkOrderExcelVo> workOrderExcelVoList = new ArrayList<>(workOrderVoList.size());
+        for (WorkOrderVo o : workOrderVoList) {
+            WorkOrderExcelVo workOrderExcelVo = new WorkOrderExcelVo();
+            BeanUtil.copyProperties(o, workOrderExcelVo);
+            workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
+            workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
+            if (ObjectUtil.isNotEmpty(o.getProcessTime())) {
+                workOrderExcelVo.setProcessorTimeStr(simpleDateFormat.format(new Date(o.getProcessTime())));
+            }
+            workOrderExcelVoList.add(workOrderExcelVo);
+        }
+
+        String fileName = "工单.xlsx";
+        try {
+            ServletOutputStream outputStream = response.getOutputStream();
+            // 告诉浏览器用什么软件可以打开此文件
+            response.setHeader("content-Type", "application/vnd.ms-excel");
+            // 下载文件的默认名称
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
+            EasyExcel.write(outputStream, WorkOrderExcelVo.class).sheet("sheet").doWrite(workOrderExcelVoList);
+            return;
+        } catch (IOException e) {
+            log.error("导出报表失败！", e);
+        }
+        throw new CustomBusinessException("导出报表失败！请联系客服！");
     }
+
+    //    /**
+//     * 预览
+//     *
+//     * @param workOrder
+//     * @return
+//     */
+//    @Override
+//    public R reconciliationPreview(WorkOrderQuery workOrder) {
+//
+//        return R.ok(baseMapper.reconciliationPreview(workOrder));
+//    }
+//
+//    /**
+//     * 对账 page
+//     *
+//     * @param workOrder
+//     * @return
+//     */
+//    @Override
+//    public R reconciliation(WorkOrderQuery workOrder) {
+//        return R.ok(baseMapper.reconciliationPage(workOrder.getThirdCompanyType(), workOrder.getThirdCompanyId(), workOrder.getCreateTimeStart(), workOrder.getCreateTimeEnd()));
+//    }
 }

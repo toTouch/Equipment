@@ -99,6 +99,12 @@
             <if test="query.orderNo != null">
                 and wo.order_no = #{query.orderNo}
             </if>
+            <if test="query.thirdCompanyId != null">
+                and wo.third_company_id = #{query.thirdCompanyId}
+            </if>
+            <if test="query.thirdCompanyType != null">
+                and wo.third_company_Type = #{query.thirdCompanyType}
+            </if>
             <if test="query.createTimeStart != null and query.createTimeEnd != null">
                 and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
             </if>
@@ -151,67 +157,11 @@
             <if test="query.orderNo != null">
                 and wo.order_no = #{query.orderNo}
             </if>
-            <if test="query.createTimeStart != null and query.createTimeEnd != null">
-                and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
+            <if test="query.thirdCompanyId != null">
+                and wo.third_company_id = #{query.thirdCompanyId}
             </if>
-        </where>
-        ORDER BY wo.create_time DESC
-    </select>
-
-    <select id="reconciliationSummary" resultType="com.xiliulou.afterserver.web.vo.ProductSerialNumberVo">
-        SELECT wo.company_type, wo.company_id, sum(wo.third_party_pay)
-        FROM work_order wo
-        WHERE 1 = 1
-        <if test="query.companyType != null">
-            and wo.company_type = #{query.companyType}
-        </if>
-        <if test="query.companyId != null">
-            and wo.company_id= #{query.companyId}
-        </if>
-        and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
-        GROUP BY wo.company_type, wo.company_id
-    </select>
-
-    <select id="reconciliationPreview" resultMap="pageMap">
-        SELECT wo.id as wo_id,
-        wo.type as wo_type,
-        wo.point_id as wo_point_id,
-        wo.info as wo_info,
-        wo.fee as wo_fee,
-        wo.company_type as wo_company_type,
-        wo.company_id as wo_company_id,
-        wo.third_party_pay as wo_third_party_pay,
-        wo.work_order_reason_id as wo_work_order_reason_id,
-        wo.processor as wo_processor,
-        wo.creater_id as wo_creater_id,
-        wo.process_time as wo_process,
-        wo.status as wo_status,
-        wo.order_no as wo_order_no,
-        wo.create_time as wo_create_time,
-        wot.type as wot_type,
-        wor.name as wor_name,
-        u.user_name as u_user_name,
-        p.name as p_name
-
-        FROM work_order as wo
-        LEFT JOIN work_order_type as wot on wot.id = wo.id
-        LEFT JOIN work_order_reason as wor on wor.id = wo.work_order_reason_id
-        LEFT JOIN user u on u.id =wo.creater_id
-        LEFT JOIN point as p on p.id = wo.point_id
-
-        <where>
-
-            <if test="query.type != null">
-                and wo.type = #{query.type}
-            </if>
-            <if test="query.status != null">
-                and wo.starus = #{query.status}
-            </if>
-            <if test="query.companyType != null">
-                and wo.company_type = #{query.companyType}
-            </if>
-            <if test="query.companyId != null">
-                and wo.company_id = #{query.companyId}
+            <if test="query.thirdCompanyType != null">
+                and wo.third_company_Type = #{query.thirdCompanyType}
             </if>
             <if test="query.createTimeStart != null and query.createTimeEnd != null">
                 and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
@@ -219,6 +169,7 @@
         </where>
         ORDER BY wo.create_time DESC
     </select>
+
 
 </mapper>
 

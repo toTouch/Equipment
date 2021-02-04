@@ -58,14 +58,28 @@ public class AdminJsonWorkOrderController {
     public void exportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
         workOrderService.exportExcel(workOrder, response);
     }
+//
+//    @Deprecated
+//    @GetMapping("admin/workOrder/reconciliationSummary")
+//    public R reconciliationSummary(WorkOrderQuery workOrder) {
+//        return workOrderService.reconciliationSummary(workOrder);
+//    }
+//
+//    @Deprecated
+//    @GetMapping("admin/workOrder/reconciliationPreview")
+//    public R reconciliationPreview(WorkOrderQuery workOrder) {
+//        return workOrderService.reconciliationPreview(workOrder);
+//    }
 
-    @GetMapping("admin/workOrder/reconciliationSummary")
-    public R reconciliationSummary(WorkOrderQuery workOrder) {
-        return workOrderService.reconciliationSummary(workOrder);
+    @GetMapping("admin/workOrder/reconciliation")
+    public R reconciliation(WorkOrderQuery workOrder) {
+        return workOrderService.reconciliation(workOrder);
     }
-    @GetMapping("admin/workOrder/reconciliationPreview")
-    public R reconciliationPreview(WorkOrderQuery workOrder) {
-        return workOrderService.reconciliationPreview(workOrder);
+
+    @GetMapping("admin/workOrder/reconciliation/exportExcel")
+    public void reconciliationExportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
+        workOrderService.reconciliationExportExcel(workOrder, response);
     }
+
 
 }

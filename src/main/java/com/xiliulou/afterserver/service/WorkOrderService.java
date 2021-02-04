@@ -19,8 +19,12 @@ public interface WorkOrderService extends IService<WorkOrder> {
     void exportExcel(WorkOrderQuery workOrder, HttpServletResponse response);
 
     R insertWorkOrder(WorkOrderQuery workOrder);
+//
+//    R reconciliationSummary(WorkOrderQuery workOrder);
+//
+//    R reconciliationPreview(WorkOrderQuery workOrder);
 
-    R reconciliationSummary(WorkOrderQuery workOrder);
+    R reconciliation(WorkOrderQuery workOrder);
 
-    R reconciliationPreview(WorkOrderQuery workOrder);
+    void reconciliationExportExcel(WorkOrderQuery workOrder, HttpServletResponse response);
 }

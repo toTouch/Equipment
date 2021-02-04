@@ -20,7 +20,7 @@ public class WorkOrder {
     private Long pointId;
     private String info;
     private BigDecimal fee;
-    private Integer thirdCompanyId;
+    private Long thirdCompanyId;
     private Integer thirdCompanyType;
     private BigDecimal thirdCompanyPay;
     private Long workOrderReasonId;
