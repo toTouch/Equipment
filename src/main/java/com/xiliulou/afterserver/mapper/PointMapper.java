@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiliulou.afterserver.entity.Point;
 import com.xiliulou.afterserver.web.query.IndexDataQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
+import com.xiliulou.afterserver.web.vo.CabinetAndBoxAmountVo;
 import com.xiliulou.afterserver.web.vo.PointVo;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -25,7 +26,7 @@ public interface PointMapper extends BaseMapper<Point> {
 
     BigDecimal getWorkOrderCostAmount(@Param("query") IndexDataQuery indexDataQuery);
 
-    Long getCabinetAmount(@Param("query") IndexDataQuery indexDataQuery);
+    CabinetAndBoxAmountVo getCabinetAmount(@Param("query") IndexDataQuery indexDataQuery);
 
     Long getBoxAmount(@Param("query") IndexDataQuery indexDataQuery);
 }

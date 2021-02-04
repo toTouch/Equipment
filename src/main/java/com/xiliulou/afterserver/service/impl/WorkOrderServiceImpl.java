@@ -59,26 +59,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     public IPage getPage(Long offset, Long size, WorkOrderQuery workOrder) {
         Page page = PageUtil.getPage(offset, size);
         page = baseMapper.getPage(page, workOrder);
-        if (ObjectUtil.isNotEmpty(page.getRecords())) {
-            List<WorkOrderVo> workOrderVoList = page.getRecords();
-            for (WorkOrderVo workOrderVo : workOrderVoList) {
 
-                if (ObjectUtil.isNotEmpty(workOrderVo.getCompanyType()) && ObjectUtil.isNotEmpty(workOrderVo.getCompanyId())) {
-                    if (ObjectUtil.equal(WorkOrder.COMPANY_TYPE_SUPPLIER, workOrderVo.getCompanyType())) {
-                        Supplier supplier = supplierService.getById(workOrderVo.getCompanyId());
-                        if (ObjectUtil.isNotEmpty(supplier) && ObjectUtil.isNotEmpty(supplier.getName())) {
-                            workOrderVo.setCompanyName(supplier.getName());
-                        }
-                    }
-                    if (ObjectUtil.equal(WorkOrder.COMPANY_TYPE_CUSTOMER, workOrderVo.getCompanyType())) {
-                        Customer customer = customerService.getById(workOrderVo.getCompanyId());
-                        if (ObjectUtil.isNotEmpty(customer) && ObjectUtil.isNotEmpty(customer.getName())) {
-                            workOrderVo.setCompanyName(customer.getName());
-                        }
-                    }
-                }
-            }
-        }
         return page;
     }
 
@@ -110,25 +91,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     public void exportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
 
         List<WorkOrderVo> workOrderVoList = baseMapper.orderList(workOrder);
-        if (ObjectUtil.isNotEmpty(workOrderVoList)) {
 
-            for (WorkOrderVo workOrderVo : workOrderVoList) {
-                if (ObjectUtil.isNotEmpty(workOrderVo.getCompanyType()) && ObjectUtil.isNotEmpty(workOrderVo.getCompanyId())) {
-                    if (ObjectUtil.equal(WorkOrder.COMPANY_TYPE_SUPPLIER, workOrderVo.getCompanyType())) {
-                        Supplier supplier = supplierService.getById(workOrderVo.getCompanyId());
-                        if (ObjectUtil.isNotEmpty(supplier) && ObjectUtil.isNotEmpty(supplier.getName())) {
-                            workOrderVo.setCompanyName(supplier.getName());
-                        }
-                    }
-                    if (ObjectUtil.equal(WorkOrder.COMPANY_TYPE_CUSTOMER, workOrderVo.getCompanyType())) {
-                        Customer customer = customerService.getById(workOrderVo.getCompanyId());
-                        if (ObjectUtil.isNotEmpty(customer) && ObjectUtil.isNotEmpty(customer.getName())) {
-                            workOrderVo.setCompanyName(customer.getName());
-                        }
-                    }
-                }
-            }
-        }
 
         if (ObjectUtil.isEmpty(workOrderVoList)) {
             throw new CustomBusinessException("没有查询到工单!无法导出！");

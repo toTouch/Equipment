@@ -48,7 +48,6 @@ public class AdminJsonPurchaseController {
         return R.ok();
     }
 
-
     @GetMapping("admin/purchase/exportExcel")
     public void exportExcel(PurchaseQuery purchase, HttpServletResponse response) {
         purchaseService.exportExcel(purchase, response);

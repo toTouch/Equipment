@@ -3,6 +3,8 @@ package com.xiliulou.afterserver.web.vo;
 import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * @program: XILIULOU
  * @description:
@@ -17,4 +19,6 @@ public class ProductSerialNumberExcelVo {
     private String productName;
     @ExcelProperty("创建时间")
     private String createTimeStr;
+    @ExcelProperty("价格")
+    private BigDecimal price;
 }

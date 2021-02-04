@@ -20,17 +20,21 @@ public class WorkOrder {
     private Long pointId;
     private String info;
     private BigDecimal fee;
-    private Integer companyId;
-    private Integer companyType;
-    private BigDecimal thirdPartyPay;
+    private Integer thirdCompanyId;
+    private Integer thirdCompanyType;
+    private BigDecimal thirdCompanyPay;
     private Long workOrderReasonId;
+    //服务商id
+    private Long serverId;
+    //服务商接单人
     private String processor;
     private Long processTime;
     private Integer status;
     private String orderNo;
     private Long createrId;
     private Long createTime;
-
+    private String thirdCompanyName;
+    private String serverName;
     //客户
     public static final Integer COMPANY_TYPE_CUSTOMER = 1;
     //供应商

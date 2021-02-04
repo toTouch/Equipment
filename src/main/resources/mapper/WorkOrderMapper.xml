@@ -28,9 +28,9 @@
         <id property="pointId" column="wo_point_id"/>
         <id property="info" column="wo_info"/>
         <id property="fee" column="wo_fee"/>
-        <id property="companyType" column="wo_company_type"/>
-        <id property="companyId" column="wo_company_id"/>
-        <id property="thirdPartyPay" column="wo_third_party_pay"/>
+        <id property="thirdCompanyType" column="wo_third_company_type"/>
+        <id property="thirdCompanyId" column="wo_third_company_id"/>
+        <id property="thirdCompanyPay" column="wo_third_company_pay"/>
         <id property="workOrderReasonId" column="wo_work_order_reason_id"/>
         <id property="processor" column="wo_processor"/>
         <id property="createrId" column="wo_creater_id"/>
@@ -39,6 +39,9 @@
         <id property="orderNo" column="wo_order_no"/>
         <id property="createTime" column="wo_create_time"/>
         <id property="workOrderType" column="wot_type"/>
+        <id property="thirdCompanyName" column="wo_third_company_name"/>
+        <id property="serverName" column="wo_server_name"/>
+
         <id property="workOrderReasonName" column="wor_name"/>
         <id property="creater" column="u_user_name"/>
         <id property="pointName" column="p_name"/>
@@ -56,9 +59,9 @@
         wo.point_id as wo_point_id,
         wo.info as wo_info,
         wo.fee as wo_fee,
-        wo.company_type as wo_company_type,
-        wo.company_id as wo_company_id,
-        wo.third_party_pay as wo_third_party_pay,
+        wo.third_company_type as wo_third_company_type,
+        wo.third_company_id as wo_third_company_id,
+        wo.third_company_pay as wo_third_company_pay,
         wo.work_order_reason_id as wo_work_order_reason_id,
         wo.processor as wo_processor,
         wo.creater_id as wo_creater_id,
@@ -66,6 +69,9 @@
         wo.status as wo_status,
         wo.order_no as wo_order_no,
         wo.create_time as wo_create_time,
+        wo.server_id as wo_server_id,
+        wo.third_company_name as wo_third_company,
+        wo.server_name as wo_server_name,
         wot.type as wot_type,
         wor.name as wor_name,
         u.user_name as u_user_name,
@@ -105,9 +111,9 @@
         wo.point_id as wo_point_id,
         wo.info as wo_info,
         wo.fee as wo_fee,
-        wo.company_type as wo_company_type,
-        wo.company_id as wo_company_id,
-        wo.third_party_pay as wo_third_party_pay,
+        wo.third_company_type as wo_third_company_type,
+        wo.third_company_id as wo_third_company_id,
+        wo.third_company_pay as wo_third_company_pay,
         wo.work_order_reason_id as wo_work_order_reason_id,
         wo.processor as wo_processor,
         wo.creater_id as wo_creater_id,
@@ -115,20 +121,22 @@
         wo.status as wo_status,
         wo.order_no as wo_order_no,
         wo.create_time as wo_create_time,
-        wo.creater_id as wo_creater_id,
-        wot.remark as wot_type,
+        wo.server_id as wo_server_id,
+        wo.third_company_name as wo_third_company,
+        wo.server_name as wo_server_name,
+        wot.type as wot_type,
         wor.name as wor_name,
         u.user_name as u_user_name,
+        p.name as p_name,
         f.id as f_id,
-
         f.type as f_type,
         f.file_name as f_file_name,
         f.bind_id as f_bind_id
-
         FROM work_order as wo
         LEFT JOIN work_order_type as wot on wot.id = wo.id
         LEFT JOIN work_order_reason as wor on wor.id = wo.work_order_reason_id
         LEFT JOIN user u on u.id =wo.creater_id
+        LEFT JOIN point as p on p.id = wo.point_id
         LEFT JOIN file as f on f.bind_id = wo.id and f.type =2
         <where>
             <if test="query.pointId != null">

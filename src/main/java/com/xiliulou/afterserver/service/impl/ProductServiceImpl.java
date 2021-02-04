@@ -101,6 +101,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             productSerialNumberExcelVo.setSerialNumber(p.getSerialNumber());
             productSerialNumberExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(p.getCreateTime())));
             productSerialNumberExcelVo.setProductName(p.getProductName());
+            productSerialNumberExcelVo.setPrice(p.getPrice());
             productSerialNumberExcelVoArrayList.add(productSerialNumberExcelVo);
         }
 
@@ -139,6 +140,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             ProductSerialNumber productSerialNumber = new ProductSerialNumber();
             productSerialNumber.setSerialNumber(productSerialNumberQuery.getPrefix() + "_" + decimalFormat.format(i));
             productSerialNumber.setProductId(productSerialNumberQuery.getProductId());
+            productSerialNumber.setPrice(product.getPrice());
             productSerialNumber.setCreateTime(System.currentTimeMillis());
             productSerialNumberMapper.insert(productSerialNumber);
         }

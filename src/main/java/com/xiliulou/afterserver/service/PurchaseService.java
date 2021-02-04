@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 public interface PurchaseService extends IService<Purchase> {
     IPage getPage(Long offset, Long size, PurchaseQuery purchase);
 
+    @Deprecated
     void exportExcel(PurchaseQuery purchase, HttpServletResponse response);
 
     R savePurchase(SavePurchaseQuery savePurchaseQuery);

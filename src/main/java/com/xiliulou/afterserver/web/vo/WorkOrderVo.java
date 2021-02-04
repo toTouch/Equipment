@@ -14,7 +14,7 @@ import java.util.List;
  **/
 @Data
 public class WorkOrderVo extends WorkOrder {
-    private String companyName;
+
     private String workOrderReasonName;
     private String workOrderType;
     private String creater;

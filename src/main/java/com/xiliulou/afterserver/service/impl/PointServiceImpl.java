@@ -19,6 +19,7 @@ import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.IndexDataQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
+import com.xiliulou.afterserver.web.vo.CabinetAndBoxAmountVo;
 import com.xiliulou.afterserver.web.vo.IndexDataVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -73,6 +74,7 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
             fileService.saveBatch(filList);
         }
         if (ObjectUtil.isNotEmpty(pointQuery.getProductSerialNumberIdAndSetNoMap())) {
+            BigDecimal totalAmount = BigDecimal.ZERO;
             for (Map.Entry<Long, Integer> entry : pointQuery.getProductSerialNumberIdAndSetNoMap().entrySet()) {
                 ProductSerialNumber productSerialNumber = productSerialNumberMapper.selectById(entry.getKey());
                 if (Objects.isNull(productSerialNumber)) {
@@ -86,8 +88,14 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
                 productSerialNumber.setPointId(point.getId());
                 productSerialNumber.setSetNo(entry.getValue());
                 productSerialNumberMapper.updateById(productSerialNumber);
+                totalAmount = totalAmount.add(productSerialNumber.getPrice());
             }
+            Point pointUpdate = new Point();
+            pointUpdate.setId(point.getId());
+            pointUpdate.setDeviceAmount(totalAmount);
+            baseMapper.updateById(pointUpdate);
         }
+
         return R.ok();
     }
 
@@ -108,17 +116,17 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
         BigDecimal allCostAmount = workOrderCostAmount.add(deliverCostAmount);
         indexDataVo.setAllCostAmount(allCostAmount);
 
-        Long cabinetAmount = baseMapper.getCabinetAmount(indexDataQuery);
-        Long boxAmount = baseMapper.getBoxAmount(indexDataQuery);
-        indexDataVo.setCabinetAmount(Objects.isNull(cabinetAmount) ? 0L : cabinetAmount);
-        indexDataVo.setBoxAmount(Objects.isNull(boxAmount) ? 0L : boxAmount);
+        CabinetAndBoxAmountVo cabinetAndBoxAmountVo = baseMapper.getCabinetAmount(indexDataQuery);
+//        Long boxAmount = baseMapper.getBoxAmount(indexDataQuery);
+        indexDataVo.setCabinetAmount(Objects.isNull(cabinetAndBoxAmountVo.getCabinetAmount()) ? 0L : cabinetAndBoxAmountVo.getCabinetAmount());
+        indexDataVo.setBoxAmount(Objects.isNull(cabinetAndBoxAmountVo.getBoxAmount()) ? 0L : cabinetAndBoxAmountVo.getBoxAmount());
         if (allCostAmount.compareTo(BigDecimal.ZERO) == 0) {
             indexDataVo.setSingleBoxCostAmount(BigDecimal.ZERO);
         } else {
-            if (boxAmount < 1) {
+            if (cabinetAndBoxAmountVo.getBoxAmount() < 1) {
                 throw new CusTomBusinessAccessDeniedException("格口总数小于1");
             }
-            indexDataVo.setSingleBoxCostAmount(allCostAmount.divide(new BigDecimal(String.valueOf(boxAmount)), 2, BigDecimal.ROUND_HALF_UP));
+            indexDataVo.setSingleBoxCostAmount(allCostAmount.divide(new BigDecimal(String.valueOf(cabinetAndBoxAmountVo.getBoxAmount())), 2, BigDecimal.ROUND_HALF_UP));
         }
         return indexDataVo;
     }

@@ -17,11 +17,13 @@ public class WorkOrderExcelVo {
     @ExcelProperty("工单类型")
     private String workOrderType;
     @ExcelProperty("公司名称")
-    private String companyName;
+    private String thirdCompanyName;
     @ExcelProperty("费用")
     private BigDecimal fee;
     @ExcelProperty("第三方承担费用")
-    private BigDecimal thirdPartyPay;
+    private BigDecimal thirdCompanyPay;
+    @ExcelProperty("服务上")
+    private String serverName;
     @ExcelProperty("处理人")
     private String processor;
     @ExcelProperty("处理时间")
@@ -38,4 +40,5 @@ public class WorkOrderExcelVo {
     private String info;
     @ExcelProperty("创建时间")
     private String createTimeStr;
+
 }

@@ -35,6 +35,14 @@
         <id property="setTime" column="p_set_time"/>
         <id property="deliverTime" column="p_deliver_time"/>
         <id property="createTime" column="p_create_time"/>
+        <id property="canopyCount" column="p_canopy_count"/>
+        <id property="primaryCabinetCount" column="p_primary_cabinet_count"/>
+        <id property="deputyCabinetCount" column="p_deputy_cabinet_count"/>
+        <id property="deviceAmount" column="p_device_amount"/>
+        <id property="paiedAmount" column="p_paied_amount"/>
+        <id property="serverAmount" column="p_server_amount"/>
+
+
         <id property="customerName" column="c_name"/>
 
         <collection property="fileList" ofType="com.xiliulou.afterserver.entity.File">
@@ -43,7 +51,6 @@
             <id property="fileName" column="f_file_name"/>
             <id property="createTime" column="f_create_time"/>
             <id property="bindId" column="f_bind_id"/>
-
         </collection>
         <collection property="productSerialNumberVoList" ofType="com.xiliulou.afterserver.web.vo.ProductSerialNumberVo">
             <id property="id" column="psn_id"/>
@@ -55,19 +62,11 @@
             <id property="setNo" column="psn_set_no"/>
             <id property="serialNumber" column="psn_serial_number"/>
         </collection>
-        <collection property="settleAccountsList" ofType="com.xiliulou.afterserver.entity.SettleAccounts">
-            <id property="id" column="sa_id"/>
-            <id property="customerId" column="sa_customer_id"/>
-            <id property="totalAmount" column="sa_total_amount"/>
-            <id property="payRate" column="sa_pay_rate"/>
-            <id property="payAmount" column="sa_pay_amount"/>
-            <id property="unPayAmount" column="sa_un_pay_amount"/>
-            <id property="billAmount" column="sa_bill_amount"/>
-            <id property="unBillAmount" column="sa_un_bill_amount"/>
-            <id property="remark" column="sa_remark"/>
-            <id property="payTime" column="sa_pay_time"/>
-            <id property="createTime" column="sa_create_time"/>
-            <id property="pointId" column="sa_point_id"/>
+        <collection property="pointBindSettleAccountsList"
+                    ofType="com.xiliulou.afterserver.entity.PointBindSettleAccounts">
+            <id property="deviceAmount" column="pisa_device_amount"/>
+            <id property="serverAmount" column="pisa_server_amount"/>
+
         </collection>
     </resultMap>
 
@@ -83,7 +82,12 @@
         p.set_time as p_set_time,
         p.deliver_time as p_deliver_time,
         p.create_time as p_create_time,
-        p.canopy_count    as p_canopy_count,
+        p.canopy_count as p_canopy_count,
+        P.primary_cabinet_count as p_primary_cabinet_count,
+        p.deputy_cabinet_count as p_deputy_cabinet_count,
+        p.device_amount as p_device_amount,
+        p.paied_amount as p_paied_amount,
+        p.server_amount as p_server_amount,
         pt.id as pt_id,
         pt.name as pt_name,
         pt.code as pt_code,
@@ -99,23 +103,14 @@
         f.file_name as f_file_name,
         f.create_time as f_create_time,
         c.name as c_name,
-        sa.id as sa_id,
-        sa.customer_id as sa_customer_id,
-        sa.total_amount as sa_total_amount,
-        sa.pay_rate as sa_pay_rate,
-        sa.pay_amount as sa_pay_amount,
-        sa.un_pay_amount as sa_un_pay_amount,
-        sa.bill_amount as sa_un_bill_amount,
-        sa.remark as sa_remark,
-        sa.pay_time as sa_pay_time,
-        sa.create_time as sa_create_time,
-        sa.point_id as sa_point_id
+        pisa.server_amount as pisa_server_amount,
+        pisa.device_amount as pisa_device_amount
         FROM point p
         LEFT JOIN product_serial_number psn on psn.point_id =p.id
         LEFT JOIN product pt on psn.product_id = pt.id
         LEFT JOIN file f on f.bind_id = p.id and f.type =1
         LEFT JOIN customer c on c.id = p.customer_id
-        LEFT JOIN settle_accounts sa on sa.point_id = p.id
+        LEFT JOIN point_bind_settle_accounts as pisa on pisa.point_id = p.id
 
         <if test="query.city != null and query.city != ''">
             and p.city =#{query.city}
@@ -175,28 +170,29 @@
         </where>
     </select>
 
-    <select id="getCabinetAmount" resultType="java.lang.Long">
-        SELECT count(1) FROM product_serial_number psn
-        LEFT JOIN  point as p on p.id = psn.product_id
-        LEFT JOIN  product as pro on pro.id =psn.product_id
-        WHERE pro.type in (1, 2)
-        <if test="query.city != null and query.city != ''">
-            and p.city =#{query.city}
-        </if>
-        <if test="query.customerId != null ">
-            and and p.customer_id = #{query.customerId}
-        </if>
-        <if test="query.pointId != null ">
-            and and p.id = #{query.point_id}
-        </if>
+    <select id="getCabinetAmount" resultType="com.xiliulou.afterserver.web.vo.CabinetAndBoxAmountVo">
+        SELECT SUM(primary_cabinet_count + deputy_cabinet_count) as cabinet_amount,
+        SUM(box_number) as box_amount
+        FROM point
 
+        <where>
+            <if test="query.city != null and query.city != ''">
+                and p.city =#{query.city}
+            </if>
+            <if test="query.customerId != null ">
+                and and p.customer_id = #{query.customerId}
+            </if>
+            <if test="query.pointId != null ">
+                and and p.id = #{query.point_id}
+            </if>
+        </where>
 
     </select>
 
     <select id="getBoxAmount" resultType="java.lang.Long">
         SELECT sum(pro.box_number) FROM product_serial_number psn
-        LEFT JOIN  point as p on p.id = psn.product_id
-        LEFT JOIN  product as pro on pro.id =psn.product_id
+        LEFT JOIN point as p on p.id = psn.product_id
+        LEFT JOIN product as pro on pro.id =psn.product_id
 
         WHERE pro.type in (1,2)
         <if test="query.city != null and query.city != ''">

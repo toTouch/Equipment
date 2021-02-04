@@ -5,10 +5,11 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * @program: XILIULOU
  * @description: 产品
- *
  * @author: Mr.YG
  * @create: 2021-01-28 17:03
  **/
@@ -22,4 +23,6 @@ public class Product {
     private Integer boxNumber;
     private Long createTime;
     private String info;
+
+    private BigDecimal price;//价格
 }

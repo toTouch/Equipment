@@ -58,7 +58,9 @@
         psu.serial_number ,
         psu.product_id,
         psu.create_time ,
+        psu.price as price,
         p.name as product_name
+
         FROM
         product_serial_number AS psu
         LEFT JOIN product AS p ON p.id = psu.product_id

@@ -1,9 +1,6 @@
 package com.xiliulou.afterserver.web.vo;
 
-import com.xiliulou.afterserver.entity.File;
-import com.xiliulou.afterserver.entity.Point;
-import com.xiliulou.afterserver.entity.Product;
-import com.xiliulou.afterserver.entity.SettleAccounts;
+import com.xiliulou.afterserver.entity.*;
 import lombok.Data;
 
 import java.util.List;
@@ -21,4 +18,5 @@ public class PointVo extends Point {
     private List<SettleAccounts> settleAccountsList;
     private String customerName;
     private List<ProductSerialNumberVo> productSerialNumberVoList;
+    private List<PointBindSettleAccounts> pointBindSettleAccountsList;
 }

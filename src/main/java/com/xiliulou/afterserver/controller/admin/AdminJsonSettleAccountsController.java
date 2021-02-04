@@ -5,6 +5,7 @@ import com.xiliulou.afterserver.entity.SettleAccounts;
 import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.service.SettleAccountsService;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.SaveSettleAccountsQuery;
 import com.xiliulou.afterserver.web.query.SettleAccountsQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,12 @@ public class AdminJsonSettleAccountsController {
     public R insert(@RequestBody SettleAccounts settleAccounts) {
         settleAccounts.setCreateTime(System.currentTimeMillis());
         return R.ok(settleAccountsService.save(settleAccounts));
+    }
+
+    @PostMapping("admin/settleAccounts/bindPoint")
+    public R insert(@RequestBody SaveSettleAccountsQuery saveSettleAccountsQuery) {
+
+        return R.ok(settleAccountsService.savePointBindSettleAccountsQuery(saveSettleAccountsQuery));
     }
 
     @PutMapping("admin/settleAccounts")

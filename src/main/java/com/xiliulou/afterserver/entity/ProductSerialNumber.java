@@ -3,6 +3,8 @@ package com.xiliulou.afterserver.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * @program: XILIULOU
  * @description:
@@ -18,4 +20,5 @@ public class ProductSerialNumber {
     private Long createTime;
     private Integer setNo;
     private Long pointId;
+    private BigDecimal price;
 }
