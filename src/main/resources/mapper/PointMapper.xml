@@ -113,10 +113,10 @@
         FROM point p
         LEFT JOIN product_serial_number psn on psn.point_id =p.id
         LEFT JOIN product pt on psn.product_id = pt.id
-        LEFT JOIN file f on f.bind_id = p.id
+        LEFT JOIN file f on f.bind_id = p.id and f.type =1
         LEFT JOIN customer c on c.id = p.customer_id
         LEFT JOIN settle_accounts sa on sa.point_id = p.id
-        where   f.type =1
+
         <if test="query.city != null and query.city != ''">
             and p.city =#{query.city}
         </if>
