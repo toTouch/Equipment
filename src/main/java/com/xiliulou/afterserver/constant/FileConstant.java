@@ -15,6 +15,8 @@ public class FileConstant {
 
     public static final String BUCKET_NAME = "after-service";
     public static final String POINT_FILE_PREFIX = "point";
+    //5M
+    public static final Long FILE_MAX_SIZE = 5242880L;
 
 
     public static final Map<Integer, String> prefixMap = new HashedMap<>();

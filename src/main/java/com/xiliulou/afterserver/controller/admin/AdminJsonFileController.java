@@ -2,6 +2,7 @@ package com.xiliulou.afterserver.controller.admin;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.server.HttpServerResponse;
+import com.xiliulou.afterserver.constant.FileConstant;
 import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.service.FileService;
 import com.xiliulou.afterserver.util.PageUtil;
@@ -30,7 +31,10 @@ public class AdminJsonFileController {
 
     @PostMapping("/admin/upload")
     public R uploadFile(@RequestParam("file") MultipartFile file) {
+        if (file.getSize() > FileConstant.FILE_MAX_SIZE) {
 
+            return R.failMsg("上传文件大小小于5M!");
+        }
         return fileService.uploadFile(file);
     }
 
