@@ -125,10 +125,12 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
         if (allCostAmount.compareTo(BigDecimal.ZERO) == 0) {
             indexDataVo.setSingleBoxCostAmount(BigDecimal.ZERO);
         } else {
-            if (cabinetAndBoxAmountVo.getBoxAmount() < 1) {
-                throw new CusTomBusinessAccessDeniedException("格口总数小于1");
+            if (indexDataVo.getBoxAmount() < 1) {
+                indexDataVo.setSingleBoxCostAmount(BigDecimal.ZERO);
+            }else {
+                indexDataVo.setSingleBoxCostAmount(allCostAmount.divide(new BigDecimal(String.valueOf(cabinetAndBoxAmountVo.getBoxAmount())), 2, BigDecimal.ROUND_HALF_UP));
+
             }
-            indexDataVo.setSingleBoxCostAmount(allCostAmount.divide(new BigDecimal(String.valueOf(cabinetAndBoxAmountVo.getBoxAmount())), 2, BigDecimal.ROUND_HALF_UP));
         }
         return indexDataVo;
     }
