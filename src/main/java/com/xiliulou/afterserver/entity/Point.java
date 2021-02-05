@@ -19,6 +19,9 @@ import java.math.BigDecimal;
 public class Point {
     private Long id;
     private String city;
+
+    private String province;
+
     private String name;
     private Long customerId;
     private Integer primaryCabinetNo;

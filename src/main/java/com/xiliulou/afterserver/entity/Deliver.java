@@ -20,6 +20,7 @@ public class Deliver {
     private Long id;
     private Long customerId;
     private String city;
+    private String province;
     private String destination;//终点
     private String bills;
     private BigDecimal deliverCost;
