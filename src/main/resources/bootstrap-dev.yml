@@ -23,7 +23,7 @@ spring:
   profiles:
     active: dev
 logging:
-  config: classpath:logback-spring.xml
+  config: classpath:logback-spring-dev.xml
   level:
     com.xiliulou.afterservice: debug
 
