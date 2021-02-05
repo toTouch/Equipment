@@ -24,11 +24,11 @@ spring:
     active: dev
 logging:
   config: classpath:logback-spring-dev.xml
-  level:
-    com.xiliulou.afterserver.mapper: debug
+
 
 
 mybatis-plus:
+  configuration:
   mapper-locations: classpath:/mapper/*Mapper.xml
   global-config:
     banner: true
