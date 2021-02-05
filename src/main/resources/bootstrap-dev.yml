@@ -25,7 +25,7 @@ spring:
 logging:
   config: classpath:logback-spring-dev.xml
   level:
-    com.xiliulou.afterserver: debug
+    com.xiliulou.afterserver.mapper: debug
 
 
 mybatis-plus:
