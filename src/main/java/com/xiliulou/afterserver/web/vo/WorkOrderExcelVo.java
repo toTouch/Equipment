@@ -16,13 +16,13 @@ public class WorkOrderExcelVo {
 
     @ExcelProperty("工单类型")
     private String workOrderType;
-    @ExcelProperty("公司名称")
+    @ExcelProperty("第三方公司名称")
     private String thirdCompanyName;
     @ExcelProperty("费用")
     private BigDecimal fee;
     @ExcelProperty("第三方承担费用")
     private BigDecimal thirdCompanyPay;
-    @ExcelProperty("服务上")
+    @ExcelProperty("服务商名称")
     private String serverName;
     @ExcelProperty("处理人")
     private String processor;
