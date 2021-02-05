@@ -29,15 +29,15 @@ logging:
 
 
 mybatis-plus:
-  mapper-locations: classpath:mapper/*.xml
+  tenant-enable: ture
+  mapper-locations: classpath:/mapper/*Mapper.xml
   global-config:
+    banner: false
     db-config:
       id-type: auto
-
-  configuration:
-    map-underscore-to-camel-case: true
-    call-setters-on-nulls: true
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+      field-strategy: NOT_NULL
+      logic-delete-value: 1
+      logic-not-delete-value: 0
 
 
 xiliulou:
