@@ -196,7 +196,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
             workOrderExcelVoList.add(workOrderExcelVo);
         }
-
+        log.info("workOrderExcelVoList:{}", workOrderExcelVoList);
         ExcelWriter excelWriter = null;
         try {
             String fileName = URLEncoder.encode("客商信息表", "UTF-8");
@@ -209,16 +209,16 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             WriteSheet writeSheet1 = EasyExcel.writerSheet(0, "全部类型").head(WorkOrderExcelVo.class).build();
             excelWriter.write(workOrderExcelVoList, writeSheet1);
             Map<String, List<WorkOrderExcelVo>> maps = workOrderExcelVoList.stream().collect(Collectors.groupingBy(WorkOrderExcelVo::getWorkOrderType));
-            if (maps.size() > 1) {
-                int i = 1;
-                for (Map.Entry<String, List<WorkOrderExcelVo>> entry : maps.entrySet()) {
-                    String workOrderType = entry.getKey();
-                    List<WorkOrderExcelVo> workOrderExcelVos = entry.getValue();
-                    WriteSheet writeSheet2 = EasyExcel.writerSheet(i, workOrderType).head(WorkOrderExcelVo.class).build();
-                    excelWriter.write(workOrderExcelVos, writeSheet2);
-                    i++;
-                }
+
+            int i = 1;
+            for (Map.Entry<String, List<WorkOrderExcelVo>> entry : maps.entrySet()) {
+                String workOrderType = entry.getKey();
+                List<WorkOrderExcelVo> workOrderExcelVos = entry.getValue();
+                WriteSheet writeSheet2 = EasyExcel.writerSheet(i, workOrderType).head(WorkOrderExcelVo.class).build();
+                excelWriter.write(workOrderExcelVos, writeSheet2);
+                i++;
             }
+
         } catch (Exception e) {
             log.error("导出报表失败!", e);
             throw new CustomBusinessException("导出报表失败!请联系客服!");
