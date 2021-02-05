@@ -180,7 +180,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     public void reconciliationExportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
         List<WorkOrderVo> workOrderVoList = baseMapper.orderList(workOrder);
-
+        log.info("workOrderVoList:{}", workOrderVoList);
         if (ObjectUtil.isEmpty(workOrderVoList)) {
             throw new CustomBusinessException("没有查询到工单!无法导出！");
         }
