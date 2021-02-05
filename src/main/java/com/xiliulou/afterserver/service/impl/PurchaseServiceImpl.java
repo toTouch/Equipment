@@ -48,7 +48,7 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseMapper, Purchase> i
 
     @Override
     public IPage getPage(Long offset, Long size, PurchaseQuery purchase) {
-        log.info("customerId:{}", purchase.getCustomerId());
+
         Page page = PageUtil.getPage(offset, size);
         return baseMapper.getPage(page, purchase);
     }
