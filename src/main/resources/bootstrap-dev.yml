@@ -29,7 +29,6 @@ logging:
 
 
 mybatis-plus:
-  tenant-enable: ture
   mapper-locations: classpath:/mapper/*Mapper.xml
   global-config:
     banner: false
