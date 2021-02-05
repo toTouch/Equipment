@@ -29,6 +29,8 @@ logging:
 
 
 mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations: classpath:/mapper/*Mapper.xml
   global-config:
     banner: false
@@ -37,8 +39,7 @@ mybatis-plus:
       field-strategy: NOT_NULL
       logic-delete-value: 1
       logic-not-delete-value: 0
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
 
 xiliulou:
   urls:
