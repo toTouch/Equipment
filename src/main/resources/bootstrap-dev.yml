@@ -29,11 +29,9 @@ logging:
 
 
 mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations: classpath:/mapper/*Mapper.xml
   global-config:
-    banner: false
+    banner: true
     db-config:
       id-type: auto
       field-strategy: NOT_NULL
