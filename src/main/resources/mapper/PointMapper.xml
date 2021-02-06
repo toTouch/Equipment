@@ -42,7 +42,7 @@
         <id property="paiedAmount" column="p_paied_amount"/>
         <id property="serverAmount" column="p_server_amount"/>
         <id property="serialNumber" column="p_serial_number"/>
-
+        <id property="province" column="p_province"/>
         <id property="primaryCabinetNo" column="p_primary_cabinet_no"/>
 
         <id property="customerName" column="c_name"/>
@@ -92,6 +92,7 @@
         p.device_amount as p_device_amount,
         p.paied_amount as p_paied_amount,
         p.server_amount as p_server_amount,
+               p.province as p_province,
         pt.id as pt_id,
         pt.name as pt_name,
         pt.code as pt_code,
