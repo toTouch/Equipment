@@ -7,8 +7,10 @@ import com.xiliulou.afterserver.entity.WorkOrder;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.SaveWorkOrderQuery;
 import com.xiliulou.afterserver.web.query.WorkOrderQuery;
+import com.xiliulou.afterserver.web.vo.WorkOrderVo;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 public interface WorkOrderService extends IService<WorkOrder> {
     IPage getPage(Long offset, Long size, WorkOrderQuery workOrder);
@@ -27,4 +29,6 @@ public interface WorkOrderService extends IService<WorkOrder> {
     R reconciliation(WorkOrderQuery workOrder);
 
     void reconciliationExportExcel(WorkOrderQuery workOrder, HttpServletResponse response);
+
+     List<WorkOrderVo> getWorkOrderList(WorkOrderQuery workOrder);
 }

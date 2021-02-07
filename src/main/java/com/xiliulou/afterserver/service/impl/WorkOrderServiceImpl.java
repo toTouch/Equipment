@@ -177,6 +177,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         return R.ok(baseMapper.getPage(PageUtil.getPage(workOrder.getOffset(), workOrder.getSize()), workOrder));
     }
 
+    public List<WorkOrderVo> getWorkOrderList(WorkOrderQuery workOrder) {
+        return baseMapper.orderList(workOrder);
+    }
+
+
     @Override
     public void reconciliationExportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
         List<WorkOrderVo> workOrderVoList = baseMapper.orderList(workOrder);

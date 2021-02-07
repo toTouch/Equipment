@@ -19,4 +19,5 @@ public class PointVo extends Point {
     private String customerName;
     private List<ProductSerialNumberVo> productSerialNumberVoList;
     private List<PointBindSettleAccounts> pointBindSettleAccountsList;
+    private List<WorkOrderVo> workOrderVoList;
 }

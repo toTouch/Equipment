@@ -2,12 +2,10 @@ package com.xiliulou.afterserver.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sun.xml.bind.v2.model.core.ID;
-import com.xiliulou.afterserver.entity.File;
-import com.xiliulou.afterserver.entity.Point;
-import com.xiliulou.afterserver.entity.PointBindProduct;
-import com.xiliulou.afterserver.entity.ProductSerialNumber;
+import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.exception.CusTomBusinessAccessDeniedException;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.PointBindProductMapper;
@@ -15,12 +13,16 @@ import com.xiliulou.afterserver.mapper.PointMapper;
 import com.xiliulou.afterserver.mapper.ProductSerialNumberMapper;
 import com.xiliulou.afterserver.service.FileService;
 import com.xiliulou.afterserver.service.PointService;
+import com.xiliulou.afterserver.service.WorkOrderService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.IndexDataQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
+import com.xiliulou.afterserver.web.query.WorkOrderQuery;
 import com.xiliulou.afterserver.web.vo.CabinetAndBoxAmountVo;
 import com.xiliulou.afterserver.web.vo.IndexDataVo;
+import com.xiliulou.afterserver.web.vo.PointVo;
+import com.xiliulou.afterserver.web.vo.WorkOrderVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,10 +52,28 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
     PointBindProductMapper pointBindProductMapper;
     @Autowired
     ProductSerialNumberMapper productSerialNumberMapper;
+    @Autowired
+    WorkOrderService workOrderService;
 
     @Override
     public IPage getPage(Long offset, Long size, PointQuery point) {
-        return baseMapper.pointPage(PageUtil.getPage(offset, size), point);
+        Page page = PageUtil.getPage(offset, size);
+
+        baseMapper.pointPage(page, point);
+        if (ObjectUtil.isNotEmpty(page.getRecords())) {
+            List<PointVo> pointVoList = page.getRecords();
+            for (PointVo pointVo : pointVoList) {
+
+                WorkOrderQuery workOrderQuery = new WorkOrderQuery();
+                workOrderQuery.setPointId(point.getId());
+                List<WorkOrderVo> workOrderVoList = workOrderService.getWorkOrderList(workOrderQuery);
+                if (ObjectUtil.isNotEmpty(workOrderVoList)) {
+                    pointVo.setWorkOrderVoList(workOrderVoList);
+                }
+            }
+            page.setRecords(pointVoList);
+        }
+        return page;
     }
 
     @Override
