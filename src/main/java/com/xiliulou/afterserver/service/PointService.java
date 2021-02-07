@@ -9,6 +9,8 @@ import com.xiliulou.afterserver.web.query.IndexDataQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
 import com.xiliulou.afterserver.web.vo.IndexDataVo;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @program: XILIULOU
  * @description:
@@ -23,4 +25,8 @@ public interface PointService extends IService<Point> {
     IndexDataVo getCostIndexData(IndexDataQuery indexDataQuery);
 
     R pointBindSerialNumber(PointQuery pointQuery);
+
+    R reconciliationPage(Long offset, Long size, PointQuery point);
+
+    void exportExcel(PointQuery pointQuery, HttpServletResponse response);
 }

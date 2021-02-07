@@ -1,6 +1,8 @@
 package com.xiliulou.afterserver.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -19,22 +21,20 @@ import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.IndexDataQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
 import com.xiliulou.afterserver.web.query.WorkOrderQuery;
-import com.xiliulou.afterserver.web.vo.CabinetAndBoxAmountVo;
-import com.xiliulou.afterserver.web.vo.IndexDataVo;
-import com.xiliulou.afterserver.web.vo.PointVo;
-import com.xiliulou.afterserver.web.vo.WorkOrderVo;
+import com.xiliulou.afterserver.web.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.nio.channels.FileLock;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @program: XILIULOU
@@ -194,5 +194,42 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
 
     }
 
+    @Override
+    public R reconciliationPage(Long offset, Long size, PointQuery point) {
+        Page page = PageUtil.getPage(offset, size);
+        return R.ok(baseMapper.pointPage(page, point));
+    }
 
+    /**
+     * @param pointQuery
+     * @param response
+     */
+    @Override
+    public void exportExcel(PointQuery pointQuery, HttpServletResponse response) {
+        List<PointVo> pointVoList = baseMapper.getPointList(pointQuery);
+        if (ObjectUtil.isEmpty(pointVoList)) {
+            throw new CustomBusinessException("未找到点位信息!");
+        }
+        List<PointExcelVo> pointExcelVoArrayList = new ArrayList<>(pointVoList.size());
+        for (PointVo o : pointVoList) {
+            PointExcelVo pointExcelVo = new PointExcelVo();
+            BeanUtil.copyProperties(o, pointExcelVo);
+
+            pointExcelVoArrayList.add(pointExcelVo);
+        }
+
+        String fileName = "采购.xlsx";
+        try {
+            ServletOutputStream outputStream = response.getOutputStream();
+            // 告诉浏览器用什么软件可以打开此文件
+            response.setHeader("content-Type", "application/vnd.ms-excel");
+            // 下载文件的默认名称
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
+            EasyExcel.write(outputStream, PointExcelVo.class).sheet("sheet").doWrite(pointExcelVoArrayList);
+            return;
+        } catch (IOException e) {
+            log.error("导出报表失败！", e);
+        }
+        throw new CustomBusinessException("导出报表失败！请联系客服！");
+    }
 }

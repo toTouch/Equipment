@@ -211,4 +211,66 @@
             and and p.id = #{query.point_id}
         </if>
     </select>
+    <select id="getPointList" resultMap="pageMap">
+        SELECT p.id as p_id,
+        p.name as p_name,
+        p.customer_id as p_customer_id,
+        p.city as p_city,
+        p.primary_cabinet_no as p_primarty_cabinet_no,
+        p.card_no as p_card_no,
+        p.remark as p_remark,
+        p.status as p_status,
+        p.set_time as p_set_time,
+        p.deliver_time as p_deliver_time,
+        p.create_time as p_create_time,
+        p.canopy_count as p_canopy_count,
+        p.serial_number as p_serial_number,
+        p.primary_cabinet_count as p_primary_cabinet_count,
+        p.primary_cabinet_no as p_primary_cabinet_no,
+        p.deputy_cabinet_count as p_deputy_cabinet_count,
+        p.device_amount as p_device_amount,
+        p.paied_amount as p_paied_amount,
+        p.server_amount as p_server_amount,
+        p.box_number as p_box_number,
+        p.province as p_province,
+        pt.id as pt_id,
+        pt.name as pt_name,
+        pt.code as pt_code,
+        pt.box_number as pt_box_number,
+        pt.create_time as pt_create_time,
+        pt.info as pt_info,
+        psn.id as psn_id,
+        psn.serial_number as psn_serial_number,
+        psn.set_no as psn_set_no,
+        f.id as f_id,
+        f.bind_id as f_bind_id,
+        f.type as f_type,
+        f.file_name as f_file_name,
+        f.create_time as f_create_time,
+        c.name as c_name,
+        pisa.server_amount as pisa_server_amount,
+        pisa.device_amount as pisa_device_amount
+        FROM point p
+        LEFT JOIN product_serial_number psn on psn.point_id =p.id
+        LEFT JOIN product pt on psn.product_id = pt.id
+        LEFT JOIN file f on f.bind_id = p.id and f.type =1
+        LEFT JOIN customer c on c.id = p.customer_id
+        LEFT JOIN point_bind_settle_accounts as pisa on pisa.point_id = p.id
+
+        <if test="query.city != null and query.city != ''">
+            and p.city =#{query.city}
+        </if>
+        <if test="query.customerId != null ">
+            and p.customer_id = #{query.customerId}
+        </if>
+        <if test="query.name != null and query.name != ''">
+            and p.name LIKE CONCAT('%',#{query.name},'%')
+        </if>
+        <if test="query.createTimeStart != null and query.createTimeEnd !=null ">
+            and p.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
+        </if>
+
+
+        ORDER BY p.create_time DESC
+    </select>
 </mapper>

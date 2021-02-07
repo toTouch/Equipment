@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @program: XILIULOU
@@ -29,4 +30,7 @@ public interface PointMapper extends BaseMapper<Point> {
     CabinetAndBoxAmountVo getCabinetAmount(@Param("query") IndexDataQuery indexDataQuery);
 
     Long getBoxAmount(@Param("query") IndexDataQuery indexDataQuery);
+
+
+    List<PointVo> getPointList(@Param("query") PointQuery pointQuery);
 }

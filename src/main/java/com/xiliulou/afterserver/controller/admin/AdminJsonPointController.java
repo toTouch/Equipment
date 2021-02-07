@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @program: XILIULOU
  * @description:
@@ -64,6 +66,16 @@ public class AdminJsonPointController {
     @GetMapping("admin/indexData/costAmount")
     public R getCostIndexData(IndexDataQuery indexDataQuery) {
         return R.ok(pointService.getCostIndexData(indexDataQuery));
+    }
+
+    @GetMapping("admin/point/page/reconciliation")
+    public R reconciliationPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, PointQuery point) {
+        return pointService.reconciliationPage(offset, size, point);
+    }
+
+    @GetMapping("admin/point/page/reconciliation/exportExcel")
+    public void reconciliationPage(PointQuery point, HttpServletResponse response) {
+        pointService.exportExcel(point, response);
     }
 
 
