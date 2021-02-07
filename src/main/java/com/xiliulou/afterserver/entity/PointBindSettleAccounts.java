@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 /**
  * @program: XILIULOU
- * @description:
+ * @description: 财务结算绑定点位关系表
  * @author: Mr.YG
  * @create: 2021-02-04 16:31
  **/

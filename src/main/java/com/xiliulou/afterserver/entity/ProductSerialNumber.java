@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 /**
  * @program: XILIULOU
- * @description:
+ * @description: 产品序列号表
  * @author: Mr.YG
  * @create: 2021-02-02 14:14
  **/

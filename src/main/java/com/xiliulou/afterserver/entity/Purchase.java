@@ -11,7 +11,7 @@ import java.nio.file.LinkOption;
 
 /**
  * @program: XILIULOU
- * @description: 采购
+ * @description: 采购表
  * @author: Mr.YG
  * @create: 2021-01-28 17:59
  **/
