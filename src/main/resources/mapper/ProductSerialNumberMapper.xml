@@ -26,6 +26,7 @@
     <select id="getSerialNumberPage" resultType="com.xiliulou.afterserver.web.vo.ProductSerialNumberVo">
 
         SELECT
+        psu.id
         psu.serial_number ,
         psu.product_id,
         psu.create_time ,
