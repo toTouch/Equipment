@@ -26,6 +26,9 @@
         <id property="id" column="p_id"/>
         <id property="customerId" column="customer_id"/>
         <id property="payRate" column="pay_rate"/>
+        <id property="payAmount" column="pay_amount"/>
+        <id property="totalAmount" column="total_amount"/>
+
         <id property="unPayAmount" column="un_pay_amount"/>
         <id property="billAmount" column="bill_amount"/>
 
