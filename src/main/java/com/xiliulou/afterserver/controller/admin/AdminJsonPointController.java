@@ -73,7 +73,7 @@ public class AdminJsonPointController {
         return pointService.reconciliationPage(offset, size, point);
     }
 
-    @GetMapping("admin/point/page/reconciliation/exportExcel")
+    @GetMapping("admin/point/reconciliation/exportExcel")
     public void reconciliationPage(PointQuery point, HttpServletResponse response) {
         pointService.exportExcel(point, response);
     }
