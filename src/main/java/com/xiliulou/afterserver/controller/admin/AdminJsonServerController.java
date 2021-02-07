@@ -50,4 +50,5 @@ public class AdminJsonServerController {
         return R.ok(serverService.list(Wrappers.<Server>lambdaQuery().orderByDesc(Server::getCreateTime)));
     }
 
+
 }
