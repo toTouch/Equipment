@@ -25,7 +25,7 @@
     <resultMap id="pageMap" type="com.xiliulou.afterserver.web.vo.SettleAccountsVo">
         <id property="id" column="p_id"/>
         <id property="customerId" column="customer_id"/>
-        <id property="payRate" column="pat_rate"/>
+        <id property="payRate" column="pay_rate"/>
         <id property="unPayAmount" column="un_pay_amount"/>
         <id property="billAmount" column="bill_amount"/>
 
