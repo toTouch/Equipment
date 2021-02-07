@@ -47,7 +47,7 @@
     </resultMap>
 
 
-    <select id="settleAccountsPage" resultType="com.xiliulou.afterserver.web.vo.SettleAccountsVo">
+    <select id="settleAccountsPage" resultMap="pageMap">
         SELECT sa.id,
         sa.customer_id,
         sa.total_amount,
