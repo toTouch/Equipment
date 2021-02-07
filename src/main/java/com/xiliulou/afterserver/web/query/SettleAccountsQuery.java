@@ -11,7 +11,7 @@ import lombok.Data;
  **/
 @Data
 public class SettleAccountsQuery extends SettleAccounts {
-
+    private Long pointId;
     private Long payTimeStart;
     private Long payTimeEnd;
 
