@@ -73,6 +73,13 @@ public class SettleAccountsServiceImpl extends ServiceImpl<SettleAccountsMapper,
             pointBindSettleAccounts.setServerAmount(Objects.isNull(pointBindSettleAccountsQuery.getServerAmount()) ? BigDecimal.ZERO : pointBindSettleAccountsQuery.getServerAmount());
             pointBindSettleAccounts.setCreateTime(System.currentTimeMillis());
             pointBindSettleAccountsMapper.insert(pointBindSettleAccounts);
+            if (Objects.nonNull(pointBindSettleAccounts.getDeviceAmount())) {
+                point.setPaiedAmount(point.getDeviceAmount().add(pointBindSettleAccounts.getDeviceAmount()));
+            }
+            if (Objects.nonNull(pointBindSettleAccounts.getServerAmount())) {
+                point.setServerAmount(point.getServerAmount().add(pointBindSettleAccountsQuery.getServerAmount()));
+            }
+            pointService.updateById(point);
         }
         return null;
     }

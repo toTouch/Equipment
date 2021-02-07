@@ -173,4 +173,6 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
         return R.ok();
 
     }
+
+
 }
