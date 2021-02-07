@@ -39,8 +39,10 @@
         <collection property="pointBindSettleAccountsList"
                     ofType="com.xiliulou.afterserver.web.vo.PointBindSettleAccountsVo">
             <id property="id" column="pbsa_id"/>
+            <id property="pointId" column="pbsa_point_id"/>
+
             <id property="pointName" column="point_name"/>
-            <id property="deviceAmount" column="device_name"/>
+            <id property="deviceAmount" column="device_Amount"/>
             <id property="serverAmount" column="server_amount"/>
         </collection>
 
@@ -63,6 +65,7 @@
         p.name as point_name,
         c.name as customer_name,
         pbsa.id as pbsa_id,
+        pbsa.point_id as pbsa_point_id,
         pbsa.device_amount as device_amount,
         pbsa.server_amount as server_amount
         FROM settle_accounts AS sa
