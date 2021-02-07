@@ -38,6 +38,7 @@ public class Point {
     private BigDecimal deviceAmount;//设备费用
     private BigDecimal paiedAmount;//已支付费用
     private BigDecimal serverAmount;//点位费
+    private Integer boxNumber;
     //正常
     public static final Integer STATUS_NORMAL = 1;
     //已移机
