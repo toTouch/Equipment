@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 @Data
 @TableName("point_bind_settle_accounts")
 public class PointBindSettleAccounts {
+    private Long id;
     private Long pointId;
     private Long settleAccountsId;
     private BigDecimal deviceAmount;

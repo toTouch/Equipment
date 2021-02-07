@@ -22,6 +22,31 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xiliulou.afterserver.mapper.SettleAccountsMapper">
 
+    <resultMap id="pageMap" type="com.xiliulou.afterserver.web.vo.SettleAccountsVo">
+        <id property="id" column="p_id"/>
+        <id property="customerId" column="customer_id"/>
+        <id property="payRate" column="pat_rate"/>
+        <id property="unPayAmount" column="un_pay_amount"/>
+        <id property="billAmount" column="bill_amount"/>
+
+        <id property="unBillAmount" column="un_bill_amount"/>
+        <id property="remark" column="remark"/>
+        <id property="payTime" column="pay_time"/>
+        <id property="createTime" column="create_time"/>
+        <id property="customerName" column="customer_name"/>
+
+
+        <collection property="pointBindSettleAccountsList"
+                    ofType="com.xiliulou.afterserver.web.vo.PointBindSettleAccountsVo">
+            <id property="id" column="pbsa_id"/>
+            <id property="pointName" column="point_name"/>
+            <id property="deviceAmount" column="device_name"/>
+            <id property="serverAmount" column="server_amount"/>
+        </collection>
+
+    </resultMap>
+
+
     <select id="settleAccountsPage" resultType="com.xiliulou.afterserver.web.vo.SettleAccountsVo">
         SELECT sa.id,
         sa.customer_id,
@@ -34,15 +59,20 @@
         sa.remark,
         sa.pay_time,
         sa.create_time,
-        sa.point_id,
+
         p.name as point_name,
-        c.name  as  customer_name
+        c.name as customer_name,
+        pbsa.id as pbsa_id,
+        pbsa.device_amount as device_amount,
+        pbsa.server_amount as server_amount
         FROM settle_accounts AS sa
-        LEFT JOIN point AS p ON p.id = sa.point_id
-        LEFT JOIN customer  c on c.id = sa.customer_id
+        LEFT JOIN point_bind_settle_accounts as pbsa on pbsa.settle_accounts_id =sa.id
+        LEFT JOIN point AS p ON p.id = pbsa.point_id
+        LEFT JOIN customer c on c.id = sa.customer_id
+
         <where>
             <if test="query.pointId != null">
-                and sa.point_id = #{query.pointId}
+                and pbsa.point_id = #{query.pointId}
             </if>
             <if test="query.payTimeStart != null and query.payTimeEnd != null">
                 and sa.pay_time BETWEEN #{query.payTimeStart} and #{query.payTimeEnd}
