@@ -3,6 +3,8 @@ package com.xiliulou.afterserver.web.vo;
 import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * @program: XILIULOU
  * @description:
@@ -14,7 +16,7 @@ public class PointExcelVo {
     @ExcelProperty("城市")
     private String city;
     @ExcelProperty("点位名称")
-    private String pointName;
+    private String name;
     @ExcelProperty("客户")
     private String customerName;
     @ExcelProperty("主柜数量")
@@ -22,5 +24,5 @@ public class PointExcelVo {
     @ExcelProperty("副柜数量")
     private String deputyCabinetCount;
     @ExcelProperty("总金额")
-    private String allAmount;
+    private BigDecimal allAmount;
 }

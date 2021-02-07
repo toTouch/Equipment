@@ -214,6 +214,10 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
         for (PointVo o : pointVoList) {
             PointExcelVo pointExcelVo = new PointExcelVo();
             BeanUtil.copyProperties(o, pointExcelVo);
+            BigDecimal a = Objects.isNull(o.getDeviceAmount()) ? BigDecimal.ZERO : o.getDeviceAmount();
+            BigDecimal b = Objects.isNull(o.getServerAmount()) ? BigDecimal.ZERO : o.getServerAmount();
+            BigDecimal allAmount = a.add(b);
+            pointExcelVo.setAllAmount(allAmount);
 
             pointExcelVoArrayList.add(pointExcelVo);
         }
