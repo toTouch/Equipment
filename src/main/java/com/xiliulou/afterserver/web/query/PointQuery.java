@@ -21,4 +21,6 @@ public class PointQuery extends Point {
 
     private Long createTimeStart;
     private Long createTimeEnd;
+
+
 }

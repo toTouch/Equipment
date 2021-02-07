@@ -21,4 +21,6 @@ public interface PointService extends IService<Point> {
     R savePoint(PointQuery pointQuery);
 
     IndexDataVo getCostIndexData(IndexDataQuery indexDataQuery);
+
+    R pointBindSerialNumber(PointQuery pointQuery);
 }

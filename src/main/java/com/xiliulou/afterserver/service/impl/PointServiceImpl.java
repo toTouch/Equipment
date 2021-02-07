@@ -127,11 +127,50 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
         } else {
             if (indexDataVo.getBoxAmount() < 1) {
                 indexDataVo.setSingleBoxCostAmount(BigDecimal.ZERO);
-            }else {
+            } else {
                 indexDataVo.setSingleBoxCostAmount(allCostAmount.divide(new BigDecimal(String.valueOf(cabinetAndBoxAmountVo.getBoxAmount())), 2, BigDecimal.ROUND_HALF_UP));
 
             }
         }
         return indexDataVo;
+    }
+
+    /**
+     * 绑定产品列表
+     *
+     * @param pointQuery
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public R pointBindSerialNumber(PointQuery pointQuery) {
+        Point point = getById(pointQuery.getId());
+        if (Objects.isNull(point)) {
+            return R.failMsg("未找到点位信息!");
+        }
+        if (ObjectUtil.isNotEmpty(pointQuery.getProductSerialNumberIdAndSetNoMap())) {
+            BigDecimal totalAmount = Objects.isNull(point.getDeviceAmount()) ? BigDecimal.ZERO : point.getDeviceAmount();
+            for (Map.Entry<Long, Integer> entry : pointQuery.getProductSerialNumberIdAndSetNoMap().entrySet()) {
+                ProductSerialNumber productSerialNumber = productSerialNumberMapper.selectById(entry.getKey());
+                if (Objects.isNull(productSerialNumber)) {
+                    log.error("not found productSerialNumber by id:{}", entry.getKey());
+                    throw new CustomBusinessException("未找到产品序列号!");
+                }
+                if (Objects.nonNull(productSerialNumber.getPointId())) {
+                    log.error("this productSerialNumber is binding other point productSerialNumberId:{}", entry.getKey());
+                    throw new CustomBusinessException("产品已被使用!");
+                }
+                productSerialNumber.setPointId(point.getId());
+                productSerialNumber.setSetNo(entry.getValue());
+                productSerialNumberMapper.updateById(productSerialNumber);
+                totalAmount = totalAmount.add(productSerialNumber.getPrice());
+            }
+            Point pointUpdate = new Point();
+            pointUpdate.setId(point.getId());
+            pointUpdate.setDeviceAmount(totalAmount);
+            baseMapper.updateById(pointUpdate);
+        }
+        return R.ok();
+
     }
 }

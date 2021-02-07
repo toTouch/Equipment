@@ -44,6 +44,12 @@ public class AdminJsonPointController {
         return pointService.savePoint(pointQuery);
     }
 
+    @PostMapping("admin/point/bindSerialNumber")
+    public R pointBindSerialNumber(@RequestBody PointQuery pointQuery) {
+
+        return pointService.pointBindSerialNumber(pointQuery);
+    }
+
     @PutMapping("admin/point")
     public R update(@RequestBody Point point) {
         // TODO: 2021/1/29 0029  怎么修改 产品绑定 
