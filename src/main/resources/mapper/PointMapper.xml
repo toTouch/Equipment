@@ -180,7 +180,7 @@
     <select id="getCabinetAmount" resultType="com.xiliulou.afterserver.web.vo.CabinetAndBoxAmountVo">
         SELECT SUM(primary_cabinet_count + deputy_cabinet_count) as cabinet_amount,
         SUM(box_number) as box_amount
-        FROM point
+        FROM point  as  p
 
         <where>
             <if test="query.city != null and query.city != ''">
