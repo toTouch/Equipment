@@ -339,9 +339,9 @@
         LEFT JOIN file f on f.bind_id = p.id and f.type =1
         LEFT JOIN customer c on c.id = p.customer_id
         LEFT JOIN point_bind_settle_accounts as pisa on pisa.point_id = p.id
-        <where>
+        where
             p.id = #{pointId}
-        </where>
+
 
         ORDER BY p.create_time DESC
     </select>
