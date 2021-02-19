@@ -41,6 +41,10 @@
         <id property="workOrderType" column="wot_type"/>
         <id property="thirdCompanyName" column="wo_third_company_name"/>
         <id property="serverName" column="wo_server_name"/>
+        <id property="transferSourcePointId" column="wo_transfer_source_point_id"/>
+        <id property="transferSourcePointName" column="wo_transfer_source_point_name"/>
+        <id property="transferDestinationPointId" column="wo_transfer_destination_point_id"/>
+        <id property="transferDestinationPointName" column="wo_transfer_destination_point_name"/>
 
         <id property="workOrderReasonName" column="wor_name"/>
         <id property="creater" column="u_user_name"/>
