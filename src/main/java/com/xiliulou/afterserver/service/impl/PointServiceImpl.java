@@ -61,6 +61,7 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
         baseMapper.getPointIdList(page, point);
         List<Long> pointIdList = page.getRecords();
         List<PointVo> pointVoList = new ArrayList<>();
+        log.info("pointIdList:{}", pointIdList);
         if (ObjectUtil.isNotEmpty(pointIdList)) {
             for (Long id : pointIdList) {
 
