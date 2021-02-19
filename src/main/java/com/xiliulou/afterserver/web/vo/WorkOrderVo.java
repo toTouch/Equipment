@@ -14,7 +14,7 @@ import java.util.List;
  * @create: 2021-02-01 10:00
  **/
 @Data
-public class WorkOrderVo  {
+public class WorkOrderVo {
     private Long id;
     private Integer type;
     private Long pointId;
@@ -40,4 +40,12 @@ public class WorkOrderVo  {
     private String creater;
     private String pointName;
     private List<File> fileList;
+    //起点
+    private String transferSourcePointId;
+    //终点
+    private String transferDestinationPointId;
+    //起点
+    private String transferSourcePointName;
+    //终点
+    private String transferDestinationPointName;
 }
