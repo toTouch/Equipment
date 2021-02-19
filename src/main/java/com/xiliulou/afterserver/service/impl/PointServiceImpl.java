@@ -58,7 +58,7 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
     @Override
     public IPage getPage(Long offset, Long size, PointQuery point) {
         Page page = PageUtil.getPage(offset, size);
-
+        log.info("name:{}", point.getName());
         baseMapper.pointPage(page, point);
         if (ObjectUtil.isNotEmpty(page.getRecords())) {
             List<PointVo> pointVoList = page.getRecords();
