@@ -333,7 +333,7 @@
         c.name as c_name,
         pisa.server_amount as pisa_server_amount,
         pisa.device_amount as pisa_device_amount
-        FROM point p
+        FROM point as  p
         LEFT JOIN product_serial_number psn on psn.point_id =p.id
         LEFT JOIN product pt on psn.product_id = pt.id
         LEFT JOIN file f on f.bind_id = p.id and f.type =1
