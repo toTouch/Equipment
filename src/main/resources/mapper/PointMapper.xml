@@ -138,19 +138,20 @@
     <select id="getDeliverCostAmount" resultType="java.math.BigDecimal">
         SELECT SUM(d.deliver_cost)
         FROM deliver d
-        <if test="query.city != null and query.city != ''">
-            and d.city =#{query.city}
-        </if>
-        <if test="query.customerId != null ">
-             and d.customer_id = #{query.customerId}
-        </if>
-        <if test="query.pointId != null ">
-             and d.point_id = #{query.pointId}
-        </if>
-        <if test="query.queryStartTime != null and query.queryEndTime !=null ">
-            and d.create_time BETWEEN #{query.queryStartTime} and #{query.queryEndTime}
-        </if>
-
+        <where>
+            <if test="query.city != null and query.city != ''">
+                and d.city =#{query.city}
+            </if>
+            <if test="query.customerId != null ">
+                and d.customer_id = #{query.customerId}
+            </if>
+            <if test="query.pointId != null ">
+                and d.point_id = #{query.pointId}
+            </if>
+            <if test="query.queryStartTime != null and query.queryEndTime !=null ">
+                and d.create_time BETWEEN #{query.queryStartTime} and #{query.queryEndTime}
+            </if>
+        </where>
     </select>
     <select id="getWorkOrderCostAmount" resultType="java.math.BigDecimal">
         SELECT
@@ -162,10 +163,10 @@
                 and p.city =#{query.city}
             </if>
             <if test="query.customerId != null ">
-                 and p.customer_id = #{query.customerId}
+                and p.customer_id = #{query.customerId}
             </if>
             <if test="query.pointId != null ">
-                 and p.point_id = #{query.pointId}
+                and p.point_id = #{query.pointId}
             </if>
             <if test="query.workOrderTypeId != null ">
                 and p.type = #{query.workOrderTypeId}
@@ -186,10 +187,10 @@
                 and p.city =#{query.city}
             </if>
             <if test="query.customerId != null ">
-                 and p.customer_id = #{query.customerId}
+                and p.customer_id = #{query.customerId}
             </if>
             <if test="query.pointId != null ">
-                 and p.id = #{query.pointId}
+                and p.id = #{query.pointId}
             </if>
         </where>
 
@@ -205,10 +206,10 @@
             and p.city =#{query.city}
         </if>
         <if test="query.customerId != null ">
-             and p.customer_id = #{query.customerId}
+            and p.customer_id = #{query.customerId}
         </if>
         <if test="query.pointId != null ">
-             and p.id = #{query.pointId}
+            and p.id = #{query.pointId}
         </if>
     </select>
     <select id="getPointList" resultMap="pageMap">
