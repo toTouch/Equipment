@@ -58,7 +58,6 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
     @Override
     public IPage getPage(Long offset, Long size, PointQuery point) {
         Page page = PageUtil.getPage(offset, size);
-        log.info("name:{}", point.getName());
         baseMapper.pointPage(page, point);
         if (ObjectUtil.isNotEmpty(page.getRecords())) {
             List<PointVo> pointVoList = page.getRecords();
@@ -176,10 +175,10 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
                     log.error("not found productSerialNumber by id:{}", entry.getKey());
                     throw new CustomBusinessException("未找到产品序列号!");
                 }
-                if (Objects.nonNull(productSerialNumber.getPointId())) {
-                    log.error("this productSerialNumber is binding other point productSerialNumberId:{}", entry.getKey());
-                    throw new CustomBusinessException("产品已被使用!");
-                }
+//                if (Objects.nonNull(productSerialNumber.getPointId())) {
+//                    log.error("this productSerialNumber is binding other point productSerialNumberId:{}", entry.getKey());
+//                    throw new CustomBusinessException("产品已被使用!");
+//                }
                 productSerialNumber.setPointId(point.getId());
                 productSerialNumber.setSetNo(entry.getValue());
                 productSerialNumberMapper.updateById(productSerialNumber);
