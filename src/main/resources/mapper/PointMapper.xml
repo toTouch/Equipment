@@ -158,15 +158,15 @@
         SUM(wo.fee-wo.third_company_pay)
         FROM work_order wo
         LEFT JOIN point as p on p.id = wo.point_id
-        <where>
+       where  wo.company_type =1
             <if test="query.city != null and query.city != ''">
                 and p.city =#{query.city}
             </if>
             <if test="query.customerId != null ">
-                and p.customer_id = #{query.customerId}
+                and wo.company_id = #{query.customerId}
             </if>
             <if test="query.pointId != null ">
-                and p.point_id = #{query.pointId}
+                and wo.point_id = #{query.pointId}
             </if>
             <if test="query.workOrderTypeId != null ">
                 and wo.type = #{query.workOrderTypeId}
@@ -174,7 +174,7 @@
             <if test="query.queryStartTime != null and query.queryEndTime !=null ">
                 and wo.create_time BETWEEN #{query.queryStartTime} and #{query.queryEndTime}
             </if>
-        </where>
+
     </select>
 
     <select id="getCabinetAmount" resultType="com.xiliulou.afterserver.web.vo.CabinetAndBoxAmountVo">
