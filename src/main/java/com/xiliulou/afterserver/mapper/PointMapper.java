@@ -33,4 +33,8 @@ public interface PointMapper extends BaseMapper<Point> {
 
 
     List<PointVo> getPointList(@Param("query") PointQuery pointQuery);
+
+    List<Long> getPointIdList(Page page, PointQuery point);
+
+    PointVo getPointBaseInfo(@Param("id") Long pointId);
 }

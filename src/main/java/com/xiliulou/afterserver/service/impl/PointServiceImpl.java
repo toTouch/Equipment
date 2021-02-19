@@ -58,20 +58,38 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
     @Override
     public IPage getPage(Long offset, Long size, PointQuery point) {
         Page page = PageUtil.getPage(offset, size);
-        baseMapper.pointPage(page, point);
-        if (ObjectUtil.isNotEmpty(page.getRecords())) {
-            List<PointVo> pointVoList = page.getRecords();
-            for (PointVo pointVo : pointVoList) {
+        baseMapper.getPointIdList(page, point);
+        List<Long> pointIdList = page.getRecords();
+        List<PointVo> pointVoList = new ArrayList<>();
+        if (ObjectUtil.isNotEmpty(pointIdList)) {
+            for (Long id : pointIdList) {
 
+                PointVo pointVo = baseMapper.getPointBaseInfo(id);
                 WorkOrderQuery workOrderQuery = new WorkOrderQuery();
                 workOrderQuery.setPointId(point.getId());
                 List<WorkOrderVo> workOrderVoList = workOrderService.getWorkOrderList(workOrderQuery);
                 if (ObjectUtil.isNotEmpty(workOrderVoList)) {
                     pointVo.setWorkOrderVoList(workOrderVoList);
                 }
+                pointVoList.add(pointVo);
+
             }
-            page.setRecords(pointVoList);
         }
+        page.setRecords(pointVoList);
+//        baseMapper.pointPage(page, point);
+//        if (ObjectUtil.isNotEmpty(page.getRecords())) {
+//            List<PointVo> pointVoList = page.getRecords();
+//            for (PointVo pointVo : pointVoList) {
+//
+//                WorkOrderQuery workOrderQuery = new WorkOrderQuery();
+//                workOrderQuery.setPointId(point.getId());
+//                List<WorkOrderVo> workOrderVoList = workOrderService.getWorkOrderList(workOrderQuery);
+//                if (ObjectUtil.isNotEmpty(workOrderVoList)) {
+//                    pointVo.setWorkOrderVoList(workOrderVoList);
+//                }
+//            }
+//            page.setRecords(pointVoList);
+//        }
         return page;
     }
 
