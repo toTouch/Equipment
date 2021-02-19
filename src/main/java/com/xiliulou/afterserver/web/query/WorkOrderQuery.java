@@ -20,4 +20,5 @@ public class WorkOrderQuery extends WorkOrder {
     private List<String> fileNameList;
     private Long offset;
     private Long size;
+    private Integer workOrderType;
 }

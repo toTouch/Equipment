@@ -58,6 +58,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
     @Override
     public IPage getPage(Long offset, Long size, WorkOrderQuery workOrder) {
+        if (Objects.nonNull(workOrder.getWorkOrderType())) {
+            workOrder.setType(workOrder.getWorkOrderType());
+        }
         Page page = PageUtil.getPage(offset, size);
         page = baseMapper.getPage(page, workOrder);
 
