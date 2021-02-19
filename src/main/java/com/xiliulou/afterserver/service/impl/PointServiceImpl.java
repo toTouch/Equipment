@@ -66,7 +66,7 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
 
                 PointVo pointVo = baseMapper.getPointBaseInfo(id);
                 WorkOrderQuery workOrderQuery = new WorkOrderQuery();
-                workOrderQuery.setPointId(point.getId());
+                workOrderQuery.setPointId(pointVo.getId());
                 List<WorkOrderVo> workOrderVoList = workOrderService.getWorkOrderList(workOrderQuery);
                 if (ObjectUtil.isNotEmpty(workOrderVoList)) {
                     pointVo.setWorkOrderVoList(workOrderVoList);
