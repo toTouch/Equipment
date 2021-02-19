@@ -276,7 +276,7 @@
 
     <select id="getPointIdList" resultType="java.lang.Long">
         SELECT p.id
-
+        from  point as p
         <if test="query.city != null and query.city != ''">
             and p.city =#{query.city}
         </if>
