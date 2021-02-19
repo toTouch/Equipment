@@ -169,7 +169,7 @@
                 and p.point_id = #{query.pointId}
             </if>
             <if test="query.workOrderTypeId != null ">
-                and p.type = #{query.workOrderTypeId}
+                and wo.type = #{query.workOrderTypeId}
             </if>
             <if test="query.queryStartTime != null and query.queryEndTime !=null ">
                 and wo.create_time BETWEEN #{query.queryStartTime} and #{query.queryEndTime}
