@@ -71,7 +71,7 @@ public class AfterServiceExceptionHandler {
      * @param exception
      * @return R
      */
-    @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
+    @ExceptionHandler({MaxUploadSizeExceededException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public R handleMaxUploadSizeExceededException(MaxUploadSizeExceededException exception) {
 
