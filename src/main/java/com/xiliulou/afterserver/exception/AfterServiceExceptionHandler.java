@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.util.List;
 
@@ -62,6 +63,20 @@ public class AfterServiceExceptionHandler {
         List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
         log.error("参数绑定异常,ex = {}", fieldErrors.get(0).getDefaultMessage());
         return R.failMsg(fieldErrors.get(0).getDefaultMessage());
+    }
+
+    /**
+     * validation Exception
+     *
+     * @param exception
+     * @return R
+     */
+    @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public R handleMaxUploadSizeExceededException(MaxUploadSizeExceededException exception) {
+
+        log.error("文件上传异常,ex = {}", "文件过大!");
+        return R.failMsg("上传文件大小不能超过5MB!");
     }
 
 }
