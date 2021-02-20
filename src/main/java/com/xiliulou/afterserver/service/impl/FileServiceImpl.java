@@ -38,7 +38,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     @Override
     public R uploadFile(MultipartFile file) {
         String fileName = IdUtil.simpleUUID() + StrUtil.DOT + FileUtil.extName(file.getOriginalFilename());
-        Map<String, String> resultMap = new HashMap<>(4);
+        Map<String, String> resultMap = new HashMap<>(2);
         resultMap.put("bucketName", FileConstant.BUCKET_NAME);
 
         resultMap.put("fileName", FileConstant.BUCKET_NAME + StrUtil.DASHED + fileName);
@@ -69,10 +69,4 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
         }
     }
 
-//    public static void main(String[] args) {
-//        String fileName = "after-service-2268b3eecafc4305b37b5b7f4a08765e.jpg";
-//        int separator = fileName.lastIndexOf(StrUtil.DASHED);
-//        String bucketName = fileName.substring(0, separator);
-//        System.out.println(bucketName);
-//    }
 }
