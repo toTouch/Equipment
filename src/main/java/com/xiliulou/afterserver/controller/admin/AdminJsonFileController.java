@@ -33,7 +33,7 @@ public class AdminJsonFileController {
     public R uploadFile(@RequestParam("file") MultipartFile file) {
         if (file.getSize() > FileConstant.FILE_MAX_SIZE) {
 
-            return R.failMsg("上传文件大小小于5M!");
+            return R.failMsg("上传文件不能大于5MB!");
         }
         return fileService.uploadFile(file);
     }
