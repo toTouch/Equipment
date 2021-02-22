@@ -23,7 +23,7 @@
 <mapper namespace="com.xiliulou.afterserver.mapper.SettleAccountsMapper">
 
     <resultMap id="pageMap" type="com.xiliulou.afterserver.web.vo.SettleAccountsVo">
-        <id property="id" column="p_id"/>
+        <id property="id" column="sa_id"/>
         <id property="customerId" column="customer_id"/>
         <id property="payRate" column="pay_rate"/>
         <id property="payAmount" column="pay_amount"/>
