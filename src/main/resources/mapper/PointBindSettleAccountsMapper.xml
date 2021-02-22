@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~
+  ~      Copyright (c) 2018-2025, lengleng All rights reserved.
+  ~
+  ~  Redistribution and use in source and binary forms, with or without
+  ~  modification, are permitted provided that the following conditions are met:
+  ~
+  ~ Redistributions of source code must retain the above copyright notice,
+  ~  this list of conditions and the following disclaimer.
+  ~  Redistributions in binary form must reproduce the above copyright
+  ~  notice, this list of conditions and the following disclaimer in the
+  ~  documentation and/or other materials provided with the distribution.
+  ~  Neither the name of the pig4cloud.com developer nor the names of its
+  ~  contributors may be used to endorse or promote products derived from
+  ~  this software without specific prior written permission.
+  ~  Author: lengleng (wangiegie@gmail.com)
+  ~
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiliulou.afterserver.mapper.PointBindSettleAccountsMapper">
+
+    <select id="getPointBindSettleAccountsList"
+            resultType="com.xiliulou.afterserver.web.vo.PointBindSettleAccountsVo">
+        SELECT
+            pbsa.id,
+            pbsa.point_id,
+            pbsa.settle_accounts_id,
+            pbsa.device_amount,
+            pbsa.server_amount,
+            pbsa.create_time,
+
+            p.name  as point_name
+        FROM
+            point_bind_settle_accounts AS pbsa
+                LEFT JOIN point AS p ON p.id = pbsa.point_id
+        WHERE
+            pbsa.settle_accounts_id = #{id}
+
+
+    </select>
+
+
+    <select id="getDeliverPage" resultType="com.xiliulou.afterserver.web.vo.DeliverVo">
+        SELECT
+        d.id,
+        d.customer_id,
+        d.city,
+        d.destination,
+        d.bills,
+        d.deliver_cost,
+        d.deliver_time,
+        d.create_time,
+        d.express_company,
+        d.express_no,
+        c.name as customer_name,
+        p.name as point_name
+        FROM
+        deliver AS d
+        LEFT JOIN customer AS c ON d.customer_id = c.id
+        LEFT JOIN point AS p ON p.id = d.point_id
+
+
+        <where>
+            <if test="query.city != null and query.city != ''">
+                and d.city = #{query.city}
+            </if>
+            <if test="query.customerId != null ">
+                and d.customer_id = #{query.customerId}
+            </if>
+            <if test="query.pointId != null ">
+                and d.point_id = #{query.pointId}
+            </if>
+            <if test="query.expressCompany != null and query.expressCompany != ''">
+                and d.express_company = #{query.expressCompany}
+            </if>
+            <if test="query.expressNo != null and query.expressNo != ''">
+                and d.express_no LIKE CONCAT('%',#{query.expressNo},'%')
+            </if>
+            <if test="query.deliverTimeStart != null and query.deliverTimeEnd != null ">
+                and d.deliver_time BETWEEN #{query.deliverTimeStart} and #{query.deliverTimeEnd}
+            </if>
+
+        </where>
+
+        ORDER BY d.create_time DESC
+    </select>
+</mapper>
