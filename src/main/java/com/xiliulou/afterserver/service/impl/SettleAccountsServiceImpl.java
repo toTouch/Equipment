@@ -91,21 +91,23 @@ public class SettleAccountsServiceImpl extends ServiceImpl<SettleAccountsMapper,
         BigDecimal bindPointAllAmount = BigDecimal.ZERO;
         for (PointBindSettleAccountsQuery pointBindSettleAccountsQuery : settleAccounts.getPointBindSettleAccountsQueryList()) {
 
-            Point point = pointService.getById(pointBindSettleAccountsQuery.getPointId());
-            if (Objects.isNull(point)) {
-                log.error("SAVE_POINT_BIND_SETTLE_ACCOUNTS_QUERY ERROR , NOT FOUND POINT BY ID:{}", pointBindSettleAccountsQuery.getPointId());
-                throw new CustomBusinessException("未找到点位!");
-            }
-            BigDecimal
-                    deviceAmount = Objects.isNull(pointBindSettleAccountsQuery.getDeviceAmount()) ? BigDecimal.ZERO : pointBindSettleAccountsQuery.getDeviceAmount();
-            BigDecimal serverAmount = Objects.isNull(pointBindSettleAccountsQuery.getServerAmount()) ? BigDecimal.ZERO : pointBindSettleAccountsQuery.getServerAmount();
-            bindPointAllAmount = bindPointAllAmount.add(deviceAmount).add(serverAmount);
+
             if (Objects.nonNull(pointBindSettleAccountsQuery.getId())) {
+
                 PointBindSettleAccounts pointBindSettleAccounts = pointBindSettleAccountsMapper.selectById(pointBindSettleAccountsQuery.getId());
                 if (Objects.isNull(pointBindSettleAccounts)) {
                     log.error("SAVE_POINT_BIND_SETTLE_ACCOUNTS_QUERY ERROR , NOT FOUND pointBindSettleAccounts BY ID:{}", pointBindSettleAccountsQuery.getId());
                     throw new CustomBusinessException("未找到绑定点位结算记录!");
                 }
+                Point point = pointService.getById(pointBindSettleAccounts.getPointId());
+                if (Objects.isNull(point)) {
+                    log.error("SAVE_POINT_BIND_SETTLE_ACCOUNTS_QUERY ERROR , NOT FOUND POINT BY ID:{}", pointBindSettleAccountsQuery.getPointId());
+                    throw new CustomBusinessException("未找到点位!");
+                }
+                BigDecimal
+                        deviceAmount = Objects.isNull(pointBindSettleAccountsQuery.getDeviceAmount()) ? BigDecimal.ZERO : pointBindSettleAccountsQuery.getDeviceAmount();
+                BigDecimal serverAmount = Objects.isNull(pointBindSettleAccountsQuery.getServerAmount()) ? BigDecimal.ZERO : pointBindSettleAccountsQuery.getServerAmount();
+                bindPointAllAmount = bindPointAllAmount.add(deviceAmount).add(serverAmount);
                 //修改
                 BigDecimal paiedAmount = Objects.isNull(point.getPaiedAmount()) ? BigDecimal.ZERO : point.getPaiedAmount();
 
@@ -113,7 +115,18 @@ public class SettleAccountsServiceImpl extends ServiceImpl<SettleAccountsMapper,
                 paiedAmount = paiedAmount.subtract(pointBindSettleAccounts.getServerAmount()).add(serverAmount);
                 point.setPaiedAmount(paiedAmount);
                 pointService.updateById(point);
+                PointBindSettleAccounts pointBindSettleAccountsUpdate = new PointBindSettleAccounts();
+
             } else {
+                Point point = pointService.getById(pointBindSettleAccountsQuery.getPointId());
+                if (Objects.isNull(point)) {
+                    log.error("SAVE_POINT_BIND_SETTLE_ACCOUNTS_QUERY ERROR , NOT FOUND POINT BY ID:{}", pointBindSettleAccountsQuery.getPointId());
+                    throw new CustomBusinessException("未找到点位!");
+                }
+                BigDecimal
+                        deviceAmount = Objects.isNull(pointBindSettleAccountsQuery.getDeviceAmount()) ? BigDecimal.ZERO : pointBindSettleAccountsQuery.getDeviceAmount();
+                BigDecimal serverAmount = Objects.isNull(pointBindSettleAccountsQuery.getServerAmount()) ? BigDecimal.ZERO : pointBindSettleAccountsQuery.getServerAmount();
+                bindPointAllAmount = bindPointAllAmount.add(deviceAmount).add(serverAmount);
                 PointBindSettleAccounts pointBindSettleAccounts = new PointBindSettleAccounts();
                 pointBindSettleAccounts.setSettleAccountsId(settleAccounts.getSettleAccountsId());
                 pointBindSettleAccounts.setPointId(pointBindSettleAccountsQuery.getPointId());
@@ -141,5 +154,86 @@ public class SettleAccountsServiceImpl extends ServiceImpl<SettleAccountsMapper,
         return R.ok();
     }
 
+    /**
+     * 保存绑定点位对账记录
+     *
+     * @param pointBindSettleAccounts
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public R savePointBindSettleAccounts(PointBindSettleAccounts pointBindSettleAccounts) {
+        Point point = pointService.getById(pointBindSettleAccounts.getPointId());
+        if (Objects.isNull(point)) {
+            log.error("SAVE_POINT_BIND_SETTLE_ACCOUNTS ERROR , NOT FOUND POINT BY ID:{}", pointBindSettleAccounts.getPointId());
+            throw new CustomBusinessException("未找到点位!");
+        }
+        SettleAccounts settleAccounts = baseMapper.selectById(pointBindSettleAccounts.getSettleAccountsId());
+        if (Objects.isNull(settleAccounts)) {
+            return R.failMsg("未找到结算记录!");
+        }
 
+
+        List<PointBindSettleAccounts> pointBindSettleAccountsList = pointBindSettleAccountsMapper.selectList(
+                Wrappers.<PointBindSettleAccounts>lambdaQuery()
+                        .eq(PointBindSettleAccounts::getSettleAccountsId, pointBindSettleAccounts.getSettleAccountsId()));
+        BigDecimal AllAmount = settleAccounts.getTotalAmount();
+        BigDecimal compareAmount = pointBindSettleAccounts.getDeviceAmount().
+                add(pointBindSettleAccounts.getServerAmount());
+        if (ObjectUtil.isNotEmpty(pointBindSettleAccountsList)) {
+            for (PointBindSettleAccounts ps : pointBindSettleAccountsList) {
+                compareAmount = compareAmount.add(ps.getDeviceAmount()).add(ps.getServerAmount());
+            }
+        }
+        if (compareAmount.compareTo(AllAmount) > 0) {
+            return R.failMsg("绑定点位总金额不能大于付款金额!");
+        }
+        pointBindSettleAccounts.setCreateTime(System.currentTimeMillis());
+        pointBindSettleAccountsMapper.insert(pointBindSettleAccounts);
+        if (Objects.nonNull(pointBindSettleAccounts.getDeviceAmount())) {
+
+            point.setPaiedAmount(point.getPaiedAmount().add(pointBindSettleAccounts.getDeviceAmount()));
+        }
+        if (Objects.nonNull(pointBindSettleAccounts.getServerAmount())) {
+            point.setServerAmount(point.getPaiedAmount().add(pointBindSettleAccounts.getServerAmount()));
+        }
+        pointService.updateById(point);
+        return R.ok();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public R deletePointBindSettleAccounts(Long id) {
+        PointBindSettleAccounts pointBindSettleAccounts = pointBindSettleAccountsMapper.selectById(id);
+        if (Objects.isNull(pointBindSettleAccounts)) {
+            return R.failMsg("未找到绑定点位记录!");
+        }
+
+        SettleAccounts settleAccounts = baseMapper.selectById(pointBindSettleAccounts.getSettleAccountsId());
+        if (Objects.isNull(settleAccounts)) {
+            return R.failMsg("未找到结算记录!");
+        }
+        Point point = pointService.getById(pointBindSettleAccounts.getPointId());
+        if (Objects.isNull(point)) {
+            log.error("SAVE_POINT_BIND_SETTLE_ACCOUNTS ERROR , NOT FOUND POINT BY ID:{}", pointBindSettleAccounts.getPointId());
+            throw new CustomBusinessException("未找到点位!");
+        }
+
+        if (Objects.nonNull(pointBindSettleAccounts.getDeviceAmount())) {
+
+            point.setPaiedAmount(point.getPaiedAmount().subtract(pointBindSettleAccounts.getDeviceAmount()));
+        }
+        if (Objects.nonNull(pointBindSettleAccounts.getServerAmount())) {
+            point.setServerAmount(point.getPaiedAmount().subtract(pointBindSettleAccounts.getServerAmount()));
+        }
+        pointService.updateById(point);
+        pointBindSettleAccountsMapper.deleteById(id);
+        return R.ok();
+    }
+
+    @Override
+    public R getPointBindSettleAccountsList(Long id) {
+
+        return R.ok(pointBindSettleAccountsMapper.getPointBindSettleAccountsList(id));
+    }
 }

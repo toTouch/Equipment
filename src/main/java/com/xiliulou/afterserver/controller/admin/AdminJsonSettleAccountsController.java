@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.controller.admin;
 
+import com.xiliulou.afterserver.entity.PointBindSettleAccounts;
 import com.xiliulou.afterserver.entity.Product;
 import com.xiliulou.afterserver.entity.SettleAccounts;
 import com.xiliulou.afterserver.service.ProductService;
@@ -37,10 +38,30 @@ public class AdminJsonSettleAccountsController {
         return R.ok(settleAccountsService.save(settleAccounts));
     }
 
+    @Deprecated
     @PostMapping("admin/settleAccounts/bindPoint")
     public R insert(@RequestBody SaveSettleAccountsQuery saveSettleAccountsQuery) {
 
         return R.ok(settleAccountsService.savePointBindSettleAccountsQuery(saveSettleAccountsQuery));
+    }
+
+
+    @PostMapping("admin/settleAccounts/bindPoint/v2")
+    public R savePointBindSettleAccounts(@RequestBody PointBindSettleAccounts pointBindSettleAccounts) {
+
+        return settleAccountsService.savePointBindSettleAccounts(pointBindSettleAccounts);
+    }
+
+    @DeleteMapping("admin/settleAccounts/bindPoint/{id}")
+    public R deletePointBindSettleAccounts(@PathVariable("id") Long id) {
+
+        return settleAccountsService.deletePointBindSettleAccounts(id);
+    }
+
+    @GetMapping("admin/settleAccounts/bindPoint/list/{id}")
+    public R getPointBindSettleAccountsList(@PathVariable("id") Long id) {
+
+        return settleAccountsService.getPointBindSettleAccountsList(id);
     }
 
     @PutMapping("admin/settleAccounts")
