@@ -13,15 +13,26 @@ import java.math.BigDecimal;
 @Data
 public class SettleAccounts {
     private Long id;
+    //客户id
     private Long customerId;
+    //总金额
     private BigDecimal totalAmount;
-    private BigDecimal payRate;
-    private BigDecimal payAmount;
-    private BigDecimal unPayAmount;
-    private BigDecimal billAmount;
-    private BigDecimal unBillAmount;
+
+
     private String remark;
     private Long payTime;
     private Long createTime;
+
+
+    //以下字段 暂时不做
+    //付款比例
+    private BigDecimal payRate;
+    //付款金额
+    private BigDecimal payAmount;
+    //未付款金额
+    private BigDecimal unPayAmount;
+    //
+    private BigDecimal billAmount;
+    private BigDecimal unBillAmount;
 
 }

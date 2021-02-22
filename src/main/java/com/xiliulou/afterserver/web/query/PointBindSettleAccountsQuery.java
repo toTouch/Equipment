@@ -12,7 +12,7 @@ import java.math.BigDecimal;
  **/
 @Data
 public class PointBindSettleAccountsQuery {
-
+    private Long id;
     private Long pointId;
     private BigDecimal deviceAmount;
     private BigDecimal serverAmount;
