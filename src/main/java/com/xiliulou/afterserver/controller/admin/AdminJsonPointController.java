@@ -35,7 +35,7 @@ public class AdminJsonPointController {
 
     @GetMapping("admin/point/list")
     public R list() {
-        return R.ok(pointService.list(Wrappers.<Point>lambdaQuery().orderByDesc(Point::getCreateTime)));
+        return R.ok(pointService.getlist());
     }
 
 
