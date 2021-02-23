@@ -16,4 +16,17 @@ public class WorkOrderType {
     private Long id;
     private String type;
     private String remark;
+
+
+    //安装
+    public static final Integer INSTALLATION = 1;
+    //派送
+    public static final Integer DELIVER = 2;
+    //接电
+    public static final Integer CONNECTION_ELECTRICITY = 3;
+    //移机
+    public static final Integer TRANSFER = 4;
+    //售后
+    public static final Integer AFTER_SALE = 5;
+
 }
