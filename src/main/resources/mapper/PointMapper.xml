@@ -158,29 +158,29 @@
         SUM(wo.fee-wo.third_company_pay)
         FROM work_order wo
         LEFT JOIN point as p on p.id = wo.point_id
-       where  wo.third_company_type =1
-            <if test="query.city != null and query.city != ''">
-                and p.city =#{query.city}
-            </if>
-            <if test="query.customerId != null ">
-                and wo.third_company_id = #{query.customerId}
-            </if>
-            <if test="query.pointId != null ">
-                and wo.point_id = #{query.pointId}
-            </if>
-            <if test="query.workOrderTypeId != null ">
-                and wo.type = #{query.workOrderTypeId}
-            </if>
-            <if test="query.queryStartTime != null and query.queryEndTime !=null ">
-                and wo.create_time BETWEEN #{query.queryStartTime} and #{query.queryEndTime}
-            </if>
+        where wo.third_company_type =1
+        <if test="query.city != null and query.city != ''">
+            and p.city =#{query.city}
+        </if>
+        <if test="query.customerId != null ">
+            and wo.third_company_id = #{query.customerId}
+        </if>
+        <if test="query.pointId != null ">
+            and wo.point_id = #{query.pointId}
+        </if>
+        <if test="query.workOrderTypeId != null ">
+            and wo.type = #{query.workOrderTypeId}
+        </if>
+        <if test="query.queryStartTime != null and query.queryEndTime !=null ">
+            and wo.create_time BETWEEN #{query.queryStartTime} and #{query.queryEndTime}
+        </if>
 
     </select>
 
     <select id="getCabinetAmount" resultType="com.xiliulou.afterserver.web.vo.CabinetAndBoxAmountVo">
         SELECT SUM(primary_cabinet_count + deputy_cabinet_count) as cabinet_amount,
         SUM(box_number) as box_amount
-        FROM point  as  p
+        FROM point as p
 
         <where>
             <if test="query.city != null and query.city != ''">
@@ -345,5 +345,37 @@
 
 
         ORDER BY p.create_time DESC
+    </select>
+
+    <select id="getAllPoint" resultMap="pageMap">
+        SELECT p.id                    as p_id,
+               p.name                  as p_name,
+               p.customer_id           as p_customer_id,
+               p.city                  as p_city,
+               p.primary_cabinet_no    as p_primarty_cabinet_no,
+               p.card_no               as p_card_no,
+               p.remark                as p_remark,
+               p.status                as p_status,
+               p.set_time              as p_set_time,
+               p.deliver_time          as p_deliver_time,
+               p.create_time           as p_create_time,
+               p.canopy_count          as p_canopy_count,
+               p.serial_number         as p_serial_number,
+               p.primary_cabinet_count as p_primary_cabinet_count,
+               p.primary_cabinet_no    as p_primary_cabinet_no,
+               p.deputy_cabinet_count  as p_deputy_cabinet_count,
+               p.device_amount         as p_device_amount,
+               p.paied_amount          as p_paied_amount,
+               p.server_amount         as p_server_amount,
+               p.box_number            as p_box_number,
+               p.province              as p_province,
+
+               psn.id                  as psn_id,
+               psn.serial_number       as psn_serial_number,
+               psn.set_no              as psn_set_no
+
+        FROM point p
+                 LEFT JOIN product_serial_number psn on psn.point_id = p.id
+
     </select>
 </mapper>

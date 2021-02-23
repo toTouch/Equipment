@@ -254,4 +254,9 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
         }
         throw new CustomBusinessException("导出报表失败！请联系客服！");
     }
+
+    @Override
+    public List<PointVo> getlist() {
+        return baseMapper.getAllPoint();
+    }
 }

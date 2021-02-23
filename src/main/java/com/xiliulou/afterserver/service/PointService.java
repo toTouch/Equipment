@@ -8,8 +8,10 @@ import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.IndexDataQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
 import com.xiliulou.afterserver.web.vo.IndexDataVo;
+import com.xiliulou.afterserver.web.vo.PointVo;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * @program: XILIULOU
@@ -29,4 +31,6 @@ public interface PointService extends IService<Point> {
     R reconciliationPage(Long offset, Long size, PointQuery point);
 
     void exportExcel(PointQuery pointQuery, HttpServletResponse response);
+
+    List<PointVo> getlist();
 }
