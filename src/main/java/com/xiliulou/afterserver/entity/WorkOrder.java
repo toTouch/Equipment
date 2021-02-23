@@ -37,9 +37,9 @@ public class WorkOrder {
     private String serverName;
     //从什么地方转移到什么地方
     //起点
-    private String transferSourcePointId;
+    private Long transferSourcePointId;
     //终点
-    private String transferDestinationPointId;
+    private Long transferDestinationPointId;
     //客户
     public static final Integer COMPANY_TYPE_CUSTOMER = 1;
     //供应商

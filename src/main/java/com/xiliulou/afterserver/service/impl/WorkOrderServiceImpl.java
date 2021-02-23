@@ -13,6 +13,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Maps;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
+import com.xiliulou.afterserver.mapper.ProductSerialNumberMapper;
 import com.xiliulou.afterserver.mapper.WorkOrderMapper;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.PageUtil;
@@ -55,6 +56,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     UserService userService;
     @Autowired
     FileService fileService;
+    @Autowired
+    ProductSerialNumberMapper productSerialNumberMapper;
 
     @Override
     public IPage getPage(Long offset, Long size, WorkOrderQuery workOrder) {
@@ -151,7 +154,21 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             log.error("SAVE_WORK_ORDER ERROR ,NOT FOUND USER BY ID ,ID:{}", workOrder.getCreaterId());
             return R.failMsg("用户不存在!");
         }
-
+        if (ObjectUtil.equal(WorkOrderType.TRANSFER, workOrder.getWorkOrderType()) && ObjectUtil.isNotEmpty(workOrder.getProductSerialNumberIdList())) {
+            //移机
+            //转移产品序列号
+            if (Objects.isNull(workOrder.getTransferSourcePointId()) || Objects.isNull(workOrder.getTransferDestinationPointId())) {
+                return R.failMsg("转移点位起点和终点不能为空!");
+            }
+            for (Long id : workOrder.getProductSerialNumberIdList()) {
+                ProductSerialNumber productSerialNumber = productSerialNumberMapper.selectById(id);
+                if (Objects.isNull(productSerialNumber)) {
+                    throw new CustomBusinessException("未找到产品id为" + id + "的产品!");
+                }
+                productSerialNumber.setPointId(workOrder.getTransferDestinationPointId());
+                productSerialNumberMapper.updateById(productSerialNumber);
+            }
+        }
         workOrder.setCreateTime(System.currentTimeMillis());
 
 

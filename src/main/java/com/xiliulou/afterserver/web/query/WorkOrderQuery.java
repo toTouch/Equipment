@@ -21,4 +21,5 @@ public class WorkOrderQuery extends WorkOrder {
     private Long offset;
     private Long size;
     private Integer workOrderType;
+    private List<Long> productSerialNumberIdList;
 }
