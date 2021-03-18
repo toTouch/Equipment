@@ -1,7 +1,5 @@
 package com.xiliulou.afterserver.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -19,6 +17,8 @@ public class Deliver {
 
     private Long id;
     private Long customerId;
+    private Long phone;//客户电话
+    private String quantity;//数量
     private String city;
     private String province;
     private String destination;//终点
@@ -29,4 +29,8 @@ public class Deliver {
     private String expressCompany;
     private String expressNo;
     private Long pointId;
+    private String type;//产品型号
+    private String status;//物流状态
+
+
 }

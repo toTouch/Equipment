@@ -1,9 +1,7 @@
 package com.xiliulou.afterserver.controller.admin;
 
 import com.xiliulou.afterserver.entity.PointBindSettleAccounts;
-import com.xiliulou.afterserver.entity.Product;
 import com.xiliulou.afterserver.entity.SettleAccounts;
-import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.service.SettleAccountsService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.SaveSettleAccountsQuery;
@@ -11,6 +9,8 @@ import com.xiliulou.afterserver.web.query.SettleAccountsQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @program: XILIULOU
@@ -74,5 +74,8 @@ public class AdminJsonSettleAccountsController {
         return R.ok();
     }
 
-
+    @GetMapping("admin/settleAccounts/exportExcel")
+    public void exportExcel(SettleAccounts settleAccounts, HttpServletResponse response) {
+        settleAccountsService.exportExcel(settleAccounts, response);
+    }
 }

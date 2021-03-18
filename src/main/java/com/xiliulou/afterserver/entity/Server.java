@@ -19,6 +19,7 @@ public class Server {
     private String phone;
     private String area;
     private Long createTime;
-
+    private String remark;
+    private String scope;
 
 }

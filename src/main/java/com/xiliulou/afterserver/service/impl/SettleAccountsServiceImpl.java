@@ -1,7 +1,8 @@
 package com.xiliulou.afterserver.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
-import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -25,7 +26,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -235,5 +241,34 @@ public class SettleAccountsServiceImpl extends ServiceImpl<SettleAccountsMapper,
     public R getPointBindSettleAccountsList(Long id) {
 
         return R.ok(pointBindSettleAccountsMapper.getPointBindSettleAccountsList(id));
+    }
+
+    //导出excel
+    @Override
+    public void exportExcel(SettleAccounts settleAccounts, HttpServletResponse response) {
+        List<SettleAccounts> settleAccountsList = list();
+        if (ObjectUtil.isEmpty(settleAccountsList)) {
+            throw new CustomBusinessException("没有查询到产品型号!无法导出！");
+        }
+        List<SettleAccountsVo> settleAccountsVos = new ArrayList<>(settleAccountsList.size());
+        for (SettleAccounts s : settleAccountsList) {
+            SettleAccountsVo settleAccountsVo = new SettleAccountsVo();
+            BeanUtil.copyProperties(s, settleAccountsVo);
+            settleAccountsVos.add(settleAccountsVo);
+        }
+
+        String fileName = "产品型号.xlsx";
+        try {
+            ServletOutputStream outputStream = response.getOutputStream();
+            // 告诉浏览器用什么软件可以打开此文件
+            response.setHeader("content-Type", "application/vnd.ms-excel");
+            // 下载文件的默认名称
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
+            EasyExcel.write(outputStream, SettleAccountsVo.class).sheet("sheet").doWrite(settleAccountsVos);
+            return;
+        } catch (IOException e) {
+            log.error("导出报表失败！", e);
+        }
+        throw new CustomBusinessException("导出报表失败！请联系客服！");
     }
 }
