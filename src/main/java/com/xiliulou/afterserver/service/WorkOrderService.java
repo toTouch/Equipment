@@ -2,9 +2,9 @@ package com.xiliulou.afterserver.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.xiliulou.afterserver.entity.Product;
 import com.xiliulou.afterserver.entity.WorkOrder;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
 import com.xiliulou.afterserver.web.query.SaveWorkOrderQuery;
 import com.xiliulou.afterserver.web.query.WorkOrderQuery;
 import com.xiliulou.afterserver.web.vo.WorkOrderVo;
@@ -31,4 +31,10 @@ public interface WorkOrderService extends IService<WorkOrder> {
     void reconciliationExportExcel(WorkOrderQuery workOrder, HttpServletResponse response);
 
      List<WorkOrderVo> getWorkOrderList(WorkOrderQuery workOrder);
+
+    List<WorkOrder> staffFuzzy(String accessToken);
+
+    R insertSerialNumber(ProductSerialNumberQuery productSerialNumberQuery);
+
+    IPage getSerialNumberPage(Long offset, Long size, ProductSerialNumberQuery productSerialNumber);
 }

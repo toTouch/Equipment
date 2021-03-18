@@ -1,12 +1,9 @@
 package com.xiliulou.afterserver.controller.admin;
 
-import com.xiliulou.afterserver.entity.Product;
 import com.xiliulou.afterserver.entity.WorkOrder;
-import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.service.WorkOrderService;
-import com.xiliulou.afterserver.service.WorkOrderTypeService;
 import com.xiliulou.afterserver.util.R;
-import com.xiliulou.afterserver.web.query.SaveWorkOrderQuery;
+import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
 import com.xiliulou.afterserver.web.query.WorkOrderQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * @program: XILIULOU
@@ -81,5 +79,21 @@ public class AdminJsonWorkOrderController {
         workOrderService.reconciliationExportExcel(workOrder, response);
     }
 
+    @GetMapping("admin/workOrder/staffFuzzy")
+    public R staffFuzzy(@RequestParam("accessToken") String accessToken ){
+       List<WorkOrder> workOrders = workOrderService.staffFuzzy(accessToken);
+       return R.ok(workOrders);
+    }
 
+    @PostMapping("admin/workOrder/serialNumber")
+    public R insertSerialNumber(@RequestBody ProductSerialNumberQuery productSerialNumberQuery) {
+
+        return workOrderService.insertSerialNumber(productSerialNumberQuery);
+    }
+
+    @GetMapping("admin/workOrder/serialNumber/page")
+    public R getSerialNumberPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size,
+                                 ProductSerialNumberQuery productSerialNumber) {
+        return R.ok(workOrderService.getSerialNumberPage(offset, size, productSerialNumber));
+    }
 }
