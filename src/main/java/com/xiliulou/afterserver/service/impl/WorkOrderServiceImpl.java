@@ -7,10 +7,10 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.metadata.WriteSheet;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.google.common.collect.Maps;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.ProductSerialNumberMapper;
@@ -18,14 +18,12 @@ import com.xiliulou.afterserver.mapper.WorkOrderMapper;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
 import com.xiliulou.afterserver.web.query.SaveWorkOrderQuery;
 import com.xiliulou.afterserver.web.query.WorkOrderQuery;
-import com.xiliulou.afterserver.web.vo.ProductExcelVo;
-import com.xiliulou.afterserver.web.vo.ReconciliationSummaryVo;
 import com.xiliulou.afterserver.web.vo.WorkOrderExcelVo;
 import com.xiliulou.afterserver.web.vo.WorkOrderVo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Case;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,8 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.ObjectStreamClass;
 import java.net.URLEncoder;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -201,6 +199,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         return baseMapper.orderList(workOrder);
     }
 
+    @Override
+    public List<WorkOrder> staffFuzzy(String accessToken) {
+       return this.baseMapper.selectList(new QueryWrapper<WorkOrder>().like("info",accessToken));
+    }
+
 
     @Override
     public void reconciliationExportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
@@ -250,6 +253,37 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         } finally {
             excelWriter.finish();
         }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public R insertSerialNumber(ProductSerialNumberQuery productSerialNumberQuery) {
+
+        WorkOrder workOrder = getById(productSerialNumberQuery.getProductId());
+        if (Objects.isNull(workOrder)) {
+            return R.failMsg("未找到产品型号!");
+        }
+        if (productSerialNumberQuery.getRightInterval() < productSerialNumberQuery.getLeftInterval()
+                && productSerialNumberQuery.getRightInterval() <= 9999 && productSerialNumberQuery.getLeftInterval() >= 0) {
+            return R.failMsg("请设置合适的编号区间!");
+        }
+        DecimalFormat decimalFormat = new DecimalFormat("0000");
+
+
+        for (Long i = productSerialNumberQuery.getLeftInterval(); i <= productSerialNumberQuery.getRightInterval(); i++) {
+
+            ProductSerialNumber productSerialNumber = new ProductSerialNumber();
+            productSerialNumber.setSerialNumber(productSerialNumberQuery.getPrefix() + "_" + decimalFormat.format(i));
+            productSerialNumber.setProductId(productSerialNumberQuery.getProductId());
+            productSerialNumber.setCreateTime(System.currentTimeMillis());
+            productSerialNumberMapper.insert(productSerialNumber);
+        }
+        return R.ok();
+    }
+
+    @Override
+    public IPage getSerialNumberPage(Long offset, Long size, ProductSerialNumberQuery productSerialNumber) {
+        return productSerialNumberMapper.getSerialNumberPage(PageUtil.getPage(offset, size), productSerialNumber);
     }
 
     //    /**

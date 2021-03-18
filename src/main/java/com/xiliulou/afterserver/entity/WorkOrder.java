@@ -35,6 +35,7 @@ public class WorkOrder {
     private String thirdCompanyName;
     private String serverName;
     private String product;
+    private String code;
     //从什么地方转移到什么地方
     //起点
     private Long transferSourcePointId;
@@ -51,6 +52,7 @@ public class WorkOrder {
     public static final Integer STATUS_PROCESSING = 2;
     //已完成
     public static final Integer STATUS_FINISHED = 3;
+
 
 
 }

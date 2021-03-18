@@ -1,7 +1,6 @@
 package com.xiliulou.afterserver.web.vo;
 
 import com.xiliulou.afterserver.entity.File;
-import com.xiliulou.afterserver.entity.WorkOrder;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -48,4 +47,8 @@ public class WorkOrderVo {
     private String transferSourcePointName;
     //终点
     private String transferDestinationPointName;
+    //产品类型
+    private String product;
+    //产品编码
+    private String code;
 }
