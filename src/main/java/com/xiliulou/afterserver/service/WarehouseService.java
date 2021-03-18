@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.WareHouse;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 
 public interface WarehouseService extends IService<WareHouse> {
@@ -12,4 +14,5 @@ public interface WarehouseService extends IService<WareHouse> {
     IPage getPage(Long offset, Long size, WareHouse warehouse);
 
 
+    IPage getPageForList(Map<String, Object> map);
 }

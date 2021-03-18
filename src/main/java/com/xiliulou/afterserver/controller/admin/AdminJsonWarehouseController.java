@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 
-
 @RestController
 @Slf4j
 public class AdminJsonWarehouseController extends BaseController {
@@ -19,7 +18,8 @@ public class AdminJsonWarehouseController extends BaseController {
     WarehouseService warehouseService;
 
     @GetMapping("admin/warehouse/page")
-    public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, WareHouse wareHouse) {
+    public R getPage(@RequestParam("offset") Long offset,@RequestParam("size") Long size,WareHouse wareHouse) {
+//        warehouseService.getPageForList(map);
         return R.ok(warehouseService.getPage(offset, size, wareHouse));
     }
 

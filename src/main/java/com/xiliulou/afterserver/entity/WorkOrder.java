@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.PriorityQueue;
 
 /**
  * @program: XILIULOU
@@ -35,6 +34,7 @@ public class WorkOrder {
     private Long createTime;
     private String thirdCompanyName;
     private String serverName;
+    private String product;
     //从什么地方转移到什么地方
     //起点
     private Long transferSourcePointId;

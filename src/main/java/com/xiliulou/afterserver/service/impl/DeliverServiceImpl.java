@@ -1,16 +1,27 @@
 package com.xiliulou.afterserver.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.Deliver;
+import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.DeliverMapper;
 import com.xiliulou.afterserver.service.DeliverService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.web.query.DeliverQuery;
+import com.xiliulou.afterserver.web.vo.DeliverExcelVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @program: XILIULOU
@@ -29,5 +40,34 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         Page page = PageUtil.getPage(offset, size);
 
         return baseMapper.getDeliverPage(page, deliver);
+    }
+
+    //导出excel
+    @Override
+    public void exportExcel(Deliver deliver, HttpServletResponse response) {
+        List<Deliver> deliverList = list();
+        if (ObjectUtil.isEmpty(deliverList)) {
+            throw new CustomBusinessException("没有查询到产品型号!无法导出！");
+        }
+        List<DeliverExcelVo> deliverExcelVos = new ArrayList<>(deliverList.size());
+        for (Deliver d : deliverList) {
+            DeliverExcelVo deliverExcelVo = new DeliverExcelVo();
+            BeanUtil.copyProperties(d, deliverExcelVo);
+            deliverExcelVos.add(deliverExcelVo);
+        }
+
+        String fileName = "产品型号.xlsx";
+        try {
+            ServletOutputStream outputStream = response.getOutputStream();
+            // 告诉浏览器用什么软件可以打开此文件
+            response.setHeader("content-Type", "application/vnd.ms-excel");
+            // 下载文件的默认名称
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
+            EasyExcel.write(outputStream, DeliverExcelVo.class).sheet("sheet").doWrite(deliverExcelVos);
+            return;
+        } catch (IOException e) {
+            log.error("导出报表失败！", e);
+        }
+        throw new CustomBusinessException("导出报表失败！请联系客服！");
     }
 }

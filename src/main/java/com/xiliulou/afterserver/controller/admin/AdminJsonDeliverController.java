@@ -1,14 +1,14 @@
 package com.xiliulou.afterserver.controller.admin;
 
 import com.xiliulou.afterserver.entity.Deliver;
-import com.xiliulou.afterserver.entity.Product;
 import com.xiliulou.afterserver.service.DeliverService;
-import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.DeliverQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @program: XILIULOU
@@ -47,4 +47,8 @@ public class AdminJsonDeliverController {
         return R.ok(deliverService.removeById(id));
     }
 
+    @GetMapping("admin/deliver/exportExcel")
+    public void exportExcel(Deliver deliver, HttpServletResponse response) {
+        deliverService.exportExcel(deliver, response);
+    }
 }

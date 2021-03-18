@@ -1,7 +1,5 @@
 package com.xiliulou.afterserver.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -23,6 +21,8 @@ public class Product {
     private Integer boxNumber;
     private Long createTime;
     private String info;
-
+    private String state;//价格
     private BigDecimal price;//价格
+
+
 }

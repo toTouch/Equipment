@@ -8,6 +8,8 @@ import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.SaveSettleAccountsQuery;
 import com.xiliulou.afterserver.web.query.SettleAccountsQuery;
 
+import javax.servlet.http.HttpServletResponse;
+
 public interface SettleAccountsService extends IService<SettleAccounts> {
     Page getPage(Long offset, Long size, SettleAccountsQuery settleAccounts);
 
@@ -18,4 +20,6 @@ public interface SettleAccountsService extends IService<SettleAccounts> {
     R deletePointBindSettleAccounts(Long id);
 
     R getPointBindSettleAccountsList(Long id);
+
+    void exportExcel(SettleAccounts settleAccounts, HttpServletResponse response);
 }
