@@ -6,14 +6,13 @@ import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.sun.xml.bind.v2.model.core.ID;
-import com.xiliulou.afterserver.entity.*;
-import com.xiliulou.afterserver.exception.CusTomBusinessAccessDeniedException;
+import com.xiliulou.afterserver.entity.File;
+import com.xiliulou.afterserver.entity.Point;
+import com.xiliulou.afterserver.entity.ProductSerialNumber;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.PointBindProductMapper;
 import com.xiliulou.afterserver.mapper.PointMapper;
 import com.xiliulou.afterserver.mapper.ProductSerialNumberMapper;
-import com.xiliulou.afterserver.service.FileService;
 import com.xiliulou.afterserver.service.PointService;
 import com.xiliulou.afterserver.service.WorkOrderService;
 import com.xiliulou.afterserver.util.PageUtil;
@@ -33,8 +32,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
-import java.nio.channels.FileLock;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @program: XILIULOU
@@ -64,10 +65,12 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
         log.info("pointIdList:{}", pointIdList);
         if (ObjectUtil.isNotEmpty(pointIdList)) {
             for (Long id : pointIdList) {
-
                 PointVo pointVo = baseMapper.getPointBaseInfo(id);
                 WorkOrderQuery workOrderQuery = new WorkOrderQuery();
                 workOrderQuery.setPointId(pointVo.getId());
+
+
+
                 List<WorkOrderVo> workOrderVoList = workOrderService.getWorkOrderList(workOrderQuery);
                 if (ObjectUtil.isNotEmpty(workOrderVoList)) {
                     pointVo.setWorkOrderVoList(workOrderVoList);
