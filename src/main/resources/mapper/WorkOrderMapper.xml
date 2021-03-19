@@ -114,9 +114,9 @@
             <if test="query.thirdCompanyId != null">
                 and wo.third_company_id = #{query.thirdCompanyId}
             </if>
-            <if test="query.thirdCompanyType != null">
+            <!--<if test="query.thirdCompanyType != null">
                 and wo.third_company_type = #{query.thirdCompanyType}
-            </if>
+            </if>-->
             <if test="query.createTimeStart != null and query.createTimeEnd != null">
                 and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
             </if>
@@ -174,9 +174,9 @@
             <if test="query.thirdCompanyId != null">
                 and wo.third_company_id = #{query.thirdCompanyId}
             </if>
-            <if test="query.thirdCompanyType != null">
+            <!--<if test="query.thirdCompanyType != null">
                 and wo.third_company_type = #{query.thirdCompanyType}
-            </if>
+            </if>-->
             <if test="query.createTimeStart != null and query.createTimeEnd != null">
                 and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
             </if>
