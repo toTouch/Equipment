@@ -42,7 +42,7 @@ public class AdminJsonProductController {
 
     @DeleteMapping("admin/product")
     public R delete(@RequestParam("id") Long id) {
-        return R.ok();
+        return R.ok(productService.removeById(id));
     }
 
     @GetMapping("admin/product/exportExcel")

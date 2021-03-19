@@ -378,4 +378,6 @@
                  LEFT JOIN product_serial_number psn on psn.point_id = p.id
 
     </select>
+
+
 </mapper>

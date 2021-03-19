@@ -96,4 +96,9 @@ public class AdminJsonWorkOrderController {
                                  ProductSerialNumberQuery productSerialNumber) {
         return R.ok(workOrderService.getSerialNumberPage(offset, size, productSerialNumber));
     }
+
+    @PostMapping("admin/workOrder/bindSerialNumber")
+    public R pointBindSerialNumber(@RequestBody WorkOrderQuery workOrderQuery) {
+        return workOrderService.pointBindSerialNumber(workOrderQuery);
+    }
 }

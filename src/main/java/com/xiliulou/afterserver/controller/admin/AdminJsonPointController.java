@@ -1,10 +1,7 @@
 package com.xiliulou.afterserver.controller.admin;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xiliulou.afterserver.entity.Point;
-import com.xiliulou.afterserver.entity.Product;
 import com.xiliulou.afterserver.service.PointService;
-import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.IndexDataQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
@@ -41,8 +38,6 @@ public class AdminJsonPointController {
 
     @PostMapping("admin/point")
     public R insert(@RequestBody PointQuery pointQuery) {
-        pointQuery.setCreateTime(System.currentTimeMillis());
-
         return pointService.savePoint(pointQuery);
     }
 

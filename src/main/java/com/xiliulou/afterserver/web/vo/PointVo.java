@@ -20,4 +20,6 @@ public class PointVo extends Point {
     private List<ProductSerialNumberVo> productSerialNumberVoList;
     private List<PointBindSettleAccounts> pointBindSettleAccountsList;
     private List<WorkOrderVo> workOrderVoList;
+    private Integer status;//状态
+    private String serialNumber;//序列号
 }

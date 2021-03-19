@@ -13,11 +13,11 @@ public class DeliverExcelVo {
     private Long phone;//客户电话
     @ExcelProperty("数量")
     private String quantity;//数量
-    @ExcelProperty("城市")
-    private String city;
-    @ExcelProperty("省")
+//    @ExcelProperty("城市")
+//    private String city;
+    @ExcelProperty("起点")
     private String province;
-    @ExcelProperty("目的地")
+    @ExcelProperty("终点")
     private String destination;//终点
     @ExcelProperty("账单")
     private String bills;
@@ -25,8 +25,8 @@ public class DeliverExcelVo {
     private BigDecimal deliverCost;
     @ExcelProperty("配送时间")
     private Long deliverTime;
-    @ExcelProperty("创建时间")
-    private Long createTime;
+//    @ExcelProperty("创建时间")
+//    private Long createTime;
     @ExcelProperty("快递公司")
     private String expressCompany;
     @ExcelProperty("快递单号")
@@ -35,6 +35,6 @@ public class DeliverExcelVo {
     private Long pointId;
     @ExcelProperty("产品类型")
     private String type;//产品型号
-    @ExcelProperty("物流状态")
-    private String status;//物流状态
+//    @ExcelProperty("物流状态")
+//    private String status;//物流状态
 }
