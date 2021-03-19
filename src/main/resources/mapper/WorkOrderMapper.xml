@@ -65,8 +65,8 @@
         wo.point_id as wo_point_id,
         wo.info as wo_info,
         wo.fee as wo_fee,
-        wo.third_company_type as wo_third_company_type,
-        wo.third_company_id as wo_third_company_id,
+        /*wo.third_company_type as wo_third_company_type,
+        wo.third_company_id as wo_third_company_id,*/
         wo.third_company_pay as wo_third_company_pay,
         wo.work_order_reason_id as wo_work_order_reason_id,
         wo.processor as wo_processor,
