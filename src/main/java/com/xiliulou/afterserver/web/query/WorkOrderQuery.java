@@ -1,10 +1,10 @@
 package com.xiliulou.afterserver.web.query;
 
-import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.entity.WorkOrder;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @program: XILIULOU
@@ -22,4 +22,7 @@ public class WorkOrderQuery extends WorkOrder {
     private Long size;
     private Integer workOrderType;
     private List<Long> productSerialNumberIdList;
+    private Map<Long, Integer> productSerialNumberIdAndSetNoMap;
+    private Integer status;
+    private String code;
 }

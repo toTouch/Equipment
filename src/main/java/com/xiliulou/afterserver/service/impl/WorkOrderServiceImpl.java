@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -284,6 +285,35 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     public IPage getSerialNumberPage(Long offset, Long size, ProductSerialNumberQuery productSerialNumber) {
         return productSerialNumberMapper.getSerialNumberPage(PageUtil.getPage(offset, size), productSerialNumber);
+    }
+
+    //绑定产品列表
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public R pointBindSerialNumber(WorkOrderQuery workOrderQuery) {
+        WorkOrder workOrder = getById(workOrderQuery.getId());
+        if (Objects.isNull(workOrder)) {
+            return R.failMsg("未找到点位信息!");
+        }
+        if (ObjectUtil.isNotEmpty(workOrderQuery.getProductSerialNumberIdAndSetNoMap())) {
+            BigDecimal totalAmount = Objects.isNull(workOrder.getFee()) ? BigDecimal.ZERO : workOrder.getFee();
+            for (Map.Entry<Long, Integer> entry : workOrderQuery.getProductSerialNumberIdAndSetNoMap().entrySet()) {
+                ProductSerialNumber productSerialNumber = productSerialNumberMapper.selectById(entry.getKey());
+                if (Objects.isNull(productSerialNumber)) {
+                    log.error("not found productSerialNumber by id:{}", entry.getKey());
+                    throw new CustomBusinessException("未找到产品序列号!");
+                }
+                productSerialNumber.setPointId(workOrder.getId());
+                productSerialNumber.setSetNo(entry.getValue());
+                productSerialNumberMapper.updateById(productSerialNumber);
+                totalAmount = totalAmount.add(productSerialNumber.getPrice());
+            }
+            WorkOrder workOrderUpdate = new WorkOrder();
+            workOrderUpdate.setId(workOrderUpdate.getId());
+            workOrder.setFee(totalAmount);
+            baseMapper.updateById(workOrderUpdate);
+        }
+        return R.ok();
     }
 
     //    /**

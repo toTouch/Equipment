@@ -37,4 +37,6 @@ public interface WorkOrderService extends IService<WorkOrder> {
     R insertSerialNumber(ProductSerialNumberQuery productSerialNumberQuery);
 
     IPage getSerialNumberPage(Long offset, Long size, ProductSerialNumberQuery productSerialNumber);
+
+    R pointBindSerialNumber(WorkOrderQuery workOrderQuery);
 }

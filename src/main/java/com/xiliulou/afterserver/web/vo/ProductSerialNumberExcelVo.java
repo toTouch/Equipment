@@ -17,8 +17,11 @@ public class ProductSerialNumberExcelVo {
     private String serialNumber;
     @ExcelProperty("产品型号")
     private String productName;
-    @ExcelProperty("创建时间")
-    private String createTimeStr;
+    @ExcelProperty("数量")
+    private Integer boxNumber;
     @ExcelProperty("价格")
     private BigDecimal price;
+    @ExcelProperty("创建时间")
+    private String createTimeStr;
+
 }
