@@ -25,4 +25,5 @@ public class WorkOrderQuery extends WorkOrder {
     private Map<Long, Integer> productSerialNumberIdAndSetNoMap;
     private Integer status;
     private String code;
+    private Integer thirdCompanyType;
 }
