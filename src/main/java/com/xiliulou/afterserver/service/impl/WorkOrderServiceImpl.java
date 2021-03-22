@@ -317,6 +317,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         return R.ok();
     }
 
+    @Override
+    public Integer getByDateQuery(Map<String, Object> params) {
+        String years = (String) params.get("years");
+        String mouths = (String) params.get("mouths");
+        Integer count = this.baseMapper.getByDateQuery(years,mouths);
+        return count;
+    }
+
     //    /**
 //     * 预览
 //     *

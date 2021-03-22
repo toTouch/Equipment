@@ -267,4 +267,13 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
     public List<PointVo> getlist() {
         return baseMapper.getAllPoint();
     }
+
+    @Override
+    public Integer getByStatCount(Map<String, Object> params) {
+        String years = (String) params.get("years");
+        String mouths = (String) params.get("mouths");
+        String city = (String) params.get("city");
+        Integer count = this.baseMapper.getByStatCount(years,mouths,city);
+        return count;
+    }
 }

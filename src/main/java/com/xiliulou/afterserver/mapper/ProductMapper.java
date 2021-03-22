@@ -10,4 +10,7 @@ import com.xiliulou.afterserver.entity.Product;
  * @create: 2021-01-28 18:58
  **/
 public interface ProductMapper extends BaseMapper<Product> {
+    default Integer getByDateQuery(String years, String mouths) {
+        return null;
+    }
 }

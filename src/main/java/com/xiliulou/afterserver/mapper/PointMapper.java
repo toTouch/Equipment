@@ -37,4 +37,7 @@ public interface PointMapper extends BaseMapper<Point> {
     PointVo getPointBaseInfo(@Param("id") Long pointId);
 
     List<PointVo> getAllPoint();
+
+    Integer getByStatCount(String years, String mouths, String city);
+
 }
