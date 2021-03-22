@@ -18,7 +18,6 @@ public class Deliver {
     private Long id;
     private Long customerId;
     private Long phone;//客户电话
-    private String quantity;//数量
     private String city;
     private String province;
     private String destination;//终点
@@ -29,8 +28,7 @@ public class Deliver {
     private String expressCompany;
     private String expressNo;
     private Long pointId;
-    private String type;//产品型号
-    private String status;//物流状态
-
-
+    private Integer state;//物流状态
+    private String product;//型号
+    private String quantity;//数量
 }
