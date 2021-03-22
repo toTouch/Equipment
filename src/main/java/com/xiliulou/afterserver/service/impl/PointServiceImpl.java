@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -222,15 +223,19 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
     }
 
     /**
+     * 导出excel
      * @param pointQuery
      * @param response
      */
     @Override
     public void exportExcel(PointQuery pointQuery, HttpServletResponse response) {
         List<PointVo> pointVoList = baseMapper.getPointList(pointQuery);
+
         if (ObjectUtil.isEmpty(pointVoList)) {
             throw new CustomBusinessException("未找到点位信息!");
         }
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<PointExcelVo> pointExcelVoArrayList = new ArrayList<>(pointVoList.size());
         for (PointVo o : pointVoList) {
             PointExcelVo pointExcelVo = new PointExcelVo();
@@ -243,7 +248,7 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
             pointExcelVoArrayList.add(pointExcelVo);
         }
 
-        String fileName = "采购.xlsx";
+        String fileName = "点位.xlsx";
         try {
             ServletOutputStream outputStream = response.getOutputStream();
             // 告诉浏览器用什么软件可以打开此文件
