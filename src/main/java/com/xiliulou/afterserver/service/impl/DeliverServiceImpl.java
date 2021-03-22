@@ -20,7 +20,9 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -46,28 +48,52 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     @Override
     public void exportExcel(Deliver deliver, HttpServletResponse response) {
         List<Deliver> deliverList = list();
+
         if (ObjectUtil.isEmpty(deliverList)) {
             throw new CustomBusinessException("没有查询到产品型号!无法导出！");
         }
-        List<DeliverExcelVo> deliverExcelVos = new ArrayList<>(deliverList.size());
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        List<DeliverExcelVo> deliverExcelVoList = new ArrayList<>(deliverList.size());
         for (Deliver d : deliverList) {
             DeliverExcelVo deliverExcelVo = new DeliverExcelVo();
             BeanUtil.copyProperties(d, deliverExcelVo);
-            deliverExcelVos.add(deliverExcelVo);
+            deliverExcelVo.setExpressNo(getExpressNo(d.getState()));
+            deliverExcelVo.setCreateTime(simpleDateFormat.format(new Date(d.getCreateTime())));
+            if (ObjectUtil.isNotEmpty(d.getDeliverTime())) {
+                deliverExcelVo.setDeliverTime(simpleDateFormat.format(new Date(d.getDeliverTime())));
+            }
+            deliverExcelVoList.add(deliverExcelVo);
         }
 
-        String fileName = "产品型号.xlsx";
+        String fileName = "发货管理.xlsx";
         try {
             ServletOutputStream outputStream = response.getOutputStream();
             // 告诉浏览器用什么软件可以打开此文件
             response.setHeader("content-Type", "application/vnd.ms-excel");
             // 下载文件的默认名称
             response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
-            EasyExcel.write(outputStream, DeliverExcelVo.class).sheet("sheet").doWrite(deliverExcelVos);
+            EasyExcel.write(outputStream, DeliverExcelVo.class).sheet("sheet").doWrite(deliverExcelVoList);
             return;
         } catch (IOException e) {
             log.error("导出报表失败！", e);
         }
         throw new CustomBusinessException("导出报表失败！请联系客服！");
+    }
+
+    private String getExpressNo(Integer status) {
+        String statusStr = "";
+        switch (status) {
+            case 1:
+                statusStr = "待处理";
+                break;
+            case 2:
+                statusStr = "处理中";
+                break;
+            case 3:
+                statusStr = "已完成";
+                break;
+        }
+        return statusStr;
     }
 }

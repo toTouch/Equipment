@@ -14,12 +14,14 @@ import com.xiliulou.afterserver.mapper.PointBindSettleAccountsMapper;
 import com.xiliulou.afterserver.mapper.SettleAccountsMapper;
 import com.xiliulou.afterserver.service.PointService;
 import com.xiliulou.afterserver.service.SettleAccountsService;
+import com.xiliulou.afterserver.util.DataUtil;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.PointBindSettleAccountsQuery;
 import com.xiliulou.afterserver.web.query.SaveSettleAccountsQuery;
 import com.xiliulou.afterserver.web.query.SettleAccountsQuery;
 import com.xiliulou.afterserver.web.vo.PointBindSettleAccountsVo;
+import com.xiliulou.afterserver.web.vo.SettleAccountsExcelVo;
 import com.xiliulou.afterserver.web.vo.SettleAccountsVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -247,24 +250,29 @@ public class SettleAccountsServiceImpl extends ServiceImpl<SettleAccountsMapper,
     @Override
     public void exportExcel(SettleAccounts settleAccounts, HttpServletResponse response) {
         List<SettleAccounts> settleAccountsList = list();
+
         if (ObjectUtil.isEmpty(settleAccountsList)) {
             throw new CustomBusinessException("没有查询到产品型号!无法导出！");
         }
-        List<SettleAccountsVo> settleAccountsVos = new ArrayList<>(settleAccountsList.size());
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        List<SettleAccountsExcelVo> settleAccountsExcelVos = new ArrayList<>(settleAccountsList.size());
         for (SettleAccounts s : settleAccountsList) {
-            SettleAccountsVo settleAccountsVo = new SettleAccountsVo();
-            BeanUtil.copyProperties(s, settleAccountsVo);
-            settleAccountsVos.add(settleAccountsVo);
+            SettleAccountsExcelVo settleAccountsExcelVo = new SettleAccountsExcelVo();
+            BeanUtil.copyProperties(s, settleAccountsExcelVo);
+
+            settleAccountsExcelVo.setCreateTime(DataUtil.getDate(s.getCreateTime()));
+            settleAccountsExcelVos.add(settleAccountsExcelVo);
         }
 
-        String fileName = "产品型号.xlsx";
+        String fileName = "财务结算.xlsx";
         try {
             ServletOutputStream outputStream = response.getOutputStream();
             // 告诉浏览器用什么软件可以打开此文件
             response.setHeader("content-Type", "application/vnd.ms-excel");
             // 下载文件的默认名称
             response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
-            EasyExcel.write(outputStream, SettleAccountsVo.class).sheet("sheet").doWrite(settleAccountsVos);
+            EasyExcel.write(outputStream, SettleAccountsExcelVo.class).sheet("sheet").doWrite(settleAccountsExcelVos);
             return;
         } catch (IOException e) {
             log.error("导出报表失败！", e);

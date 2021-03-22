@@ -27,7 +27,9 @@
         SELECT
         d.id,
         d.customer_id,
+        d.phone,
         d.city,
+        d.province,
         d.destination,
         d.bills,
         d.deliver_cost,
@@ -35,6 +37,10 @@
         d.create_time,
         d.express_company,
         d.express_no,
+        d.point_id,
+        d.product,
+        d.quantity,
+        d.state,
         c.name as customer_name,
         p.name as point_name
         FROM
