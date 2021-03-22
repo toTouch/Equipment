@@ -18,8 +18,8 @@ public class SettleAccountsExcelVo {
     private BigDecimal totalAmount;
     @ExcelProperty("备注")
     private String remark;
-    @ExcelProperty("支付时间")
-    private Long payTime;
+   /* @ExcelProperty("支付时间")
+    private String payTime;*/
     @ExcelProperty("创建时间")
-    private Long createTime;
+    private String createTime;
 }
