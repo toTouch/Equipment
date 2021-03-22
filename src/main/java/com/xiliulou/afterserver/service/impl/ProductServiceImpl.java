@@ -30,10 +30,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @program: XILIULOU
@@ -145,5 +142,13 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     @Override
     public IPage getSerialNumberPage(Long offset, Long size, ProductSerialNumberQuery productSerialNumber) {
         return productSerialNumberMapper.getSerialNumberPage(PageUtil.getPage(offset, size), productSerialNumber);
+    }
+
+    @Override
+    public Integer getByDateQuery(Map<String, Object> params) {
+        String years = (String) params.get("years");
+        String mouths = (String) params.get("mouths");
+        Integer count = this.baseMapper.getByDateQuery(years,mouths);
+        return count;
     }
 }

@@ -17,6 +17,5 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
     List<WorkOrderVo> orderList(@Param("query") WorkOrderQuery workOrder);
 
 
-
-
+    Integer getByDateQuery(@Param("years") String years, @Param("mouths") String mouths);
 }

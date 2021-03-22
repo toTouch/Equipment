@@ -11,6 +11,7 @@ import com.xiliulou.afterserver.web.vo.WorkOrderVo;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Map;
 
 public interface WorkOrderService extends IService<WorkOrder> {
     IPage getPage(Long offset, Long size, WorkOrderQuery workOrder);
@@ -39,4 +40,6 @@ public interface WorkOrderService extends IService<WorkOrder> {
     IPage getSerialNumberPage(Long offset, Long size, ProductSerialNumberQuery productSerialNumber);
 
     R pointBindSerialNumber(WorkOrderQuery workOrderQuery);
+
+    Integer getByDateQuery(Map<String, Object> params);
 }

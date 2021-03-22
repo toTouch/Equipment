@@ -3,7 +3,6 @@ package com.xiliulou.afterserver.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.Point;
-import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.IndexDataQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
@@ -12,6 +11,7 @@ import com.xiliulou.afterserver.web.vo.PointVo;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @program: XILIULOU
@@ -33,4 +33,8 @@ public interface PointService extends IService<Point> {
     void exportExcel(PointQuery pointQuery, HttpServletResponse response);
 
     List<PointVo> getlist();
+
+    Integer getByStatCount(Map<String, Object> params);
+
+
 }

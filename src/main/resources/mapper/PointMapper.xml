@@ -378,6 +378,9 @@
                  LEFT JOIN product_serial_number psn on psn.point_id = p.id
 
     </select>
+    <select id="getByStatCount" resultType="java.lang.Integer">
+
+    </select>
 
 
 </mapper>
