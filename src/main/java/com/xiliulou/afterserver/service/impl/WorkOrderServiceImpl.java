@@ -316,7 +316,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
         return R.ok();
     }
-
+    //总工单
     @Override
     public Integer getByDateQuery(Map<String, Object> params) {
         String years = (String) params.get("years");
@@ -325,6 +325,32 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         return count;
     }
 
+    //总格口
+    @Override
+    public Integer getMouth(Map<String, Object> params) {
+        String years = (String) params.get("years");
+        String mouths = (String) params.get("mouths");
+        Integer count = this.baseMapper.getByDateQuery(years,mouths);
+        return count;
+    }
+
+    //总
+    @Override
+    public Integer getGeneral(Map<String, Object> params) {
+        String years = (String) params.get("years");
+        String mouths = (String) params.get("mouths");
+        Integer count = this.baseMapper.getByDateQuery(years,mouths);
+        return count;
+    }
+
+    //
+    @Override
+    public Integer getTotal(Map<String, Object> params) {
+        String years = (String) params.get("years");
+        String mouths = (String) params.get("mouths");
+        Integer count = this.baseMapper.getByDateQuery(years,mouths);
+        return count;
+    }
     //    /**
 //     * 预览
 //     *

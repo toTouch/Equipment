@@ -379,7 +379,14 @@
 
     </select>
     <select id="getByStatCount" resultType="java.lang.Integer">
+        SELECT count(point_id) FROM `work_order` where 1 = 1
 
+        <if test="years != null"  >
+            and years = #{years}
+        </if>
+        <if test="mouth != null" >
+            and mouths = #{mouths}
+        </if>
     </select>
 
 

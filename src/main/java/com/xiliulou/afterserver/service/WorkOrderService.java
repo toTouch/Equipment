@@ -42,4 +42,10 @@ public interface WorkOrderService extends IService<WorkOrder> {
     R pointBindSerialNumber(WorkOrderQuery workOrderQuery);
 
     Integer getByDateQuery(Map<String, Object> params);
+
+    Integer getMouth(Map<String, Object> params);
+
+    Integer getGeneral(Map<String, Object> params);
+
+    Integer getTotal(Map<String, Object> params);
 }

@@ -9,8 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
+/*
+*点位统计
+* */
 @RestController
-@RequestMapping("")
+@RequestMapping("admin/stat/count")
 public class AdminJsonStatController {
 
     @Autowired

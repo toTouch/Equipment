@@ -17,9 +17,6 @@ public class StatServiceImpl implements StatService {
     @Autowired
     private StatService statService;
 
-    @Autowired
-    private StatService baseMapper;
-
     @Override
     public void getStat(Map<String, Object> params) {
 
@@ -30,8 +27,8 @@ public class StatServiceImpl implements StatService {
         map.put("getByStatCount",pointCount);
 
         //城市点位
-
+        Integer cityCount = pointService.getByStatCount(params);
+        map.put("getByStatCount", cityCount);
     }
-
 
 }
