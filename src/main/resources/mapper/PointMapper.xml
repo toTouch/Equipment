@@ -387,6 +387,9 @@
         <if test="mouth != null" >
             and mouths = #{mouths}
         </if>
+        <if test="city != null">
+            and city = #{city}
+        </if>
     </select>
 
 

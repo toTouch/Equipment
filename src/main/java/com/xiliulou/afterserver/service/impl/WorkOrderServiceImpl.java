@@ -321,7 +321,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     public Integer getByDateQuery(Map<String, Object> params) {
         String years = (String) params.get("years");
         String mouths = (String) params.get("mouths");
-        Integer count = this.baseMapper.getByDateQuery(years,mouths);
+        String city = (String) params.get("city");
+        Integer count = this.baseMapper.getByDateQuery(years,mouths,city);
         return count;
     }
 
@@ -330,7 +331,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     public Integer getMouth(Map<String, Object> params) {
         String years = (String) params.get("years");
         String mouths = (String) params.get("mouths");
-        Integer count = this.baseMapper.getByDateQuery(years,mouths);
+        String city = (String) params.get("city");
+
+        Integer count = this.baseMapper.getByDateQuery(years,mouths,city);
         return count;
     }
 
@@ -339,7 +342,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     public Integer getGeneral(Map<String, Object> params) {
         String years = (String) params.get("years");
         String mouths = (String) params.get("mouths");
-        Integer count = this.baseMapper.getByDateQuery(years,mouths);
+        String city = (String) params.get("city");
+
+        Integer count = this.baseMapper.getByDateQuery(years,mouths,city);
         return count;
     }
 
@@ -348,7 +353,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     public Integer getTotal(Map<String, Object> params) {
         String years = (String) params.get("years");
         String mouths = (String) params.get("mouths");
-        Integer count = this.baseMapper.getByDateQuery(years,mouths);
+        String city = (String) params.get("city");
+
+        Integer count = this.baseMapper.getByDateQuery(years,mouths,city);
         return count;
     }
     //    /**

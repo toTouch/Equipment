@@ -16,11 +16,11 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
 
     List<WorkOrderVo> orderList(@Param("query") WorkOrderQuery workOrder);
 
-    Integer getByDateQuery(@Param("years") String years, @Param("mouths") String mouths);
+    Integer getByDateQuery(@Param("years") String years, @Param("mouths") String mouths,@Param("city") String city);
 
-    Integer getMouth(@Param("years") String years, @Param("mouths") String mouths);
+    Integer getMouth(@Param("years") String years, @Param("mouths") String mouths,@Param("city") String city);
 
-    Integer getGeneral(@Param("years") String years, @Param("mouths") String mouths);
+    Integer getGeneral(@Param("years") String years, @Param("mouths") String mouths,@Param("city") String city);
 
-    Integer getTotal(@Param("years") String years, @Param("mouths") String mouths);
+    Integer getTotal(@Param("years") String years, @Param("mouths") String mouths,@Param("city") String city);
 }
