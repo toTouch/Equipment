@@ -27,14 +27,15 @@ public class DataQueryServiceImpl implements DataQueryService {
         map.put("WorkOrderCount",orderCount);
 
         //总支出
-        Integer expendCount = workOrderService.getByDateQuery(params);
+        Integer expendCount = workOrderService.getGeneral(params);
         map.put("WorkOrderCount",expendCount);
 
         //总点位
-        Integer pointCount = workOrderService.getByDateQuery(params);
+        Integer pointCount = workOrderService.getTotal(params);
         map.put("workOrderCount",pointCount);
+
         //总格口
-        Integer gridCount = productService.getByDateQuery(params);
+        Integer gridCount = productService.getMouth(params);
         map.put("workOrderCount",gridCount);
     }
 }

@@ -194,6 +194,9 @@
         <if test="mouth != null" >
             and mouths = #{mouths}
         </if>
+        <if test="city != null">
+            and city = #{city}
+        </if>
     </select>
 
     <select id="getMouth" resultType="java.lang.Integer">
@@ -205,6 +208,9 @@
         </if>
         <if test="mouth != null" >
             and mouths = #{mouths}
+        </if>
+        <if test="city != null">
+            and city = #{city}
         </if>
     </select>
 
@@ -218,6 +224,9 @@
         <if test="mouth != null" >
             and mouths = #{mouths}
         </if>
+        <if test="city != null">
+            and city = #{city}
+        </if>
     </select>
 
     <select id="getTotal" resultType="java.lang.Integer">
@@ -230,7 +239,9 @@
         <if test="mouth != null" >
             and mouths = #{mouths}
         </if>
-
+        <if test="city != null">
+            and city = #{city}
+        </if>
     </select>
 
 

@@ -1,7 +1,9 @@
 package com.xiliulou.afterserver.service;
 
+import java.util.Map;
+
 public interface RepairService {
 
-//    Integer getRepairCount(Map<String, Object> params);
+    void getRepairCount(Map<String, Object> params);
 
 }
