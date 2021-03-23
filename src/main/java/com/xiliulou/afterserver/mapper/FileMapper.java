@@ -10,4 +10,5 @@ import com.xiliulou.afterserver.entity.File;
  * @create: 2021-01-29 11:23
  **/
 public interface FileMapper extends BaseMapper<File> {
+
 }

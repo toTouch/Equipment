@@ -27,5 +27,14 @@ public interface ProductService extends IService<Product> {
 
     void serialNumberExportExcel(ProductSerialNumberQuery productSerialNumberQuery, HttpServletResponse response);
 
-     Integer getByDateQuery(Map<String, Object> params) ;
+    Integer getByDateQuery(Map<String, Object> params) ;
+
+    Integer getMouth(Map<String, Object> params);
+
+    Integer getGeneral(Map<String, Object> params);
+
+    Integer getTotal(Map<String, Object> params);
+
+    Integer getRepairCount(Map<String, Object> params);
+
 }

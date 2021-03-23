@@ -1,6 +1,6 @@
 package com.xiliulou.afterserver.controller.admin;
 
-import com.xiliulou.afterserver.service.DataQueryService;
+import com.xiliulou.afterserver.service.MouthService;
 import com.xiliulou.afterserver.util.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,18 +9,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
+/*
+* 格口统计
+* */
 @RestController
-@RequestMapping("/admin/Data/count")
-public class AdminJsonDataQueryController {
+@RequestMapping("admin/mouth")
+public class AdminJsonMouthController {
+
     @Autowired
-    private DataQueryService dataQueryService;
+    private MouthService mouthService;
 
-    public R getDataCount(@RequestParam Map<String, Object> params){
+    public R getStat(@RequestParam Map<String, Object> params) {
 
-        dataQueryService.getDataCount(params);
+        mouthService.getMouth(params);
 
-        return R.ok(dataQueryService);
+        return R.ok();
     }
-
-
 }

@@ -184,8 +184,52 @@
         ORDER BY wo.create_time DESC
     </select>
     <select id="getByDateQuery" resultType="java.lang.Integer">
-        SELECT count(1) FROM `work_order` where 1 = 1
 
+        //总点位
+        SELECT count(point_id) FROM `work_order` where 1 = 1
+
+        <if test="years != null"  >
+            and years = #{years}
+        </if>
+        <if test="mouth != null" >
+            and mouths = #{mouths}
+        </if>
+    </select>
+
+    <select id="getMouth" resultType="java.lang.Integer">
+        //总格口
+        SELECT sum(box_number) FROM `product` where 1 = 1
+
+        <if test="years != null"  >
+            and years = #{years}
+        </if>
+        <if test="mouth != null" >
+            and mouths = #{mouths}
+        </if>
+    </select>
+
+    <select id="getGeneral" resultType="java.lang.Integer">
+        //总工单
+        SELECT count(id) FROM `work_order` where 1 = 1
+
+        <if test="years != null"  >
+            and years = #{years}
+        </if>
+        <if test="mouth != null" >
+            and mouths = #{mouths}
+        </if>
+    </select>
+
+    <select id="getTotal" resultType="java.lang.Integer">
+        //总支出
+        SELECT sum(point_id) FROM `work_order` where 1 = 1
+
+        <if test="years != null"  >
+            and years = #{years}
+        </if>
+        <if test="mouth != null" >
+            and mouths = #{mouths}
+        </if>
 
     </select>
 

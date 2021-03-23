@@ -148,7 +148,41 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     public Integer getByDateQuery(Map<String, Object> params) {
         String years = (String) params.get("years");
         String mouths = (String) params.get("mouths");
-        Integer count = this.baseMapper.getByDateQuery(years,mouths);
+        Integer count = this.baseMapper.getMouth(years,mouths);
         return count;
     }
+
+    @Override
+    public Integer getMouth(Map<String, Object> params) {
+        String years = (String) params.get("years");
+        String mouths = (String) params.get("mouths");
+        Integer count = this.baseMapper.getMouth(years,mouths);
+        return count;
+    }
+
+    @Override
+    public Integer getGeneral(Map<String, Object> params) {
+        String years = (String) params.get("years");
+        String mouths = (String) params.get("mouths");
+        Integer count = this.baseMapper.getMouth(years,mouths);
+        return count;
+    }
+
+    @Override
+    public Integer getTotal(Map<String, Object> params) {
+        String years = (String) params.get("years");
+        String mouths = (String) params.get("mouths");
+        Integer count = this.baseMapper.getMouth(years,mouths);
+        return count;
+    }
+    
+    @Override
+    public Integer getRepairCount(Map<String, Object> params) {
+        
+        String years = (String) params.get("years");
+        String mouths = (String) params.get("mouths");
+        Integer count = this.baseMapper.getMouth(years,mouths);
+        return count;
+    }
+
 }
