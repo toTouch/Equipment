@@ -58,6 +58,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Autowired
     ProductSerialNumberMapper productSerialNumberMapper;
 
+
     @Override
     public IPage getPage(Long offset, Long size, WorkOrderQuery workOrder) {
         if (Objects.nonNull(workOrder.getWorkOrderType())) {
@@ -322,6 +323,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         String years = (String) params.get("years");
         String mouths = (String) params.get("mouths");
         String city = (String) params.get("city");
+
         Integer count = this.baseMapper.getByDateQuery(years,mouths,city);
         return count;
     }
@@ -337,7 +339,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         return count;
     }
 
-    //总
+    //总工单
     @Override
     public Integer getGeneral(Map<String, Object> params) {
         String years = (String) params.get("years");
@@ -348,7 +350,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         return count;
     }
 
-    //
+    //总支出
     @Override
     public Integer getTotal(Map<String, Object> params) {
         String years = (String) params.get("years");

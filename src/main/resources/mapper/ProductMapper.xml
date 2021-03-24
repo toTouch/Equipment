@@ -44,11 +44,33 @@
     </select>
 
     <select id="getGeneral" resultType="java.lang.Integer">
+        //总工单
+        SELECT count(id) FROM `work_order` where 1 = 1
 
+        <if test="years != null"  >
+            and years = #{years}
+        </if>
+        <if test="mouth != null" >
+            and mouths = #{mouths}
+        </if>
+        <if test="city != null">
+            and city = #{city}
+        </if>
 
     </select>
     <select id="getTotal" resultType="java.lang.Integer">
+        //总支出
+        SELECT sum(point_id) FROM `work_order` where 1 = 1
 
+        <if test="years != null"  >
+            and years = #{years}
+        </if>
+        <if test="mouth != null" >
+            and mouths = #{mouths}
+        </if>
+        <if test="city != null">
+            and city = #{city}
+        </if>
     </select>
     <select id="getRepairCount" resultType="java.lang.Integer">
 

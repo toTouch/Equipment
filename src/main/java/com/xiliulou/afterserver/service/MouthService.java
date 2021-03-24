@@ -4,5 +4,5 @@ import java.util.Map;
 
 public interface MouthService {
 
-    Integer getMouth(Map<String, Object> params);
+    Map<String, Integer> getMouth(Map<String, Object> params);
 }

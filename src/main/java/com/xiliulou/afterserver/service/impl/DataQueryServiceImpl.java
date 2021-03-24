@@ -18,24 +18,26 @@ public class DataQueryServiceImpl implements DataQueryService {
     private ProductService productService;
 
     @Override
-    public void getDataCount(Map<String, Object> params) {
+    public Map<String, Integer> getDataCount(Map<String, Object> params) {
 
         HashMap<String, Integer> map = new HashMap<>();
 
         //总工单
         Integer orderCount = workOrderService.getByDateQuery(params);
-        map.put("WorkOrderCount",orderCount);
+        map.put("getDataCount",orderCount);
 
         //总支出
         Integer expendCount = workOrderService.getGeneral(params);
-        map.put("WorkOrderCount",expendCount);
+        map.put("getDataCount",expendCount);
 
         //总点位
         Integer pointCount = workOrderService.getTotal(params);
-        map.put("workOrderCount",pointCount);
+        map.put("getDataCount",pointCount);
 
         //总格口
         Integer gridCount = productService.getMouth(params);
-        map.put("workOrderCount",gridCount);
+        map.put("getDataCount",gridCount);
+
+        return map;
     }
 }

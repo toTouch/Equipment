@@ -18,14 +18,14 @@ public class MouthServiceImpl implements MouthService {
     private MouthService mouthService;
 
     @Override
-    public Integer getMouth(Map<String, Object> params) {
+    public Map<String, Integer> getMouth(Map<String, Object> params) {
 
         HashMap<String, Integer> map = new HashMap<>();
 
         //总接口
-        Integer mouthCount = mouthService.getMouth(params);
+        Integer mouthCount = productService.getMouth(params);
         map.put("getByMouthCount",mouthCount);
 
-        return mouthCount;
+        return map;
     }
 }

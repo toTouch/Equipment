@@ -273,6 +273,7 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
         String years = (String) params.get("years");
         String mouths = (String) params.get("mouths");
         String city = (String) params.get("city");
+
         Integer count = this.baseMapper.getByStatCount(years,mouths,city);
         return count;
     }
