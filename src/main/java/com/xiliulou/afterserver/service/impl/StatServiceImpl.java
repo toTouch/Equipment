@@ -18,7 +18,7 @@ public class StatServiceImpl implements StatService {
     private StatService statService;
 
     @Override
-    public void getStat(Map<String, Object> params) {
+    public Map<String, Integer> getStat(Map<String, Object> params) {
 
         HashMap<String, Integer> map = new HashMap<>();
 
@@ -29,6 +29,8 @@ public class StatServiceImpl implements StatService {
         //城市点位
         Integer cityCount = pointService.getByStatCount(params);
         map.put("getByStatCount", cityCount);
+
+        return map;
     }
 
 }

@@ -5,5 +5,6 @@ import java.util.Map;
 
 public interface DataQueryService {
 
-   void getDataCount( Map<String, Object> params);
+   Map<String, Integer> getDataCount( Map<String, Object> params);
+
 }

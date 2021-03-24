@@ -4,6 +4,6 @@ import java.util.Map;
 
 public interface RepairService {
 
-    void getRepairCount(Map<String, Object> params);
+    Map<String, Integer> getRepairCount(Map<String, Object> params);
 
 }

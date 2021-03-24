@@ -18,16 +18,18 @@ public class RepairServiceImpl implements RepairService {
     private RepairService repairService;
 
     @Override
-    public void getRepairCount(Map<String, Object> params) {
+    public Map<String, Integer> getRepairCount(Map<String, Object> params) {
 
         HashMap<String, Integer> map = new HashMap<>();
 
         //总工单
         Integer orderCount = workOrderService.getByDateQuery(params);
-        map.put("WorkOrderCount",orderCount);
+        map.put("getRepairCount",orderCount);
 
         //总支出
-        Integer expendCount = workOrderService.getByDateQuery(params);
-        map.put("WorkOrderCount",expendCount);
+        Integer expendCount = workOrderService.getTotal(params);
+        map.put("getTotal",expendCount);
+
+        return map;
     }
 }
