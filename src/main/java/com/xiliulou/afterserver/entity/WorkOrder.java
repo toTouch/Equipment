@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -13,7 +14,10 @@ import java.math.BigDecimal;
  **/
 @Data
 @TableName("work_order")
-public class WorkOrder {
+public class WorkOrder implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private Long id;
     private Integer type;
     private Long pointId;
@@ -31,11 +35,14 @@ public class WorkOrder {
     private Integer status;
     private String orderNo;
     private Long createrId;
-    private Long createTime;
+    private String createTime;
     private String thirdCompanyName;
     private String serverName;
     private String product;
     private String code;
+    private Integer boxNumber;
+
+
     //从什么地方转移到什么地方
     //起点
     private Long transferSourcePointId;

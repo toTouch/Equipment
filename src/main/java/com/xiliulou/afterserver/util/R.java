@@ -3,6 +3,8 @@ package com.xiliulou.afterserver.util;
 import com.xiliulou.afterserver.constant.ErrorMsg;
 import lombok.Data;
 
+import java.util.Map;
+
 /**
  * @author: eclair
  * @Date: 2020/10/13 18:11
@@ -60,4 +62,8 @@ public class R<T> {
         return apiResult;
     }
 
+    public R data(Map<String, Object> map){
+        this.setData((T) map);
+        return this;
+    }
 }

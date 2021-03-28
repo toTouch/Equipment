@@ -48,4 +48,5 @@ public interface WorkOrderService extends IService<WorkOrder> {
     Integer getGeneral(Map<String, Object> params);
 
     Integer getTotal(Map<String, Object> params);
-}
+
+   }

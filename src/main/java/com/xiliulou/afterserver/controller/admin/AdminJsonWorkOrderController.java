@@ -1,12 +1,17 @@
 package com.xiliulou.afterserver.controller.admin;
 
 import com.xiliulou.afterserver.entity.WorkOrder;
+import com.xiliulou.afterserver.exception.BadRequestException;
+import com.xiliulou.afterserver.service.DeliverService;
 import com.xiliulou.afterserver.service.WorkOrderService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
 import com.xiliulou.afterserver.web.query.WorkOrderQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,21 +39,22 @@ public class AdminJsonWorkOrderController {
 
 
     @PostMapping("admin/workOrder")
-    public R insert(@RequestBody WorkOrderQuery workOrder, HttpServletRequest request) {
+    public R insert(@Validated @RequestBody WorkOrderQuery workOrder) {
 
-        Long uid = (Long) request.getAttribute("uid");
-        workOrder.setCreaterId(uid);
-        return workOrderService.insertWorkOrder(workOrder);
+        //Long uid = (Long) request.getAttribute("uid");
+        //workOrder.setCreaterId(uid);
+        //return workOrderService.insertWorkOrder(workOrder);
+        return R.ok(workOrderService.save(workOrder));
     }
 
     @PutMapping("admin/workOrder")
-    public R update(@RequestBody WorkOrder workOrder) {
+    public R update(@Validated @RequestBody WorkOrder workOrder) {
         return R.ok(workOrderService.updateById(workOrder));
     }
 
     @DeleteMapping("admin/workOrder")
-    public R delete(@RequestParam("id") Long id) {
-        return R.ok();
+    public R delete(@Validated @RequestParam("id") Long id) {
+        return R.ok(workOrderService.removeById(id));
     }
 
 
