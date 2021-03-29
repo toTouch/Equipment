@@ -30,7 +30,6 @@ public class AdminJsonDeliverController {
         return R.ok(deliverService.getPage(offset, size, deliver));
     }
 
-
     @PostMapping("admin/deliver")
     public R insert(@RequestBody Deliver deliver) {
         deliver.setCreateTime(System.currentTimeMillis());

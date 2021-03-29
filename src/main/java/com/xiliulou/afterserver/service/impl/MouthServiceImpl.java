@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.WorkOrder;
 import com.xiliulou.afterserver.mapper.MouthMapper;
-import com.xiliulou.afterserver.mapper.WorkOrderMapper;
 import com.xiliulou.afterserver.service.MouthService;
 import com.xiliulou.afterserver.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +48,7 @@ public class MouthServiceImpl extends ServiceImpl<MouthMapper,WorkOrder> impleme
         for (int i = 0; i < staList.size(); i++ ) {
             WorkOrder daily = staList.get(i);
             //封装日期集合
-            date_calculatedList.add(daily.getCreateTime());
+//            date_calculatedList.add(daily.getCreateTime());
             //封装对应数量
             switch (begin) {
                 case "box_number":

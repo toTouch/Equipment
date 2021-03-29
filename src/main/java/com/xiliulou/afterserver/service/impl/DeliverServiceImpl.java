@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.Deliver;
@@ -11,7 +12,6 @@ import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.DeliverMapper;
 import com.xiliulou.afterserver.service.DeliverService;
 import com.xiliulou.afterserver.util.PageUtil;
-import com.xiliulou.afterserver.web.query.DeliverQuery;
 import com.xiliulou.afterserver.web.vo.DeliverExcelVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,11 +37,11 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
 
 
     @Override
-    public IPage getPage(Long offset, Long size, DeliverQuery deliver) {
+    public IPage getPage(Long offset, Long size, Deliver deliver) {
 
         Page page = PageUtil.getPage(offset, size);
 
-        return baseMapper.getDeliverPage(page, deliver);
+        return baseMapper.selectPage(page, Wrappers.lambdaQuery(deliver).orderByDesc(Deliver::getCreateTime));
     }
 
     //导出excel

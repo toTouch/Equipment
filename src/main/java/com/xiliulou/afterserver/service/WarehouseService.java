@@ -3,11 +3,8 @@ package com.xiliulou.afterserver.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.WareHouse;
-import org.springframework.stereotype.Service;
 
 import java.util.Map;
-
-@Service
 
 public interface WarehouseService extends IService<WareHouse> {
 
