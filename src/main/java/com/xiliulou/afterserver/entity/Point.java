@@ -1,9 +1,6 @@
 package com.xiliulou.afterserver.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.mysql.cj.protocol.PacketReceivedTimeHolder;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -39,11 +36,18 @@ public class Point {
     private BigDecimal paiedAmount;//已支付费用
     private BigDecimal serverAmount;//点位费
     private Integer boxNumber;
+    //结清状态
+    private Integer type;
     //正常
     public static final Integer STATUS_NORMAL = 1;
     //已移机
     public static final Integer STATUS_TRANSFER = 2;
     //拆机
     public static final Integer STATUS_REMOVE = 3;
+
+    //结清
+    public static final Integer TYPE_SETTLE = 1;
+    //未结清
+    public static final Integer TYPE_NOTSETTLE = 2;
 
 }

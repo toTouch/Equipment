@@ -1,9 +1,9 @@
 package com.xiliulou.afterserver.web.vo;
 
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
+
+import java.math.BigDecimal;
 
 /**
  * @program: XILIULOU
@@ -18,12 +18,15 @@ public class ProductExcelVo {
     private String name;
     @ExcelProperty("种类")
     private Integer type;
+    @ExcelProperty("价格")
+    private BigDecimal price;
     @ExcelProperty("型号编码")
     private String code;
     @ExcelProperty("格子数量")
     private Integer boxNumber;
     @ExcelProperty("创建时间")
     private Long createTime;
-    @ExcelProperty("描述")
-    private String info;
+    @ExcelProperty("产品状态")
+    private String state;
+
 }
