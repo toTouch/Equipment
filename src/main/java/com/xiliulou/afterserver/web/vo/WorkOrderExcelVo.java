@@ -38,5 +38,6 @@ public class WorkOrderExcelVo {
     private String statusStr;
     @ExcelProperty("工单编号")
     private String orderNo;
-
+    @ExcelProperty("创建时间")
+    private String createTimeStr;
 }
