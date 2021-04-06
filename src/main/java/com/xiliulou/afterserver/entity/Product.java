@@ -29,7 +29,7 @@ public class Product implements Serializable {
     private Integer boxNumber;
     private Long createTime;
     private String info;
-    private String state;//价格
+    private String state;//产品状态
     private BigDecimal price;//价格
 
 
