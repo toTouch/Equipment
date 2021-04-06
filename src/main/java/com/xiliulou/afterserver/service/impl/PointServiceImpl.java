@@ -243,7 +243,7 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
             BigDecimal a = Objects.isNull(o.getDeviceAmount()) ? BigDecimal.ZERO : o.getDeviceAmount();
             BigDecimal b = Objects.isNull(o.getServerAmount()) ? BigDecimal.ZERO : o.getServerAmount();
             BigDecimal allAmount = a.add(b);
-            pointExcelVo.setAllAmount(allAmount);
+            pointExcelVo.setServerAmount(allAmount);
 
             pointExcelVoArrayList.add(pointExcelVo);
         }
