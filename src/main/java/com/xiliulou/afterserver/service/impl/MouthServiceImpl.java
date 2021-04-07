@@ -48,7 +48,7 @@ public class MouthServiceImpl extends ServiceImpl<MouthMapper,WorkOrder> impleme
         for (int i = 0; i < staList.size(); i++ ) {
             WorkOrder daily = staList.get(i);
             //封装日期集合
-//            date_calculatedList.add(daily.getCreateTime());
+            date_calculatedList.add(daily.getCreateTime());
             //封装对应数量
             switch (begin) {
                 case "box_number":
