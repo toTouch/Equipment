@@ -21,8 +21,6 @@ public class DeliverExcelVo {
     private BigDecimal deliverCost;
     @ExcelProperty("配送时间")
     private String deliverTime;
-    @ExcelProperty("创建时间")
-    private String createTime;
     @ExcelProperty("快递公司")
     private String expressCompany;
     @ExcelProperty("快递单号")
@@ -33,4 +31,6 @@ public class DeliverExcelVo {
     private String state;//物流状态
     @ExcelProperty("数量")
     private String quantity;//数量
+    @ExcelProperty("创建时间")
+    private String createTime;
 }

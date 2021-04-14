@@ -4,10 +4,7 @@ package com.xiliulou.afterserver.controller.admin;
 import com.xiliulou.afterserver.service.RepairService;
 import com.xiliulou.afterserver.util.R;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -26,5 +23,10 @@ public class AdminJsonRepairController {
 
         return R.ok(repairService.getRepairCount(params));
     }
-
+    //图标显示,返回日期json数组,数量json数组
+    /*@GetMapping("mouth/{begin}/{end}")
+    public R showData(@PathVariable String begin, @PathVariable String end) {
+        Map<String,Object> map = this.repairService.getShowData(begin,end);
+        return R.ok().data(map);
+    }*/
 }

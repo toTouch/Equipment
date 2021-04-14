@@ -34,7 +34,7 @@ public class WorkOrder implements Serializable {
     private Long processTime;
     private Integer status;
     private String orderNo;
-    private Long createrId;
+    private Long createId;
     private Long createTime;
     private String thirdCompanyName;
     private String serverName;

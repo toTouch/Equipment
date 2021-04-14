@@ -2,6 +2,7 @@ package com.xiliulou.afterserver.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiliulou.afterserver.entity.Product;
 import com.xiliulou.afterserver.entity.WorkOrder;
 import com.xiliulou.afterserver.mapper.MouthMapper;
 import com.xiliulou.afterserver.service.MouthService;
@@ -37,18 +38,17 @@ public class MouthServiceImpl extends ServiceImpl<MouthMapper,WorkOrder> impleme
 
     @Override
     public Map<String, Object> getShowData( String begin, String end) {
-        QueryWrapper<WorkOrder> wrapper = new QueryWrapper<>();
+        QueryWrapper<Product> wrapper = new QueryWrapper<>();
         wrapper.between("date_calculated",begin,end);
         //wrapper.select("date_calculated",type);
-        List<WorkOrder> staList = baseMapper.selectList(wrapper);
-
-        List<String> date_calculatedList = new ArrayList<>();
+        List<Product> staList = baseMapper.selectList(wrapper);
+        List<Long> date_calculatedList = new ArrayList<>();
         List<Integer> numDataList = new ArrayList<>();
 
         for (int i = 0; i < staList.size(); i++ ) {
-            WorkOrder daily = staList.get(i);
+            Product daily = staList.get(i);
             //封装日期集合
-//            date_calculatedList.add(daily.getCreateTime());
+            date_calculatedList.add(daily.getCreateTime());
             //封装对应数量
             switch (begin) {
                 case "box_number":
