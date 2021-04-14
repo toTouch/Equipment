@@ -6,9 +6,7 @@ import com.xiliulou.afterserver.exception.CusTomBusinessAccessDeniedException;
 import com.xiliulou.afterserver.jwt.JwtHelper;
 import com.xiliulou.afterserver.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -64,7 +62,7 @@ public class AuthInterceptorAdapter extends HandlerInterceptorAdapter {
         if (ObjectUtil.isEmpty(body)) {
             throw new CusTomBusinessAccessDeniedException("token异常!");
         }
-
+        log.info("hhh" + body.get("id").toString());
         Long uid = Long.parseLong((String) body.get("id"));
         User user = userService.getById(uid);
         // TODO: 2021/2/2 0002   ThreadLocal
