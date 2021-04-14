@@ -6,4 +6,5 @@ public interface RepairService {
 
     Map<String, Integer> getRepairCount(Map<String, Object> params);
 
+//    Map<String, Object> getShowData(String begin, String end);
 }

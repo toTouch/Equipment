@@ -32,4 +32,34 @@ public class RepairServiceImpl implements RepairService {
 
         return map;
     }
+
+   /* @Override
+    public Map<String, Object> getShowData(String begin, String end) {
+*//*        QueryWrapper<WorkOrder> wrapper = new QueryWrapper<>();
+        wrapper.between("date_calculated",begin,end);
+        //wrapper.select("date_calculated",type);
+//        List<WorkOrder> staList = baseMapper.selectList(wrapper);
+        List<Long> date_calculatedList = new ArrayList<>();
+        List<Integer> numDataList = new ArrayList<>();
+
+        for (int i = 0; i < staList.size(); i++ ) {
+            WorkOrder daily = staList.get(i);
+            //封装日期集合
+            date_calculatedList.add(daily.getCreateTime());
+            //封装对应数量
+            switch (begin) {
+                case "box_number":
+                    numDataList.add(daily.getBoxNumber());
+                    break;
+
+                default:
+                    break;
+            }
+        }
+        Map<String,Object> map = new HashMap<>();
+        map.put("date_calculatedList",date_calculatedList);
+        map.put("numDataList",numDataList);
+        return map;
+    }*//*
+    }*/
 }
