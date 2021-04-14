@@ -34,7 +34,7 @@ public class AdminJsonWarehouseController extends BaseController {
 
     @DeleteMapping("admin/warehouse")
     public R delete(@RequestParam("id") Long id) {
-        return R.ok();
+        return R.ok(warehouseService.removeById(id));
     }
 
     @GetMapping("admin/ware/list")
