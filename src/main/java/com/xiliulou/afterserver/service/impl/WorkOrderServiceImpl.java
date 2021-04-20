@@ -80,7 +80,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.failMsg("用户不存在!");
         }
         for (WorkOrder workOrder : saveWorkOrderQuery.getWorkOrderList()) {
-            workOrder.setCreateTime(System.currentTimeMillis());
+            workOrder.setProcessTime(System.currentTimeMillis());
             if (!StrUtil.isEmpty(saveWorkOrderQuery.getProcessor())) {
                 workOrder.setProcessor(saveWorkOrderQuery.getProcessor());
             }
@@ -170,7 +170,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 productSerialNumberMapper.updateById(productSerialNumber);
             }
         }
-        workOrder.setCreateTime(System.currentTimeMillis());
+        workOrder.setProcessTime(System.currentTimeMillis());
 
 
         workOrder.setStatus(WorkOrder.STATUS_FINISHED);
