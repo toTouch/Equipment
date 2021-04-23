@@ -9,8 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-
 
 @RestController
 @Slf4j
@@ -35,8 +33,8 @@ public class AdminJsonWarehouseController extends BaseController {
     }
 
     @DeleteMapping("admin/warehouse")
-    public R delete(@RequestParam("id") Long ids) {
-        return R.ok(warehouseService.removeByIds(Arrays.asList(ids)));
+    public R delete(@RequestParam("id") Long id) {
+        return R.ok(warehouseService.removeById(id));
     }
 
     @GetMapping("admin/ware/list")
