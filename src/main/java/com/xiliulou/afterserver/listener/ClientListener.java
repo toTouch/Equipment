@@ -35,6 +35,7 @@ public class ClientListener extends AnalysisEventListener<CustomerInfo> {
         if (list.size() >= BATCH_COUNT) {
             saveData();
             list.clear();
+
         }
 
     }
