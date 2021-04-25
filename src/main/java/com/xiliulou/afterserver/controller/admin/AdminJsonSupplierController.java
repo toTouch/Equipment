@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * @program: XILIULOU
- * @description:
+ * @description: 供应商列表
  * @author: Mr.YG
  * @create: 2021-01-29 09:13
  **/
