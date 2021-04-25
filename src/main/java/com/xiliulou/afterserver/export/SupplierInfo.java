@@ -1,7 +1,6 @@
-package com.xiliulou.afterserver.entity;
+package com.xiliulou.afterserver.export;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -12,25 +11,31 @@ import lombok.Data;
  * @create: 2021-01-28 17:35
  **/
 @Data
-@TableName("supplier")
-public class Supplier {
-    private Long id;
+public class SupplierInfo {
+
+    @ExcelProperty(index = 0)
     private String label;
     /**
      * 公司名称
      */
+    @ExcelProperty(index = 3)
     private String companyName;
+    @ExcelProperty(index = 4)
     private String manager;
+    @ExcelProperty(index = 5)
     private String phone;
+    @ExcelProperty(index = 2)
     private String area;
-    private Long createTime;
     //发票类型
+    @ExcelProperty(index = 7)
     private String billType;
     //费用明细
+    @ExcelProperty(index = 6)
     private String scheduleOfFees;
     /**
      * 城市id
      */
-    private String  city;
+    @ExcelProperty(index = 1)
+    private String city;
 
 }
