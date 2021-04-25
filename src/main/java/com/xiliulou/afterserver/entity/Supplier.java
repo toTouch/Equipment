@@ -16,7 +16,10 @@ import lombok.Data;
 public class Supplier {
     private Long id;
     private String label;
-    private String name;
+    /**
+     * 公司名称
+     */
+    private String companyName;
     private String manager;
     private String phone;
     private String area;
@@ -25,4 +28,9 @@ public class Supplier {
     private String billType;
     //费用明细
     private String scheduleOfFees;
+    /**
+     * 城市id
+     */
+    private Integer cid;
+
 }

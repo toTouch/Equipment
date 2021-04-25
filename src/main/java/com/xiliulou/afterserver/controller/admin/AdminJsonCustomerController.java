@@ -1,19 +1,26 @@
 package com.xiliulou.afterserver.controller.admin;
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelReader;
+import com.alibaba.excel.read.metadata.ReadSheet;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xiliulou.afterserver.controller.BaseController;
 import com.xiliulou.afterserver.entity.Customer;
+import com.xiliulou.afterserver.export.CustomerInfo;
+import com.xiliulou.afterserver.listener.ClientListener;
 import com.xiliulou.afterserver.service.CustomerService;
 import com.xiliulou.afterserver.util.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.sql.Wrapper;
 
 /**
  * @program: XILIULOU
- * @description:
+ * @description:  客户列表
  * @author: Mr.YG
  * @create: 2021-01-29 09:00
  **/
@@ -55,6 +62,19 @@ public class AdminJsonCustomerController extends BaseController {
 
         return R.ok(customerService.list(Wrappers.<Customer>lambdaQuery().orderByDesc(Customer::getCreateTime)));
 
+    }
+
+    /**
+     * 导入
+     */
+    @PostMapping("admin/customer/upload")
+    public R upload(MultipartFile file) throws IOException {
+
+        ExcelReader excelReader = EasyExcel.read(file.getInputStream(), CustomerInfo.class,new ClientListener(customerService)).build();
+        ReadSheet readSheet = EasyExcel.readSheet(0).build();
+        excelReader.read(readSheet);
+        excelReader.finish();
+        return R.ok();
     }
 
 }
