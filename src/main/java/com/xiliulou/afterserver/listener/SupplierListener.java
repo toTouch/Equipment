@@ -1,18 +1,26 @@
 package com.xiliulou.afterserver.listener;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.sun.deploy.ui.DialogTemplate;
+import com.xiliulou.afterserver.config.SpringContextUtil;
 import com.xiliulou.afterserver.entity.Supplier;
+import com.xiliulou.afterserver.entity.SysAreaCodeEntity;
 import com.xiliulou.afterserver.export.CustomerInfo;
 import com.xiliulou.afterserver.export.SupplierInfo;
+import com.xiliulou.afterserver.service.CityService;
 import com.xiliulou.afterserver.service.SupplierService;
+import com.xiliulou.afterserver.spring.SpringContextUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,16 +30,18 @@ import java.util.List;
  * @Description: 供应商
  */
 @Slf4j
-@Component
 public class SupplierListener extends AnalysisEventListener<SupplierInfo> {
 
     private static final int BATCH_COUNT = 100;
     List<SupplierInfo> list = new ArrayList<>();
 
     private SupplierService supplierService;
-    public SupplierListener(SupplierService supplierService){
+    private CityService cityService;
+    public SupplierListener(SupplierService supplierService,CityService cityService){
         this.supplierService = supplierService;
+        this.cityService = cityService;
     }
+
 
 
     @Override
@@ -62,6 +72,12 @@ public class SupplierListener extends AnalysisEventListener<SupplierInfo> {
             BeanUtils.copyProperties(item, supplier);
             supplier.setCreateTime(System.currentTimeMillis());
 
+            if (StrUtil.isNotEmpty(item.getCity())) {
+                LambdaQueryWrapper<SysAreaCodeEntity> wrapper = new LambdaQueryWrapper<>();
+                wrapper.eq(SysAreaCodeEntity::getName, item.getCity());
+                String code = cityService.getBaseMapper().selectOne(wrapper).getCode();
+                supplier.setCity(code);
+            }
             arrayList.add(supplier);
         });
         supplierService.saveBatch(arrayList);

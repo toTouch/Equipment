@@ -2,6 +2,8 @@ package com.xiliulou.afterserver.entity;
 
 
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.beans.Transient;
@@ -19,6 +21,7 @@ import java.util.List;
  * @date 2021-02-20 11:49:15
  */
 @Data
+@TableName("sys_area_code")
 public class SysAreaCodeEntity implements Serializable {
 
 	/**
@@ -76,6 +79,7 @@ public class SysAreaCodeEntity implements Serializable {
 	private String isValid;
 
 
+	@TableField(exist = false)
 	private List<SysAreaCodeEntity> children;
 
 }

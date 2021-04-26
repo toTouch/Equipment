@@ -8,6 +8,7 @@ import com.xiliulou.afterserver.controller.BaseController;
 import com.xiliulou.afterserver.entity.Supplier;
 import com.xiliulou.afterserver.export.SupplierInfo;
 import com.xiliulou.afterserver.listener.SupplierListener;
+import com.xiliulou.afterserver.service.CityService;
 import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.util.R;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,8 @@ public class AdminJsonSupplierController extends BaseController {
 
     @Autowired
     SupplierService supplierService;
+    @Autowired
+    CityService cityService;
 
     @GetMapping("admin/supplier/page")
     public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, Supplier supplier) {
@@ -64,7 +67,7 @@ public class AdminJsonSupplierController extends BaseController {
     @PostMapping("admin/supplier/upload")
     public R upload(MultipartFile file) throws IOException {
 
-        ExcelReader excelReader = EasyExcel.read(file.getInputStream(), SupplierInfo.class,new SupplierListener(supplierService)).build();
+        ExcelReader excelReader = EasyExcel.read(file.getInputStream(), SupplierInfo.class,new SupplierListener(supplierService,cityService)).build();
         ReadSheet readSheet = EasyExcel.readSheet(0).build();
         excelReader.read(readSheet);
         excelReader.finish();
