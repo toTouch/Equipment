@@ -198,6 +198,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         return R.ok(baseMapper.getPage(PageUtil.getPage(workOrder.getOffset(), workOrder.getSize()), workOrder));
     }
 
+    @Override
     public List<WorkOrderVo> getWorkOrderList(WorkOrderQuery workOrder) {
         return baseMapper.orderList(workOrder);
     }

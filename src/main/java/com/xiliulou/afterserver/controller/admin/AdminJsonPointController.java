@@ -26,7 +26,9 @@ public class AdminJsonPointController {
 
 
     @GetMapping("admin/point/page")
-    public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, PointQuery point) {
+    public R getPage(@RequestParam("offset") Long offset,
+                     @RequestParam("size") Long size,
+                     PointQuery point) {
         return R.ok(pointService.getPage(offset, size, point));
     }
 
@@ -55,6 +57,7 @@ public class AdminJsonPointController {
 
     @DeleteMapping("admin/point")
     public R delete(@RequestParam("id") Long id) {
+        pointService.removeById(id);
         return R.ok();
     }
 
