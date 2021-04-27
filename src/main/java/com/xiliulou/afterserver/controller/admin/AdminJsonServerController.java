@@ -51,6 +51,7 @@ public class AdminJsonServerController {
 
     @DeleteMapping("admin/server")
     public R delete(@RequestParam("id") Long id) {
+        this.serverService.removeById(id);
         return R.ok();
     }
 

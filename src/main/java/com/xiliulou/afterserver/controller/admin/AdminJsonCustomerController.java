@@ -54,6 +54,7 @@ public class AdminJsonCustomerController extends BaseController {
     @DeleteMapping("admin/customer")
     public R delete(@RequestParam("id") Long id) {
         // TODO: 2021/1/29 0029  校验是否可以删,是否绑定其他内容
+        customerService.removeById(id);
         return R.ok();
     }
 

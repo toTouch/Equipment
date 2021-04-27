@@ -53,6 +53,7 @@ public class AdminJsonSupplierController extends BaseController {
 
     @DeleteMapping("admin/supplier")
     public R delete(@RequestParam("id") Long id) {
+        this.supplierService.removeById(id);
         return R.ok();
     }
 
