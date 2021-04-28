@@ -42,6 +42,7 @@ public class AdminJsonWorkOrderTypeController {
 
     @DeleteMapping("admin/workOrderType")
     public R delete(@RequestParam("id") Long id) {
+        workOrderTypeService.removeById(id);
         return R.ok();
     }
 
