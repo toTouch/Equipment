@@ -40,6 +40,7 @@ public class AdminJsonPointController {
 
     @PostMapping("admin/point")
     public R insert(@RequestBody PointQuery pointQuery) {
+        pointQuery.setCreateTime(System.currentTimeMillis());
         return pointService.savePoint(pointQuery);
     }
 
