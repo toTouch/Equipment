@@ -31,7 +31,7 @@
         d.city,
         d.province,
         d.destination,
-        d.bills,
+        d.remark,
         d.deliver_cost,
         d.deliver_time,
         d.create_time,
