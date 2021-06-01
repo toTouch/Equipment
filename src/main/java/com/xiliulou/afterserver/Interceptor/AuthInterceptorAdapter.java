@@ -45,6 +45,11 @@ public class AuthInterceptorAdapter extends HandlerInterceptorAdapter {
         if (pathMatcher(requestUri)) {
             return true;
         }
+
+        if (request.getMethod().equals("OPTIONS")){
+            return true;
+        }
+
         User user = checkToken(request);
 
         return true;

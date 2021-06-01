@@ -5,22 +5,12 @@ import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.sun.deploy.ui.DialogTemplate;
-import com.xiliulou.afterserver.config.SpringContextUtil;
 import com.xiliulou.afterserver.entity.Supplier;
-import com.xiliulou.afterserver.entity.SysAreaCodeEntity;
-import com.xiliulou.afterserver.export.CustomerInfo;
 import com.xiliulou.afterserver.export.SupplierInfo;
-import com.xiliulou.afterserver.service.CityService;
 import com.xiliulou.afterserver.service.SupplierService;
-import com.xiliulou.afterserver.spring.SpringContextUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,10 +26,9 @@ public class SupplierListener extends AnalysisEventListener<SupplierInfo> {
     List<SupplierInfo> list = new ArrayList<>();
 
     private SupplierService supplierService;
-    private CityService cityService;
-    public SupplierListener(SupplierService supplierService,CityService cityService){
+
+    public SupplierListener(SupplierService supplierService){
         this.supplierService = supplierService;
-        this.cityService = cityService;
     }
 
 
@@ -71,13 +60,6 @@ public class SupplierListener extends AnalysisEventListener<SupplierInfo> {
             Supplier supplier = new Supplier();
             BeanUtils.copyProperties(item, supplier);
             supplier.setCreateTime(System.currentTimeMillis());
-
-            if (StrUtil.isNotEmpty(item.getCity())) {
-                LambdaQueryWrapper<SysAreaCodeEntity> wrapper = new LambdaQueryWrapper<>();
-                wrapper.eq(SysAreaCodeEntity::getName, item.getCity());
-                String code = cityService.getBaseMapper().selectOne(wrapper).getCode();
-                supplier.setCity(code);
-            }
             arrayList.add(supplier);
         });
         supplierService.saveBatch(arrayList);

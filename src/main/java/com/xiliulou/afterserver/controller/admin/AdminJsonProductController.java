@@ -32,6 +32,7 @@ public class AdminJsonProductController {
 
     @PostMapping("admin/product")
     public R insert(@RequestBody Product product) {
+        product.setCreateTime(System.currentTimeMillis());
         return R.ok(productService.save(product));
     }
 

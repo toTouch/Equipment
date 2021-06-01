@@ -8,7 +8,6 @@ import com.xiliulou.afterserver.controller.BaseController;
 import com.xiliulou.afterserver.entity.Supplier;
 import com.xiliulou.afterserver.export.SupplierInfo;
 import com.xiliulou.afterserver.listener.SupplierListener;
-import com.xiliulou.afterserver.service.CityService;
 import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.util.R;
 import lombok.extern.slf4j.Slf4j;
