@@ -37,4 +37,6 @@ public interface ProductService extends IService<Product> {
 
     Integer getRepairCount(Map<String, Object> params);
 
+    R productList();
+
 }

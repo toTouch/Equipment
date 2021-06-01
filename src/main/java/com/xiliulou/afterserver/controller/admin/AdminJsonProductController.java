@@ -68,5 +68,10 @@ public class AdminJsonProductController {
         productService.serialNumberExportExcel(productSerialNumberQuery, response);
     }
 
+    @GetMapping("/admin/product/list")
+    public R productList(){
+       return productService.productList();
+    }
+
 
 }
