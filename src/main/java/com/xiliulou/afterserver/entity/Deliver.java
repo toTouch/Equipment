@@ -21,7 +21,7 @@ public class Deliver {
     private String city;
     private String province;
     private String destination;//终点
-    private String bills;
+    private String remark;
     private BigDecimal deliverCost;
     private Long deliverTime;
     private Long createTime;
