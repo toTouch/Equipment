@@ -16,17 +16,17 @@ import java.math.BigDecimal;
 public class Deliver {
 
     private Long id;
-    private Long customerId;
+    private Long customerId;//客户id
     private Long phone;//客户电话
-    private String city;
+    private String city;//起点城市
     private String province;
     private String destination;//终点
-    private String remark;
-    private BigDecimal deliverCost;
-    private Long deliverTime;
+    private String remark;//备注
+    private BigDecimal deliverCost;//配送费用
+    private Long deliverTime;//配送时间
     private Long createTime;
-    private String expressCompany;
-    private String expressNo;
+    private String expressCompany;//快递公司
+    private String expressNo;//快递单号
     private Long pointId;
     private Integer state;//物流状态
     private String product;//型号
