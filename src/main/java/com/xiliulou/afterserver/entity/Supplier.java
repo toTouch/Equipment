@@ -17,7 +17,7 @@ import lombok.Data;
 public class Supplier {
     private Long id;
     private String label;
-
+    private String name;
     private String manager;
     private String phone;
     private String area;
