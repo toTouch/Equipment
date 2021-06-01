@@ -185,4 +185,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         return count;
     }
 
+    @Override
+    public R productList() {
+        List<Product> products = this.baseMapper.selectList(null);
+        return R.ok(products);
+    }
+
 }
