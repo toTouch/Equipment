@@ -1,5 +1,7 @@
 package com.xiliulou.afterserver.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -19,7 +21,11 @@ public class ProductSerialNumber {
     private String serialNumber;
     private Long productId;
     private Long createTime;
+
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private Integer setNo;
+
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private Long pointId;
     private BigDecimal price;
     private String remarks;
