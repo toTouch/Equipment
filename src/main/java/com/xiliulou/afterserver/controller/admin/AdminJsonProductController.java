@@ -80,8 +80,8 @@ public class AdminJsonProductController {
         return productService.productSerialNumber(productSerialNumberQuery);
     }
 
-    @GetMapping("/admin/product/serial/number/{id}")
-    public R productSerialNumberInfo(@PathVariable("id") Long id){
+    @GetMapping("/admin/product/serial/number")
+    public R productSerialNumberInfo(@RequestParam("id") Long id){
         return productService.productSerialNumberInfo(id);
     }
 
