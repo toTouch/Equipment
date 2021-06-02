@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.excel.EasyExcel;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -231,15 +232,15 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         BeanUtil.copyProperties(productSerialNumber,productSerialNumberVo);
 
         if (Objects.nonNull(productSerialNumber)){
-            if (productSerialNumberVo.getStatus().equals(ProductSerialNumber.UNUSED)
-                    || productSerialNumberVo.getStatus().equals(ProductSerialNumber.TO_BE_REPAIRED)){
+            if (productSerialNumberVo.getStatus().equals(ProductSerialNumber.UNUSED.toString())
+                    || productSerialNumberVo.getStatus().equals(ProductSerialNumber.TO_BE_REPAIRED.toString())){
                 WareHouse wareHouse = warehouseService.getById(productSerialNumber.getPointId());
                 if (Objects.nonNull(wareHouse)){
                     productSerialNumberVo.setAddr(wareHouse);
                 }
             }
 
-            if (productSerialNumberVo.getStatus().equals(ProductSerialNumber.IN_USE)){
+            if (productSerialNumberVo.getStatus().equals(ProductSerialNumber.IN_USE.toString())){
                 Point point = pointService.getById(productSerialNumberVo.getPointId());
                 if (Objects.nonNull(point)) {
                     productSerialNumberVo.setAddr(point);
@@ -258,6 +259,15 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             return R.ok();
         }
         return R.fail("数据库错误");
+    }
+
+    @Override
+    public R getProductSerialNumListByPid(Long id) {
+        LambdaQueryWrapper<ProductSerialNumber> productSerialNumberLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        productSerialNumberLambdaQueryWrapper.eq(ProductSerialNumber::getProductId,id);
+        List<ProductSerialNumber> productSerialNumbers = productSerialNumberMapper.selectList(productSerialNumberLambdaQueryWrapper);
+
+        return R.ok(productSerialNumbers);
     }
 
 }
