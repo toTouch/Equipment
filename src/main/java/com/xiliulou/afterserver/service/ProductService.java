@@ -49,5 +49,4 @@ public interface ProductService extends IService<Product> {
 
     R getProductSerialNumListByPid(Long id);
 
-    R productSerialNumBangingPoint(List<ProductSerialNumber> productSerialNumberList);
 }

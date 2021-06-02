@@ -96,8 +96,4 @@ public class AdminJsonProductController {
         return productService.updateProductSerialNumberInfo(productSerialNumberQuery);
     }
 
-    @PutMapping("/admin/product/serial/number/banging/point")
-    public R productSerialNumBangingPoint(@RequestBody List<ProductSerialNumber> productSerialNumberList){
-        return productService.productSerialNumBangingPoint(productSerialNumberList);
-    }
 }

@@ -270,15 +270,6 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         return R.ok(productSerialNumbers);
     }
 
-    @Override
-    public R productSerialNumBangingPoint(List<ProductSerialNumber> productSerialNumberList) {
 
-        if (Objects.nonNull(productSerialNumberList)) {
-            productSerialNumberList.forEach(item -> {
-                productSerialNumberMapper.updateById(item);
-            });
-        }
-        return R.ok();
-    }
 
 }
