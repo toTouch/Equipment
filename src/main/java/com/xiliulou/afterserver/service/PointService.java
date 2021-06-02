@@ -37,4 +37,5 @@ public interface PointService extends IService<Point> {
     Integer getByStatCount(Map<String, Object> params);
 
 
+    R unBindSerialNumber(Long pid);
 }

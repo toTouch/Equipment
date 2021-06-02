@@ -284,4 +284,15 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
         Integer count = this.baseMapper.getByStatCount(years,mouths,city);
         return count;
     }
+
+    @Override
+    public R unBindSerialNumber(Long pid) {
+        ProductSerialNumber productSerialNumber = productSerialNumberMapper.selectById(pid);
+        if (Objects.nonNull(productSerialNumber)){
+            productSerialNumber.setPointId(null);
+            productSerialNumber.setSetNo(null);
+            productSerialNumberMapper.updateById(productSerialNumber);
+        }
+        return R.ok();
+    }
 }
