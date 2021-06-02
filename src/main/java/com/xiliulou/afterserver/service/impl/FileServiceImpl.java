@@ -5,6 +5,7 @@ import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.server.HttpServerResponse;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.constant.FileConstant;
 import com.xiliulou.afterserver.entity.File;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -67,6 +69,14 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
         } catch (Exception e) {
             log.error("文件读取异常", e);
         }
+    }
+
+    @Override
+    public R getFileList(Long pid) {
+        LambdaQueryWrapper<File> fileLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<File> eq = fileLambdaQueryWrapper.eq(File::getBindId, pid);
+        List<File> files = this.baseMapper.selectList(eq);
+        return R.ok(files);
     }
 
 }

@@ -29,6 +29,11 @@ public class AdminJsonFileController {
     FileService fileService;
 
 
+    @GetMapping("/admin/file/list")
+    public R fileList(@RequestParam("pid") Long pid){
+        return fileService.getFileList(pid);
+    }
+
     @PostMapping("/admin/upload")
     public R uploadFile(@RequestParam("file") MultipartFile file) {
 //        if (file.getSize() > FileConstant.FILE_MAX_SIZE) {
