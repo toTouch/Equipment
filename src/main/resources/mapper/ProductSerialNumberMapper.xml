@@ -32,6 +32,7 @@
         psu.product_id,
         psu.create_time ,
         p.name as product_name
+        psu.status
         FROM
         product_serial_number AS psu
         LEFT JOIN product AS p ON p.id = psu.product_id
