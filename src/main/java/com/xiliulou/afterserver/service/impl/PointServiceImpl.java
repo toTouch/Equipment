@@ -209,7 +209,9 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
                 productSerialNumber.setPointId(point.getId());
                 productSerialNumber.setSetNo(v);
                 productSerialNumberMapper.updateById(productSerialNumber);
-                totalAmount.add(productSerialNumber.getPrice());
+                if (Objects.nonNull(productSerialNumber.getPrice())) {
+                    totalAmount.add(productSerialNumber.getPrice());
+                }
             });
 
             Point pointUpdate = new Point();
