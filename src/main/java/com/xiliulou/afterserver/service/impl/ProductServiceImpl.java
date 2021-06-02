@@ -7,12 +7,16 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiliulou.afterserver.entity.Point;
 import com.xiliulou.afterserver.entity.Product;
 import com.xiliulou.afterserver.entity.ProductSerialNumber;
+import com.xiliulou.afterserver.entity.WareHouse;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.ProductMapper;
 import com.xiliulou.afterserver.mapper.ProductSerialNumberMapper;
+import com.xiliulou.afterserver.service.PointService;
 import com.xiliulou.afterserver.service.ProductService;
+import com.xiliulou.afterserver.service.WarehouseService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
@@ -46,6 +50,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     ProductSerialNumberMapper productSerialNumberMapper;
     @Autowired
     ProductService productService;
+    @Autowired
+    WarehouseService warehouseService;
+    @Autowired
+    PointService pointService;
 
     @Override
     public IPage getPage(Long offset, Long size, Product product) {
@@ -214,6 +222,42 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         }
 
         return R.ok();
+    }
+
+    @Override
+    public R productSerialNumberInfo(Long id) {
+        ProductSerialNumber productSerialNumber = productSerialNumberMapper.selectById(id);
+        ProductSerialNumberVo productSerialNumberVo = new ProductSerialNumberVo();
+        BeanUtil.copyProperties(productSerialNumber,productSerialNumberVo);
+
+        if (Objects.nonNull(productSerialNumber)){
+            if (productSerialNumberVo.getStatus().equals(ProductSerialNumber.UNUSED)
+                    || productSerialNumberVo.getStatus().equals(ProductSerialNumber.TO_BE_REPAIRED)){
+                WareHouse wareHouse = warehouseService.getById(productSerialNumber.getPointId());
+                if (Objects.nonNull(wareHouse)){
+                    productSerialNumberVo.setAddr(wareHouse);
+                }
+            }
+
+            if (productSerialNumberVo.getStatus().equals(ProductSerialNumber.IN_USE)){
+                Point point = pointService.getById(productSerialNumberVo.getPointId());
+                if (Objects.nonNull(point)) {
+                    productSerialNumberVo.setAddr(point);
+                }
+            }
+
+        }
+
+        return R.ok(productSerialNumberVo);
+    }
+
+    @Override
+    public R updateProductSerialNumberInfo(ProductSerialNumberQuery productSerialNumberQuery) {
+        int i = productSerialNumberMapper.updateById(productSerialNumberQuery);
+        if (i>0){
+            return R.ok();
+        }
+        return R.fail("数据库错误");
     }
 
 }
