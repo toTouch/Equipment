@@ -201,10 +201,10 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
                     throw new CustomBusinessException("未找到产品序列号!");
                 }
 
-//                if (Objects.nonNull(productSerialNumber.getPointId())) {
-//                    log.error("this productSerialNumber is binding other point productSerialNumberId:{}", entry.getKey());
-//                    throw new CustomBusinessException("产品已被使用!");
-//                }
+                if (Objects.nonNull(productSerialNumber.getPointId())) {
+                    log.error("this productSerialNumber is binding other point productSerialNumberId:{}", k);
+                    throw new CustomBusinessException("产品已被使用!");
+                }
 
                 productSerialNumber.setPointId(point.getId());
                 productSerialNumber.setSetNo(v);
