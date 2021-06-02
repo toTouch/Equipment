@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.excel.EasyExcel;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -295,5 +296,16 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
             productSerialNumberMapper.updateById(productSerialNumber);
         }
         return R.ok();
+    }
+
+    @Override
+    public R pointGetBingList(Long id) {
+
+        LambdaQueryWrapper<ProductSerialNumber> productSerialNumberLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                    productSerialNumberLambdaQueryWrapper.eq(ProductSerialNumber::getPointId,id)
+                    .orderByAsc(ProductSerialNumber::getStatus);
+
+        List<ProductSerialNumber> productSerialNumbers = productSerialNumberMapper.selectList(productSerialNumberLambdaQueryWrapper);
+        return R.ok(productSerialNumbers);
     }
 }

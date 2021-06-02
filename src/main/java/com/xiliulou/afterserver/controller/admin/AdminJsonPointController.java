@@ -44,6 +44,11 @@ public class AdminJsonPointController {
         return pointService.savePoint(pointQuery);
     }
 
+    @GetMapping("/admin/point/get/bind/serial/num")
+    public R pointGetBingList(@RequestParam("pid")Long pid){
+        return pointService.pointGetBingList(pid);
+    }
+
     @PostMapping("admin/point/bindSerialNumber")
     public R pointBindSerialNumber(@RequestBody PointQuery pointQuery) {
 
