@@ -159,7 +159,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     public Integer getByDateQuery(Map<String, Object> params) {
         String years = (String) params.get("years");
         String mouths = (String) params.get("mouths");
-        Integer count = this.baseMapper.getMouth(years,mouths);
+        Integer count = this.baseMapper.getMouth(years, mouths);
         return count;
     }
 
@@ -167,7 +167,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     public Integer getMouth(Map<String, Object> params) {
         String years = (String) params.get("years");
         String mouths = (String) params.get("mouths");
-        Integer count = this.baseMapper.getMouth(years,mouths);
+        Integer count = this.baseMapper.getMouth(years, mouths);
         return count;
     }
 
@@ -175,7 +175,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     public Integer getGeneral(Map<String, Object> params) {
         String years = (String) params.get("years");
         String mouths = (String) params.get("mouths");
-        Integer count = this.baseMapper.getMouth(years,mouths);
+        Integer count = this.baseMapper.getMouth(years, mouths);
         return count;
     }
 
@@ -183,16 +183,16 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     public Integer getTotal(Map<String, Object> params) {
         String years = (String) params.get("years");
         String mouths = (String) params.get("mouths");
-        Integer count = this.baseMapper.getMouth(years,mouths);
+        Integer count = this.baseMapper.getMouth(years, mouths);
         return count;
     }
-    
+
     @Override
     public Integer getRepairCount(Map<String, Object> params) {
-        
+
         String years = (String) params.get("years");
         String mouths = (String) params.get("mouths");
-        Integer count = this.baseMapper.getMouth(years,mouths);
+        Integer count = this.baseMapper.getMouth(years, mouths);
         return count;
     }
 
@@ -205,7 +205,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     @Override
     public R productSerialNumber(ProductSerialNumberQuery productSerialNumberQuery) {
         Product product = this.baseMapper.selectById(productSerialNumberQuery.getProductId());
-        if (Objects.isNull(product)){
+        if (Objects.isNull(product)) {
             return R.fail("产品型号有误，请检查");
         }
 
@@ -216,8 +216,8 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         for (int i = Integer.parseInt(leftInterval.toString()); i < Integer.parseInt(rightInterval.toString()); i++) {
 
             ProductSerialNumber productSerialNumber = new ProductSerialNumber();
-            BeanUtil.copyProperties(productSerialNumberQuery,productSerialNumber);
-            productSerialNumber.setSerialNumber(code+"_"+i);
+            BeanUtil.copyProperties(productSerialNumberQuery, productSerialNumber);
+            productSerialNumber.setSerialNumber(code + "_" + i);
             productSerialNumber.setCreateTime(System.currentTimeMillis());
             productSerialNumberMapper.insert(productSerialNumber);
         }
@@ -229,18 +229,18 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     public R productSerialNumberInfo(Long id) {
         ProductSerialNumber productSerialNumber = productSerialNumberMapper.selectById(id);
         ProductSerialNumberVo productSerialNumberVo = new ProductSerialNumberVo();
-        BeanUtil.copyProperties(productSerialNumber,productSerialNumberVo);
+        BeanUtil.copyProperties(productSerialNumber, productSerialNumberVo);
 
-        if (Objects.nonNull(productSerialNumber)){
+        if (Objects.nonNull(productSerialNumber)) {
             if (productSerialNumberVo.getStatus().equals(ProductSerialNumber.UNUSED.toString())
-                    || productSerialNumberVo.getStatus().equals(ProductSerialNumber.TO_BE_REPAIRED.toString())){
+                    || productSerialNumberVo.getStatus().equals(ProductSerialNumber.TO_BE_REPAIRED.toString())) {
                 WareHouse wareHouse = warehouseService.getById(productSerialNumber.getPointId());
-                if (Objects.nonNull(wareHouse)){
+                if (Objects.nonNull(wareHouse)) {
                     productSerialNumberVo.setAddr(wareHouse);
                 }
             }
 
-            if (productSerialNumberVo.getStatus().equals(ProductSerialNumber.IN_USE.toString())){
+            if (productSerialNumberVo.getStatus().equals(ProductSerialNumber.IN_USE.toString())) {
                 Point point = pointService.getById(productSerialNumberVo.getPointId());
                 if (Objects.nonNull(point)) {
                     productSerialNumberVo.setAddr(point);
@@ -255,7 +255,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     @Override
     public R updateProductSerialNumberInfo(ProductSerialNumberQuery productSerialNumberQuery) {
         int i = productSerialNumberMapper.updateById(productSerialNumberQuery);
-        if (i>0){
+        if (i > 0) {
             return R.ok();
         }
         return R.fail("数据库错误");
@@ -264,10 +264,21 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     @Override
     public R getProductSerialNumListByPid(Long id) {
         LambdaQueryWrapper<ProductSerialNumber> productSerialNumberLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        productSerialNumberLambdaQueryWrapper.eq(ProductSerialNumber::getProductId,id);
+        productSerialNumberLambdaQueryWrapper.eq(ProductSerialNumber::getProductId, id);
         List<ProductSerialNumber> productSerialNumbers = productSerialNumberMapper.selectList(productSerialNumberLambdaQueryWrapper);
 
         return R.ok(productSerialNumbers);
+    }
+
+    @Override
+    public R productSerialNumBangingPoint(List<ProductSerialNumber> productSerialNumberList) {
+
+        if (Objects.nonNull(productSerialNumberList)) {
+            productSerialNumberList.forEach(item -> {
+                productSerialNumberMapper.updateById(item);
+            });
+        }
+        return R.ok();
     }
 
 }
