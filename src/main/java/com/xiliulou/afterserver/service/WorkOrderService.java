@@ -12,6 +12,7 @@ import com.xiliulou.afterserver.web.vo.WorkOrderVo;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public interface WorkOrderService extends IService<WorkOrder> {
     IPage getPage(Long offset, Long size, WorkOrderQuery workOrder);
@@ -49,4 +50,5 @@ public interface WorkOrderService extends IService<WorkOrder> {
 
     Integer getTotal(Map<String, Object> params);
 
-   }
+    R saveWorkerOrder(WorkOrderQuery workOrder);
+}

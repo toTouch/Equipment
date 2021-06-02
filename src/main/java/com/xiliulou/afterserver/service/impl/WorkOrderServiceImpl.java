@@ -62,7 +62,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     public IPage getPage(Long offset, Long size, WorkOrderQuery workOrder) {
         if (Objects.nonNull(workOrder.getWorkOrderType())) {
-            workOrder.setType(workOrder.getWorkOrderType());
+            workOrder.setType(workOrder.getWorkOrderType().toString());
         }
         Page page = PageUtil.getPage(offset, size);
         page = baseMapper.getPage(page, workOrder);
@@ -360,6 +360,37 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         Integer count = this.baseMapper.getByDateQuery(years,mouths,city);
         return count;
+    }
+
+    @Override
+    public R saveWorkerOrder(WorkOrderQuery workOrder) {
+        //如果工单类型包含  派送   则系统生成一个派送工单，自动新增一个发货订单
+//        if (workOrder.getType().contains(WorkOrder.TYPE_SEND.toString())){
+//            Deliver deliver = new Deliver();
+////            deliver.
+//        }
+        //照片类型为
+        if (ObjectUtil.isNotEmpty(workOrder.getFileNameList())
+                && workOrder.getType().equals(WorkOrder.TYPE_AFTER)) {
+            List<File> filList = new ArrayList();
+            for (String name : workOrder.getFileNameList()) {
+                File file = new File();
+                file.setFileName(name);
+                file.setFileType(File.FILE_TYPE_SPOT);
+                file.setBindId(workOrder.getPointId());
+                file.setType(File.FILE_TYPE_AFTER);
+                file.setCreateTime(System.currentTimeMillis());
+                filList.add(file);
+            }
+            fileService.saveBatch(filList);
+        }
+
+
+        int insert = this.baseMapper.insert(workOrder);
+        if (insert>0){
+            return R.ok();
+        }
+        return R.fail("数据库保存出错");
     }
     //    /**
 //     * 预览

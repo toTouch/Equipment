@@ -44,7 +44,8 @@ public class AdminJsonWorkOrderController {
         //Long uid = (Long) request.getAttribute("uid");
         //workOrder.setCreaterId(uid);
         //return workOrderService.insertWorkOrder(workOrder);
-        return R.ok(workOrderService.save(workOrder));
+
+        return workOrderService.saveWorkerOrder(workOrder);
     }
 
     @PutMapping("admin/workOrder")
