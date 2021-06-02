@@ -41,4 +41,8 @@ public interface ProductService extends IService<Product> {
     R productList();
 
     R productSerialNumber(ProductSerialNumberQuery productSerialNumberQuery);
+
+    R productSerialNumberInfo(Long id);
+
+    R updateProductSerialNumberInfo(ProductSerialNumberQuery productSerialNumberQuery);
 }

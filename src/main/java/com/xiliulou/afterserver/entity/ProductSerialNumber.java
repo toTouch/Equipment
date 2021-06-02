@@ -26,4 +26,9 @@ public class ProductSerialNumber {
 
 //    0：【未使用】1：【使用中】2：【拆机柜】3：【待维修】
     private Integer status;
+
+    public static final Integer UNUSED = 0;
+    public static final Integer IN_USE = 1;
+    public static final Integer DISASSEMBLE = 2;
+    public static final Integer TO_BE_REPAIRED = 3;
 }

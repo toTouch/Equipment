@@ -3,6 +3,8 @@ package com.xiliulou.afterserver.web.vo;
 import com.xiliulou.afterserver.entity.ProductSerialNumber;
 import lombok.Data;
 
+import java.util.Objects;
+
 /**
  * @program: XILIULOU
  * @description:
@@ -18,4 +20,7 @@ public class ProductSerialNumberVo extends ProductSerialNumber {
     private Integer boxNumber;
 
     private String info;
+
+    //位置
+    private Object addr;
 }

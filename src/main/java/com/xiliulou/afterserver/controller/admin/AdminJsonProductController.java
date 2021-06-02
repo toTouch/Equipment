@@ -75,8 +75,18 @@ public class AdminJsonProductController {
        return productService.productList();
     }
 
-    @PostMapping("/amin/product/serial/number")
+    @PostMapping("/admin/product/serial/number")
     public R productSerialNumber(@RequestBody ProductSerialNumberQuery productSerialNumberQuery){
         return productService.productSerialNumber(productSerialNumberQuery);
+    }
+
+    @GetMapping("/admin/product/serial/number/{id}")
+    public R productSerialNumberInfo(@PathVariable("id") Long id){
+        return productService.productSerialNumberInfo(id);
+    }
+
+    @PutMapping("/admin/product/serial/number")
+    public R updateProductSerialNumberInfo(@RequestBody ProductSerialNumberQuery productSerialNumberQuery){
+        return productService.updateProductSerialNumberInfo(productSerialNumberQuery);
     }
 }
