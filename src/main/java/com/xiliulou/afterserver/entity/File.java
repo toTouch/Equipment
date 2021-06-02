@@ -18,6 +18,20 @@ public class File {
     private String fileName;
     private Long createTime;
     private Long bindId;
+    private Integer fileType;
+
+    /**
+     * 现场勘察 1
+     */
+    public static final Integer FILE_TYPE_SPOT = 1;
+    /**
+     * 安装验收 2
+     */
+    public static final Integer FILE_TYPE_INSTALL = 2;
+    /**
+     * 售后问题 3
+     */
+    public static final Integer FILE_TYPE_AFTER = 3;
 
     public static final Integer TYPE_POINT = 1;
     public static final Integer TYPE_WORK_ORDER = 2;
