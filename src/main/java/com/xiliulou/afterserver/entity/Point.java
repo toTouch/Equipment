@@ -36,6 +36,12 @@ public class Point {
     private BigDecimal paiedAmount;//已支付费用
     private BigDecimal serverAmount;//点位费
     private Integer boxNumber;
+    //经度
+    private String coordY;
+    //纬度
+    private String coordX;
+
+
     //结清状态
     private Integer type;
     //正常
