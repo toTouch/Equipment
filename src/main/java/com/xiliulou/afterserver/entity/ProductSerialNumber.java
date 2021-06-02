@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @TableName("product_serial_number")
 public class ProductSerialNumber {
     private Long id;
-//    private String productName;
+
     private String serialNumber;
     private Long productId;
     private Long createTime;
@@ -23,4 +23,7 @@ public class ProductSerialNumber {
     private Long pointId;
     private BigDecimal price;
     private String remarks;
+
+//    0：【未使用】1：【使用中】2：【拆机柜】3：【待维修】
+    private Integer status;
 }
