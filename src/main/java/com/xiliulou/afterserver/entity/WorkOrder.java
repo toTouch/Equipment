@@ -19,7 +19,7 @@ public class WorkOrder implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Long id;
-    private Integer type;
+    private String type;
     private Long pointId;
     private String info;
     private BigDecimal fee;
@@ -41,6 +41,7 @@ public class WorkOrder implements Serializable {
     private String product;
     private String code;
     private Integer boxNumber;
+    private Integer warehourseId;
 
 
     //从什么地方转移到什么地方
@@ -59,6 +60,21 @@ public class WorkOrder implements Serializable {
     public static final Integer STATUS_PROCESSING = 2;
     //已完成
     public static final Integer STATUS_FINISHED = 3;
+
+
+    //工单类型
+    //1.安装
+    public static final Integer TYPE_INSTALL = 1;
+    //2.派送
+    public static final Integer TYPE_SEND = 2;
+    //3.接电
+    public static final Integer TYPE_CONTACT = 3;
+    //4.移机
+    public static final Integer TYPE_MOBLIE = 4;
+    //5.售后
+    public static final Integer TYPE_AFTER = 5;
+    //6.归仓
+    public static final Integer TYPE_BELONG_WAREHOUSE = 6;
 
 
 
