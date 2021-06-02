@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.Product;
+import com.xiliulou.afterserver.entity.ProductSerialNumber;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
 
@@ -39,4 +40,5 @@ public interface ProductService extends IService<Product> {
 
     R productList();
 
+    R productSerialNumber(ProductSerialNumberQuery productSerialNumberQuery);
 }

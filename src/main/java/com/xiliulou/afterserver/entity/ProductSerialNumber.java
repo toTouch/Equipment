@@ -15,10 +15,12 @@ import java.math.BigDecimal;
 @TableName("product_serial_number")
 public class ProductSerialNumber {
     private Long id;
+//    private String productName;
     private String serialNumber;
     private Long productId;
     private Long createTime;
     private Integer setNo;
     private Long pointId;
     private BigDecimal price;
+    private String remarks;
 }
