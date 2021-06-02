@@ -44,6 +44,8 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
     @Autowired
     ProductSerialNumberMapper productSerialNumberMapper;
+    @Autowired
+    ProductService productService;
 
     @Override
     public IPage getPage(Long offset, Long size, Product product) {
@@ -189,6 +191,29 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     public R productList() {
         List<Product> products = this.baseMapper.selectList(null);
         return R.ok(products);
+    }
+
+    @Override
+    public R productSerialNumber(ProductSerialNumberQuery productSerialNumberQuery) {
+        Product product = this.baseMapper.selectById(productSerialNumberQuery.getProductId());
+        if (Objects.isNull(product)){
+            return R.fail("产品型号有误，请检查");
+        }
+
+        Long leftInterval = productSerialNumberQuery.getLeftInterval();
+        Long rightInterval = productSerialNumberQuery.getRightInterval();
+        String code = product.getCode();
+
+        for (int i = Integer.parseInt(leftInterval.toString()); i < Integer.parseInt(rightInterval.toString()); i++) {
+
+            ProductSerialNumber productSerialNumber = new ProductSerialNumber();
+            BeanUtil.copyProperties(productSerialNumberQuery,productSerialNumber);
+            productSerialNumber.setSerialNumber(code+"_"+i);
+            productSerialNumber.setCreateTime(System.currentTimeMillis());
+            productSerialNumberMapper.insert(productSerialNumber);
+        }
+
+        return R.ok();
     }
 
 }

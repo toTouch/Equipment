@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.controller.admin;
 
 import com.xiliulou.afterserver.entity.Product;
+import com.xiliulou.afterserver.entity.ProductSerialNumber;
 import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
@@ -22,6 +23,7 @@ public class AdminJsonProductController {
 
     @Autowired
     ProductService productService;
+
 
 
     @GetMapping("admin/product/page")
@@ -73,5 +75,8 @@ public class AdminJsonProductController {
        return productService.productList();
     }
 
-
+    @PostMapping("/amin/product/serial/number")
+    public R productSerialNumber(@RequestBody ProductSerialNumberQuery productSerialNumberQuery){
+        return productService.productSerialNumber(productSerialNumberQuery);
+    }
 }
