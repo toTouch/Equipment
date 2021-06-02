@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * @program: XILIULOU
@@ -75,6 +76,11 @@ public class AdminJsonProductController {
        return productService.productList();
     }
 
+    @GetMapping("/admin/product/serial/number/pid")
+    public R getProductSerialNumberByPid(@RequestParam("id") Long id){
+        return productService.getProductSerialNumListByPid(id);
+    }
+
     @PostMapping("/admin/product/serial/number")
     public R productSerialNumber(@RequestBody ProductSerialNumberQuery productSerialNumberQuery){
         return productService.productSerialNumber(productSerialNumberQuery);
@@ -88,5 +94,10 @@ public class AdminJsonProductController {
     @PutMapping("/admin/product/serial/number")
     public R updateProductSerialNumberInfo(@RequestBody ProductSerialNumberQuery productSerialNumberQuery){
         return productService.updateProductSerialNumberInfo(productSerialNumberQuery);
+    }
+
+    @PutMapping("/admin/product/serial/number/banging/point")
+    public R productSerialNumBangingPoint(@RequestBody List<ProductSerialNumber> productSerialNumberList){
+        return productService.productSerialNumBangingPoint(productSerialNumberList);
     }
 }

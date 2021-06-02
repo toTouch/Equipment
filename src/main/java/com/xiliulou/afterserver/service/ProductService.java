@@ -8,6 +8,7 @@ import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,4 +46,8 @@ public interface ProductService extends IService<Product> {
     R productSerialNumberInfo(Long id);
 
     R updateProductSerialNumberInfo(ProductSerialNumberQuery productSerialNumberQuery);
+
+    R getProductSerialNumListByPid(Long id);
+
+    R productSerialNumBangingPoint(List<ProductSerialNumber> productSerialNumberList);
 }
