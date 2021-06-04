@@ -44,6 +44,9 @@
         <id property="serialNumber" column="p_serial_number"/>
         <id property="province" column="p_province"/>
         <id property="primaryCabinetNo" column="p_primary_cabinet_no"/>
+        <id property="coordX" column="p_coord_x"/>
+        <id property="coordY" column="p_coord_y"/>
+        <id property="specificAddress" column="p_specific_address"/>
 
         <id property="customerName" column="c_name"/>
 
@@ -318,6 +321,9 @@
                p.server_amount         as p_server_amount,
                p.box_number            as p_box_number,
                p.province              as p_province,
+               p.coord_y               as p_coord_y,
+               p.coord_x               as p_coord_x,
+               p.specific_address      as p_specific_address,
                pt.id                   as pt_id,
                pt.name                 as pt_name,
                pt.code                 as pt_code,
