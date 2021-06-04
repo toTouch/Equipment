@@ -84,7 +84,7 @@
         wo.code as wo_code,
         (SELECT name FROM point WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM point WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
-        wot.type as wot_type,
+
         wor.name as wor_name,
         u.user_name as u_user_name,
         p.name as p_name,
@@ -93,7 +93,7 @@
         f.file_name as f_file_name,
         f.bind_id as f_bind_id
         FROM work_order as wo
-        LEFT JOIN work_order_type as wot on wot.id = wo.id
+
         LEFT JOIN work_order_reason as wor on wor.id = wo.work_order_reason_id
         LEFT JOIN user u on u.id =wo.creater_id
         LEFT JOIN point as p on p.id = wo.point_id
