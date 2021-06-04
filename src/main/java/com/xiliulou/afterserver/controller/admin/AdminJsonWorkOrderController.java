@@ -49,7 +49,7 @@ public class AdminJsonWorkOrderController {
         }
         workOrder.setProcessor(uid.toString());
         workOrder.setCreaterId(uid);
-
+        workOrder.setCreateTime(System.currentTimeMillis());
         return workOrderService.saveWorkerOrder(workOrder);
     }
 
