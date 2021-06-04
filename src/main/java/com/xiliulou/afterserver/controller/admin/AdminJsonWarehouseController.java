@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Objects;
 
 
 @RestController
@@ -47,9 +48,11 @@ public class AdminJsonWarehouseController extends BaseController {
         return R.ok(warehouseService.removeById(id));
     }
 
-    @GetMapping("admin/ware/list")
-    public R list() {
-        return R.ok(warehouseService.list(Wrappers.<WareHouse>lambdaQuery().orderByDesc(WareHouse::getCreateTime)));
+    @GetMapping("admin/warehouse/list")
+    public R list(@RequestParam(value = "name",required = false) String name) {
+        return R.ok(warehouseService.list(Wrappers.<WareHouse>lambdaQuery().orderByDesc(WareHouse::getCreateTime)
+                .like(Objects.nonNull(name),WareHouse::getWareHouses,name)
+        ));
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.controller.admin;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xiliulou.afterserver.entity.Point;
 import com.xiliulou.afterserver.service.PointService;
 import com.xiliulou.afterserver.util.R;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Objects;
 
 /**
  * @program: XILIULOU
@@ -35,6 +37,11 @@ public class AdminJsonPointController {
     @GetMapping("admin/point/list")
     public R list() {
         return R.ok(pointService.getlist());
+    }
+
+    @GetMapping("/admin/pull/point/list")
+    public R pullList(@RequestParam(value = "name",required = false)String name){
+        return R.ok(pointService.list(Wrappers.<Point>lambdaQuery().like(Objects.nonNull(name),Point::getName,name)));
     }
 
 
