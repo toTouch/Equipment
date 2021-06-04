@@ -88,7 +88,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if (!StrUtil.isEmpty(saveWorkOrderQuery.getProcessor())) {
                 workOrder.setProcessor(saveWorkOrderQuery.getProcessor());
             }
-            workOrder.setCreateId(saveWorkOrderQuery.getUid());
+//            workOrder.setCreateId(saveWorkOrderQuery.getUid());
             workOrder.setStatus(WorkOrder.STATUS_FINISHED);
             workOrder.setOrderNo(String.valueOf(IdUtil.getSnowflake(1, 1).nextId()));
             baseMapper.insert(workOrder);
@@ -154,9 +154,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
     @Override
     public R insertWorkOrder(WorkOrderQuery workOrder) {
-        User user = userService.getUserById(workOrder.getCreateId());
+        User user = userService.getUserById(workOrder.getCreaterId());
         if (Objects.isNull(user)) {
-            log.error("SAVE_WORK_ORDER ERROR ,NOT FOUND USER BY ID ,ID:{}", workOrder.getCreateId());
+            log.error("SAVE_WORK_ORDER ERROR ,NOT FOUND USER BY ID ,ID:{}", workOrder.getCreaterId());
             return R.failMsg("用户不存在!");
         }
         if (ObjectUtil.equal(WorkOrderType.TRANSFER, workOrder.getWorkOrderType()) && ObjectUtil.isNotEmpty(workOrder.getProductSerialNumberIdList())) {
