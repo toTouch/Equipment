@@ -48,7 +48,7 @@ public class AdminJsonWorkOrderController {
             return R.fail("请传入uid");
         }
         workOrder.setProcessor(uid.toString());
-        workOrder.setCreateId(uid);
+        workOrder.setCreaterId(uid);
 
         return workOrderService.saveWorkerOrder(workOrder);
     }
