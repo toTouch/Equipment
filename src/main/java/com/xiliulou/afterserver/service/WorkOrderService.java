@@ -7,8 +7,10 @@ import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
 import com.xiliulou.afterserver.web.query.SaveWorkOrderQuery;
 import com.xiliulou.afterserver.web.query.WorkOrderQuery;
+import com.xiliulou.afterserver.web.query.WorkerOrderUpdateStatusQuery;
 import com.xiliulou.afterserver.web.vo.WorkOrderVo;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
@@ -51,4 +53,6 @@ public interface WorkOrderService extends IService<WorkOrder> {
     Integer getTotal(Map<String, Object> params);
 
     R saveWorkerOrder(WorkOrderQuery workOrder);
+
+    R updateWorkOrderStatus(WorkerOrderUpdateStatusQuery query, HttpServletRequest request);
 }

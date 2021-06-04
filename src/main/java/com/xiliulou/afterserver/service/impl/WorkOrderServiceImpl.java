@@ -21,6 +21,7 @@ import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
 import com.xiliulou.afterserver.web.query.SaveWorkOrderQuery;
 import com.xiliulou.afterserver.web.query.WorkOrderQuery;
+import com.xiliulou.afterserver.web.query.WorkerOrderUpdateStatusQuery;
 import com.xiliulou.afterserver.web.vo.WorkOrderExcelVo;
 import com.xiliulou.afterserver.web.vo.WorkOrderVo;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -57,6 +59,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     FileService fileService;
     @Autowired
     ProductSerialNumberMapper productSerialNumberMapper;
+    @Autowired
+    PointService pointService;
 
 
     @Override
@@ -363,26 +367,51 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public R saveWorkerOrder(WorkOrderQuery workOrder) {
         //如果工单类型包含  派送   则系统生成一个派送工单，自动新增一个发货订单
 //        if (workOrder.getType().contains(WorkOrder.TYPE_SEND.toString())){
 //            Deliver deliver = new Deliver();
 ////            deliver.
 //        }
-        //照片类型为
-        if (ObjectUtil.isNotEmpty(workOrder.getFileNameList())
-                && workOrder.getType().equals(WorkOrder.TYPE_AFTER)) {
-            List<File> filList = new ArrayList();
-            for (String name : workOrder.getFileNameList()) {
-                File file = new File();
-                file.setFileName(name);
-                file.setFileType(File.FILE_TYPE_SPOT);
-                file.setBindId(workOrder.getPointId());
-                file.setType(File.FILE_TYPE_AFTER);
-                file.setCreateTime(System.currentTimeMillis());
-                filList.add(file);
+
+        workOrder.setOrderNo(UUID.randomUUID().toString());
+        Point point = pointService.getById(workOrder.getPointId());
+        if (Objects.isNull(point)){
+            log.error("WorkOrder Error pointId:{}",workOrder.getPointId());
+            return R.fail("未查询到相关点位");
+        }
+
+        if (workOrder.getType().contains(WorkOrder.TYPE_INSTALL.toString())){
+            point.setStatus(Point.STATUS_TRANSFER);
+            if (!pointService.updateById(point)){
+                log.error("WorkOrder Error  update point status error data:{}",point.toString());
+                return R.fail("数据库错误");
             }
-            fileService.saveBatch(filList);
+        }
+
+        //照片类型为
+        if (ObjectUtil.isNotEmpty(workOrder.getFileNameList())) {
+
+            if (workOrder.getType().equals(WorkOrder.TYPE_AFTER) || workOrder.getType().equals(WorkOrder.TYPE_MOBLIE)) {
+                List<File> filList = new ArrayList();
+                for (String name : workOrder.getFileNameList()) {
+                    File file = new File();
+                    file.setFileName(name);
+                    file.setFileType(File.FILE_TYPE_SPOT);
+                    file.setBindId(workOrder.getPointId());
+
+                    if (workOrder.getType().equals(WorkOrder.TYPE_AFTER)) {
+                        file.setType(File.FILE_TYPE_AFTER);
+                    }
+                    if (workOrder.getType().equals(WorkOrder.TYPE_MOBLIE)) {
+                        file.setType(File.FILE_TYPE_INSTALL);
+                    }
+                    file.setCreateTime(System.currentTimeMillis());
+                    filList.add(file);
+                }
+              fileService.saveBatch(filList);
+            }
         }
 
 
@@ -391,6 +420,20 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.ok();
         }
         return R.fail("数据库保存出错");
+    }
+
+    @Override
+    public R updateWorkOrderStatus(WorkerOrderUpdateStatusQuery query, HttpServletRequest request) {
+        Long uid = (Long) request.getSession().getAttribute("uid");
+        WorkOrder workOrder = baseMapper.selectById(query.getId());
+
+        if (Objects.isNull(workOrder)){
+            return R.fail("id不存在");
+        }
+        workOrder.setProcessor(uid.toString());
+        workOrder.setReason(query.getReason());
+        baseMapper.updateById(workOrder);
+        return R.ok();
     }
     //    /**
 //     * 预览

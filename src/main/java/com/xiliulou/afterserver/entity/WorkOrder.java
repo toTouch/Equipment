@@ -42,6 +42,7 @@ public class WorkOrder implements Serializable {
     private String code;
     private Integer boxNumber;
     private Integer warehourseId;
+    private String reason;
 
 
     //从什么地方转移到什么地方
@@ -54,12 +55,11 @@ public class WorkOrder implements Serializable {
     //供应商
     public static final Integer COMPANY_TYPE_SUPPLIER = 2;
 
-    //待处理
+    // 1;待处理2:已处理3:待分析4：已完结
     public static final Integer STATUS_INIT = 1;
-    //处理中
     public static final Integer STATUS_PROCESSING = 2;
-    //已完成
-    public static final Integer STATUS_FINISHED = 3;
+    public static final Integer STATUS_ANALYSE = 3;
+    public static final Integer STATUS_FINISHED = 4;
 
 
     //工单类型
