@@ -7,6 +7,7 @@ import com.xiliulou.afterserver.service.WorkOrderService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
 import com.xiliulou.afterserver.web.query.WorkOrderQuery;
+import com.xiliulou.afterserver.web.query.WorkerOrderUpdateStatusQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @program: XILIULOU
@@ -39,13 +41,21 @@ public class AdminJsonWorkOrderController {
 
 
     @PostMapping("admin/workOrder")
-    public R insert(@Validated @RequestBody WorkOrderQuery workOrder) {
+    public R insert(@Validated @RequestBody WorkOrderQuery workOrder,HttpServletRequest request) {
 
-        //Long uid = (Long) request.getAttribute("uid");
-        //workOrder.setCreaterId(uid);
-        //return workOrderService.insertWorkOrder(workOrder);
+        Long uid = (Long) request.getAttribute("uid");
+        if (Objects.isNull(uid)){
+            return R.fail("请传入uid");
+        }
+        workOrder.setProcessor(uid.toString());
+        workOrder.setCreateId(uid);
 
         return workOrderService.saveWorkerOrder(workOrder);
+    }
+
+    @PutMapping("/update/workorder/status")
+    public R updateWorkOrderStatus(@RequestBody WorkerOrderUpdateStatusQuery query,HttpServletRequest request){
+        return workOrderService.updateWorkOrderStatus(query,request);
     }
 
     @PutMapping("admin/workOrder")
