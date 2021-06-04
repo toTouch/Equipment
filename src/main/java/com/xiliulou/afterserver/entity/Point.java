@@ -40,15 +40,16 @@ public class Point {
     private String coordY;
     //纬度
     private String coordX;
-
+    //具体地址
+    private String specificAddress;
 
     //结清状态
     private Integer type;
-    //正常
+    //待安装
     public static final Integer STATUS_NORMAL = 1;
-    //已移机
+    //运营中
     public static final Integer STATUS_TRANSFER = 2;
-    //拆机
+    //已拆机
     public static final Integer STATUS_REMOVE = 3;
 
     //结清
