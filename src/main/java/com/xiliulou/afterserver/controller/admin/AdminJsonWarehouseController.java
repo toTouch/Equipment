@@ -36,7 +36,10 @@ public class AdminJsonWarehouseController extends BaseController {
 
 
     @PostMapping("admin/warehouse")
-    public R insert(@RequestBody WareHouse wareHouse) { return R.ok(warehouseService.save(wareHouse)); }
+    public R insert(@RequestBody WareHouse wareHouse) {
+        wareHouse.setCreateTime(System.currentTimeMillis());
+        return R.ok(warehouseService.save(wareHouse));
+    }
 
     @PutMapping("admin/warehouse")
     public R update(@RequestBody WareHouse wareHouse) {
