@@ -24,6 +24,7 @@ public class Product implements Serializable {
 
     private Long id;
     private String name;
+    // 1.主柜 2.副柜
     private Integer type;
     private String code;
     private Integer boxNumber;
@@ -32,5 +33,7 @@ public class Product implements Serializable {
     private String state;//产品状态
     private BigDecimal price;//价格
 
+    public static final Integer MAIN_LOCKER = 1;
+    public static final Integer VICE_LOCKER = 2;
 
 }
