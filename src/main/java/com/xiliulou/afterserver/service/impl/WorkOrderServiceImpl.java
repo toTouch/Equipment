@@ -409,10 +409,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         //照片类型为
         if (workOrder.getFileNameList() != null) {
-            List<File> filList = new ArrayList();
-            for (String name : workOrder.getFileNameList()) {
+            workOrder.getFileNameList().forEach(item -> {
                 File file = new File();
-                file.setFileName(name);
+                file.setFileName(item);
                 file.setType(File.TYPE_WORK_ORDER);
                 file.setBindId(workOrder.getPointId());
 
@@ -425,8 +424,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
                 file.setCreateTime(System.currentTimeMillis());
                 fileService.save(file);
-                filList.add(file);
-            }
+            });
         }
 
 
