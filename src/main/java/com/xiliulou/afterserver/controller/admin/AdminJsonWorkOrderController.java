@@ -59,8 +59,8 @@ public class AdminJsonWorkOrderController {
     }
 
     @PutMapping("admin/workOrder")
-    public R update(@Validated @RequestBody WorkOrder workOrder) {
-        return R.ok(workOrderService.updateById(workOrder));
+    public R update(@Validated @RequestBody WorkOrderQuery workOrder) {
+        return workOrderService.updateWorkOrder(workOrder);
     }
 
     @DeleteMapping("admin/workOrder")
