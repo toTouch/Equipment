@@ -52,8 +52,8 @@ public class AdminJsonSettleAccountsController {
         return settleAccountsService.savePointBindSettleAccounts(pointBindSettleAccounts);
     }
 
-    @DeleteMapping("admin/settleAccounts/bindPoint/{id}")
-    public R deletePointBindSettleAccounts(@PathVariable("id") Long id) {
+    @DeleteMapping("admin/settleAccounts/bindPoint")
+    public R deletePointBindSettleAccounts(@RequestParam("id") Long id) {
 
         return settleAccountsService.deletePointBindSettleAccounts(id);
     }
