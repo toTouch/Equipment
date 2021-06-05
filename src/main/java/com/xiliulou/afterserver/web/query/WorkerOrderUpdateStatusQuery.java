@@ -12,4 +12,5 @@ public class WorkerOrderUpdateStatusQuery {
     private Long id;
     private Integer status;
     private Long workOrderReasonId;
+    private Long uid;
 }

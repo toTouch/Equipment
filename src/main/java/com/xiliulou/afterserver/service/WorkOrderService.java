@@ -54,7 +54,7 @@ public interface WorkOrderService extends IService<WorkOrder> {
 
     R saveWorkerOrder(WorkOrderQuery workOrder);
 
-    R updateWorkOrderStatus(WorkerOrderUpdateStatusQuery query, HttpServletRequest request);
+    R updateWorkOrderStatus(WorkerOrderUpdateStatusQuery query);
 
     R updateWorkOrder(WorkOrderQuery workOrder);
 }
