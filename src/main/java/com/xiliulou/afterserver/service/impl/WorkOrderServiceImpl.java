@@ -408,27 +408,24 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         //照片类型为
-        if (ObjectUtil.isNotEmpty(workOrder.getFileNameList())) {
+        if (workOrder.getFileNameList().size()>0) {
+            List<File> filList = new ArrayList();
+            for (String name : workOrder.getFileNameList()) {
+                File file = new File();
+                file.setFileName(name);
+                file.setType(File.TYPE_WORK_ORDER);
+                file.setBindId(workOrder.getPointId());
 
-            if (workOrder.getType().equals(WorkOrder.TYPE_AFTER) || workOrder.getType().equals(WorkOrder.TYPE_MOBLIE)) {
-                List<File> filList = new ArrayList();
-                for (String name : workOrder.getFileNameList()) {
-                    File file = new File();
-                    file.setFileName(name);
-                    file.setType(File.TYPE_WORK_ORDER);
-                    file.setBindId(workOrder.getPointId());
-
-                    if (workOrder.getType().equals(WorkOrder.TYPE_AFTER)) {
-                        file.setFileType(File.FILE_TYPE_AFTER);
-                    }
-                    if (workOrder.getType().equals(WorkOrder.TYPE_MOBLIE)) {
-                        file.setFileType(File.FILE_TYPE_INSTALL);
-                    }
-                    file.setCreateTime(System.currentTimeMillis());
-                    fileService.save(file);
-                    filList.add(file);
+                if (workOrder.getType().equals(WorkOrder.TYPE_AFTER.toString())) {
+                    file.setFileType(File.FILE_TYPE_AFTER);
                 }
-              fileService.saveBatch(filList);
+                if (workOrder.getType().equals(WorkOrder.TYPE_INSTALL.toString())
+                        || workOrder.getType().equals(WorkOrder.TYPE_SEND_INSERT.toString())) {
+                    file.setFileType(File.FILE_TYPE_INSTALL);
+                }
+                file.setCreateTime(System.currentTimeMillis());
+                fileService.save(file);
+                filList.add(file);
             }
         }
 
