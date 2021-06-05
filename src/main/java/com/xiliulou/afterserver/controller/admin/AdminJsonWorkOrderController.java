@@ -53,14 +53,21 @@ public class AdminJsonWorkOrderController {
         return workOrderService.saveWorkerOrder(workOrder);
     }
 
-    @PutMapping("admin/update/workorder/status")
-    public R updateWorkOrderStatus(@RequestBody WorkerOrderUpdateStatusQuery query,HttpServletRequest request){
+    @GetMapping("admin/update/workorder/status")
+    public R updateWorkOrderStatus(@RequestParam("id")Long id,
+                                   @RequestParam("status")Integer status,
+                                   @RequestParam("workOrderReasonId")Long workOrderReasonId,
+                                   HttpServletRequest request){
         Long uid = (Long) request.getAttribute("uid");
         if (Objects.isNull(uid)){
             return R.fail("请传入uid");
         }
-        query.setUid(uid);
-        return workOrderService.updateWorkOrderStatus(query);
+        WorkerOrderUpdateStatusQuery workerOrderUpdateStatusQuery = new WorkerOrderUpdateStatusQuery();
+        workerOrderUpdateStatusQuery.setUid(uid);
+        workerOrderUpdateStatusQuery.setId(id);
+        workerOrderUpdateStatusQuery.setStatus(status);
+        workerOrderUpdateStatusQuery.setWorkOrderReasonId(workOrderReasonId);
+        return workOrderService.updateWorkOrderStatus(workerOrderUpdateStatusQuery);
     }
 
     @PutMapping("admin/workOrder")
