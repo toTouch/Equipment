@@ -53,7 +53,7 @@ public class AdminJsonWorkOrderController {
         return workOrderService.saveWorkerOrder(workOrder);
     }
 
-    @GetMapping("admin/update/workorder/status")
+    @PostMapping("admin/update/workorder/status")
     public R updateWorkOrderStatus(@RequestParam("id")Long id,
                                    @RequestParam("status")Integer status,
                                    @RequestParam("workOrderReasonId")Long workOrderReasonId,
