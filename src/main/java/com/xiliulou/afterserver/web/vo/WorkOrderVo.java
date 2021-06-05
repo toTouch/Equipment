@@ -39,6 +39,7 @@ public class WorkOrderVo {
     private String creater;
     private String pointName;
     private List<File> fileList;
+    private String reason;
     //起点
     private String transferSourcePointId;
     //终点
