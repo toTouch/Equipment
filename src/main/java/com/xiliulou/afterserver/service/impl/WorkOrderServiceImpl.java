@@ -415,14 +415,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 for (String name : workOrder.getFileNameList()) {
                     File file = new File();
                     file.setFileName(name);
-                    file.setFileType(File.FILE_TYPE_SPOT);
+                    file.setType(File.TYPE_WORK_ORDER);
                     file.setBindId(workOrder.getPointId());
 
                     if (workOrder.getType().equals(WorkOrder.TYPE_AFTER)) {
-                        file.setType(File.FILE_TYPE_AFTER);
+                        file.setFileType(File.FILE_TYPE_AFTER);
                     }
                     if (workOrder.getType().equals(WorkOrder.TYPE_MOBLIE)) {
-                        file.setType(File.FILE_TYPE_INSTALL);
+                        file.setFileType(File.FILE_TYPE_INSTALL);
                     }
                     file.setCreateTime(System.currentTimeMillis());
                     filList.add(file);
