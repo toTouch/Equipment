@@ -425,6 +425,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         file.setFileType(File.FILE_TYPE_INSTALL);
                     }
                     file.setCreateTime(System.currentTimeMillis());
+                    fileService.save(file);
                     filList.add(file);
                 }
               fileService.saveBatch(filList);
