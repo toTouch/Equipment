@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.web.query;
 import com.xiliulou.afterserver.entity.WorkOrder;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -26,4 +27,9 @@ public class WorkOrderQuery extends WorkOrder {
     private Integer status;
     private String code;
     private Integer thirdCompanyType;
+    private BigDecimal sendManey;
+
+    private String startAddr;
+    private String count;
+
 }

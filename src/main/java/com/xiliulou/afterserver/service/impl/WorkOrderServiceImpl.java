@@ -61,6 +61,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     ProductSerialNumberMapper productSerialNumberMapper;
     @Autowired
     PointService pointService;
+    @Autowired
+    DeliverService deliverService;
+    @Autowired
+    ServerService serverService;
 
 
     @Override
@@ -369,19 +373,32 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     @Transactional(rollbackFor = Exception.class)
     public R saveWorkerOrder(WorkOrderQuery workOrder) {
-        //如果工单类型包含  派送   则系统生成一个派送工单，自动新增一个发货订单
-//        if (workOrder.getType().contains(WorkOrder.TYPE_SEND.toString())){
-//            Deliver deliver = new Deliver();
-////            deliver.
-//        }
-
-        workOrder.setOrderNo(UUID.randomUUID().toString());
         Point point = pointService.getById(workOrder.getPointId());
         if (Objects.isNull(point)){
             log.error("WorkOrder Error pointId:{}",workOrder.getPointId());
             return R.fail("未查询到相关点位");
         }
+        //如果工单类型包含  派送   则系统生成一个派送工单，自动新增一个发货订单
+        if (workOrder.getType().equals(WorkOrder.TYPE_SEND.toString())
+                || workOrder.getType().equals(WorkOrder.TYPE_SEND_INSERT.toString())){
+            Deliver deliver = new Deliver();
+            deliver.setCreateTime(System.currentTimeMillis());
+            deliver.setDeliverCost(workOrder.getSendManey());
 
+            Server server = serverService.getById(workOrder.getServerId());
+            if (Objects.nonNull(server)){
+                deliver.setExpressCompany(server.getName());
+            }
+
+            deliver.setDeliverTime(System.currentTimeMillis());
+            deliver.setQuantity(workOrder.getCount());
+            deliver.setCity(workOrder.getStartAddr());
+            deliver.setDestination(point.getName());
+
+            deliverService.save(deliver);
+        }
+
+        workOrder.setOrderNo(UUID.randomUUID().toString());
         if (workOrder.getType().contains(WorkOrder.TYPE_INSTALL.toString())){
             point.setStatus(Point.STATUS_TRANSFER);
             if (!pointService.updateById(point)){
