@@ -408,7 +408,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         //照片类型为
-        if (workOrder.getFileNameList().size()>0) {
+        if (workOrder.getFileNameList() != null) {
             List<File> filList = new ArrayList();
             for (String name : workOrder.getFileNameList()) {
                 File file = new File();
