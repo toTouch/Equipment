@@ -47,7 +47,7 @@
         <id property="transferDestinationPointName" column="wo_transfer_destination_point_name"/>
         <id property="product" column="wo_product"/>
         <id property="code" column="wo_code"/>
-
+        <id property="serverId" column="wo_server_id"/>
         <id property="workOrderReasonName" column="wor_name"/>
         <id property="creater" column="u_user_name"/>
         <id property="pointName" column="p_name"/>

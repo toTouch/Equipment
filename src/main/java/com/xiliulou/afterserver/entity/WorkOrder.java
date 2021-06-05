@@ -75,7 +75,8 @@ public class WorkOrder implements Serializable {
     public static final Integer TYPE_AFTER = 5;
     //6.归仓
     public static final Integer TYPE_BELONG_WAREHOUSE = 6;
-
+    //7.派送安装
+    public static final Integer TYPE_SEND_INSERT = 7;
 
 
 }
