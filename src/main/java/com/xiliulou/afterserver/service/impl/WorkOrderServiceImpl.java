@@ -7,6 +7,7 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.metadata.WriteSheet;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -406,7 +407,26 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 return R.fail("数据库错误");
             }
         }
+        saveFile(workOrder);
 
+        int insert = this.baseMapper.insert(workOrder);
+        if (insert>0){
+            return R.ok();
+        }
+        return R.fail("数据库保存出错");
+    }
+
+    private void saveFile(WorkOrderQuery workOrder) {
+        LambdaQueryWrapper<File> eq = new LambdaQueryWrapper<File>()
+                .eq(File::getBindId, workOrder.getPointId())
+                .eq(File::getType, File.TYPE_WORK_ORDER);
+
+        List<File> files = fileService.getBaseMapper().selectList(eq);
+        if (Objects.nonNull(files)){
+            files.forEach(item -> {
+                fileService.removeById(item.getId());
+            });
+        }
         //照片类型为
         if (workOrder.getFileNameList() != null) {
             workOrder.getFileNameList().forEach(item -> {
@@ -426,13 +446,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 fileService.save(file);
             });
         }
-
-
-        int insert = this.baseMapper.insert(workOrder);
-        if (insert>0){
-            return R.ok();
-        }
-        return R.fail("数据库保存出错");
     }
 
     @Override
@@ -452,26 +465,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     @Transactional(rollbackFor = Exception.class)
     public R updateWorkOrder(WorkOrderQuery workOrder) {
+        saveFile(workOrder);
         this.baseMapper.updateById(workOrder);
-//        //照片类型为
-//        if (workOrder.getFileNameList() != null) {
-//            workOrder.getFileNameList().forEach(item -> {
-//                File file = new File();
-//                file.setFileName(item);
-//                file.setType(File.TYPE_WORK_ORDER);
-//                file.setBindId(workOrder.getPointId());
-//
-//                if (workOrder.getType().equals(WorkOrder.TYPE_AFTER.toString())) {
-//                    file.setFileType(File.FILE_TYPE_AFTER);
-//                }
-//                if (workOrder.getType().equals(WorkOrder.TYPE_INSTALL.toString())
-//                        || workOrder.getType().equals(WorkOrder.TYPE_SEND_INSERT.toString())) {
-//                    file.setFileType(File.FILE_TYPE_INSTALL);
-//                }
-//                file.setCreateTime(System.currentTimeMillis());
-//                fileService.save(file);
-//            });
-//        }
         return R.ok();
     }
     //    /**

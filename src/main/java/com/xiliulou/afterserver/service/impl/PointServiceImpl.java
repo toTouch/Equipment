@@ -112,17 +112,8 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
         BeanUtils.copyProperties(pointQuery, point);
         baseMapper.insert(point);
 
-        if (ObjectUtil.isNotEmpty(pointQuery.getFileList())) {
-            List<File> filList = new ArrayList();
-            for (File file : pointQuery.getFileList()) {
-                file.setFileType(File.FILE_TYPE_SPOT);
-                file.setBindId(point.getId());
-                file.setType(File.TYPE_POINT);
-                file.setCreateTime(System.currentTimeMillis());
-                filList.add(file);
-            }
-            fileService.saveBatch(filList);
-        }
+        pointQuery.setId(point.getId());
+        saveFile(pointQuery);
         if (ObjectUtil.isNotEmpty(pointQuery.getProductSerialNumberIdAndSetNoMap())) {
             BigDecimal totalAmount = BigDecimal.ZERO;
             for (Map.Entry<Long, Integer> entry : pointQuery.getProductSerialNumberIdAndSetNoMap().entrySet()) {
@@ -147,6 +138,31 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
         }
 
         return R.ok();
+    }
+
+    private void saveFile(PointQuery pointQuery) {
+        LambdaQueryWrapper<File> eq = new LambdaQueryWrapper<File>()
+                .eq(File::getBindId, pointQuery.getId())
+                .eq(File::getType, File.TYPE_POINT);
+
+        List<File> files = fileService.getBaseMapper().selectList(eq);
+        if (Objects.nonNull(files)){
+            files.forEach(item -> {
+                fileService.removeById(item.getId());
+            });
+        }
+
+        if (ObjectUtil.isNotEmpty(pointQuery.getFileList())) {
+            List<File> filList = new ArrayList();
+            for (File file : pointQuery.getFileList()) {
+                file.setFileType(File.FILE_TYPE_SPOT);
+                file.setBindId(pointQuery.getId());
+                file.setType(File.TYPE_POINT);
+                file.setCreateTime(System.currentTimeMillis());
+                filList.add(file);
+            }
+            fileService.saveBatch(filList);
+        }
     }
 
     /**
@@ -327,6 +343,7 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
     @Override
     public R updatePoint(PointQuery point) {
         this.updateById(point);
+        saveFile(point);
         return R.ok();
     }
 }
