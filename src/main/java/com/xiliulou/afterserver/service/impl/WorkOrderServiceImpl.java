@@ -457,7 +457,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("id不存在");
         }
         workOrder.setProcessor(uid.toString());
-        workOrder.setReason(query.getReason());
+        workOrder.setWorkOrderReasonId(query.getWorkOrderReasonId());
         baseMapper.updateById(workOrder);
         return R.ok();
     }
