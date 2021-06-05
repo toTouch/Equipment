@@ -448,6 +448,32 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         baseMapper.updateById(workOrder);
         return R.ok();
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public R updateWorkOrder(WorkOrderQuery workOrder) {
+        this.baseMapper.updateById(workOrder);
+        //照片类型为
+        if (workOrder.getFileNameList() != null) {
+            workOrder.getFileNameList().forEach(item -> {
+                File file = new File();
+                file.setFileName(item);
+                file.setType(File.TYPE_WORK_ORDER);
+                file.setBindId(workOrder.getPointId());
+
+                if (workOrder.getType().equals(WorkOrder.TYPE_AFTER.toString())) {
+                    file.setFileType(File.FILE_TYPE_AFTER);
+                }
+                if (workOrder.getType().equals(WorkOrder.TYPE_INSTALL.toString())
+                        || workOrder.getType().equals(WorkOrder.TYPE_SEND_INSERT.toString())) {
+                    file.setFileType(File.FILE_TYPE_INSTALL);
+                }
+                file.setCreateTime(System.currentTimeMillis());
+                fileService.save(file);
+            });
+        }
+        return R.ok();
+    }
     //    /**
 //     * 预览
 //     *
