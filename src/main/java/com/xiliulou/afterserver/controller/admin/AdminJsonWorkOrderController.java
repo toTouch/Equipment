@@ -59,7 +59,7 @@ public class AdminJsonWorkOrderController {
         if (Objects.isNull(uid)){
             return R.fail("请传入uid");
         }
-        query.setUid(uid.toString());
+        query.setUid(uid);
         return workOrderService.updateWorkOrderStatus(query);
     }
 
