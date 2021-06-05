@@ -53,7 +53,7 @@ public class AdminJsonWorkOrderController {
         return workOrderService.saveWorkerOrder(workOrder);
     }
 
-    @PutMapping("/update/workorder/status")
+    @PutMapping("admin/update/workorder/status")
     public R updateWorkOrderStatus(@RequestBody WorkerOrderUpdateStatusQuery query,HttpServletRequest request){
         return workOrderService.updateWorkOrderStatus(query,request);
     }

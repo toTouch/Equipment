@@ -11,5 +11,5 @@ import lombok.Data;
 public class WorkerOrderUpdateStatusQuery {
     private Long id;
     private Integer status;
-    private String reason;
+    private Long workOrderReasonId;
 }
