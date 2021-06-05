@@ -450,7 +450,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
     @Override
     public R updateWorkOrderStatus(WorkerOrderUpdateStatusQuery query, HttpServletRequest request) {
-        Long uid = (Long) request.getSession().getAttribute("uid");
+        Long uid = (Long) request.getAttribute("uid");
         WorkOrder workOrder = baseMapper.selectById(query.getId());
 
         if (Objects.isNull(workOrder)){
