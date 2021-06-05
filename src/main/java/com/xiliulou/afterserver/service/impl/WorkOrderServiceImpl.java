@@ -449,14 +449,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     @Override
-    public R updateWorkOrderStatus(WorkerOrderUpdateStatusQuery query, HttpServletRequest request) {
-        Long uid = (Long) request.getAttribute("uid");
+    public R updateWorkOrderStatus(WorkerOrderUpdateStatusQuery query) {
         WorkOrder workOrder = baseMapper.selectById(query.getId());
 
         if (Objects.isNull(workOrder)){
             return R.fail("id不存在");
         }
-        workOrder.setProcessor(uid.toString());
+        workOrder.setProcessor(query.getUid().toString());
         workOrder.setWorkOrderReasonId(query.getWorkOrderReasonId());
         baseMapper.updateById(workOrder);
         return R.ok();
