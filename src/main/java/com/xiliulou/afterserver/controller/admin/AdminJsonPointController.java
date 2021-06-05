@@ -68,9 +68,10 @@ public class AdminJsonPointController {
     }
 
     @PutMapping("admin/point")
-    public R update(@RequestBody Point point) {
-        // TODO: 2021/1/29 0029  怎么修改 产品绑定 
-        return R.ok(pointService.updateById(point));
+    public R update(@RequestBody PointQuery point) {
+        // TODO: 2021/1/29 0029  怎么修改 产品绑定
+
+        return pointService.updatePoint(point);
     }
 
     @DeleteMapping("admin/point")

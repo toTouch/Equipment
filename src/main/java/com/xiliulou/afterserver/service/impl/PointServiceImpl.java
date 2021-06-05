@@ -323,4 +323,10 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
         List<ProductSerialNumber> productSerialNumbers = productSerialNumberMapper.selectList(productSerialNumberLambdaQueryWrapper);
         return R.ok(productSerialNumbers);
     }
+
+    @Override
+    public R updatePoint(PointQuery point) {
+        this.updateById(point);
+        return R.ok();
+    }
 }

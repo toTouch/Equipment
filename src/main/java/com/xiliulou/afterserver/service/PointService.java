@@ -40,4 +40,6 @@ public interface PointService extends IService<Point> {
     R unBindSerialNumber(Long pid);
 
     R pointGetBingList(Long id);
+
+    R updatePoint(PointQuery point);
 }
