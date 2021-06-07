@@ -17,17 +17,17 @@ public class WorkOrderExcelVo {
     @ExcelProperty("工单类型")
     private String workOrderType;
     @ExcelProperty("点位")
-    private String thirdCompanyName;
+    private String pointName;
     @ExcelProperty("费用")
     private BigDecimal fee;
     @ExcelProperty("公司")
-    private String thirdCompanyId;
+    private String thirdCompanyName;
     @ExcelProperty("第三方承担费用")
     private BigDecimal thirdCompanyPay;
     @ExcelProperty("工单原因")
     private String workOrderReasonName;
-    @ExcelProperty("处理人")
-    private String processor;
+//    @ExcelProperty("处理人")
+//    private String processor;
     @ExcelProperty("服务商名称")
     private String serverName;
     @ExcelProperty("创建人")
