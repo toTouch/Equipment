@@ -412,17 +412,22 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
 
         if (workOrder.getThirdCompanyId() != null && workOrder.getThirdCompanyType() != null) {
+            log.info("workorder===================start===================");
             if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)){
+                log.info("workorder===================customer===================");
                 Customer customer = customerService.getById(workOrder.getThirdCompanyId());
                 if(Objects.nonNull(customer)) {
                     workOrder.setThirdCompanyName(customer.getName());
+                    log.info("workorder===================customer===================name:{}",customer.getName());
                 }
             }
 
             if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
+                log.info("workorder===================supplier===================");
                 Supplier supplier = supplierService.getById(workOrder.getThirdCompanyId());
                 if (Objects.nonNull(supplier)){
                     workOrder.setThirdCompanyName(supplier.getName());
+                    log.info("workorder===================supplier===================name:{}",supplier.getName());
                 }
             }
 
