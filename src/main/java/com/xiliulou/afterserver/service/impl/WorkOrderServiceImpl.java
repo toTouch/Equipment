@@ -260,8 +260,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             workOrderExcelVoList.add(workOrderExcelVo);
             payAmount.addAndGet((int) (o.getFee()).doubleValue() * 100);
 
-            if (Objects.nonNull(o.getThirdCompanyName())){
-                Double aDouble = new Double(o.getThirdCompanyName());
+            if (Objects.nonNull(o.getThirdCompanyPay())){
+                Double aDouble = new Double(o.getThirdCompanyPay().doubleValue());
                 thirdPayAmount.addAndGet((int) aDouble.doubleValue() * 100);
             }
         }
