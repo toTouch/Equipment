@@ -289,19 +289,19 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             excelWriter.write(workOrderExcelVoList, writeSheet1);
 
 
-            /**
-             * 每个公司一个表格
-             */
-            Map<String, List<WorkOrderExcelVo>> maps = workOrderExcelVoList.stream().collect(Collectors.groupingBy(WorkOrderExcelVo::getWorkOrderType));
-
-            int i = 1;
-            for (Map.Entry<String, List<WorkOrderExcelVo>> entry : maps.entrySet()) {
-                String workOrderType = entry.getKey();
-                List<WorkOrderExcelVo> workOrderExcelVos = entry.getValue();
-                WriteSheet writeSheet2 = EasyExcel.writerSheet(i, workOrderType).head(WorkOrderExcelVo.class).build();
-                excelWriter.write(workOrderExcelVos, writeSheet2);
-                i++;
-            }
+//            /**
+//             * 每个公司一个表格
+//             */
+//            Map<String, List<WorkOrderExcelVo>> maps = workOrderExcelVoList.stream().collect(Collectors.groupingBy(WorkOrderExcelVo::getWorkOrderType));
+//
+//            int i = 1;
+//            for (Map.Entry<String, List<WorkOrderExcelVo>> entry : maps.entrySet()) {
+//                String workOrderType = entry.getKey();
+//                List<WorkOrderExcelVo> workOrderExcelVos = entry.getValue();
+//                WriteSheet writeSheet2 = EasyExcel.writerSheet(i, workOrderType).head(WorkOrderExcelVo.class).build();
+//                excelWriter.write(workOrderExcelVos, writeSheet2);
+//                i++;
+//            }
 
         } catch (Exception e) {
             log.error("导出报表失败!", e);
