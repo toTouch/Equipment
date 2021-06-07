@@ -39,6 +39,7 @@ import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -234,6 +235,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<WorkOrderExcelVo> workOrderExcelVoList = new ArrayList<>(workOrderVoList.size());
+        AtomicInteger payAmount = new AtomicInteger();
+        AtomicInteger thirdPayAmount = new AtomicInteger();
+
         for (WorkOrderVo o : workOrderVoList) {
             WorkOrderExcelVo workOrderExcelVo = new WorkOrderExcelVo();
             BeanUtil.copyProperties(o, workOrderExcelVo);
@@ -254,7 +258,21 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrderExcelVo.setProcessorTimeStr(simpleDateFormat.format(new Date(o.getProcessTime())));
             }
             workOrderExcelVoList.add(workOrderExcelVo);
+            payAmount.addAndGet((int) (o.getFee()).doubleValue() * 100);
+
+            if (Objects.nonNull(o.getThirdCompanyName())){
+                Double aDouble = new Double(o.getThirdCompanyName());
+                thirdPayAmount.addAndGet((int) aDouble.doubleValue() * 100);
+            }
         }
+        WorkOrderExcelVo tailLine = new WorkOrderExcelVo();
+        tailLine.setWorkOrderType("总金额(单位：分):");
+        tailLine.setPointName(payAmount.toString() +"分");
+
+        tailLine.setThirdCompanyName("第三方总金额(单位：分):");
+        tailLine.setWorkOrderReasonName(thirdPayAmount.toString() +"分");
+        workOrderExcelVoList.add(tailLine);
+
         log.info("workOrderExcelVoList:{}", workOrderExcelVoList);
         ExcelWriter excelWriter = null;
         try {
@@ -263,24 +281,27 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             response.setCharacterEncoding("utf-8");
             response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
             ServletOutputStream outputStream = response.getOutputStream();
-
             excelWriter = EasyExcel.write(outputStream).build();
+            /**
+             * 总的导表
+             */
             WriteSheet writeSheet1 = EasyExcel.writerSheet(0, "全部类型").head(WorkOrderExcelVo.class).build();
             excelWriter.write(workOrderExcelVoList, writeSheet1);
 
 
+            /**
+             * 每个公司一个表格
+             */
+            Map<String, List<WorkOrderExcelVo>> maps = workOrderExcelVoList.stream().collect(Collectors.groupingBy(WorkOrderExcelVo::getWorkOrderType));
 
-
-//            Map<String, List<WorkOrderExcelVo>> maps = workOrderExcelVoList.stream().collect(Collectors.groupingBy(WorkOrderExcelVo::getWorkOrderType));
-//
-//            int i = 1;
-//            for (Map.Entry<String, List<WorkOrderExcelVo>> entry : maps.entrySet()) {
-//                String workOrderType = entry.getKey();
-//                List<WorkOrderExcelVo> workOrderExcelVos = entry.getValue();
-//                WriteSheet writeSheet2 = EasyExcel.writerSheet(i, workOrderType).head(WorkOrderExcelVo.class).build();
-//                excelWriter.write(workOrderExcelVos, writeSheet2);
-//                i++;
-//            }
+            int i = 1;
+            for (Map.Entry<String, List<WorkOrderExcelVo>> entry : maps.entrySet()) {
+                String workOrderType = entry.getKey();
+                List<WorkOrderExcelVo> workOrderExcelVos = entry.getValue();
+                WriteSheet writeSheet2 = EasyExcel.writerSheet(i, workOrderType).head(WorkOrderExcelVo.class).build();
+                excelWriter.write(workOrderExcelVos, writeSheet2);
+                i++;
+            }
 
         } catch (Exception e) {
             log.error("导出报表失败!", e);

@@ -22,10 +22,10 @@ public class WorkOrderExcelVo {
     private BigDecimal fee;
     @ExcelProperty("公司")
     private String thirdCompanyName;
-    @ExcelProperty("第三方承担费用")
-    private BigDecimal thirdCompanyPay;
     @ExcelProperty("工单原因")
     private String workOrderReasonName;
+    @ExcelProperty("第三方承担费用")
+    private BigDecimal thirdCompanyPay;
     private Long thirdCompanyId;
 //    @ExcelProperty("处理人")
 //    private String processor;
