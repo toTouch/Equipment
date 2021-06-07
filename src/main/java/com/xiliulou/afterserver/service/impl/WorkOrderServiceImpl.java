@@ -214,7 +214,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
     @Override
     public List<WorkOrder> staffFuzzy(String accessToken) {
-       return this.baseMapper.selectList(new QueryWrapper<WorkOrder>().like("info",accessToken));
+        return this.baseMapper.selectList(new QueryWrapper<WorkOrder>().like("info", accessToken));
     }
 
 
@@ -327,6 +327,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
         return R.ok();
     }
+
     //总工单
     @Override
     public Integer getByDateQuery(Map<String, Object> params) {
@@ -334,7 +335,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         String mouths = (String) params.get("mouths");
         String city = (String) params.get("city");
 
-        Integer count = this.baseMapper.getByDateQuery(years,mouths,city);
+        Integer count = this.baseMapper.getByDateQuery(years, mouths, city);
         return count;
     }
 
@@ -345,7 +346,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         String mouths = (String) params.get("mouths");
         String city = (String) params.get("city");
 
-        Integer count = this.baseMapper.getByDateQuery(years,mouths,city);
+        Integer count = this.baseMapper.getByDateQuery(years, mouths, city);
         return count;
     }
 
@@ -356,7 +357,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         String mouths = (String) params.get("mouths");
         String city = (String) params.get("city");
 
-        Integer count = this.baseMapper.getByDateQuery(years,mouths,city);
+        Integer count = this.baseMapper.getByDateQuery(years, mouths, city);
         return count;
     }
 
@@ -367,7 +368,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         String mouths = (String) params.get("mouths");
         String city = (String) params.get("city");
 
-        Integer count = this.baseMapper.getByDateQuery(years,mouths,city);
+        Integer count = this.baseMapper.getByDateQuery(years, mouths, city);
         return count;
     }
 
@@ -375,19 +376,19 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Transactional(rollbackFor = Exception.class)
     public R saveWorkerOrder(WorkOrderQuery workOrder) {
         Point point = pointService.getById(workOrder.getPointId());
-        if (Objects.isNull(point)){
-            log.error("WorkOrder Error pointId:{}",workOrder.getPointId());
+        if (Objects.isNull(point)) {
+            log.error("WorkOrder Error pointId:{}", workOrder.getPointId());
             return R.fail("未查询到相关点位");
         }
         //如果工单类型包含  派送   则系统生成一个派送工单，自动新增一个发货订单
         if (workOrder.getType().equals(WorkOrder.TYPE_SEND.toString())
-                || workOrder.getType().equals(WorkOrder.TYPE_SEND_INSERT.toString())){
+                || workOrder.getType().equals(WorkOrder.TYPE_SEND_INSERT.toString())) {
             Deliver deliver = new Deliver();
             deliver.setCreateTime(System.currentTimeMillis());
             deliver.setDeliverCost(workOrder.getSendManey());
 
             Server server = serverService.getById(workOrder.getServerId());
-            if (Objects.nonNull(server)){
+            if (Objects.nonNull(server)) {
                 deliver.setExpressCompany(server.getName());
             }
 
@@ -400,17 +401,35 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         workOrder.setOrderNo(UUID.randomUUID().toString());
-        if (workOrder.getType().contains(WorkOrder.TYPE_INSTALL.toString())){
+        if (workOrder.getType().contains(WorkOrder.TYPE_INSTALL.toString())) {
             point.setStatus(Point.STATUS_TRANSFER);
-            if (!pointService.updateById(point)){
-                log.error("WorkOrder Error  update point status error data:{}",point.toString());
+            if (!pointService.updateById(point)) {
+                log.error("WorkOrder Error  update point status error data:{}", point.toString());
                 return R.fail("数据库错误");
             }
         }
         saveFile(workOrder);
 
+
+        if (workOrder.getThirdCompanyId() != null && workOrder.getThirdCompanyType() != null) {
+            if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)){
+                Customer customer = customerService.getById(workOrder.getThirdCompanyId());
+                if(Objects.nonNull(customer)) {
+                    workOrder.setThirdCompanyName(customer.getName());
+                }
+            }
+
+            if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
+                Supplier supplier = supplierService.getById(workOrder.getThirdCompanyId());
+                if (Objects.nonNull(supplier)){
+                    workOrder.setThirdCompanyName(supplier.getName());
+                }
+            }
+
+        }
+
         int insert = this.baseMapper.insert(workOrder);
-        if (insert>0){
+        if (insert > 0) {
             return R.ok();
         }
         return R.fail("数据库保存出错");
@@ -422,7 +441,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 .eq(File::getType, File.TYPE_WORK_ORDER);
 
         List<File> files = fileService.getBaseMapper().selectList(eq);
-        if (Objects.nonNull(files)){
+        if (Objects.nonNull(files)) {
             files.forEach(item -> {
                 fileService.removeById(item.getId());
             });
@@ -452,7 +471,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     public R updateWorkOrderStatus(WorkerOrderUpdateStatusQuery query) {
         WorkOrder workOrder = baseMapper.selectById(query.getId());
 
-        if (Objects.isNull(workOrder)){
+        if (Objects.isNull(workOrder)) {
             return R.fail("id不存在");
         }
         workOrder.setProcessor(query.getUid().toString());
