@@ -26,6 +26,7 @@ public class WorkOrderExcelVo {
     private BigDecimal thirdCompanyPay;
     @ExcelProperty("工单原因")
     private String workOrderReasonName;
+    private Long thirdCompanyId;
 //    @ExcelProperty("处理人")
 //    private String processor;
     @ExcelProperty("服务商名称")

@@ -222,6 +222,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
     @Override
     public void reconciliationExportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
+
+        if (workOrder.getCreateTimeStart() == null || workOrder.getCreateTimeEnd() == null){
+            throw new CustomBusinessException("请选择开始时间结束时间");
+        }
+
         List<WorkOrderVo> workOrderVoList = baseMapper.orderList(workOrder);
         log.info("workOrderVoList:{}", workOrderVoList);
         if (ObjectUtil.isEmpty(workOrderVoList)) {
@@ -233,7 +238,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             WorkOrderExcelVo workOrderExcelVo = new WorkOrderExcelVo();
             BeanUtil.copyProperties(o, workOrderExcelVo);
 
-            WorkOrderType workOrderType = workOrderTypeService.getById(workOrderExcelVo.getWorkOrderType());
+            WorkOrderType workOrderType = workOrderTypeService.getById(o.getWorkOrderType());
             if (Objects.nonNull(workOrderType)){
                 workOrderExcelVo.setWorkOrderType(workOrderType.getType());
             }
@@ -262,16 +267,20 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             excelWriter = EasyExcel.write(outputStream).build();
             WriteSheet writeSheet1 = EasyExcel.writerSheet(0, "全部类型").head(WorkOrderExcelVo.class).build();
             excelWriter.write(workOrderExcelVoList, writeSheet1);
-            Map<String, List<WorkOrderExcelVo>> maps = workOrderExcelVoList.stream().collect(Collectors.groupingBy(WorkOrderExcelVo::getWorkOrderType));
 
-            int i = 1;
-            for (Map.Entry<String, List<WorkOrderExcelVo>> entry : maps.entrySet()) {
-                String workOrderType = entry.getKey();
-                List<WorkOrderExcelVo> workOrderExcelVos = entry.getValue();
-                WriteSheet writeSheet2 = EasyExcel.writerSheet(i, workOrderType).head(WorkOrderExcelVo.class).build();
-                excelWriter.write(workOrderExcelVos, writeSheet2);
-                i++;
-            }
+
+
+
+//            Map<String, List<WorkOrderExcelVo>> maps = workOrderExcelVoList.stream().collect(Collectors.groupingBy(WorkOrderExcelVo::getWorkOrderType));
+//
+//            int i = 1;
+//            for (Map.Entry<String, List<WorkOrderExcelVo>> entry : maps.entrySet()) {
+//                String workOrderType = entry.getKey();
+//                List<WorkOrderExcelVo> workOrderExcelVos = entry.getValue();
+//                WriteSheet writeSheet2 = EasyExcel.writerSheet(i, workOrderType).head(WorkOrderExcelVo.class).build();
+//                excelWriter.write(workOrderExcelVos, writeSheet2);
+//                i++;
+//            }
 
         } catch (Exception e) {
             log.error("导出报表失败!", e);
