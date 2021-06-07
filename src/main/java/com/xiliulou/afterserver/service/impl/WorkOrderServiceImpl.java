@@ -66,6 +66,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     DeliverService deliverService;
     @Autowired
     ServerService serverService;
+    @Autowired
+    WorkOrderTypeService workOrderTypeService;
 
 
     @Override
@@ -230,6 +232,17 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         for (WorkOrderVo o : workOrderVoList) {
             WorkOrderExcelVo workOrderExcelVo = new WorkOrderExcelVo();
             BeanUtil.copyProperties(o, workOrderExcelVo);
+
+            WorkOrderType workOrderType = workOrderTypeService.getById(workOrderExcelVo.getWorkOrderType());
+            if (Objects.nonNull(workOrderType)){
+                workOrderExcelVo.setWorkOrderType(workOrderType.getType());
+            }
+
+            Point point = pointService.getById(o.getPointId());
+            if (Objects.nonNull(point)){
+                workOrderExcelVo.setPointName(point.getName());
+            }
+
             workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
             if (ObjectUtil.isNotEmpty(o.getProcessTime())) {
