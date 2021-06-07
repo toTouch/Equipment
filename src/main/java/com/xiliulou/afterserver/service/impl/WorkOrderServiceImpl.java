@@ -238,7 +238,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             WorkOrderExcelVo workOrderExcelVo = new WorkOrderExcelVo();
             BeanUtil.copyProperties(o, workOrderExcelVo);
 
-            WorkOrderType workOrderType = workOrderTypeService.getById(o.getWorkOrderType());
+            WorkOrderType workOrderType = workOrderTypeService.getById(o.getType());
             if (Objects.nonNull(workOrderType)){
                 workOrderExcelVo.setWorkOrderType(workOrderType.getType());
             }
