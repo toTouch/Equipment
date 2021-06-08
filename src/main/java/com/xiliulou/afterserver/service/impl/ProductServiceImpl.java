@@ -232,7 +232,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         BeanUtil.copyProperties(productSerialNumber, productSerialNumberVo);
 
         if (Objects.nonNull(productSerialNumber)) {
-            if (productSerialNumberVo.getStatus().equals(ProductSerialNumber.UNUSED.toString())
+            if (productSerialNumberVo.getStatus().equals(ProductSerialNumber.PRODUCTION.toString())
                     || productSerialNumberVo.getStatus().equals(ProductSerialNumber.TO_BE_REPAIRED.toString())) {
                 WareHouse wareHouse = warehouseService.getById(productSerialNumber.getPointId());
                 if (Objects.nonNull(wareHouse)) {
