@@ -34,6 +34,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
@@ -69,6 +70,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     ServerService serverService;
     @Autowired
     WorkOrderTypeService workOrderTypeService;
+    @Autowired
+    ExcelQueueHander excelQueueHander;
 
 
     @Override
@@ -108,24 +111,93 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
     @Override
     public void exportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
-
         List<WorkOrderVo> workOrderVoList = baseMapper.orderList(workOrder);
-
 
         if (ObjectUtil.isEmpty(workOrderVoList)) {
             throw new CustomBusinessException("没有查询到工单!无法导出！");
         }
-
+//        excelQueueHander.putQueue(workOrderVoList);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<WorkOrderExcelVo> workOrderExcelVoList = new ArrayList<>(workOrderVoList.size());
+
+        //客户
+        ArrayList<WorkOrderExcelVo> customerList = new ArrayList<>();
+        //供应商
+        ArrayList<WorkOrderExcelVo> supplierList = new ArrayList<>();
+        //服务商
+        ArrayList<WorkOrderExcelVo> serverList = new ArrayList<>();
+
+        workOrderVoList.forEach(item -> {
+            WorkOrderExcelVo workOrderExcelVo = new WorkOrderExcelVo();
+            workOrderExcelVo.setStatusStr(getStatusStr(item.getStatus()));
+            workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(item.getCreateTime())));
+            workOrderExcelVo.setThirdCompanyPay(item.getThirdCompanyPay());
+
+            //TODO 工单原因
+
+            WorkOrderType workOrderType = workOrderTypeService.getById(item.getType());
+            if (Objects.nonNull(workOrderType)){
+                workOrderExcelVo.setWorkOrderType(workOrderType.getType());
+            }
+
+            if (item.getPointId()!=null){
+                Point point = pointService.getById(item.getId());
+                if (Objects.nonNull(point)){
+                    workOrderExcelVo.setPointName(point.getName());
+                }
+            }
+
+
+
+            if (item.getThirdCompanyType() != null ) {
+                if (item.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)){
+                    Customer customer = customerService.getById(item.getThirdCompanyId());
+                    if (Objects.nonNull(customer)) {
+                        workOrderExcelVo.setThirdCompanyName(customer.getName());
+                    }
+                    customerList.add(workOrderExcelVo);
+                }
+
+                if (item.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
+                    Supplier supplier = supplierService.getById(item.getThirdCompanyId());
+                    if (Objects.nonNull(supplier)){
+                        workOrderExcelVo.setThirdCompanyName(supplier.getName());
+                    }
+                    supplierList.add(workOrderExcelVo);
+                }
+            }
+
+
+
+            if (item.getServerId()!=null){
+                Server server = serverService.getById(item.getServerId());
+                if (Objects.nonNull(server)){
+                    workOrderExcelVo.setThirdCompanyName(server.getName());
+                }
+                serverList.add(workOrderExcelVo);
+            }
+
+        });
+
+
+
+
+
+
+
+
+
+
+
+
         for (WorkOrderVo o : workOrderVoList) {
             WorkOrderExcelVo workOrderExcelVo = new WorkOrderExcelVo();
             BeanUtil.copyProperties(o, workOrderExcelVo);
             workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
-            if (ObjectUtil.isNotEmpty(o.getProcessTime())) {
-                workOrderExcelVo.setProcessorTimeStr(simpleDateFormat.format(new Date(o.getProcessTime())));
-            }
+//            if (ObjectUtil.isNotEmpty(o.getProcessTime())) {
+//                workOrderExcelVo.setProcessorTimeStr(simpleDateFormat.format(new Date(o.getProcessTime())));
+//            }
             workOrderExcelVoList.add(workOrderExcelVo);
         }
 
@@ -142,6 +214,19 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             log.error("导出报表失败！", e);
         }
         throw new CustomBusinessException("导出报表失败！请联系客服！");
+    }
+
+
+    private void countExcelHander(List<WorkOrderVo> workOrderVoList, HttpServletResponse response) {
+
+    }
+
+    private void clientExcelHander(List<WorkOrderVo> workOrderVoList, HttpServletResponse response) {
+
+    }
+
+    private void serverExcelHander(List<WorkOrderVo> workOrderVoList, HttpServletResponse response) {
+
     }
 
     private String getStatusStr(Integer status) {
@@ -254,23 +339,21 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
             workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
-            if (ObjectUtil.isNotEmpty(o.getProcessTime())) {
-                workOrderExcelVo.setProcessorTimeStr(simpleDateFormat.format(new Date(o.getProcessTime())));
-            }
+
             workOrderExcelVoList.add(workOrderExcelVo);
-            payAmount.addAndGet((int) (o.getFee()).doubleValue() * 100);
+            payAmount.addAndGet((int) (o.getFee()).doubleValue());
 
             if (Objects.nonNull(o.getThirdCompanyPay())){
                 Double aDouble = new Double(o.getThirdCompanyPay().doubleValue());
-                thirdPayAmount.addAndGet((int) aDouble.doubleValue() * 100);
+                thirdPayAmount.addAndGet((int) aDouble.doubleValue());
             }
         }
         WorkOrderExcelVo tailLine = new WorkOrderExcelVo();
-        tailLine.setWorkOrderType("总金额(单位：分):");
-        tailLine.setPointName(payAmount.toString() +"分");
+        tailLine.setWorkOrderType("总金额");
+        tailLine.setPointName(payAmount.toString());
 
-        tailLine.setThirdCompanyName("第三方总金额(单位：分):");
-        tailLine.setWorkOrderReasonName(thirdPayAmount.toString() +"分");
+        tailLine.setThirdCompanyName("第三方总金额");
+        tailLine.setWorkOrderReasonName(thirdPayAmount.toString());
         workOrderExcelVoList.add(tailLine);
 
         log.info("workOrderExcelVoList:{}", workOrderExcelVoList);
@@ -290,9 +373,17 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
 
 //            /**
+//             * 汇总表
+//             */
+//            if ()
+//
+//
+//
+//
+//            /**
 //             * 每个公司一个表格
 //             */
-//            Map<String, List<WorkOrderExcelVo>> maps = workOrderExcelVoList.stream().collect(Collectors.groupingBy(WorkOrderExcelVo::getWorkOrderType));
+//                Map<String, List<WorkOrderExcelVo>> maps = workOrderExcelVoList.stream().collect(Collectors.groupingBy(WorkOrderExcelVo::getWorkOrderType));
 //
 //            int i = 1;
 //            for (Map.Entry<String, List<WorkOrderExcelVo>> entry : maps.entrySet()) {
@@ -310,6 +401,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             excelWriter.finish();
         }
     }
+
+
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
