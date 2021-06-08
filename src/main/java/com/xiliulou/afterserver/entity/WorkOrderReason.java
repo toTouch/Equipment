@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -18,5 +19,7 @@ public class WorkOrderReason {
     private Long id;
     private String name;
     private Long parentId;
+
+    @TableField(exist = false)
     private List<WorkOrderReason> chird;
 }
