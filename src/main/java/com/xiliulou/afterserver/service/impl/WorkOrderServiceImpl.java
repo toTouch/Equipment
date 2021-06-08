@@ -282,7 +282,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if (Objects.nonNull(point)){
                 workOrderExcelVo.setPointName(point.getName());
             }
-
+            workOrderExcelVo.setThirdCompanyPay(o.getThirdCompanyPay());
             workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
 
