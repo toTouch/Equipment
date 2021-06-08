@@ -239,8 +239,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<WorkOrderExcelVo> workOrderExcelVoList = new ArrayList<>(workOrderVoList.size());
-        AtomicInteger payAmount = new AtomicInteger();
-        AtomicInteger thirdPayAmount = new AtomicInteger();
+
+        AtomicInteger customerPayAmount = new AtomicInteger();
+        AtomicInteger supplierPayAmount = new AtomicInteger();
+        AtomicInteger serverPayAmount = new AtomicInteger();
 
         for (WorkOrderVo o : workOrderVoList) {
             WorkOrderExcelVo workOrderExcelVo = new WorkOrderExcelVo();
@@ -258,6 +260,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         workOrderExcelVo.setThirdCompanyName(customer.getName());
                     }
                     workOrderExcelVo.setThirdCompanyType("客户");
+                    customerPayAmount.addAndGet((int) o.getThirdCompanyPay().doubleValue());
                 }
                 if (o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
                     Supplier supplier = supplierService.getById(o.getThirdCompanyId());
@@ -265,6 +268,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         workOrderExcelVo.setThirdCompanyName(supplier.getName());
                     }
                     workOrderExcelVo.setThirdCompanyType("供应商");
+                    supplierPayAmount.addAndGet((int)o.getThirdCompanyPay().doubleValue());
                 }
             }
 
@@ -274,6 +278,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     workOrderExcelVo.setThirdCompanyName(server.getName());
                 }
                 workOrderExcelVo.setThirdCompanyType("服务商");
+                serverPayAmount.addAndGet((int)o.getThirdCompanyPay().doubleValue());
             }
 
 
@@ -287,19 +292,17 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
 
             workOrderExcelVoList.add(workOrderExcelVo);
-            payAmount.addAndGet((int) (o.getFee()).doubleValue());
 
-            if (Objects.nonNull(o.getThirdCompanyPay())){
-                Double aDouble = new Double(o.getThirdCompanyPay().doubleValue());
-                thirdPayAmount.addAndGet((int) aDouble.doubleValue());
-            }
         }
         WorkOrderExcelVo tailLine = new WorkOrderExcelVo();
-        tailLine.setWorkOrderType("总金额");
-        tailLine.setPointName(payAmount.toString());
+        tailLine.setThirdCompanyType("客户总金额");
+        tailLine.setThirdCompanyName(customerPayAmount.toString());
 
-        tailLine.setThirdCompanyName("第三方总金额");
-        tailLine.setWorkOrderReasonName(thirdPayAmount.toString());
+        tailLine.setWorkOrderType("供应商总金额");
+        tailLine.setPointName(supplierPayAmount.toString());
+
+        tailLine.setWorkOrderReasonName("服务商总金额");
+        tailLine.setStatusStr(serverPayAmount.toString());
         workOrderExcelVoList.add(tailLine);
 
         log.info("workOrderExcelVoList:{}", workOrderExcelVoList);
