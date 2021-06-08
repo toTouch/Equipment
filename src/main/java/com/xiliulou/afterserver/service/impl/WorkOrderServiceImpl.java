@@ -246,9 +246,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         AtomicInteger supplierPayAmount = new AtomicInteger();
         AtomicInteger serverPayAmount = new AtomicInteger();
 
-        for (WorkOrderVo o : workOrderVoList) {
+
+
+
+        workOrderVoList.forEach(o -> {
             WorkOrderExcelVo workOrderExcelVo = new WorkOrderExcelVo();
-//            BeanUtil.copyProperties(o, workOrderExcelVo);
             // TODO: 2021/6/8 0008 工单原因
             WorkOrderType workOrderType = workOrderTypeService.getById(o.getType());
             if (Objects.nonNull(workOrderType)){
@@ -273,29 +275,66 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     if (o.getThirdCompanyPay()!=null) {
                         customerPayAmount.addAndGet((int) o.getThirdCompanyPay().doubleValue());
                     }
-                    customerExcelVoList.add(workOrderExcelVo);
-                    WorkOrderExcelVo tailLine = new WorkOrderExcelVo();
-                    tailLine.setThirdCompanyType("客户总金额");
-                    tailLine.setThirdCompanyName(customerPayAmount.toString());
-                    customerExcelVoList.add(tailLine);
-                }
-                if (o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
-                    Supplier supplier = supplierService.getById(o.getThirdCompanyId());
-                    if(Objects.nonNull(supplier)){
-                        workOrderExcelVo.setThirdCompanyName(supplier.getName());
-                    }
-                    workOrderExcelVo.setThirdCompanyType("供应商");
-                    if (o.getThirdCompanyPay()!=null) {
-                        supplierPayAmount.addAndGet((int) o.getThirdCompanyPay().doubleValue());
-                    }
-                    supplierExcelVoList.add(workOrderExcelVo);
-                    WorkOrderExcelVo tailLine = new WorkOrderExcelVo();
-                    tailLine.setThirdCompanyType("供应商总金额");
-                    tailLine.setThirdCompanyName(supplierPayAmount.toString());
-                    supplierExcelVoList.add(tailLine);
+
                 }
             }
 
+            customerExcelVoList.add(workOrderExcelVo);
+            WorkOrderExcelVo tailLine = new WorkOrderExcelVo();
+            tailLine.setThirdCompanyType("客户总金额");
+            tailLine.setThirdCompanyName(customerPayAmount.toString());
+            customerExcelVoList.add(tailLine);
+        });
+
+
+        workOrderVoList.forEach(o -> {
+            WorkOrderExcelVo workOrderExcelVo = new WorkOrderExcelVo();
+            // TODO: 2021/6/8 0008 工单原因
+            WorkOrderType workOrderType = workOrderTypeService.getById(o.getType());
+            if (Objects.nonNull(workOrderType)){
+                workOrderExcelVo.setWorkOrderType(workOrderType.getType());
+            }
+
+            Point point = pointService.getById(o.getPointId());
+            if (Objects.nonNull(point)){
+                workOrderExcelVo.setPointName(point.getName());
+            }
+            workOrderExcelVo.setThirdCompanyPay(o.getThirdCompanyPay());
+            workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
+            workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
+            if (o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
+                Supplier supplier = supplierService.getById(o.getThirdCompanyId());
+                if(Objects.nonNull(supplier)){
+                    workOrderExcelVo.setThirdCompanyName(supplier.getName());
+                }
+                workOrderExcelVo.setThirdCompanyType("供应商");
+                if (o.getThirdCompanyPay()!=null) {
+                    supplierPayAmount.addAndGet((int) o.getThirdCompanyPay().doubleValue());
+                }
+            }
+            supplierExcelVoList.add(workOrderExcelVo);
+            WorkOrderExcelVo tailLine = new WorkOrderExcelVo();
+            tailLine.setThirdCompanyType("供应商总金额");
+            tailLine.setThirdCompanyName(supplierPayAmount.toString());
+            supplierExcelVoList.add(tailLine);
+        });
+
+        workOrderVoList.forEach(o -> {
+            WorkOrderExcelVo workOrderExcelVo = new WorkOrderExcelVo();
+
+            // TODO: 2021/6/8 0008 工单原因
+            WorkOrderType workOrderType = workOrderTypeService.getById(o.getType());
+            if (Objects.nonNull(workOrderType)){
+                workOrderExcelVo.setWorkOrderType(workOrderType.getType());
+            }
+
+            Point point = pointService.getById(o.getPointId());
+            if (Objects.nonNull(point)){
+                workOrderExcelVo.setPointName(point.getName());
+            }
+            workOrderExcelVo.setThirdCompanyPay(o.getThirdCompanyPay());
+            workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
+            workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
             if (o.getServerId()!=null){
                 Server server = serverService.getById(o.getServerId());
                 if (Objects.nonNull(server)){
@@ -312,8 +351,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 tailLine.setThirdCompanyName(serverPayAmount.toString());
                 serverExcelVoList.add(tailLine);
             }
-
-        }
+        });
 
         ExcelWriter excelWriter = null;
         try {
