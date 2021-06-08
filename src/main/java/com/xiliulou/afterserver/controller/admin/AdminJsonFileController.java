@@ -4,6 +4,8 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.server.HttpServerResponse;
 import com.xiliulou.afterserver.constant.FileConstant;
 import com.xiliulou.afterserver.entity.File;
+import com.xiliulou.afterserver.entity.ProductFile;
+import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.service.FileService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
@@ -27,6 +29,8 @@ public class AdminJsonFileController {
 
     @Autowired
     FileService fileService;
+    @Autowired
+    ProductFileMapper productFileMapper;
 
 
     @GetMapping("/admin/file/list")
@@ -64,5 +68,13 @@ public class AdminJsonFileController {
         return R.ok();
     }
 
+
+    @PostMapping("/admin/product/file")
+    public R adminPrductFile(@RequestBody FileQuery file){
+        ProductFile productFile = new ProductFile();
+        productFile.setFileStr(file.getFileName());
+        productFileMapper.insert(productFile);
+        return R.ok(productFile);
+    }
 
 }
