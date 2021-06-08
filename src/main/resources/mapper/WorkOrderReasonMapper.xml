@@ -23,4 +23,7 @@
 <mapper namespace="com.xiliulou.afterserver.mapper.WorkOrderReasonMapper">
 
 
+    <delete id="deleteForID">
+        delete from work_order_reason where id = #{id}
+    </delete>
 </mapper>
