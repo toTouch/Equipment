@@ -260,7 +260,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         workOrderExcelVo.setThirdCompanyName(customer.getName());
                     }
                     workOrderExcelVo.setThirdCompanyType("客户");
-                    customerPayAmount.addAndGet((int) o.getThirdCompanyPay().doubleValue());
+                    if (o.getThirdCompanyPay()!=null) {
+                        customerPayAmount.addAndGet((int) o.getThirdCompanyPay().doubleValue());
+                    }
                 }
                 if (o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
                     Supplier supplier = supplierService.getById(o.getThirdCompanyId());
@@ -268,7 +270,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         workOrderExcelVo.setThirdCompanyName(supplier.getName());
                     }
                     workOrderExcelVo.setThirdCompanyType("供应商");
-                    supplierPayAmount.addAndGet((int)o.getThirdCompanyPay().doubleValue());
+                    if (o.getThirdCompanyPay()!=null) {
+                        supplierPayAmount.addAndGet((int) o.getThirdCompanyPay().doubleValue());
+                    }
                 }
             }
 
@@ -278,7 +282,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     workOrderExcelVo.setThirdCompanyName(server.getName());
                 }
                 workOrderExcelVo.setThirdCompanyType("服务商");
-                serverPayAmount.addAndGet((int)o.getThirdCompanyPay().doubleValue());
+                if (o.getThirdCompanyPay()!=null) {
+                    serverPayAmount.addAndGet((int) o.getThirdCompanyPay().doubleValue());
+                }
             }
 
 
