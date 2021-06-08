@@ -8,11 +8,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xiliulou.afterserver.entity.Point;
-import com.xiliulou.afterserver.entity.Product;
-import com.xiliulou.afterserver.entity.ProductSerialNumber;
-import com.xiliulou.afterserver.entity.WareHouse;
+import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
+import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.mapper.ProductMapper;
 import com.xiliulou.afterserver.mapper.ProductSerialNumberMapper;
 import com.xiliulou.afterserver.service.PointService;
@@ -24,6 +22,7 @@ import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
 import com.xiliulou.afterserver.web.vo.ProductExcelVo;
 import com.xiliulou.afterserver.web.vo.ProductSerialNumberExcelVo;
 import com.xiliulou.afterserver.web.vo.ProductSerialNumberVo;
+import com.xiliulou.afterserver.web.vo.ProductVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,12 +54,30 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     WarehouseService warehouseService;
     @Autowired
     PointService pointService;
+    @Autowired
+    ProductFileMapper productFileMapper;
 
     @Override
     public IPage getPage(Long offset, Long size, Product product) {
 
         Page page = PageUtil.getPage(offset, size);
-        return baseMapper.selectPage(page, Wrappers.lambdaQuery(product).orderByDesc(Product::getCreateTime));
+        Page selectPage = baseMapper.selectPage(page, Wrappers.lambdaQuery(product).orderByDesc(Product::getCreateTime));
+        List<Product> records = selectPage.getRecords();
+
+        ArrayList<ProductVo> list = new ArrayList<>();
+
+        records.forEach(item -> {
+            ProductVo productVo = new ProductVo();
+            BeanUtil.copyProperties(item,productVo);
+
+            LambdaQueryWrapper<ProductFile> eq = new LambdaQueryWrapper<ProductFile>().eq(ProductFile::getProductId, item.getId());
+            List<ProductFile> productFiles = productFileMapper.selectList(eq);
+            productVo.setProductFileList(productFiles);
+            list.add(productVo);
+        });
+
+        selectPage.setRecords(list);
+        return  selectPage;
     }
 
     @Override

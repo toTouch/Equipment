@@ -1,12 +1,16 @@
 package com.xiliulou.afterserver.controller.admin;
 
 import com.xiliulou.afterserver.entity.Product;
+import com.xiliulou.afterserver.entity.ProductFile;
 import com.xiliulou.afterserver.entity.ProductSerialNumber;
+import com.xiliulou.afterserver.mapper.ProductFileMapper;
+import com.xiliulou.afterserver.mapper.ProductMapper;
 import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -24,6 +28,8 @@ public class AdminJsonProductController {
 
     @Autowired
     ProductService productService;
+    @Autowired
+    ProductFileMapper productFileMapper;
 
 
 
@@ -34,9 +40,17 @@ public class AdminJsonProductController {
 
 
     @PostMapping("admin/product")
+    @Transactional(rollbackFor = Exception.class)
     public R insert(@RequestBody Product product) {
         product.setCreateTime(System.currentTimeMillis());
-        return R.ok(productService.save(product));
+        productService.save(product);
+        if (product.getAccessory()!=null){
+            ProductFile productFile = new ProductFile();
+            productFile.setFileStr(product.getAccessory());
+            productFile.setProductId(product.getId());
+            productFileMapper.insert(productFile);
+        }
+        return R.ok();
     }
 
     @PutMapping("admin/product")
