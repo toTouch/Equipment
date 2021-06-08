@@ -46,10 +46,6 @@ public class ProductSerialNumber {
     //批次
     private String batch;
 
-    //附件
-    @TableField(exist = false)
-    private String accessory;
-
 
     /**
      * 0:生产中（刚刚创建）                    工厂地址
