@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -32,6 +33,13 @@ public class Product implements Serializable {
     private String info;
     private String state;//产品状态
     private BigDecimal price;//价格
+
+    //批次
+    private String batch;
+
+    //附件
+    @TableField(exist = false)
+    private String accessory;
 
     public static final Integer MAIN_LOCKER = 1;
     public static final Integer VICE_LOCKER = 2;
