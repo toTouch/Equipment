@@ -33,6 +33,7 @@ public class Product implements Serializable {
     private String info;
     private String state;//产品状态
     private BigDecimal price;//价格
+    private String remarks;//备注
 
     //批次
     private String batch;
