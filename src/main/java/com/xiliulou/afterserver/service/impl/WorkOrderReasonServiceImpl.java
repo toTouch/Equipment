@@ -17,4 +17,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class WorkOrderReasonServiceImpl extends ServiceImpl<WorkOrderReasonMapper, WorkOrderReason> implements WorkOrderReasonService {
 
+    @Override
+    public Integer deleteById(Long id) {
+        return this.baseMapper.deleteForID(id);
+    }
 }
