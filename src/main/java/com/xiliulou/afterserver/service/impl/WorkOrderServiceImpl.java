@@ -302,7 +302,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             workOrderExcelVo.setThirdCompanyPay(o.getThirdCompanyPay());
             workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
-            if (o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
+            if (o.getThirdCompanyType() != null && o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
                 Supplier supplier = supplierService.getById(o.getThirdCompanyId());
                 if(Objects.nonNull(supplier)){
                     workOrderExcelVo.setThirdCompanyName(supplier.getName());
