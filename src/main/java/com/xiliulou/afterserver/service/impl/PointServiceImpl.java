@@ -312,14 +312,14 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
     @Override
     public R unBindSerialNumber(Long pid) {
         ProductSerialNumber productSerialNumber = productSerialNumberMapper.selectById(pid);
-        Product product = productService.getById(pid);
-        if (Objects.nonNull(product)){
-            if (product.getType().equals(Product.MAIN_LOCKER)){
-                Point point = pointService.getById(productSerialNumber.getPointId());
-                point.setStatus(Point.STATUS_REMOVE);
-                pointService.updateById(point);
-            }
-        }
+//        Product product = productService.getById(pid);
+//        if (Objects.nonNull(product)){
+//            if (product.getType().equals(Product.MAIN_LOCKER)){
+//                Point point = pointService.getById(productSerialNumber.getPointId());
+//                point.setStatus(Point.STATUS_REMOVE);
+//                pointService.updateById(point);
+//            }
+//        }
         if (Objects.nonNull(productSerialNumber)){
             productSerialNumber.setPointId(null);
             productSerialNumber.setSetNo(null);
