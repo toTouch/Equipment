@@ -45,10 +45,11 @@ public class AdminJsonWorkOrderReasonController {
     @DeleteMapping("admin/workOrderReason")
     public R delete(@RequestParam("id") Long id) {
 //        workOrderReasonService.remove(Wrappers.<WorkOrderReason>lambdaUpdate().eq(WorkOrderReason::getParentId, id));
-      Integer  del  =  workOrderReasonService.deleteById(id);
-      if (del > 0){
-          return R.ok();
-      }
-        return R.fail("删除错误");
+//      Integer  del  =  workOrderReasonService.deleteById(id);
+//      if (del > 0){
+//          return R.ok();
+//      }
+        return R.ok(workOrderReasonService.deleteById(id));
+//        return R.fail("删除错误");
     }
 }
