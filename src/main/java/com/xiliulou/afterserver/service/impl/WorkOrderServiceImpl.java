@@ -507,7 +507,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 || workOrder.getType().equals(WorkOrder.TYPE_SEND_INSERT.toString())) {
             Deliver deliver = new Deliver();
             deliver.setCreateTime(System.currentTimeMillis());
-            deliver.setDeliverCost(workOrder.getSendManey());
+            deliver.setDeliverCost(workOrder.getFee());
 
             Server server = serverService.getById(workOrder.getServerId());
             if (Objects.nonNull(server)) {
