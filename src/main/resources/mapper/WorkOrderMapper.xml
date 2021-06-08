@@ -31,6 +31,7 @@
         <id property="thirdCompanyType" column="wo_third_company_type"/>
         <id property="thirdCompanyId" column="wo_third_company_id"/>
         <id property="thirdCompanyPay" column="wo_third_company_pay"/>
+        <id property="thirdReason" column="wo_third_reason"/>
         <id property="workOrderReasonId" column="wo_work_order_reason_id"/>
         <id property="processor" column="wo_processor"/>
         <id property="createrId" column="wo_creater_id"/>
@@ -134,6 +135,7 @@
         wo.third_company_id as wo_third_company_id,
         wo.third_company_type as wo_third_company_type,
         wo.third_company_pay as wo_third_company_pay,
+        wo.third_reason as wo_third_reason,
         wo.work_order_reason_id as wo_work_order_reason_id,
         wo.processor as wo_processor,
         wo.creater_id as wo_creater_id,

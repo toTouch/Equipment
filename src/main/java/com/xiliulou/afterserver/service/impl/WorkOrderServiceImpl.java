@@ -263,6 +263,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if (Objects.nonNull(point)){
                 workOrderExcelVo.setPointName(point.getName());
             }
+            workOrderExcelVo.setWorkOrderReasonName(o.getThirdReason());
             workOrderExcelVo.setThirdCompanyPay(o.getThirdCompanyPay());
             workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
@@ -297,6 +298,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if (Objects.nonNull(point)){
                 workOrderExcelVo2.setPointName(point.getName());
             }
+            workOrderExcelVo2.setWorkOrderReasonName(o.getThirdReason());
             workOrderExcelVo2.setThirdCompanyPay(o.getThirdCompanyPay());
             workOrderExcelVo2.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo2.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
