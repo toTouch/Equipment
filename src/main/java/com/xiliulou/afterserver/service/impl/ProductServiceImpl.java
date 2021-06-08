@@ -151,6 +151,8 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             productSerialNumber.setCreateTime(System.currentTimeMillis());
 //            productSerialNumberMapper.insert(productSerialNumber);
             boolean save = productSerialNumberService.save(productSerialNumber);
+
+            log.error("ProductSerialNumber========ID :{}",productSerialNumber.getId());
             if (save){
                 ProductFile productFile = new ProductFile();
                 productFile.setProductId(productSerialNumber.getId());
