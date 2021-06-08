@@ -43,6 +43,14 @@ public class ProductSerialNumber {
     private String factory;
 
 
+    //批次
+    private String batch;
+
+    //附件
+    @TableField(exist = false)
+    private String accessory;
+
+
     /**
      * 0:生产中（刚刚创建）                    工厂地址
      * 1:运输中  （发货管理）                  对应物流的收货地址

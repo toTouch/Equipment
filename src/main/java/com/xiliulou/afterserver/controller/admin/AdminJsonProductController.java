@@ -44,12 +44,6 @@ public class AdminJsonProductController {
     public R insert(@RequestBody Product product) {
         product.setCreateTime(System.currentTimeMillis());
         productService.save(product);
-        if (product.getAccessory()!=null){
-            ProductFile productFile = new ProductFile();
-            productFile.setFileStr(product.getAccessory());
-            productFile.setProductId(product.getId());
-            productFileMapper.insert(productFile);
-        }
         return R.ok();
     }
 

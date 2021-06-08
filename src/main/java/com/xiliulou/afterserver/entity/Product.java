@@ -35,12 +35,7 @@ public class Product implements Serializable {
     private BigDecimal price;//价格
     private String remarks;//备注
 
-    //批次
-    private String batch;
 
-    //附件
-    @TableField(exist = false)
-    private String accessory;
 
     public static final Integer MAIN_LOCKER = 1;
     public static final Integer VICE_LOCKER = 2;

@@ -1,8 +1,10 @@
 package com.xiliulou.afterserver.web.vo;
 
+import com.xiliulou.afterserver.entity.ProductFile;
 import com.xiliulou.afterserver.entity.ProductSerialNumber;
 import lombok.Data;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -23,4 +25,8 @@ public class ProductSerialNumberVo extends ProductSerialNumber {
 
     //位置
     private Object addr;
+
+    private List<ProductFile> productFileList;
+
+
 }

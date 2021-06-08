@@ -22,7 +22,6 @@ import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
 import com.xiliulou.afterserver.web.vo.ProductExcelVo;
 import com.xiliulou.afterserver.web.vo.ProductSerialNumberExcelVo;
 import com.xiliulou.afterserver.web.vo.ProductSerialNumberVo;
-import com.xiliulou.afterserver.web.vo.ProductVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -62,21 +61,6 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
         Page page = PageUtil.getPage(offset, size);
         Page selectPage = baseMapper.selectPage(page, Wrappers.lambdaQuery(product).orderByDesc(Product::getCreateTime));
-        List<Product> records = selectPage.getRecords();
-
-        ArrayList<ProductVo> list = new ArrayList<>();
-
-        records.forEach(item -> {
-            ProductVo productVo = new ProductVo();
-            BeanUtil.copyProperties(item,productVo);
-
-            LambdaQueryWrapper<ProductFile> eq = new LambdaQueryWrapper<ProductFile>().eq(ProductFile::getProductId, item.getId());
-            List<ProductFile> productFiles = productFileMapper.selectList(eq);
-            productVo.setProductFileList(productFiles);
-            list.add(productVo);
-        });
-
-        selectPage.setRecords(list);
         return  selectPage;
     }
 
@@ -169,7 +153,19 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
     @Override
     public IPage getSerialNumberPage(Long offset, Long size, ProductSerialNumberQuery productSerialNumber) {
-        return productSerialNumberMapper.getSerialNumberPage(PageUtil.getPage(offset, size), productSerialNumber);
+        IPage<ProductSerialNumberVo> serialNumberPage = productSerialNumberMapper.getSerialNumberPage(PageUtil.getPage(offset, size), productSerialNumber);
+        List<ProductSerialNumberVo> records = serialNumberPage.getRecords();
+
+        records.forEach(item -> {
+
+            LambdaQueryWrapper<ProductFile> eq = new LambdaQueryWrapper<ProductFile>().eq(ProductFile::getProductId, item.getId());
+            List<ProductFile> productFiles = productFileMapper.selectList(eq);
+            item.setProductFileList(productFiles);
+
+        });
+
+        serialNumberPage.setRecords(records);
+        return serialNumberPage;
     }
 
     @Override
@@ -237,6 +233,14 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             productSerialNumber.setSerialNumber(code + "_" + i);
             productSerialNumber.setCreateTime(System.currentTimeMillis());
             productSerialNumberMapper.insert(productSerialNumber);
+
+            if (productSerialNumberQuery.getAccessory()!=null){
+                ProductFile productFile = new ProductFile();
+                productFile.setFileStr(productSerialNumberQuery.getAccessory());
+                productFile.setProductId(productSerialNumberQuery.getId());
+                productFileMapper.insert(productFile);
+            }
+
         }
 
         return R.ok();
