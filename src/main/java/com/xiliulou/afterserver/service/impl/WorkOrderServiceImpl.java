@@ -276,19 +276,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 if (o.getThirdCompanyPay()!=null) {
                     customerPayAmount.addAndGet((int) o.getThirdCompanyPay().doubleValue());
                 }
+                customerExcelVoList.add(workOrderExcelVo);
             }
-            customerExcelVoList.add(workOrderExcelVo);
+
+            WorkOrderExcelVo tailLine = new WorkOrderExcelVo();
+            tailLine.setThirdCompanyType("客户总金额");
+            tailLine.setThirdCompanyName(customerPayAmount.toString());
+            customerExcelVoList.add(tailLine);
         });
-
-        WorkOrderExcelVo tailLine = new WorkOrderExcelVo();
-        tailLine.setThirdCompanyType("客户总金额");
-        tailLine.setThirdCompanyName(customerPayAmount.toString());
-        customerExcelVoList.add(tailLine);
-
-
-
-
-
 
 
         workOrderVoList.forEach(o -> {
@@ -315,14 +310,15 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 if (o.getThirdCompanyPay()!=null) {
                     supplierPayAmount.addAndGet((int) o.getThirdCompanyPay().doubleValue());
                 }
+                supplierExcelVoList.add(workOrderExcelVo2);
             }
-            supplierExcelVoList.add(workOrderExcelVo2);
+
+            WorkOrderExcelVo2 tailLine2 = new WorkOrderExcelVo2();
+            tailLine2.setThirdCompanyType("供应商总金额");
+            tailLine2.setThirdCompanyName(supplierPayAmount.toString());
+            supplierExcelVoList.add(tailLine2);
         });
 
-        WorkOrderExcelVo2 tailLine2 = new WorkOrderExcelVo2();
-        tailLine.setThirdCompanyType("供应商总金额");
-        tailLine.setThirdCompanyName(supplierPayAmount.toString());
-        supplierExcelVoList.add(tailLine2);
 
 
 
@@ -355,12 +351,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrderExcelVo3.setThirdCompanyPay(o.getFee());
                 serverExcelVoList.add(workOrderExcelVo3);
             }
+            WorkOrderExcelVo3 tailLine3 = new WorkOrderExcelVo3();
+            tailLine3.setThirdCompanyType("服务商总金额");
+            tailLine3.setThirdCompanyName(serverPayAmount.toString());
+            serverExcelVoList.add(tailLine3);
         });
 
-        WorkOrderExcelVo3 tailLine3 = new WorkOrderExcelVo3();
-        tailLine.setThirdCompanyType("服务商总金额");
-        tailLine.setThirdCompanyName(serverPayAmount.toString());
-        serverExcelVoList.add(tailLine3);
+
 
         ExcelWriter excelWriter = null;
         try {
