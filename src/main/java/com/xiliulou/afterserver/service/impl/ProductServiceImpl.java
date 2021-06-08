@@ -147,6 +147,11 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             productSerialNumber.setPrice(product.getPrice());
             productSerialNumber.setCreateTime(System.currentTimeMillis());
             productSerialNumberMapper.insert(productSerialNumber);
+
+            ProductFile productFile = new ProductFile();
+            productFile.setProductId(productSerialNumber.getId());
+            productFile.setFileStr(productSerialNumberQuery.getAccessory());
+            productFileMapper.insert(productFile);
         }
         return R.ok();
     }
