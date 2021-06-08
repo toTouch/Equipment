@@ -24,7 +24,7 @@ public class WorkOrderExcelVo {
     private String pointName;
     @ExcelProperty("工单原因")
     private String workOrderReasonName;
-    @ExcelProperty("公司承担费用")
+    @ExcelProperty("费用")
     private BigDecimal thirdCompanyPay;
     @ExcelProperty("工单状态")
     private String statusStr;
