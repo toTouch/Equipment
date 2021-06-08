@@ -277,6 +277,9 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
                 }
             }
 
+            LambdaQueryWrapper<ProductFile> eq = new LambdaQueryWrapper<ProductFile>().eq(ProductFile::getProductId, id);
+            List<ProductFile> productFiles = productFileMapper.selectList(eq);
+            productSerialNumberVo.setProductFileList(productFiles);
         }
 
         return R.ok(productSerialNumberVo);
