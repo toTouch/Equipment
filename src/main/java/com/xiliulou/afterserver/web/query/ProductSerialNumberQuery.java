@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.web.query;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.xiliulou.afterserver.entity.ProductSerialNumber;
 import lombok.Data;
 
@@ -21,5 +22,8 @@ public class ProductSerialNumberQuery extends ProductSerialNumber {
 
     private Long createTimeStart;
     private Long createTimeEnd;
+
+    //附件
+    private String accessory;
 
 }
