@@ -244,11 +244,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             productSerialNumber.setCreateTime(System.currentTimeMillis());
             productSerialNumberMapper.insert(productSerialNumber);
 
-            if (productSerialNumberQuery.getAccessory()!=null){
-                ProductFile productFile = new ProductFile();
-                productFile.setFileStr(productSerialNumberQuery.getAccessory());
-                productFile.setProductId(productSerialNumberQuery.getId());
-                productFileMapper.insert(productFile);
+            if (productSerialNumberQuery.getFileId()!=null){
+                ProductFile productFile = productFileMapper.selectById(productSerialNumberQuery.getFileId());
+                productFile.setProductId(productSerialNumber.getId());
+                productFileMapper.updateById(productFile);
             }
 
         }
