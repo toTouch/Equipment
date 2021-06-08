@@ -14,6 +14,7 @@ import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.mapper.ProductMapper;
 import com.xiliulou.afterserver.mapper.ProductSerialNumberMapper;
 import com.xiliulou.afterserver.service.PointService;
+import com.xiliulou.afterserver.service.ProductSerialNumberService;
 import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.service.WarehouseService;
 import com.xiliulou.afterserver.util.PageUtil;
@@ -47,6 +48,8 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
     @Autowired
     ProductSerialNumberMapper productSerialNumberMapper;
+    @Autowired
+    ProductSerialNumberService productSerialNumberService;
     @Autowired
     ProductService productService;
     @Autowired
@@ -146,7 +149,8 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             productSerialNumber.setProductId(productSerialNumberQuery.getProductId());
             productSerialNumber.setPrice(product.getPrice());
             productSerialNumber.setCreateTime(System.currentTimeMillis());
-            productSerialNumberMapper.insert(productSerialNumber);
+//            productSerialNumberMapper.insert(productSerialNumber);
+            productSerialNumberService.save(productSerialNumber);
 
             ProductFile productFile = new ProductFile();
             productFile.setProductId(productSerialNumber.getId());
