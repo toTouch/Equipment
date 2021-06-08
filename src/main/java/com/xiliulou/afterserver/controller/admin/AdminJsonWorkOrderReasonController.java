@@ -30,6 +30,10 @@ public class AdminJsonWorkOrderReasonController {
         return R.ok(workOrderReasonService.list());
     }
 
+    @GetMapping("/admin/reason/tree/list")
+    public R getTreeList(){
+        return workOrderReasonService.getTreeList();
+    }
 
     @PostMapping("admin/workOrderReason")
     public R insert(@RequestBody WorkOrderReason workOrderReason) {

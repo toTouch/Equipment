@@ -4,8 +4,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.WorkOrderReason;
 import com.xiliulou.afterserver.mapper.WorkOrderReasonMapper;
 import com.xiliulou.afterserver.service.WorkOrderReasonService;
+import com.xiliulou.afterserver.util.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @program: XILIULOU
@@ -20,5 +24,33 @@ public class WorkOrderReasonServiceImpl extends ServiceImpl<WorkOrderReasonMappe
     @Override
     public Integer deleteById(Long id) {
         return this.baseMapper.deleteForID(id);
+    }
+
+    @Override
+    public R getTreeList() {
+        List<WorkOrderReason> selectList = this.baseMapper.selectList(null);
+
+
+        List<WorkOrderReason> collectMenu1 = selectList.stream().filter(item -> item.getParentId() == -1)
+                .map(menu -> {
+                    menu.setChird(getChrlidens(menu, selectList));
+                    return menu;
+                }).collect(Collectors.toList());
+
+        return R.ok(collectMenu1);
+    }
+
+
+    /***
+     * 递归查询所有的分类的下级分类
+     */
+    private List<WorkOrderReason> getChrlidens(WorkOrderReason root, List<WorkOrderReason> allList) {
+        List<WorkOrderReason> chrlidens = allList.stream().filter(item -> {
+            return item.getParentId().equals(root.getId());
+        }).map(item -> {
+            item.setChird(getChrlidens(item, allList));
+            return item;
+        }).collect(Collectors.toList());
+        return chrlidens;
     }
 }

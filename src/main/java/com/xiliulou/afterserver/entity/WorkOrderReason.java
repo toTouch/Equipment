@@ -3,6 +3,8 @@ package com.xiliulou.afterserver.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @program: XILIULOU
  * @description: 工单原因
@@ -16,4 +18,5 @@ public class WorkOrderReason {
     private Long id;
     private String name;
     private Long parentId;
+    private List<WorkOrderReason> chird;
 }
