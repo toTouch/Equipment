@@ -289,6 +289,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     public R updateProductSerialNumberInfo(ProductSerialNumberQuery productSerialNumberQuery) {
         int i = productSerialNumberMapper.updateById(productSerialNumberQuery);
         if (i > 0) {
+
             return R.ok();
         }
         return R.fail("数据库错误");

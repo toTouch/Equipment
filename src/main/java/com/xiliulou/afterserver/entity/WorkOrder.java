@@ -26,6 +26,7 @@ public class WorkOrder implements Serializable {
     private Long thirdCompanyId;
     private Integer thirdCompanyType;
     private BigDecimal thirdCompanyPay;
+    private String thirdReason;
     private Long workOrderReasonId;
     //服务商id
     private Long serverId;

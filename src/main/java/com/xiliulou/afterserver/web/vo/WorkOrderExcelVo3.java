@@ -22,8 +22,8 @@ public class WorkOrderExcelVo3 {
     private String workOrderType;
     @ExcelProperty("点位")
     private String pointName;
-    @ExcelProperty("工单原因")
-    private String workOrderReasonName;
+//    @ExcelProperty("工单原因")
+//    private String workOrderReasonName;
     @ExcelProperty("工单状态")
     private String statusStr;
     @ExcelProperty("费用")
