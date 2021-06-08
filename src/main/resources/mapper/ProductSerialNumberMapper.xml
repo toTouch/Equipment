@@ -31,6 +31,7 @@
         psu.serial_number ,
         psu.product_id,
         psu.create_time ,
+        psu.remarks ,
         p.name as product_name,
         psu.status
         FROM
