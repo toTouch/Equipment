@@ -508,7 +508,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             Deliver deliver = new Deliver();
             deliver.setCreateTime(System.currentTimeMillis());
             deliver.setDeliverCost(workOrder.getFee());
-
+            deliver.setRemark(workOrder.getInfo());
             Server server = serverService.getById(workOrder.getServerId());
             if (Objects.nonNull(server)) {
                 deliver.setExpressCompany(server.getName());
