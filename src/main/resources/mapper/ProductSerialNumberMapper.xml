@@ -33,7 +33,8 @@
         psu.create_time ,
         psu.remarks ,
         p.name as product_name,
-        psu.status
+        psu.status,
+        psu.batch
         FROM
         product_serial_number AS psu
         LEFT JOIN product AS p ON p.id = psu.product_id
