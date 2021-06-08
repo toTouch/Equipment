@@ -292,7 +292,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     WorkOrderExcelVo tailLine = new WorkOrderExcelVo();
                     tailLine.setThirdCompanyType("供应商总金额");
                     tailLine.setThirdCompanyName(supplierPayAmount.toString());
-                    supplierExcelVoList.add(workOrderExcelVo);
+                    supplierExcelVoList.add(tailLine);
                 }
             }
 
@@ -305,26 +305,16 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 if (o.getThirdCompanyPay()!=null) {
                     serverPayAmount.addAndGet((int) o.getFee().doubleValue());
                 }
+                workOrderExcelVo.setThirdCompanyPay(o.getFee());
                 serverExcelVoList.add(workOrderExcelVo);
                 WorkOrderExcelVo tailLine = new WorkOrderExcelVo();
                 tailLine.setThirdCompanyType("服务商总金额");
                 tailLine.setThirdCompanyName(serverPayAmount.toString());
-                serverExcelVoList.add(workOrderExcelVo);
+                serverExcelVoList.add(tailLine);
             }
 
         }
-//        WorkOrderExcelVo tailLine = new WorkOrderExcelVo();
-//        tailLine.setThirdCompanyType("客户总金额");
-//        tailLine.setThirdCompanyName(customerPayAmount.toString());
-//
-//        tailLine.setWorkOrderType("供应商总金额");
-//        tailLine.setPointName(supplierPayAmount.toString());
-//
-//        tailLine.setWorkOrderReasonName("服务商总金额");
-//        tailLine.setStatusStr(serverPayAmount.toString());
-//        workOrderExcelVoList.add(tailLine);
-//
-//        log.info("workOrderExcelVoList:{}", workOrderExcelVoList);
+
         ExcelWriter excelWriter = null;
         try {
             String fileName = URLEncoder.encode("客商信息表", "UTF-8");
