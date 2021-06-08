@@ -24,6 +24,6 @@ public class ProductSerialNumberQuery extends ProductSerialNumber {
     private Long createTimeEnd;
 
     //附件
-    private String accessory;
+    private String fileId;
 
 }

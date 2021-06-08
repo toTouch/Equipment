@@ -149,16 +149,14 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             productSerialNumber.setProductId(productSerialNumberQuery.getProductId());
             productSerialNumber.setPrice(product.getPrice());
             productSerialNumber.setCreateTime(System.currentTimeMillis());
-//            productSerialNumberMapper.insert(productSerialNumber);
-            boolean save = productSerialNumberService.save(productSerialNumber);
+            productSerialNumberService.save(productSerialNumber);
 
-            log.error("ProductSerialNumber========ID :{}",productSerialNumber.getId());
-            if (save){
-                ProductFile productFile = new ProductFile();
+            if (productSerialNumberQuery.getFileId()!=null){
+                ProductFile productFile = productFileMapper.selectById(productSerialNumberQuery.getFileId());
                 productFile.setProductId(productSerialNumber.getId());
-                productFile.setFileStr(productSerialNumberQuery.getAccessory());
-                productFileMapper.insert(productFile);
+                productFileMapper.updateById(productFile);
             }
+
         }
         return R.ok();
     }
