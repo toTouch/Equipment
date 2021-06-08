@@ -238,7 +238,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             throw new CustomBusinessException("没有查询到工单!无法导出！");
         }
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        List<WorkOrderExcelVo> workOrderExcelVoList = new ArrayList<>(workOrderVoList.size());
+        List<WorkOrderExcelVo> customerExcelVoList = new ArrayList<>(workOrderVoList.size());
+        List<WorkOrderExcelVo> supplierExcelVoList = new ArrayList<>(workOrderVoList.size());
+        List<WorkOrderExcelVo> serverExcelVoList = new ArrayList<>(workOrderVoList.size());
 
         AtomicInteger customerPayAmount = new AtomicInteger();
         AtomicInteger supplierPayAmount = new AtomicInteger();
@@ -253,6 +255,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrderExcelVo.setWorkOrderType(workOrderType.getType());
             }
 
+            Point point = pointService.getById(o.getPointId());
+            if (Objects.nonNull(point)){
+                workOrderExcelVo.setPointName(point.getName());
+            }
+            workOrderExcelVo.setThirdCompanyPay(o.getThirdCompanyPay());
+            workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
+            workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
+
             if (o.getThirdCompanyType()!=null){
                 if (o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)){
                     Customer customer = customerService.getById(o.getThirdCompanyId());
@@ -263,6 +273,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     if (o.getThirdCompanyPay()!=null) {
                         customerPayAmount.addAndGet((int) o.getThirdCompanyPay().doubleValue());
                     }
+                    customerExcelVoList.add(workOrderExcelVo);
+                    WorkOrderExcelVo tailLine = new WorkOrderExcelVo();
+                    tailLine.setThirdCompanyType("客户总金额");
+                    tailLine.setThirdCompanyName(customerPayAmount.toString());
+                    customerExcelVoList.add(tailLine);
                 }
                 if (o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
                     Supplier supplier = supplierService.getById(o.getThirdCompanyId());
@@ -273,6 +288,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     if (o.getThirdCompanyPay()!=null) {
                         supplierPayAmount.addAndGet((int) o.getThirdCompanyPay().doubleValue());
                     }
+                    supplierExcelVoList.add(workOrderExcelVo);
+                    WorkOrderExcelVo tailLine = new WorkOrderExcelVo();
+                    tailLine.setThirdCompanyType("供应商总金额");
+                    tailLine.setThirdCompanyName(supplierPayAmount.toString());
+                    supplierExcelVoList.add(workOrderExcelVo);
                 }
             }
 
@@ -283,35 +303,28 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
                 workOrderExcelVo.setThirdCompanyType("服务商");
                 if (o.getThirdCompanyPay()!=null) {
-                    serverPayAmount.addAndGet((int) o.getThirdCompanyPay().doubleValue());
+                    serverPayAmount.addAndGet((int) o.getFee().doubleValue());
                 }
+                serverExcelVoList.add(workOrderExcelVo);
+                WorkOrderExcelVo tailLine = new WorkOrderExcelVo();
+                tailLine.setThirdCompanyType("服务商总金额");
+                tailLine.setThirdCompanyName(serverPayAmount.toString());
+                serverExcelVoList.add(workOrderExcelVo);
             }
-
-
-
-            Point point = pointService.getById(o.getPointId());
-            if (Objects.nonNull(point)){
-                workOrderExcelVo.setPointName(point.getName());
-            }
-            workOrderExcelVo.setThirdCompanyPay(o.getThirdCompanyPay());
-            workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
-            workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
-
-            workOrderExcelVoList.add(workOrderExcelVo);
 
         }
-        WorkOrderExcelVo tailLine = new WorkOrderExcelVo();
-        tailLine.setThirdCompanyType("客户总金额");
-        tailLine.setThirdCompanyName(customerPayAmount.toString());
-
-        tailLine.setWorkOrderType("供应商总金额");
-        tailLine.setPointName(supplierPayAmount.toString());
-
-        tailLine.setWorkOrderReasonName("服务商总金额");
-        tailLine.setStatusStr(serverPayAmount.toString());
-        workOrderExcelVoList.add(tailLine);
-
-        log.info("workOrderExcelVoList:{}", workOrderExcelVoList);
+//        WorkOrderExcelVo tailLine = new WorkOrderExcelVo();
+//        tailLine.setThirdCompanyType("客户总金额");
+//        tailLine.setThirdCompanyName(customerPayAmount.toString());
+//
+//        tailLine.setWorkOrderType("供应商总金额");
+//        tailLine.setPointName(supplierPayAmount.toString());
+//
+//        tailLine.setWorkOrderReasonName("服务商总金额");
+//        tailLine.setStatusStr(serverPayAmount.toString());
+//        workOrderExcelVoList.add(tailLine);
+//
+//        log.info("workOrderExcelVoList:{}", workOrderExcelVoList);
         ExcelWriter excelWriter = null;
         try {
             String fileName = URLEncoder.encode("客商信息表", "UTF-8");
@@ -323,31 +336,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             /**
              * 总的导表
              */
-            WriteSheet writeSheet1 = EasyExcel.writerSheet(0, "全部类型").head(WorkOrderExcelVo.class).build();
-            excelWriter.write(workOrderExcelVoList, writeSheet1);
+            WriteSheet writeSheet1 = EasyExcel.writerSheet(0, "客户").head(WorkOrderExcelVo.class).build();
+            excelWriter.write(customerExcelVoList, writeSheet1);
 
+            WriteSheet writeSheet2 = EasyExcel.writerSheet(1, "供应商").head(WorkOrderExcelVo.class).build();
+            excelWriter.write(supplierExcelVoList, writeSheet2);
 
-//            /**
-//             * 汇总表
-//             */
-//            if ()
-//
-//
-//
-//
-//            /**
-//             * 每个公司一个表格
-//             */
-//                Map<String, List<WorkOrderExcelVo>> maps = workOrderExcelVoList.stream().collect(Collectors.groupingBy(WorkOrderExcelVo::getWorkOrderType));
-//
-//            int i = 1;
-//            for (Map.Entry<String, List<WorkOrderExcelVo>> entry : maps.entrySet()) {
-//                String workOrderType = entry.getKey();
-//                List<WorkOrderExcelVo> workOrderExcelVos = entry.getValue();
-//                WriteSheet writeSheet2 = EasyExcel.writerSheet(i, workOrderType).head(WorkOrderExcelVo.class).build();
-//                excelWriter.write(workOrderExcelVos, writeSheet2);
-//                i++;
-//            }
+            WriteSheet writeSheet3 = EasyExcel.writerSheet(2, "服务商").head(WorkOrderExcelVo.class).build();
+            excelWriter.write(serverExcelVoList, writeSheet3);
 
         } catch (Exception e) {
             log.error("导出报表失败!", e);
