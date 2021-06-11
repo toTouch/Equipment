@@ -15,6 +15,6 @@ public class FileQuery extends File {
     public static final Integer FLAG_FALSE = 0;
     public static final Integer FLAG_TRUE = 1;
 
-
+    private String fileStr;
     public Integer delFlag;
 }
