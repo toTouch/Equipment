@@ -165,7 +165,7 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
         if (ObjectUtil.isNotEmpty(pointQuery.getFileList())) {
             List<File> filList = new ArrayList();
             for (File file : pointQuery.getFileList()) {
-                file.setFileType(File.FILE_TYPE_SPOT);
+//                file.setFileType(File.FILE_TYPE_SPOT);
                 file.setBindId(pointQuery.getId());
                 file.setType(File.TYPE_POINT);
                 file.setCreateTime(System.currentTimeMillis());
