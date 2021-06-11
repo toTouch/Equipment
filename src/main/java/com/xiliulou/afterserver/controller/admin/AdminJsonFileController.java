@@ -71,7 +71,7 @@ public class AdminJsonFileController {
 
     @PostMapping("/admin/product/file")
     public R adminPrductFile(@RequestBody ProductFile file){
-
+        log.error("productFile:{}",file.toString());
         productFileMapper.insert(file);
         return R.ok(file);
     }
