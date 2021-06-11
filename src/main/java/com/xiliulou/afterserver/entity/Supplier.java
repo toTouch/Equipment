@@ -28,5 +28,8 @@ public class Supplier {
     //费用明细
     private String scheduleOfFees;
 
+    @TableField(exist = false)
+    private String cityName;
+
 
 }
