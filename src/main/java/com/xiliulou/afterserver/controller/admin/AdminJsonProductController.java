@@ -5,6 +5,7 @@ import com.xiliulou.afterserver.entity.ProductFile;
 import com.xiliulou.afterserver.entity.ProductSerialNumber;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.mapper.ProductMapper;
+import com.xiliulou.afterserver.service.ProductSerialNumberService;
 import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
@@ -30,6 +31,8 @@ public class AdminJsonProductController {
     ProductService productService;
     @Autowired
     ProductFileMapper productFileMapper;
+    @Autowired
+    ProductSerialNumberService productSerialNumberService;
 
 
 
@@ -102,6 +105,11 @@ public class AdminJsonProductController {
     @PutMapping("/admin/product/serial/number")
     public R updateProductSerialNumberInfo(@RequestBody ProductSerialNumberQuery productSerialNumberQuery){
         return productService.updateProductSerialNumberInfo(productSerialNumberQuery);
+    }
+
+    @DeleteMapping("/admin/product/serial/number")
+    public R delProductSerialNumber(@RequestParam("id") Long id){
+        return R.ok(productSerialNumberService.removeById(id));
     }
 
 }
