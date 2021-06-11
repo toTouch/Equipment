@@ -26,4 +26,6 @@ public class ProductFile implements Serializable {
     private Long productId;
 
     private String fileStr;
+
+    private String fileName;
 }
