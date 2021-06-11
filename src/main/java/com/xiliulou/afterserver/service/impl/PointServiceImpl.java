@@ -7,17 +7,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xiliulou.afterserver.entity.File;
-import com.xiliulou.afterserver.entity.Point;
-import com.xiliulou.afterserver.entity.Product;
-import com.xiliulou.afterserver.entity.ProductSerialNumber;
+import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.PointBindProductMapper;
 import com.xiliulou.afterserver.mapper.PointMapper;
 import com.xiliulou.afterserver.mapper.ProductSerialNumberMapper;
-import com.xiliulou.afterserver.service.PointService;
-import com.xiliulou.afterserver.service.ProductService;
-import com.xiliulou.afterserver.service.WorkOrderService;
+import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.IndexDataQuery;
@@ -63,6 +58,10 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
     ProductService productService;
     @Autowired
     PointService pointService;
+    @Autowired
+    CityService cityService;
+    @Autowired
+    ProvinceService provinceService;
 
     @Override
     public IPage getPage(Long offset, Long size, PointQuery point) {
@@ -74,6 +73,17 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
         if (ObjectUtil.isNotEmpty(pointIdList)) {
             for (Long id : pointIdList) {
                 PointVo pointVo = baseMapper.getPointBaseInfo(id);
+
+                if (pointVo.getCity()!=null){
+                    City city = cityService.queryByIdFromDB(Integer.parseInt(pointVo.getCity()));
+                    if (Objects.nonNull(city)){
+                        Province province = provinceService.queryByIdFromDB(city.getPid());
+                        if (Objects.nonNull(province)){
+                            pointVo.setProvinceName(province.getName());
+                        }
+                        pointVo.setCityName(city.getName());
+                    }
+                }
                 WorkOrderQuery workOrderQuery = new WorkOrderQuery();
                 workOrderQuery.setPointId(pointVo.getId());
 
