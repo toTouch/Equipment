@@ -27,5 +27,5 @@ public class ProductFile implements Serializable {
 
     private String fileStr;
 
-    private String fileName;
+    private String productFileName;
 }

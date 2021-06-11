@@ -73,7 +73,7 @@ public class AdminJsonFileController {
     public R adminPrductFile(@RequestBody FileQuery file){
         ProductFile productFile = new ProductFile();
         productFile.setFileStr(file.getFileStr());
-        productFile.setFileName(file.getFileName());
+        productFile.setProductFileName(file.getFileName());
         productFileMapper.insert(productFile);
         return R.ok(productFile);
     }
