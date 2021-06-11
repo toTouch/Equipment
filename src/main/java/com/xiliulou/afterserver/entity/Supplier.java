@@ -21,6 +21,7 @@ public class Supplier {
     private String manager;
     private String phone;
     private String area;
+    private String province;
     private Long createTime;
     //发票类型
     private String billType;
