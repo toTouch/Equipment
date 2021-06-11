@@ -50,67 +50,67 @@ public class PointInfo {
     /**
      * 副柜台数
      */
-    @ExcelProperty(index = 5)
+    @ExcelProperty(index = 6)
     private Integer deputyCabinetCount;
 
     /**
      * 雨棚数量
      */
-    @ExcelProperty(index = 6)
+    @ExcelProperty(index = 7)
     private Integer canopyCount;
     /**
      * 格口数量
      */
-    @ExcelProperty(index = 7)
+    @ExcelProperty(index = 8)
     private Integer boxNumber;
 
     /**
      * 柜子类型  1:常温柜 2：加热柜
      */
-    @ExcelProperty(index = 8)
+    @ExcelProperty(index = 9)
     private String lockerType;
     /**
      * 城市
      */
-    @ExcelProperty(index = 9)
+    @ExcelProperty(index = 10)
     private String city;
     /**
      * 序列号
      */
-    @ExcelProperty(index = 10)
+    @ExcelProperty(index = 11)
     private Integer primaryCabinetNo;
     /**
      *sn码
      */
-    @ExcelProperty(index = 11)
+    @ExcelProperty(index = 12)
     private String serialNumber;
     /**
      * //物联网卡
      */
-    @ExcelProperty(index = 12)
+    @ExcelProperty(index = 13)
     private String cardNo;
     /**
      * 备注
      */
-    @ExcelProperty(index = 13)
+    @ExcelProperty(index = 14)
     private String remark;
     /**
      * 年份
      */
-    @ExcelProperty(index = 14)
+    @ExcelProperty(index = 15)
     private Long createTime;
 
 
     /**
      * 安装日期
      */
-    @ExcelProperty(index = 15)
+    @ExcelProperty(index = 16)
     private String setTime;
 
     /**
      * 发货日期
      */
-    @ExcelProperty(index = 16)
+    @ExcelProperty(index = 17)
     private Long deliverTime;
 
 
