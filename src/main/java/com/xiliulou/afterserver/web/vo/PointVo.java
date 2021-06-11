@@ -22,4 +22,6 @@ public class PointVo extends Point {
     private List<WorkOrderVo> workOrderVoList;
     private Integer status;//状态
     private String serialNumber;//序列号
+    private String provinceName;
+    private String cityName;
 }

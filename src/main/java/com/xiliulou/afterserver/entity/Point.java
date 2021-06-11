@@ -43,6 +43,9 @@ public class Point {
     //具体地址
     private String specificAddress;
 
+    //柜子类型  1:常温柜 2：加热柜
+    private Integer lockerType;
+
     //结清状态
     private Integer type;
     //待安装
