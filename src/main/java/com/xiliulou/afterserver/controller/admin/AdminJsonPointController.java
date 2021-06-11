@@ -1,7 +1,14 @@
 package com.xiliulou.afterserver.controller.admin;
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelReader;
+import com.alibaba.excel.read.metadata.ReadSheet;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xiliulou.afterserver.entity.Point;
+import com.xiliulou.afterserver.export.PointInfo;
+import com.xiliulou.afterserver.listener.PointListener;
+import com.xiliulou.afterserver.service.CityService;
+import com.xiliulou.afterserver.service.CustomerService;
 import com.xiliulou.afterserver.service.PointService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.IndexDataQuery;
@@ -9,8 +16,10 @@ import com.xiliulou.afterserver.web.query.PointQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -25,6 +34,10 @@ public class AdminJsonPointController {
 
     @Autowired
     PointService pointService;
+    @Autowired
+    CityService cityService;
+    @Autowired
+    CustomerService customerService;
 
 
     @GetMapping("admin/point/page")
@@ -95,5 +108,18 @@ public class AdminJsonPointController {
         pointService.exportExcel(point, response);
     }
 
+
+    /**
+     * 导入
+     */
+    @PostMapping("admin/point/upload")
+    public R upload(MultipartFile file) throws IOException {
+
+        ExcelReader excelReader = EasyExcel.read(file.getInputStream(), PointInfo.class,new PointListener(pointService,customerService,cityService)).build();
+        ReadSheet readSheet = EasyExcel.readSheet(0).build();
+        excelReader.read(readSheet);
+        excelReader.finish();
+        return R.ok();
+    }
 
 }
