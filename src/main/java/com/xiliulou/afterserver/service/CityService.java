@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.service;
 
 
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.City;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  * @author makejava
  * @since 2021-01-21 18:05:41
  */
-public interface CityService {
+public interface CityService extends IService<City> {
 
     /**
      * 通过ID查询单条数据从数据库

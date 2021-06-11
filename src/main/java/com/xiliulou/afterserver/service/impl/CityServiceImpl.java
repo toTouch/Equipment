@@ -2,6 +2,7 @@ package com.xiliulou.afterserver.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.City;
 import com.xiliulou.afterserver.mapper.CityMapper;
 import com.xiliulou.afterserver.service.CityService;
@@ -20,7 +21,7 @@ import java.util.List;
  */
 @Service("cityService")
 @Slf4j
-public class CityServiceImpl implements CityService {
+public class CityServiceImpl extends ServiceImpl<CityMapper, City> implements CityService {
 	@Resource
 	private CityMapper cityMapper;
 
