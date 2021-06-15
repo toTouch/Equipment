@@ -46,10 +46,6 @@ public class WorkOrder implements Serializable {
     private Integer warehourseId;
     private String reason;
 
-    @TableField(exist = false)
-    private String pointName;
-
-
     //从什么地方转移到什么地方
     //起点
     private Long transferSourcePointId;

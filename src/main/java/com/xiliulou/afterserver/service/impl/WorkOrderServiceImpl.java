@@ -23,10 +23,7 @@ import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
 import com.xiliulou.afterserver.web.query.SaveWorkOrderQuery;
 import com.xiliulou.afterserver.web.query.WorkOrderQuery;
 import com.xiliulou.afterserver.web.query.WorkerOrderUpdateStatusQuery;
-import com.xiliulou.afterserver.web.vo.WorkOrderExcelVo;
-import com.xiliulou.afterserver.web.vo.WorkOrderExcelVo2;
-import com.xiliulou.afterserver.web.vo.WorkOrderExcelVo3;
-import com.xiliulou.afterserver.web.vo.WorkOrderVo;
+import com.xiliulou.afterserver.web.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -85,10 +82,12 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         List<WorkOrder> workOrders = page.getRecords();
 
         workOrders.forEach(item -> {
+            WorkOrderPageVo workOrderPageVo = new WorkOrderPageVo();
+            BeanUtil.copyProperties(item,workOrderPageVo);
             if (Objects.nonNull(item.getPointId())){
                 Point point = pointService.getById(item.getPointId());
                 if (Objects.nonNull(point)){
-                    item.setPointName(point.getName());
+                    workOrderPageVo.setPointName(point.getName());
                 }
             }
         });
