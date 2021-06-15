@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -44,6 +45,9 @@ public class WorkOrder implements Serializable {
 //    private Integer boxNumber;
     private Integer warehourseId;
     private String reason;
+
+    @TableField(exist = false)
+    private String pointName;
 
 
     //从什么地方转移到什么地方
