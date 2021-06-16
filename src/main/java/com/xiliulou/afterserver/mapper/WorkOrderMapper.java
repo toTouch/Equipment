@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiliulou.afterserver.entity.WorkOrder;
 import com.xiliulou.afterserver.web.query.WorkOrderQuery;
+import com.xiliulou.afterserver.web.vo.AfterCountListVo;
+import com.xiliulou.afterserver.web.vo.AfterCountVo;
+import com.xiliulou.afterserver.web.vo.AfterOrderVo;
 import com.xiliulou.afterserver.web.vo.WorkOrderVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -16,11 +19,19 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
 
     List<WorkOrderVo> orderList(@Param("query") WorkOrderQuery workOrder);
 
-    Integer getByDateQuery(@Param("years") String years, @Param("mouths") String mouths,@Param("city") String city);
+    List<AfterCountVo> qualityCount(@Param("pointId") Long pointId, @Param("cityId") Integer cityId, @Param("datestamp") Long datestamp);
 
-    Integer getMouth(@Param("years") String years, @Param("mouths") String mouths,@Param("city") String city);
+    List<AfterCountListVo> qualityCountList(@Param("pointId") Long pointId, @Param("cityId") Integer cityId, @Param("datestamp") Long datestamp);
 
-    Integer getGeneral(@Param("years") String years, @Param("mouths") String mouths,@Param("city") String city);
+    List<AfterOrderVo> afterWorkOrderByCity(@Param("pointId") Long pointId, @Param("cityId") Integer cityId, @Param("datestamp") Long datestamp);
 
-    Integer getTotal(@Param("years") String years, @Param("mouths") String mouths,@Param("city") String city);
+    List<AfterOrderVo> afterWorkOrderByPoint(@Param("pointId") Long pointId, @Param("cityId") Integer cityId, @Param("datestamp") Long datestamp);
+
+    List<AfterOrderVo> afterWorkOrderList(@Param("pointId") Long pointId, @Param("cityId") Integer cityId, @Param("datestamp") Long datestamp);
+
+    List<AfterOrderVo> installWorkOrderByCity(@Param("pointId") Long pointId, @Param("cityId") Integer cityId, @Param("datestamp") Long datestamp);
+
+    List<AfterOrderVo> installWorkOrderByPoint(@Param("pointId") Long pointId, @Param("cityId") Integer cityId, @Param("datestamp") Long datestamp);
+
+    List<AfterOrderVo> installWorkOrderList(@Param("pointId") Long pointId, @Param("cityId") Integer cityId, @Param("datestamp") Long datestamp);
 }
