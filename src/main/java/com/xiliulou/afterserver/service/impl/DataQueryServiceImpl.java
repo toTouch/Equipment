@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service.impl;
 
+import com.xiliulou.afterserver.entity.City;
 import com.xiliulou.afterserver.entity.WorkOrderReason;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DateUtils;
@@ -26,6 +27,8 @@ public class DataQueryServiceImpl implements DataQueryService {
 
     @Autowired
     private WorkOrderReasonService workOrderReasonService;
+    @Autowired
+    private CityService cityService;
 
     @Override
     public R installWorkOrder(Long pointId, Integer cityId, Integer dateType) {
@@ -61,8 +64,24 @@ public class DataQueryServiceImpl implements DataQueryService {
         datestamp =  ((dateType == 1 ) ? null : DateUtils.daysToStamp(-(dateType - 1)));
 
         List<AfterOrderVo>  afterWorkOrderByCityList = workOrderService.afterWorkOrderByCity(pointId,cityId,datestamp);
+        afterWorkOrderByCityList.forEach(item -> {
+            if (Objects.nonNull(item.getCity())){
+                City city = cityService.getById(item.getCity());
+                if (Objects.nonNull(city)){
+                    item.setCityName(city.getName());
+                }
+            }
+        });
         List<AfterOrderVo>  afterWorkOrderByPointList = workOrderService.afterWorkOrderByPoint(pointId,cityId,datestamp);
         List<AfterOrderVo>  afterWorkOrderList = workOrderService.afterWorkOrderList(pointId,cityId,datestamp);
+        afterWorkOrderList.forEach(item -> {
+            if (Objects.nonNull(item.getCity())){
+                City city = cityService.getById(item.getCity());
+                if (Objects.nonNull(city)){
+                    item.setCityName(city.getName());
+                }
+            }
+        });
 
         HashMap<String, Object> map = new HashMap<>(3);
         map.put("afterWorkOrderByCityList",afterWorkOrderByCityList);

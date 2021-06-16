@@ -272,7 +272,8 @@
         SELECT
             FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ) AS date,
             sum( o.fee ) AS sumCount,
-            count(1) as numCount
+            count(1) as numCount,
+            b.city
         FROM
             work_order o
             LEFT JOIN point b ON o.point_id = b.id
@@ -285,7 +286,7 @@
             and b.city = #{cityId}
         </if>
         GROUP BY
-            b.city
+            date
         ORDER BY
             date DESC
     </select>
