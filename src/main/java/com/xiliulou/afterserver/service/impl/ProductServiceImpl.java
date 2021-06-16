@@ -236,7 +236,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         Long rightInterval = productSerialNumberQuery.getRightInterval();
         String code = product.getCode();
 
-        for (int i = Integer.parseInt(leftInterval.toString()); i < Integer.parseInt(rightInterval.toString()); i++) {
+        for (int i = Integer.parseInt(leftInterval.toString()); i <= Integer.parseInt(rightInterval.toString()); i++) {
 
             ProductSerialNumber productSerialNumber = new ProductSerialNumber();
             BeanUtil.copyProperties(productSerialNumberQuery, productSerialNumber);
