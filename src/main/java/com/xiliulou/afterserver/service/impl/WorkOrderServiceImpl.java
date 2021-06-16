@@ -449,49 +449,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         return R.ok();
     }
 
-    //总工单
-    @Override
-    public Integer getByDateQuery(Map<String, Object> params) {
-        String years = (String) params.get("years");
-        String mouths = (String) params.get("mouths");
-        String city = (String) params.get("city");
-
-        Integer count = this.baseMapper.getByDateQuery(years, mouths, city);
-        return count;
-    }
-
-    //总格口
-    @Override
-    public Integer getMouth(Map<String, Object> params) {
-        String years = (String) params.get("years");
-        String mouths = (String) params.get("mouths");
-        String city = (String) params.get("city");
-
-        Integer count = this.baseMapper.getByDateQuery(years, mouths, city);
-        return count;
-    }
-
-    //总工单
-    @Override
-    public Integer getGeneral(Map<String, Object> params) {
-        String years = (String) params.get("years");
-        String mouths = (String) params.get("mouths");
-        String city = (String) params.get("city");
-
-        Integer count = this.baseMapper.getByDateQuery(years, mouths, city);
-        return count;
-    }
-
-    //总支出
-    @Override
-    public Integer getTotal(Map<String, Object> params) {
-        String years = (String) params.get("years");
-        String mouths = (String) params.get("mouths");
-        String city = (String) params.get("city");
-
-        Integer count = this.baseMapper.getByDateQuery(years, mouths, city);
-        return count;
-    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -613,6 +570,48 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         saveFile(workOrder);
         this.baseMapper.updateById(workOrder);
         return R.ok();
+    }
+
+    @Override
+    public List<AfterCountVo> qualityCount(Long pointId, Integer cityId, Long datestamp) {
+
+      return this.baseMapper.qualityCount(pointId,cityId,datestamp);
+    }
+
+    @Override
+    public List<AfterCountListVo> qualityCountList(Long pointId, Integer cityId, Long datestamp) {
+
+        return this.baseMapper.qualityCountList(pointId,cityId,datestamp);
+    }
+
+    @Override
+    public List<AfterOrderVo> afterWorkOrderByCity(Long pointId, Integer cityId, Long datestamp) {
+        return this.baseMapper.afterWorkOrderByCity(pointId,cityId,datestamp);
+    }
+
+    @Override
+    public List<AfterOrderVo> afterWorkOrderByPoint(Long pointId, Integer cityId, Long datestamp) {
+        return this.baseMapper.afterWorkOrderByPoint(pointId,cityId,datestamp);
+    }
+
+    @Override
+    public List<AfterOrderVo> afterWorkOrderList(Long pointId, Integer cityId, Long datestamp) {
+        return this.baseMapper.afterWorkOrderList(pointId,cityId,datestamp);
+    }
+
+    @Override
+    public List<AfterOrderVo> installWorkOrderByCity(Long pointId, Integer cityId, Long datestamp) {
+        return this.baseMapper.installWorkOrderByCity(pointId,cityId,datestamp);
+    }
+
+    @Override
+    public List<AfterOrderVo> installWorkOrderByPoint(Long pointId, Integer cityId, Long datestamp) {
+        return this.baseMapper.installWorkOrderByPoint(pointId,cityId,datestamp);
+    }
+
+    @Override
+    public List<AfterOrderVo> installWorkOrderList(Long pointId, Integer cityId, Long datestamp) {
+        return this.baseMapper.installWorkOrderList(pointId,cityId,datestamp);
     }
     //    /**
 //     * 预览

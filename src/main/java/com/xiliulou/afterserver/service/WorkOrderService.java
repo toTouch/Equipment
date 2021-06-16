@@ -8,6 +8,9 @@ import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
 import com.xiliulou.afterserver.web.query.SaveWorkOrderQuery;
 import com.xiliulou.afterserver.web.query.WorkOrderQuery;
 import com.xiliulou.afterserver.web.query.WorkerOrderUpdateStatusQuery;
+import com.xiliulou.afterserver.web.vo.AfterCountListVo;
+import com.xiliulou.afterserver.web.vo.AfterCountVo;
+import com.xiliulou.afterserver.web.vo.AfterOrderVo;
 import com.xiliulou.afterserver.web.vo.WorkOrderVo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,17 +47,25 @@ public interface WorkOrderService extends IService<WorkOrder> {
 
     R pointBindSerialNumber(WorkOrderQuery workOrderQuery);
 
-    Integer getByDateQuery(Map<String, Object> params);
-
-    Integer getMouth(Map<String, Object> params);
-
-    Integer getGeneral(Map<String, Object> params);
-
-    Integer getTotal(Map<String, Object> params);
-
     R saveWorkerOrder(WorkOrderQuery workOrder);
 
     R updateWorkOrderStatus(WorkerOrderUpdateStatusQuery query);
 
     R updateWorkOrder(WorkOrderQuery workOrder);
+
+    List<AfterCountVo> qualityCount(Long pointId, Integer cityId, Long datestamp);
+
+    List<AfterCountListVo> qualityCountList(Long pointId, Integer cityId, Long datestamp);
+
+    List<AfterOrderVo> afterWorkOrderByCity(Long pointId, Integer cityId, Long datestamp);
+
+    List<AfterOrderVo> afterWorkOrderByPoint(Long pointId, Integer cityId, Long datestamp);
+
+    List<AfterOrderVo> afterWorkOrderList(Long pointId, Integer cityId, Long datestamp);
+
+    List<AfterOrderVo> installWorkOrderByCity(Long pointId, Integer cityId, Long datestamp);
+
+    List<AfterOrderVo> installWorkOrderByPoint(Long pointId, Integer cityId, Long datestamp);
+
+    List<AfterOrderVo> installWorkOrderList(Long pointId, Integer cityId, Long datestamp);
 }

@@ -19,12 +19,39 @@ public class AdminJsonDataQueryController {
     @Autowired
     private DataQueryService dataQueryService;
 
-    @GetMapping("/count")
-    public R getDataCount(@RequestParam Map<String, Object> params){
+    @GetMapping("/install/work/order")
+    public R installWorkOrder(@RequestParam(value = "pointId",required = false) Long pointId,
+                              @RequestParam(value = "cityId",required = false) Integer cityId,
+                              @RequestParam(value = "dateType") Integer dateType){
+        return dataQueryService.installWorkOrder(pointId,cityId,dateType);
+    }
 
+//    @GetMapping("/after/ratio")
+//    public R afterRatio(@RequestParam(value = "pointId",required = false) Long pointId,
+//                        @RequestParam(value = "cityId",required = false) Integer cityId,
+//                        @RequestParam(value = "dateType") Integer dateType){
+//        return dataQueryService.afterRatio(pointId,cityId,dateType);
+//    }
 
-        return R.ok(dataQueryService.getDataCount(params));
+    @GetMapping("/after")
+    public R after(@RequestParam(value = "pointId",required = false) Long pointId,
+                   @RequestParam(value = "cityId",required = false) Integer cityId,
+                   @RequestParam(value = "dateType") Integer dateType){
+        return dataQueryService.after(pointId,cityId,dateType);
+    }
 
+    @GetMapping("/quality/analyse")
+    public R qualityAnalyse(@RequestParam(value = "pointId",required = false) Long pointId,
+                            @RequestParam(value = "cityId",required = false) Integer cityId,
+                            @RequestParam(value = "dateType") Integer dateType){
+        return dataQueryService.qualityAnalyse(pointId,cityId,dateType);
+    }
+
+    @GetMapping("/quality/analyse/list")
+    public R qualityAnalyseList(@RequestParam(value = "pointId",required = false) Long pointId,
+                            @RequestParam(value = "cityId",required = false) Integer cityId,
+                            @RequestParam(value = "dateType") Integer dateType){
+        return dataQueryService.qualityAnalyseList(pointId,cityId,dateType);
     }
 
 
