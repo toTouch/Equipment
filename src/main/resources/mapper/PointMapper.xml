@@ -283,6 +283,7 @@
         SELECT p.id
         from point as p
         <where>
+            and p.del_flag = 0
             <if test="query.city != null and query.city != ''">
                 and p.city =#{query.city}
             </if>
