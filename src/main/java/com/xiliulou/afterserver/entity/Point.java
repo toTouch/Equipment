@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.entity;
 
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -52,6 +53,9 @@ public class Point {
 
     //结清状态
     private Integer type;
+
+    @TableLogic
+    private Integer delFlag;
     //待安装
     public static final Integer STATUS_NORMAL = 1;
     //运营中
