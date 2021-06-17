@@ -222,7 +222,7 @@
             and create_time &gt;= #{datestamp}
         </if>
         GROUP BY
-             date
+            work_order_reason_id
         ORDER BY date DESC
 
     </select>
