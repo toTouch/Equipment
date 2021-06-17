@@ -349,7 +349,7 @@
             and p.city = #{cityId}
         </if>
         GROUP BY
-            p.city
+            date
         ORDER BY
             date DESC
             LIMIT 20
