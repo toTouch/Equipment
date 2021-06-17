@@ -13,10 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -76,7 +73,10 @@ public class DataQueryServiceImpl implements DataQueryService {
             }
         });
 
-        Map<Long, List<AfterOrderVo>> collect = installWorkOrderByPointList.stream().collect(Collectors.groupingBy(AfterOrderVo::getPointId));
+        Map<Long, List<AfterOrderVo>> collect = installWorkOrderByPointList
+                .stream()
+                .sorted(Comparator.comparing(AfterOrderVo::getSumCount).reversed())
+                .collect(Collectors.groupingBy(AfterOrderVo::getPointId));
 
         List<AfterOrderVo> installWorkOrderList = workOrderService.installWorkOrderList(pointId, cityId, datestamp);
         installWorkOrderList.forEach(item -> {
