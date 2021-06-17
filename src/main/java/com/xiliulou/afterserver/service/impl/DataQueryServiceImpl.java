@@ -76,6 +76,8 @@ public class DataQueryServiceImpl implements DataQueryService {
             }
         });
 
+        Map<Long, List<AfterOrderVo>> collect = installWorkOrderByPointList.stream().collect(Collectors.groupingBy(AfterOrderVo::getPointId));
+
         List<AfterOrderVo> installWorkOrderList = workOrderService.installWorkOrderList(pointId, cityId, datestamp);
         installWorkOrderList.forEach(item -> {
             if (Objects.nonNull(item.getCity())) {
@@ -91,7 +93,7 @@ public class DataQueryServiceImpl implements DataQueryService {
 
         HashMap<String, Object> map = new HashMap<>(4);
         map.put("installWorkOrderByCityList", installWorkOrderByCityList);
-        map.put("installWorkOrderByPointList", installWorkOrderByPointList);
+        map.put("installWorkOrderByPointMap", collect);
         map.put("installWorkOrderList", installWorkOrderList);
         map.put("avg",divide);
         return R.ok().data(map);

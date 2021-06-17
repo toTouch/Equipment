@@ -15,6 +15,7 @@ public class AfterOrderVo {
     private Integer city;
     private String cityName;
     private String date;
+    private Long pointId;
     private String pointName;
     private Integer numCount;
 
