@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class DataQueryServiceImpl implements DataQueryService {
@@ -177,7 +178,9 @@ public class DataQueryServiceImpl implements DataQueryService {
                 }
             }
         });
-        return R.ok(qualityCount);
+
+        Map<Long, List<AfterCountListVo>> collect = qualityCount.stream().collect(Collectors.groupingBy(AfterCountListVo::getReasonId));
+        return R.ok(collect);
     }
 
     private static double add(String v1, String v2) {
