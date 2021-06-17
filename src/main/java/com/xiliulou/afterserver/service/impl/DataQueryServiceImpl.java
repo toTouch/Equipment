@@ -85,6 +85,11 @@ public class DataQueryServiceImpl implements DataQueryService {
         collect.forEach((k,v) -> {
             InstallSumCountVo installSumCountVo = new InstallSumCountVo();
             double sum = v.stream().mapToDouble(item -> Double.parseDouble(item.getSumCount())).sum();
+
+            v.forEach(item -> {
+                installSumCountVo.setPointName(item.getPointName());
+            });
+
             installSumCountVo.setPointId(k);
             installSumCountVo.setSum(sum);
             installSumCountVo.setList(v);

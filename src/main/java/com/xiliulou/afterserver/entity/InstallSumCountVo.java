@@ -13,6 +13,7 @@ import java.util.List;
 @Data
 public class InstallSumCountVo {
     private Long pointId;
+    private String pointName;
     private Double sum;
     private List<AfterOrderVo> list;
 }
