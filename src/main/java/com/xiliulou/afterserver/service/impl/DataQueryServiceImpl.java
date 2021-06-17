@@ -55,6 +55,7 @@ public class DataQueryServiceImpl implements DataQueryService {
         List<AfterOrderVo> installWorkOrderByPointList = workOrderService.installWorkOrderByPoint(pointId, cityId, datestamp);
 
         Double avg = 0.00;
+        Double finalAvg = avg;
         installWorkOrderByPointList.forEach(item -> {
             if (Objects.nonNull(item.getCity())) {
                 City city = cityService.getById(item.getCity());
@@ -69,19 +70,21 @@ public class DataQueryServiceImpl implements DataQueryService {
                 }
             }
             if (Objects.nonNull(item.getSumCount())) {
-                add(avg.toString(), item.getSumCount());
+                add(finalAvg.toString(), item.getSumCount());
             }
         });
 
-//        avg = installWorkOrderByPointList.stream().mapToInt(item -> Integer.parseInt(item.getSumCount())).average().getAsDouble();
+        avg = installWorkOrderByPointList.stream().mapToDouble(item -> Double.parseDouble(item.getSumCount())).average().getAsDouble();
 
         Map<Long, List<AfterOrderVo>> collect = installWorkOrderByPointList
                 .stream()
                 .collect(Collectors.groupingBy(AfterOrderVo::getPointId));
 
         collect.forEach((k,v) -> {
-            v.stream().sorted(Comparator.comparing(AfterOrderVo::getSumCount).reversed());
+            v.stream().mapToDouble(item -> Double.parseDouble(item.getSumCount())).sum();
         });
+
+//        collect.entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue())).forEach(System.out::println);
 
         List<AfterOrderVo> installWorkOrderList = workOrderService.installWorkOrderList(pointId, cityId, datestamp);
         installWorkOrderList.forEach(item -> {
@@ -93,16 +96,11 @@ public class DataQueryServiceImpl implements DataQueryService {
             }
         });
 
-        BigDecimal sumCount = new BigDecimal(avg);
-        double v = sumCount.doubleValue();
-        double v1 = v / installWorkOrderByPointList.size();
-//        BigDecimal divide = sumCount.divide(BigDecimal.valueOf(installWorkOrderByPointList.size()));
-
         HashMap<String, Object> map = new HashMap<>(4);
         map.put("installWorkOrderByCityList", installWorkOrderByCityList);
         map.put("installWorkOrderByPointMap", collect);
         map.put("installWorkOrderList", installWorkOrderList);
-        map.put("avg",v1);
+        map.put("avg",avg);
         return R.ok().data(map);
     }
 
