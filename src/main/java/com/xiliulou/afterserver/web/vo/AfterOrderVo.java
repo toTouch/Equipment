@@ -20,5 +20,4 @@ public class AfterOrderVo {
 
     private Integer type;
     private String typeName;
-    private BigDecimal avg;
 }
