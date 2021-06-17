@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.service.impl;
 
 import com.xiliulou.afterserver.entity.City;
+import com.xiliulou.afterserver.entity.InstallSumCountVo;
 import com.xiliulou.afterserver.entity.WorkOrderReason;
 import com.xiliulou.afterserver.entity.WorkOrderType;
 import com.xiliulou.afterserver.service.*;
@@ -80,15 +81,17 @@ public class DataQueryServiceImpl implements DataQueryService {
                 .stream()
                 .collect(Collectors.groupingBy(AfterOrderVo::getPointId));
 
-        HashMap<Long, Map<Double,List<AfterOrderVo>>> hashMap = new HashMap<>();
+        ArrayList<InstallSumCountVo> list = new ArrayList<>();
         collect.forEach((k,v) -> {
-            HashMap<Double,List<AfterOrderVo>> map = new HashMap<>();
+            InstallSumCountVo installSumCountVo = new InstallSumCountVo();
             double sum = v.stream().mapToDouble(item -> Double.parseDouble(item.getSumCount())).sum();
-            map.put(sum,v);
-            hashMap.put(k,map);
+            installSumCountVo.setPointId(k);
+            installSumCountVo.setSum(sum);
+            installSumCountVo.setList(v);
+            list.add(installSumCountVo);
         });
 
-
+        list.stream().sorted(Comparator.comparing(InstallSumCountVo::getSum).reversed());
 
         List<AfterOrderVo> installWorkOrderList = workOrderService.installWorkOrderList(pointId, cityId, datestamp);
         installWorkOrderList.forEach(item -> {
@@ -102,7 +105,7 @@ public class DataQueryServiceImpl implements DataQueryService {
 
         HashMap<String, Object> map = new HashMap<>(4);
         map.put("installWorkOrderByCityList", installWorkOrderByCityList);
-        map.put("installWorkOrderByPointMap", hashMap);
+        map.put("installWorkOrderByPointMap", list);
         map.put("installWorkOrderList", installWorkOrderList);
         map.put("avg",avg);
         return R.ok().data(map);
