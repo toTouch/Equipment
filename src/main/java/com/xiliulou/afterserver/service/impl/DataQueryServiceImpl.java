@@ -42,60 +42,61 @@ public class DataQueryServiceImpl implements DataQueryService {
             return R.fail("查询时间间隔不正确");
         }
 
-        datestamp =  ((dateType == 1 ) ? null : DateUtils.daysToStamp(-(dateType - 1)));
+        datestamp = ((dateType == 1) ? null : DateUtils.daysToStamp(-(dateType - 1)));
 
-        List<AfterOrderVo>  installWorkOrderByCityList = workOrderService.installWorkOrderByCity(pointId,cityId,datestamp);
+        List<AfterOrderVo> installWorkOrderByCityList = workOrderService.installWorkOrderByCity(pointId, cityId, datestamp);
         installWorkOrderByCityList.forEach(item -> {
-            if (Objects.nonNull(item.getCity())){
+            if (Objects.nonNull(item.getCity())) {
                 City city = cityService.getById(item.getCity());
-                if (Objects.nonNull(city)){
+                if (Objects.nonNull(city)) {
                     item.setCityName(city.getName());
                 }
             }
         });
 
-        List<AfterOrderVo>  installWorkOrderByPointList = workOrderService.installWorkOrderByPoint(pointId,cityId,datestamp);
+        List<AfterOrderVo> installWorkOrderByPointList = workOrderService.installWorkOrderByPoint(pointId, cityId, datestamp);
 
-        BigDecimal avg = null;
+        Double avg = 0.00;
         installWorkOrderByPointList.forEach(item -> {
-            if (Objects.nonNull(item.getCity())){
+            if (Objects.nonNull(item.getCity())) {
                 City city = cityService.getById(item.getCity());
-                if (Objects.nonNull(city)){
+                if (Objects.nonNull(city)) {
                     item.setCityName(city.getName());
                 }
             }
-            if (Objects.nonNull(item.getType())){
+            if (Objects.nonNull(item.getType())) {
                 WorkOrderType workOrderType = workOrderTypeService.getById(item.getType());
-                if (Objects.nonNull(workOrderType)){
+                if (Objects.nonNull(workOrderType)) {
                     item.setTypeName(workOrderType.getType());
                 }
             }
-            if (Objects.nonNull(item.getSumCount())){
-                BigDecimal sum = new BigDecimal(item.getSumCount());
-                avg.add(sum);
+            if (Objects.nonNull(item.getSumCount())) {
+                add(avg.toString(), item.getSumCount());
             }
         });
 
-        avg.divide(BigDecimal.valueOf(installWorkOrderByPointList.size()));
+        BigDecimal sumCount = new BigDecimal(avg);
+        BigDecimal divide = sumCount.divide(BigDecimal.valueOf(installWorkOrderByPointList.size()));
+
         AfterOrderVo afterOrderVo = new AfterOrderVo();
-        afterOrderVo.setAvg(avg);
+        afterOrderVo.setAvg(divide);
         installWorkOrderByPointList.add(afterOrderVo);
 
 
-        List<AfterOrderVo>  installWorkOrderList = workOrderService.installWorkOrderList(pointId,cityId,datestamp);
+        List<AfterOrderVo> installWorkOrderList = workOrderService.installWorkOrderList(pointId, cityId, datestamp);
         installWorkOrderList.forEach(item -> {
-            if (Objects.nonNull(item.getCity())){
+            if (Objects.nonNull(item.getCity())) {
                 City city = cityService.getById(item.getCity());
-                if (Objects.nonNull(city)){
+                if (Objects.nonNull(city)) {
                     item.setCityName(city.getName());
                 }
             }
         });
 
         HashMap<String, Object> map = new HashMap<>(3);
-        map.put("installWorkOrderByCityList",installWorkOrderByCityList);
-        map.put("installWorkOrderByPointList",installWorkOrderByPointList);
-        map.put("installWorkOrderList",installWorkOrderList);
+        map.put("installWorkOrderByCityList", installWorkOrderByCityList);
+        map.put("installWorkOrderByPointList", installWorkOrderByPointList);
+        map.put("installWorkOrderList", installWorkOrderList);
         return R.ok().data(map);
     }
 
@@ -111,32 +112,32 @@ public class DataQueryServiceImpl implements DataQueryService {
         if (Objects.isNull(dateType) || dateType < 0 || dateType > 90) {
             return R.fail("查询时间间隔不正确");
         }
-        datestamp =  ((dateType == 1 ) ? null : DateUtils.daysToStamp(-(dateType - 1)));
+        datestamp = ((dateType == 1) ? null : DateUtils.daysToStamp(-(dateType - 1)));
 
-        List<AfterOrderVo>  afterWorkOrderByCityList = workOrderService.afterWorkOrderByCity(pointId,cityId,datestamp);
+        List<AfterOrderVo> afterWorkOrderByCityList = workOrderService.afterWorkOrderByCity(pointId, cityId, datestamp);
         afterWorkOrderByCityList.forEach(item -> {
-            if (Objects.nonNull(item.getCity())){
+            if (Objects.nonNull(item.getCity())) {
                 City city = cityService.getById(item.getCity());
-                if (Objects.nonNull(city)){
+                if (Objects.nonNull(city)) {
                     item.setCityName(city.getName());
                 }
             }
         });
-        List<AfterOrderVo>  afterWorkOrderByPointList = workOrderService.afterWorkOrderByPoint(pointId,cityId,datestamp);
-        List<AfterOrderVo>  afterWorkOrderList = workOrderService.afterWorkOrderList(pointId,cityId,datestamp);
+        List<AfterOrderVo> afterWorkOrderByPointList = workOrderService.afterWorkOrderByPoint(pointId, cityId, datestamp);
+        List<AfterOrderVo> afterWorkOrderList = workOrderService.afterWorkOrderList(pointId, cityId, datestamp);
         afterWorkOrderList.forEach(item -> {
-            if (Objects.nonNull(item.getCity())){
+            if (Objects.nonNull(item.getCity())) {
                 City city = cityService.getById(item.getCity());
-                if (Objects.nonNull(city)){
+                if (Objects.nonNull(city)) {
                     item.setCityName(city.getName());
                 }
             }
         });
 
         HashMap<String, Object> map = new HashMap<>(3);
-        map.put("afterWorkOrderByCityList",afterWorkOrderByCityList);
-        map.put("afterWorkOrderByPointList",afterWorkOrderByPointList);
-        map.put("afterWorkOrderList",afterWorkOrderList);
+        map.put("afterWorkOrderByCityList", afterWorkOrderByCityList);
+        map.put("afterWorkOrderByPointList", afterWorkOrderByPointList);
+        map.put("afterWorkOrderList", afterWorkOrderList);
         return R.ok().data(map);
     }
 
@@ -147,20 +148,19 @@ public class DataQueryServiceImpl implements DataQueryService {
         if (Objects.isNull(dateType) || dateType < 0 || dateType > 90) {
             return R.fail("查询时间间隔不正确");
         }
-        datestamp =  ((dateType == 1 ) ? null : DateUtils.daysToStamp(-(dateType - 1)));
+        datestamp = ((dateType == 1) ? null : DateUtils.daysToStamp(-(dateType - 1)));
 
-        List<AfterCountVo> qualityCount = workOrderService.qualityCount(pointId,cityId,datestamp);
+        List<AfterCountVo> qualityCount = workOrderService.qualityCount(pointId, cityId, datestamp);
         qualityCount.forEach(item -> {
-            if (item.getReasonId()!=null){
+            if (item.getReasonId() != null) {
                 WorkOrderReason workOrderReason = workOrderReasonService.getById(item.getReasonId());
-                if (Objects.nonNull(workOrderReason)){
+                if (Objects.nonNull(workOrderReason)) {
                     item.setReasonName(workOrderReason.getName());
                 }
             }
         });
         return R.ok(qualityCount);
     }
-
 
 
     @Override
@@ -170,17 +170,25 @@ public class DataQueryServiceImpl implements DataQueryService {
         if (Objects.isNull(dateType) || dateType < 0 || dateType > 90) {
             return R.fail("查询时间间隔不正确");
         }
-        datestamp =  ((dateType == 1 ) ? null : DateUtils.daysToStamp(-(dateType - 1)));
+        datestamp = ((dateType == 1) ? null : DateUtils.daysToStamp(-(dateType - 1)));
 
-        List<AfterCountListVo> qualityCount = workOrderService.qualityCountList(pointId,cityId,datestamp);
+        List<AfterCountListVo> qualityCount = workOrderService.qualityCountList(pointId, cityId, datestamp);
         qualityCount.forEach(item -> {
-            if (item.getReasonId()!=null){
+            if (item.getReasonId() != null) {
                 WorkOrderReason workOrderReason = workOrderReasonService.getById(item.getReasonId());
-                if (Objects.nonNull(workOrderReason)){
+                if (Objects.nonNull(workOrderReason)) {
                     item.setReasonName(workOrderReason.getName());
                 }
             }
         });
         return R.ok(qualityCount);
     }
+
+    private static double add(String v1, String v2) {
+        BigDecimal b1 = new BigDecimal(v1);
+        BigDecimal b2 = new BigDecimal(v2);
+        return b1.add(b2).doubleValue();
+    }
+
+
 }
