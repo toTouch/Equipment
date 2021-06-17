@@ -34,9 +34,6 @@ public interface PointService extends IService<Point> {
 
     List<PointVo> getlist();
 
-    Integer getByStatCount(Map<String, Object> params);
-
-
     R unBindSerialNumber(Long pid);
 
     R pointGetBingList(Long id);

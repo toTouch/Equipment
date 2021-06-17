@@ -310,16 +310,6 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
     }
 
     @Override
-    public Integer getByStatCount(Map<String, Object> params) {
-        String years = (String) params.get("years");
-        String mouths = (String) params.get("mouths");
-        String city = (String) params.get("city");
-
-        Integer count = this.baseMapper.getByStatCount(years,mouths,city);
-        return count;
-    }
-
-    @Override
     public R unBindSerialNumber(Long pid) {
         ProductSerialNumber productSerialNumber = productSerialNumberMapper.selectById(pid);
 //        Product product = productService.getById(pid);
