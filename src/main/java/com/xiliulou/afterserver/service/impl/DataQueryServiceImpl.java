@@ -80,11 +80,15 @@ public class DataQueryServiceImpl implements DataQueryService {
                 .stream()
                 .collect(Collectors.groupingBy(AfterOrderVo::getPointId));
 
+        HashMap<Long, Map<Double,List<AfterOrderVo>>> hashMap = new HashMap<>();
         collect.forEach((k,v) -> {
-            v.stream().mapToDouble(item -> Double.parseDouble(item.getSumCount())).sum();
+            HashMap<Double,List<AfterOrderVo>> map = new HashMap<>();
+            double sum = v.stream().mapToDouble(item -> Double.parseDouble(item.getSumCount())).sum();
+            map.put(sum,v);
+            hashMap.put(k,map);
         });
 
-//        collect.entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue())).forEach(System.out::println);
+
 
         List<AfterOrderVo> installWorkOrderList = workOrderService.installWorkOrderList(pointId, cityId, datestamp);
         installWorkOrderList.forEach(item -> {
