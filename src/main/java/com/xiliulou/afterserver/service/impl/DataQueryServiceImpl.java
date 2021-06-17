@@ -55,7 +55,6 @@ public class DataQueryServiceImpl implements DataQueryService {
         List<AfterOrderVo> installWorkOrderByPointList = workOrderService.installWorkOrderByPoint(pointId, cityId, datestamp);
 
         Double avg = 0.00;
-        Double finalAvg = avg;
         installWorkOrderByPointList.forEach(item -> {
             if (Objects.nonNull(item.getCity())) {
                 City city = cityService.getById(item.getCity());
@@ -70,11 +69,11 @@ public class DataQueryServiceImpl implements DataQueryService {
                 }
             }
             if (Objects.nonNull(item.getSumCount())) {
-                add(finalAvg.toString(), item.getSumCount());
+                add(avg.toString(), item.getSumCount());
             }
         });
 
-        avg = installWorkOrderByPointList.stream().mapToInt(item -> Integer.parseInt(item.getSumCount())).average().getAsDouble();
+//        avg = installWorkOrderByPointList.stream().mapToInt(item -> Integer.parseInt(item.getSumCount())).average().getAsDouble();
 
         Map<Long, List<AfterOrderVo>> collect = installWorkOrderByPointList
                 .stream()
@@ -94,11 +93,16 @@ public class DataQueryServiceImpl implements DataQueryService {
             }
         });
 
+        BigDecimal sumCount = new BigDecimal(avg);
+        double v = sumCount.doubleValue();
+        double v1 = v / installWorkOrderByPointList.size();
+//        BigDecimal divide = sumCount.divide(BigDecimal.valueOf(installWorkOrderByPointList.size()));
+
         HashMap<String, Object> map = new HashMap<>(4);
         map.put("installWorkOrderByCityList", installWorkOrderByCityList);
         map.put("installWorkOrderByPointMap", collect);
         map.put("installWorkOrderList", installWorkOrderList);
-        map.put("avg",avg);
+        map.put("avg",v1);
         return R.ok().data(map);
     }
 
