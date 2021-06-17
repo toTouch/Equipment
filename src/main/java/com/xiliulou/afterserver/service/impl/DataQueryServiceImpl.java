@@ -73,10 +73,13 @@ public class DataQueryServiceImpl implements DataQueryService {
             }
         });
 
-//        Map<Long, List<AfterOrderVo>> collect = installWorkOrderByPointList
-//                .stream()
-//                .sorted(Comparator.comparing(AfterOrderVo::getSumCount).reversed())
-//                .collect(Collectors.groupingBy(AfterOrderVo::getPointId));
+        Map<Long, List<AfterOrderVo>> collect = installWorkOrderByPointList
+                .stream()
+                .collect(Collectors.groupingBy(AfterOrderVo::getPointId));
+
+        collect.forEach((k,v) -> {
+            v.stream().sorted(Comparator.comparing(AfterOrderVo::getSumCount).reversed());
+        });
 
         List<AfterOrderVo> installWorkOrderList = workOrderService.installWorkOrderList(pointId, cityId, datestamp);
         installWorkOrderList.forEach(item -> {
@@ -93,7 +96,7 @@ public class DataQueryServiceImpl implements DataQueryService {
 
         HashMap<String, Object> map = new HashMap<>(4);
         map.put("installWorkOrderByCityList", installWorkOrderByCityList);
-        map.put("installWorkOrderByPointMap", installWorkOrderByPointList);
+        map.put("installWorkOrderByPointMap", collect);
         map.put("installWorkOrderList", installWorkOrderList);
         map.put("avg",divide);
         return R.ok().data(map);
