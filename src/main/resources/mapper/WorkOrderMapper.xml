@@ -315,6 +315,7 @@
         SUM( o.fee ) AS sumCount,
         p.NAME AS pointName,
         p.city,
+        p.id as pointId,
         count( o.type) AS numCount,
         o.type
         FROM
