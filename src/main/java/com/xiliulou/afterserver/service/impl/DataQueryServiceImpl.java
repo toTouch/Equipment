@@ -91,7 +91,7 @@ public class DataQueryServiceImpl implements DataQueryService {
             list.add(installSumCountVo);
         });
 
-        list.stream().sorted(Comparator.comparing(InstallSumCountVo::getSum).reversed());
+        List<InstallSumCountVo> collect1 = list.stream().sorted(Comparator.comparing(InstallSumCountVo::getSum).reversed()).collect(Collectors.toList());
 
         List<AfterOrderVo> installWorkOrderList = workOrderService.installWorkOrderList(pointId, cityId, datestamp);
         installWorkOrderList.forEach(item -> {
@@ -105,7 +105,7 @@ public class DataQueryServiceImpl implements DataQueryService {
 
         HashMap<String, Object> map = new HashMap<>(4);
         map.put("installWorkOrderByCityList", installWorkOrderByCityList);
-        map.put("installWorkOrderByPointMap", list);
+        map.put("installWorkOrderByPointMap", collect1);
         map.put("installWorkOrderList", installWorkOrderList);
         map.put("avg",avg);
         return R.ok().data(map);
