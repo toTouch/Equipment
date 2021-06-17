@@ -55,6 +55,7 @@ public class DataQueryServiceImpl implements DataQueryService {
         List<AfterOrderVo> installWorkOrderByPointList = workOrderService.installWorkOrderByPoint(pointId, cityId, datestamp);
 
         Double avg = 0.00;
+        Double finalAvg = avg;
         installWorkOrderByPointList.forEach(item -> {
             if (Objects.nonNull(item.getCity())) {
                 City city = cityService.getById(item.getCity());
@@ -69,9 +70,11 @@ public class DataQueryServiceImpl implements DataQueryService {
                 }
             }
             if (Objects.nonNull(item.getSumCount())) {
-                add(avg.toString(), item.getSumCount());
+                add(finalAvg.toString(), item.getSumCount());
             }
         });
+
+        avg = installWorkOrderByPointList.stream().mapToInt(item -> Integer.parseInt(item.getSumCount())).average().getAsDouble();
 
         Map<Long, List<AfterOrderVo>> collect = installWorkOrderByPointList
                 .stream()
@@ -91,14 +94,11 @@ public class DataQueryServiceImpl implements DataQueryService {
             }
         });
 
-        BigDecimal sumCount = new BigDecimal(avg);
-        BigDecimal divide = sumCount.divide(BigDecimal.valueOf(installWorkOrderByPointList.size()));
-
         HashMap<String, Object> map = new HashMap<>(4);
         map.put("installWorkOrderByCityList", installWorkOrderByCityList);
         map.put("installWorkOrderByPointMap", collect);
         map.put("installWorkOrderList", installWorkOrderList);
-        map.put("avg",divide);
+        map.put("avg",avg);
         return R.ok().data(map);
     }
 
