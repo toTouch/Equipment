@@ -179,8 +179,8 @@ public class DataQueryServiceImpl implements DataQueryService {
             }
         });
 
-        Map<Long, List<AfterCountListVo>> collect = qualityCount.stream().collect(Collectors.groupingBy(AfterCountListVo::getReasonId));
-        return R.ok(collect);
+//        Map<Long, List<AfterCountListVo>> collect = qualityCount.stream().collect(Collectors.groupingBy(AfterCountListVo::getReasonId));
+        return R.ok(qualityCount);
     }
 
     private static double add(String v1, String v2) {
