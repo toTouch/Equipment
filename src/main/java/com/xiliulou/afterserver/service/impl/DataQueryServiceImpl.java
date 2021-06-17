@@ -2,6 +2,7 @@ package com.xiliulou.afterserver.service.impl;
 
 import com.xiliulou.afterserver.entity.City;
 import com.xiliulou.afterserver.entity.WorkOrderReason;
+import com.xiliulou.afterserver.entity.WorkOrderType;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.R;
@@ -11,6 +12,7 @@ import com.xiliulou.afterserver.web.vo.AfterOrderVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +31,8 @@ public class DataQueryServiceImpl implements DataQueryService {
     private WorkOrderReasonService workOrderReasonService;
     @Autowired
     private CityService cityService;
+    @Autowired
+    private WorkOrderTypeService workOrderTypeService;
 
     @Override
     public R installWorkOrder(Long pointId, Integer cityId, Integer dateType) {
@@ -37,7 +41,9 @@ public class DataQueryServiceImpl implements DataQueryService {
         if (Objects.isNull(dateType) || dateType < 0 || dateType > 90) {
             return R.fail("查询时间间隔不正确");
         }
+
         datestamp =  ((dateType == 1 ) ? null : DateUtils.daysToStamp(-(dateType - 1)));
+
         List<AfterOrderVo>  installWorkOrderByCityList = workOrderService.installWorkOrderByCity(pointId,cityId,datestamp);
         installWorkOrderByCityList.forEach(item -> {
             if (Objects.nonNull(item.getCity())){
@@ -47,7 +53,35 @@ public class DataQueryServiceImpl implements DataQueryService {
                 }
             }
         });
+
         List<AfterOrderVo>  installWorkOrderByPointList = workOrderService.installWorkOrderByPoint(pointId,cityId,datestamp);
+
+        BigDecimal avg = null;
+        installWorkOrderByPointList.forEach(item -> {
+            if (Objects.nonNull(item.getCity())){
+                City city = cityService.getById(item.getCity());
+                if (Objects.nonNull(city)){
+                    item.setCityName(city.getName());
+                }
+            }
+            if (Objects.nonNull(item.getType())){
+                WorkOrderType workOrderType = workOrderTypeService.getById(item.getType());
+                if (Objects.nonNull(workOrderType)){
+                    item.setTypeName(workOrderType.getType());
+                }
+            }
+            if (Objects.nonNull(item.getSumCount())){
+                BigDecimal sum = new BigDecimal(item.getSumCount());
+                avg.add(sum);
+            }
+        });
+
+        avg.divide(BigDecimal.valueOf(installWorkOrderByPointList.size()));
+        AfterOrderVo afterOrderVo = new AfterOrderVo();
+        afterOrderVo.setAvg(avg);
+        installWorkOrderByPointList.add(afterOrderVo);
+
+
         List<AfterOrderVo>  installWorkOrderList = workOrderService.installWorkOrderList(pointId,cityId,datestamp);
         installWorkOrderList.forEach(item -> {
             if (Objects.nonNull(item.getCity())){

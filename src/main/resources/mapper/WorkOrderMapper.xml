@@ -312,12 +312,16 @@
     </select>
     <select id="installWorkOrderByPoint" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
         SELECT
-        SUM( o.fee ) AS sumCount, p.name as pointName,p.city,count(1) as numCount
+        SUM( o.fee ) AS sumCount,
+        p.NAME AS pointName,
+        p.city,
+        count( o.type) AS numCount,
+        o.type
         FROM
         work_order o
         LEFT JOIN point p ON o.point_id = p.id
         WHERE
-        o.type IN ( 1, 2, 3 )
+        1 = 1
         <if test="datestamp != null">
             and o.create_time &gt;= #{datestamp}
         </if>
@@ -325,10 +329,11 @@
             and p.city = #{cityId}
         </if>
         GROUP BY
-        p.id
+        o.point_id,o.type
         ORDER BY
         sumCount DESC
         LIMIT 20
+
     </select>
     <select id="installWorkOrderList" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
         SELECT
