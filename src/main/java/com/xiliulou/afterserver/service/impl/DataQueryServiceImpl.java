@@ -102,7 +102,7 @@ public class DataQueryServiceImpl implements DataQueryService {
 
         HashMap<String, Object> map = new HashMap<>(4);
         map.put("installWorkOrderByCityList", installWorkOrderByCityList);
-        map.put("installWorkOrderByPointMap", collect);
+        map.put("installWorkOrderByPointMap", hashMap);
         map.put("installWorkOrderList", installWorkOrderList);
         map.put("avg",avg);
         return R.ok().data(map);
