@@ -39,8 +39,24 @@ public class DataQueryServiceImpl implements DataQueryService {
         }
         datestamp =  ((dateType == 1 ) ? null : DateUtils.daysToStamp(-(dateType - 1)));
         List<AfterOrderVo>  installWorkOrderByCityList = workOrderService.installWorkOrderByCity(pointId,cityId,datestamp);
+        installWorkOrderByCityList.forEach(item -> {
+            if (Objects.nonNull(item.getCity())){
+                City city = cityService.getById(item.getCity());
+                if (Objects.nonNull(city)){
+                    item.setCityName(city.getName());
+                }
+            }
+        });
         List<AfterOrderVo>  installWorkOrderByPointList = workOrderService.installWorkOrderByPoint(pointId,cityId,datestamp);
         List<AfterOrderVo>  installWorkOrderList = workOrderService.installWorkOrderList(pointId,cityId,datestamp);
+        installWorkOrderList.forEach(item -> {
+            if (Objects.nonNull(item.getCity())){
+                City city = cityService.getById(item.getCity());
+                if (Objects.nonNull(city)){
+                    item.setCityName(city.getName());
+                }
+            }
+        });
 
         HashMap<String, Object> map = new HashMap<>(3);
         map.put("installWorkOrderByCityList",installWorkOrderByCityList);
