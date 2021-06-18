@@ -112,7 +112,7 @@ public class DataQueryServiceImpl implements DataQueryService {
         map.put("installWorkOrderByCityList", installWorkOrderByCityList);
         map.put("installWorkOrderByPointMap", collect1);
         map.put("installWorkOrderList", installWorkOrderList);
-        map.put("avg",avg);
+        map.put("avg",String.format("%.2f",avg));
         return R.ok().data(map);
     }
 
