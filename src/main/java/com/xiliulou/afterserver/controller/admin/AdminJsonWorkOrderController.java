@@ -55,11 +55,11 @@ public class AdminJsonWorkOrderController {
 
     @PutMapping("admin/update/workorder/status")
     public R updateWorkOrderStatus(@RequestBody WorkerOrderUpdateStatusQuery query,HttpServletRequest request){
-        Long uid = (Long) request.getAttribute("uid");
-        if (Objects.isNull(uid)){
-            return R.fail("请传入uid");
-        }
-        query.setUid(uid);
+//        Long uid = (Long) request.getAttribute("uid");
+//        if (Objects.isNull(uid)){
+//            return R.fail("请传入uid");
+//        }
+//        query.setUid(uid);
         return workOrderService.updateWorkOrderStatus(query);
     }
 
