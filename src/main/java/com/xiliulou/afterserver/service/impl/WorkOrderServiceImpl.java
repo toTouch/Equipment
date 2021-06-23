@@ -574,45 +574,45 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     @Override
-    public List<AfterCountVo> qualityCount(Long pointId, Integer cityId, Long datestamp) {
+    public List<AfterCountVo> qualityCount(Long pointId, Integer cityId,Long startTime,Long endTime) {
 
-      return this.baseMapper.qualityCount(pointId,cityId,datestamp);
+      return this.baseMapper.qualityCount(pointId,cityId,startTime,endTime);
     }
 
     @Override
-    public List<AfterCountListVo> qualityCountList(Long pointId, Integer cityId, Long datestamp) {
+    public List<AfterCountListVo> qualityCountList(Long pointId, Integer cityId,Long stratTime,Long endTime) {
 
-        return this.baseMapper.qualityCountList(pointId,cityId,datestamp);
+        return this.baseMapper.qualityCountList(pointId,cityId,stratTime,endTime);
     }
 
     @Override
-    public List<AfterOrderVo> afterWorkOrderByCity(Long pointId, Integer cityId, Long datestamp) {
-        return this.baseMapper.afterWorkOrderByCity(pointId,cityId,datestamp);
+    public List<AfterOrderVo> afterWorkOrderByCity(Long pointId, Integer cityId, Long stratTime,Long endTime) {
+        return this.baseMapper.afterWorkOrderByCity(pointId,cityId,stratTime,endTime);
     }
 
     @Override
-    public List<AfterOrderVo> afterWorkOrderByPoint(Long pointId, Integer cityId, Long datestamp) {
-        return this.baseMapper.afterWorkOrderByPoint(pointId,cityId,datestamp);
+    public List<AfterOrderVo> afterWorkOrderByPoint(Long pointId, Integer cityId,Long stratTime,Long endTime) {
+        return this.baseMapper.afterWorkOrderByPoint(pointId,cityId,stratTime,endTime);
     }
 
     @Override
-    public List<AfterOrderVo> afterWorkOrderList(Long pointId, Integer cityId, Long datestamp) {
-        return this.baseMapper.afterWorkOrderList(pointId,cityId,datestamp);
+    public List<AfterOrderVo> afterWorkOrderList(Long pointId, Integer cityId, Long stratTime,Long endTime) {
+        return this.baseMapper.afterWorkOrderList(pointId,cityId,stratTime,endTime);
     }
 
     @Override
-    public List<AfterOrderVo> installWorkOrderByCity(Long pointId, Integer cityId, Long datestamp) {
-        return this.baseMapper.installWorkOrderByCity(pointId,cityId,datestamp);
+    public List<AfterOrderVo> installWorkOrderByCity(Long pointId, Integer cityId,Long stratTime,Long endTime) {
+        return this.baseMapper.installWorkOrderByCity(pointId,cityId,stratTime,endTime);
     }
 
     @Override
-    public List<AfterOrderVo> installWorkOrderByPoint(Long pointId, Integer cityId, Long datestamp) {
-        return this.baseMapper.installWorkOrderByPoint(pointId,cityId,datestamp);
+    public List<AfterOrderVo> installWorkOrderByPoint(Long pointId, Integer cityId,Long stratTime,Long endTime) {
+        return this.baseMapper.installWorkOrderByPoint(pointId,cityId,stratTime,endTime);
     }
 
     @Override
-    public List<AfterOrderVo> installWorkOrderList(Long pointId, Integer cityId, Long datestamp) {
-        return this.baseMapper.installWorkOrderList(pointId,cityId,datestamp);
+    public List<AfterOrderVo> installWorkOrderList(Long pointId, Integer cityId,Long stratTime,Long endTime) {
+        return this.baseMapper.installWorkOrderList(pointId,cityId,stratTime,endTime);
     }
     //    /**
 //     * 预览

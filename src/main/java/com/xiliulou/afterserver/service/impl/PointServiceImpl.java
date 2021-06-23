@@ -119,6 +119,12 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
     @Transactional(rollbackFor = Exception.class)
     public R savePoint(PointQuery pointQuery) {
         Point point = new Point();
+        if (Objects.isNull(pointQuery.getPrimaryCabinetCount())){
+            point.setPrimaryCabinetCount(0);
+        }
+        if (Objects.isNull(pointQuery.getDeputyCabinetCount())){
+            point.setDeputyCabinetCount(0);
+        }
         BeanUtils.copyProperties(pointQuery, point);
         baseMapper.insert(point);
 
@@ -345,5 +351,11 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
         this.updateById(point);
         saveFile(point);
         return R.ok();
+    }
+
+    @Override
+    public Integer queryPointCountFromDate(Long startTime, Long endTime) {
+
+        return this.baseMapper.queryPointCountFromDate(startTime,endTime);
     }
 }

@@ -40,4 +40,5 @@ public interface PointMapper extends BaseMapper<Point> {
 
     Integer getByStatCount(@Param("years") String years, @Param("mouths") String mouths, @Param("city") String city);
 
+    Integer queryPointCountFromDate(@Param("startTime") Long startTime, @Param("endTime") Long endTime);
 }

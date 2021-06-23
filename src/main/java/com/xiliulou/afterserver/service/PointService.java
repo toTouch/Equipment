@@ -39,4 +39,6 @@ public interface PointService extends IService<Point> {
     R pointGetBingList(Long id);
 
     R updatePoint(PointQuery point);
+
+    Integer queryPointCountFromDate(Long startTime, Long endTime);
 }

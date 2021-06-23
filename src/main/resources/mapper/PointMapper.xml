@@ -401,5 +401,17 @@
         </if>
     </select>
 
+    <select id="queryPointCountFromDate" resultType="java.lang.Integer">
+        SELECT
+            SUM( primary_cabinet_count + deputy_cabinet_count ) as count
+        FROM
+            point
+        WHERE
+            1 = 1
+        <if test="stratTime != null and endTime != null ">
+            and create_time BETWEEN #{stratTime} and #{endTime}
+        </if>
+    </select>
+
 
 </mapper>
