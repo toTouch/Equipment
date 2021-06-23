@@ -7,13 +7,11 @@ import java.util.Map;
 
 public interface DataQueryService {
 
-    R installWorkOrder(Long pointId, Integer cityId, Integer dateType);
+    R installWorkOrder(Long pointId, Integer cityId,Long startTime,Long endTime);
 
-    R afterRatio(Long pointId, Integer cityId, Integer dateType);
+    R after(Long pointId, Integer cityId,Long startTime,Long endTime);
 
-    R after(Long pointId, Integer cityId, Integer dateType);
+    R qualityAnalyse(Long pointId, Integer cityId,Long startTime,Long endTime);
 
-    R qualityAnalyse(Long pointId, Integer cityId, Integer dateType);
-
-    R qualityAnalyseList(Long pointId, Integer cityId, Integer dateType);
+    R qualityAnalyseList(Long pointId, Integer cityId, Long stratTime,Long endTime);
 }

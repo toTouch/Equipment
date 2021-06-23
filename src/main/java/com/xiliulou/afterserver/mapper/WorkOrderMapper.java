@@ -19,19 +19,27 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
 
     List<WorkOrderVo> orderList(@Param("query") WorkOrderQuery workOrder);
 
-    List<AfterCountVo> qualityCount(@Param("pointId") Long pointId, @Param("cityId") Integer cityId, @Param("datestamp") Long datestamp);
+    List<AfterCountVo> qualityCount(@Param("pointId") Long pointId, @Param("cityId") Integer cityId,
+                                    @Param("startTime") Long startTime, @Param("endTime") Long endTime);
 
-    List<AfterCountListVo> qualityCountList(@Param("pointId") Long pointId, @Param("cityId") Integer cityId, @Param("datestamp") Long datestamp);
+    List<AfterCountListVo> qualityCountList(@Param("pointId") Long pointId, @Param("cityId") Integer cityId,
+                                            @Param("stratTime") Long stratTime, @Param("endTime") Long endTime);
 
-    List<AfterOrderVo> afterWorkOrderByCity(@Param("pointId") Long pointId, @Param("cityId") Integer cityId, @Param("datestamp") Long datestamp);
+    List<AfterOrderVo> afterWorkOrderByCity(@Param("pointId") Long pointId, @Param("cityId") Integer cityId,
+                                            @Param("stratTime") Long stratTime, @Param("endTime") Long endTime);
 
-    List<AfterOrderVo> afterWorkOrderByPoint(@Param("pointId") Long pointId, @Param("cityId") Integer cityId, @Param("datestamp") Long datestamp);
+    List<AfterOrderVo> afterWorkOrderByPoint(@Param("pointId") Long pointId, @Param("cityId") Integer cityId,
+                                             @Param("stratTime") Long stratTime, @Param("endTime") Long endTime);
 
-    List<AfterOrderVo> afterWorkOrderList(@Param("pointId") Long pointId, @Param("cityId") Integer cityId, @Param("datestamp") Long datestamp);
+    List<AfterOrderVo> afterWorkOrderList(@Param("pointId") Long pointId, @Param("cityId") Integer cityId,
+                                          @Param("stratTime") Long stratTime, @Param("endTime") Long endTime);
 
-    List<AfterOrderVo> installWorkOrderByCity(@Param("pointId") Long pointId, @Param("cityId") Integer cityId, @Param("datestamp") Long datestamp);
+    List<AfterOrderVo> installWorkOrderByCity(@Param("pointId") Long pointId, @Param("cityId") Integer cityId,
+                                              @Param("stratTime") Long stratTime, @Param("endTime") Long endTime);
 
-    List<AfterOrderVo> installWorkOrderByPoint(@Param("pointId") Long pointId, @Param("cityId") Integer cityId, @Param("datestamp") Long datestamp);
+    List<AfterOrderVo> installWorkOrderByPoint(@Param("pointId") Long pointId, @Param("cityId") Integer cityId,
+                                               @Param("stratTime") Long stratTime, @Param("endTime") Long endTime);
 
-    List<AfterOrderVo> installWorkOrderList(@Param("pointId") Long pointId, @Param("cityId") Integer cityId, @Param("datestamp") Long datestamp);
+    List<AfterOrderVo> installWorkOrderList(@Param("pointId") Long pointId, @Param("cityId") Integer cityId,
+                                            @Param("stratTime") Long stratTime, @Param("endTime") Long endTime);
 }

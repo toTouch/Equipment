@@ -22,36 +22,34 @@ public class AdminJsonDataQueryController {
     @GetMapping("/install/work/order")
     public R installWorkOrder(@RequestParam(value = "pointId",required = false) Long pointId,
                               @RequestParam(value = "cityId",required = false) Integer cityId,
-                              @RequestParam(value = "dateType") Integer dateType){
-        return dataQueryService.installWorkOrder(pointId,cityId,dateType);
+                              @RequestParam(value = "startTime",required = false) Long startTime,
+                              @RequestParam(value = "endTime",required = false) Long endTime){
+        return dataQueryService.installWorkOrder(pointId,cityId,startTime,endTime);
     }
 
-//    @GetMapping("/after/ratio")
-//    public R afterRatio(@RequestParam(value = "pointId",required = false) Long pointId,
-//                        @RequestParam(value = "cityId",required = false) Integer cityId,
-//                        @RequestParam(value = "dateType") Integer dateType){
-//        return dataQueryService.afterRatio(pointId,cityId,dateType);
-//    }
 
     @GetMapping("/after")
     public R after(@RequestParam(value = "pointId",required = false) Long pointId,
                    @RequestParam(value = "cityId",required = false) Integer cityId,
-                   @RequestParam(value = "dateType") Integer dateType){
-        return dataQueryService.after(pointId,cityId,dateType);
+                   @RequestParam(value = "startTime",required = false) Long startTime,
+                   @RequestParam(value = "endTime",required = false) Long endTime){
+        return dataQueryService.after(pointId,cityId,startTime,endTime);
     }
 
     @GetMapping("/quality/analyse")
     public R qualityAnalyse(@RequestParam(value = "pointId",required = false) Long pointId,
                             @RequestParam(value = "cityId",required = false) Integer cityId,
-                            @RequestParam(value = "dateType") Integer dateType){
-        return dataQueryService.qualityAnalyse(pointId,cityId,dateType);
+                            @RequestParam(value = "startTime",required = false) Long startTime,
+                            @RequestParam(value = "endTime",required = false) Long endTime){
+        return dataQueryService.qualityAnalyse(pointId,cityId,startTime,endTime);
     }
 
     @GetMapping("/quality/analyse/list")
     public R qualityAnalyseList(@RequestParam(value = "pointId",required = false) Long pointId,
                             @RequestParam(value = "cityId",required = false) Integer cityId,
-                            @RequestParam(value = "dateType") Integer dateType){
-        return dataQueryService.qualityAnalyseList(pointId,cityId,dateType);
+                            @RequestParam(value = "startTime",required = false) Long startTime,
+                            @RequestParam(value = "endTime",required = false) Long endTime){
+        return dataQueryService.qualityAnalyseList(pointId,cityId,startTime,endTime);
     }
 
 
