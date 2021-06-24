@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.security.auth.login.CredentialException;
+import java.util.Objects;
 
 /**
  * @program: XILIULOU
@@ -28,6 +30,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     public IPage getCustomerPage(Long offset, Long size, Customer customer) {
         Page page = PageUtil.getPage(offset, size);
 
-        return baseMapper.selectPage(page, Wrappers.lambdaQuery(customer).orderByDesc(Customer::getCreateTime));
+        LambdaQueryWrapper<Customer> wrapper = new LambdaQueryWrapper<>();
+        wrapper.like(Objects.nonNull(customer.getName()),Customer::getName,customer.getName())
+                .like(Objects.nonNull(customer.getPhone()),Customer::getPhone,customer.getPhone())
+                .orderByDesc(Customer::getCreateTime);
+        return baseMapper.selectPage(page, wrapper);
     }
 }

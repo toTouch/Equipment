@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -34,7 +35,14 @@ public class SupplierServiceImpl extends ServiceImpl<SupplierMapper, Supplier> i
     @Override
     public IPage getPage(Long offset, Long size, Supplier supplier) {
         Page page = PageUtil.getPage(offset, size);
-        Page page1 = baseMapper.selectPage(page, Wrappers.lambdaQuery(supplier).orderByDesc(Supplier::getCreateTime));
+
+        LambdaQueryWrapper<Supplier> wrapper = new LambdaQueryWrapper<>();
+        wrapper.like(Objects.nonNull(supplier.getName()),Supplier::getName,supplier.getName())
+                .like(Objects.nonNull(supplier.getManager()),Supplier::getManager,supplier.getManager())
+                .like(Objects.nonNull(supplier.getPhone()),Supplier::getPhone,supplier.getPhone())
+                .orderByDesc(Supplier::getCreateTime);
+
+        Page page1 = baseMapper.selectPage(page,wrapper);
         List<Supplier> records = page1.getRecords();
 
         records.forEach(item -> {
