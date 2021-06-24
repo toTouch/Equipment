@@ -46,7 +46,7 @@ public class DataQueryServiceImpl implements DataQueryService {
             }
             if (pointCount != null && item.getSumCount() != null) {
                 Double count = item.getSumCount() / pointCount;
-                item.setSumCount(count);
+                item.setSumCount(formatCount(count));
             }
         });
 
@@ -118,6 +118,7 @@ public class DataQueryServiceImpl implements DataQueryService {
         return R.ok().data(map);
     }
 
+
     @Override
     public R after(Long pointId, Integer cityId, Long startTime, Long endTime) {
         Integer pointCount = pointService.queryPointCountFromDate(null, null);
@@ -133,7 +134,7 @@ public class DataQueryServiceImpl implements DataQueryService {
 
             if (pointCount != null && item.getSumCount() != null) {
                 Double count = item.getSumCount() / pointCount;
-                item.setSumCount(count);
+                item.setSumCount(formatCount(count));
             }
 
             if (pointCount != null && item.getNumCount() != null) {
@@ -155,7 +156,7 @@ public class DataQueryServiceImpl implements DataQueryService {
 
             if (pointCount != null && item.getSumCount() != null) {
                 Double count = item.getSumCount() / pointCount;
-                item.setSumCount(count);
+                item.setSumCount(formatCount(count));
             }
             if (pointCount != null && item.getNumCount() != null) {
                 int i = item.getNumCount() / pointCount;
@@ -206,6 +207,12 @@ public class DataQueryServiceImpl implements DataQueryService {
 
         Map<Long, List<AfterCountListVo>> collect = qualityCount.stream().collect(Collectors.groupingBy(AfterCountListVo::getReasonId));
         return R.ok(collect);
+    }
+
+
+    private Double formatCount(Double count) {
+        BigDecimal b   =   new   BigDecimal(count);
+        return  b.setScale(2,   BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     private static double add(String v1, String v2) {
