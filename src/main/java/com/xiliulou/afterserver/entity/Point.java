@@ -47,6 +47,11 @@ public class Point {
     //柜子类型  1:常温柜 2：加热柜
     private Integer lockerType;
 
+    /**
+     * 登记卡号
+     */
+    private String registrationCardNo;
+
     public static final Integer LOCKER_TPYE_NORMAL = 1;
     public static final Integer LOCKER_TPYE_HEAT = 2;
 

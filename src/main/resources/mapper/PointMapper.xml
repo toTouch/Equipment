@@ -287,6 +287,10 @@
             <if test="query.city != null and query.city != ''">
                 and p.city =#{query.city}
             </if>
+            <if test="query.status != null and query.status != ''">
+                and p.status =#{query.status}
+            </if>
+
             <if test="query.customerId != null ">
                 and p.customer_id = #{query.customerId}
             </if>
