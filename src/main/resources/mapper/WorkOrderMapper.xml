@@ -390,7 +390,7 @@
             LIMIT 20
     </select>
     <select id="countOrderList" resultType="java.lang.Integer">
-        SELECT count (1)
+        SELECT count(1)
         FROM work_order as wo
         LEFT JOIN work_order_type as wot on wot.id = wo.id
         LEFT JOIN work_order_reason as wor on wor.id = wo.work_order_reason_id
