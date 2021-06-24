@@ -187,6 +187,9 @@
             </if>
         </where>
         ORDER BY wo.create_time DESC
+        <if test="query.offset != null and query.size != null ">
+            LIMIT #{query.offset},#{query.size}
+        </if>
     </select>
 
     <select id="qualityCount" resultType="com.xiliulou.afterserver.web.vo.AfterCountVo">
