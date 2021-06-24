@@ -33,6 +33,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         LambdaQueryWrapper<Customer> wrapper = new LambdaQueryWrapper<>();
         wrapper.like(Objects.nonNull(customer.getName()),Customer::getName,customer.getName())
                 .like(Objects.nonNull(customer.getPhone()),Customer::getPhone,customer.getPhone())
+                .like(Objects.nonNull(customer.getManager()),Customer::getManager,customer.getManager())
                 .orderByDesc(Customer::getCreateTime);
         return baseMapper.selectPage(page, wrapper);
     }
