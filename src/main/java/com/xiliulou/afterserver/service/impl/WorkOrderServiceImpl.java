@@ -210,6 +210,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
     @Override
     public R reconciliation(WorkOrderQuery workOrder) {
+        Integer count = baseMapper.countOrderList(workOrder);
         List<WorkOrderVo> workOrderVoList = baseMapper.orderList(workOrder);
         workOrderVoList.forEach(o -> {
 
@@ -246,7 +247,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
             }
         });
-        return R.ok(workOrderVoList);
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("total",count);
+        map.put("data",workOrderVoList);
+        return R.ok(map);
     }
 
     @Override
@@ -296,6 +301,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if (Objects.nonNull(point)){
                 workOrderExcelVo.setPointName(point.getName());
             }
+            workOrderExcelVo.setRemarks(o.getInfo());
             workOrderExcelVo.setWorkOrderReasonName(o.getThirdReason());
             workOrderExcelVo.setThirdCompanyPay(o.getThirdCompanyPay());
 //            workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
@@ -331,6 +337,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if (Objects.nonNull(point)){
                 workOrderExcelVo2.setPointName(point.getName());
             }
+            workOrderExcelVo2.setRemarks(o.getInfo());
             workOrderExcelVo2.setWorkOrderReasonName(o.getThirdReason());
             workOrderExcelVo2.setThirdCompanyPay(o.getThirdCompanyPay());
 //            workOrderExcelVo2.setStatusStr(getStatusStr(o.getStatus()));
@@ -367,6 +374,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if (Objects.nonNull(point)){
                 workOrderExcelVo3.setPointName(point.getName());
             }
+            workOrderExcelVo3.setRemarks(o.getInfo());
             workOrderExcelVo3.setThirdCompanyPay(o.getThirdCompanyPay());
 //            workOrderExcelVo3.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo3.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
