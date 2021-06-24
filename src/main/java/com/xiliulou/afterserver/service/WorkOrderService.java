@@ -55,17 +55,17 @@ public interface WorkOrderService extends IService<WorkOrder> {
 
     List<AfterCountVo> qualityCount(Long pointId, Integer cityId,Long startTime,Long endTime);
 
-    List<AfterCountListVo> qualityCountList(Long pointId, Integer cityId, Long stratTime,Long endTime);
+    List<AfterCountListVo> qualityCountList(Long pointId, Integer cityId, Long startTime,Long endTime);
 
-    List<AfterOrderVo> afterWorkOrderByCity(Long pointId, Integer cityId, Long stratTime,Long endTime);
+    List<AfterOrderVo> afterWorkOrderByCity(Long pointId, Integer cityId, Long startTime,Long endTime);
 
-    List<AfterOrderVo> afterWorkOrderByPoint(Long pointId, Integer cityId, Long stratTime,Long endTime);
+    List<AfterOrderVo> afterWorkOrderByPoint(Long pointId, Integer cityId, Long startTime,Long endTime);
 
-    List<AfterOrderVo> afterWorkOrderList(Long pointId, Integer cityId, Long stratTime,Long endTime);
+    List<AfterOrderVo> afterWorkOrderList(Long pointId, Integer cityId, Long startTime,Long endTime);
 
-    List<AfterOrderVo> installWorkOrderByCity(Long pointId, Integer cityId, Long stratTime,Long endTime);
+    List<AfterOrderVo> installWorkOrderByCity(Long pointId, Integer cityId, Long startTime,Long endTime);
 
-    List<AfterOrderVo> installWorkOrderByPoint(Long pointId, Integer cityId, Long stratTime,Long endTime);
+    List<AfterOrderVo> installWorkOrderByPoint(Long pointId, Integer cityId, Long startTime,Long endTime);
 
-    List<AfterOrderVo> installWorkOrderList(Long pointId, Integer cityId, Long stratTime,Long endTime);
+    List<AfterOrderVo> installWorkOrderList(Long pointId, Integer cityId, Long startTime,Long endTime);
 }
