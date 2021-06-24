@@ -42,4 +42,6 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
 
     List<AfterOrderVo> installWorkOrderList(@Param("pointId") Long pointId, @Param("cityId") Integer cityId,
                                             @Param("stratTime") Long stratTime, @Param("endTime") Long endTime);
+
+    Integer countOrderList(@Param("query") WorkOrderQuery workOrder);
 }

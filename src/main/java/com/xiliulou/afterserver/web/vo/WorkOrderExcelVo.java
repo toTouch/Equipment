@@ -28,6 +28,8 @@ public class WorkOrderExcelVo {
 //    private String statusStr;
     @ExcelProperty("费用")
     private BigDecimal thirdCompanyPay;
+    @ExcelProperty("备注")
+    private String remarks;
     @ExcelProperty("创建时间")
     private String createTimeStr;
 }
