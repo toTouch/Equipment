@@ -34,9 +34,9 @@ public class DataQueryServiceImpl implements DataQueryService {
     private WorkOrderTypeService workOrderTypeService;
 
     @Override
-    public R installWorkOrder(Long pointId, Integer cityId,Long startTime,Long endTime) {
-        Integer pointCount = pointService.queryPointCountFromDate(startTime,endTime);
-        List<AfterOrderVo> installWorkOrderByCityList = workOrderService.installWorkOrderByCity(pointId,cityId,startTime,endTime);
+    public R installWorkOrder(Long pointId, Integer cityId, Long startTime, Long endTime) {
+        Integer pointCount = pointService.queryPointCountFromDate(startTime, endTime);
+        List<AfterOrderVo> installWorkOrderByCityList = workOrderService.installWorkOrderByCity(pointId, cityId, startTime, endTime);
         installWorkOrderByCityList.forEach(item -> {
             if (Objects.nonNull(item.getCity())) {
                 City city = cityService.getById(item.getCity());
@@ -44,13 +44,13 @@ public class DataQueryServiceImpl implements DataQueryService {
                     item.setCityName(city.getName());
                 }
             }
-            if (pointCount !=null && item.getSumCount()!=null){
-                Double count = Double.valueOf(Integer.parseInt(item.getSumCount()) / pointCount);
+            if (pointCount != null && item.getSumCount() != null) {
+                Double count = Double.parseDouble(item.getSumCount()) / pointCount;
                 item.setSumCount(count.toString());
             }
         });
 
-        List<AfterOrderVo> installWorkOrderByPointList = workOrderService.installWorkOrderByPoint(pointId, cityId, startTime,endTime);
+        List<AfterOrderVo> installWorkOrderByPointList = workOrderService.installWorkOrderByPoint(pointId, cityId, startTime, endTime);
 
         Double avg = 0.00;
         Double finalAvg = avg;
@@ -79,7 +79,7 @@ public class DataQueryServiceImpl implements DataQueryService {
                 .collect(Collectors.groupingBy(AfterOrderVo::getPointId));
 
         ArrayList<InstallSumCountVo> list = new ArrayList<>();
-        collect.forEach((k,v) -> {
+        collect.forEach((k, v) -> {
             InstallSumCountVo installSumCountVo = new InstallSumCountVo();
             double sum = v.stream().mapToDouble(item -> Double.parseDouble(item.getSumCount())).sum();
 
@@ -95,8 +95,8 @@ public class DataQueryServiceImpl implements DataQueryService {
 
         List<InstallSumCountVo> collect1 = list.stream().sorted(Comparator.comparing(InstallSumCountVo::getSum).reversed()).collect(Collectors.toList());
 
-        List<AfterOrderVo> installWorkOrderList = workOrderService.installWorkOrderList(pointId, cityId, null,null);
-        Integer pointCountFromList = pointService.queryPointCountFromDate(null,null);
+        List<AfterOrderVo> installWorkOrderList = workOrderService.installWorkOrderList(pointId, cityId, null, null);
+        Integer pointCountFromList = pointService.queryPointCountFromDate(null, null);
         installWorkOrderList.forEach(item -> {
             if (Objects.nonNull(item.getCity())) {
                 City city = cityService.getById(item.getCity());
@@ -104,8 +104,8 @@ public class DataQueryServiceImpl implements DataQueryService {
                     item.setCityName(city.getName());
                 }
             }
-            if (pointCount !=null && item.getSumCount()!=null){
-                Double count = Double.valueOf(Integer.parseInt(item.getSumCount()) / pointCount);
+            if (pointCount != null && item.getSumCount() != null) {
+                Double count = Double.parseDouble(item.getSumCount()) / pointCountFromList;
                 item.setSumCount(count.toString());
             }
         });
@@ -114,15 +114,15 @@ public class DataQueryServiceImpl implements DataQueryService {
         map.put("installWorkOrderByCityList", installWorkOrderByCityList);
         map.put("installWorkOrderByPointMap", collect1);
         map.put("installWorkOrderList", installWorkOrderList);
-        map.put("avg",String.format("%.2f",avg));
+        map.put("avg", String.format("%.2f", avg));
         return R.ok().data(map);
     }
 
     @Override
-    public R after(Long pointId, Integer cityId,Long startTime,Long endTime) {
-       Integer pointCount = pointService.queryPointCountFromDate(null,null);
+    public R after(Long pointId, Integer cityId, Long startTime, Long endTime) {
+        Integer pointCount = pointService.queryPointCountFromDate(null, null);
 
-        List<AfterOrderVo> afterWorkOrderByCityList = workOrderService.afterWorkOrderByCity(pointId, cityId, startTime,endTime);
+        List<AfterOrderVo> afterWorkOrderByCityList = workOrderService.afterWorkOrderByCity(pointId, cityId, startTime, endTime);
         afterWorkOrderByCityList.forEach(item -> {
             if (Objects.nonNull(item.getCity())) {
                 City city = cityService.getById(item.getCity());
@@ -131,20 +131,20 @@ public class DataQueryServiceImpl implements DataQueryService {
                 }
             }
 
-            if (pointCount !=null && item.getSumCount()!=null){
-                Double count = Double.valueOf(Integer.parseInt(item.getSumCount()) / pointCount);
+            if (pointCount != null && item.getSumCount() != null) {
+                Double count = Double.parseDouble(item.getSumCount()) / pointCount;
                 item.setSumCount(count.toString());
             }
 
-            if (pointCount!=null && item.getNumCount()!=null){
+            if (pointCount != null && item.getNumCount() != null) {
                 int i = item.getNumCount() / pointCount;
                 item.setNumCount(i);
             }
         });
 
-        List<AfterOrderVo> afterWorkOrderByPointList = workOrderService.afterWorkOrderByPoint(pointId, cityId,startTime,endTime);
+        List<AfterOrderVo> afterWorkOrderByPointList = workOrderService.afterWorkOrderByPoint(pointId, cityId, startTime, endTime);
 
-        List<AfterOrderVo> afterWorkOrderList = workOrderService.afterWorkOrderList(pointId, cityId,null,null);
+        List<AfterOrderVo> afterWorkOrderList = workOrderService.afterWorkOrderList(pointId, cityId, null, null);
         afterWorkOrderList.forEach(item -> {
             if (Objects.nonNull(item.getCity())) {
                 City city = cityService.getById(item.getCity());
@@ -153,11 +153,11 @@ public class DataQueryServiceImpl implements DataQueryService {
                 }
             }
 
-            if (pointCount !=null && item.getSumCount()!=null){
-                Double count = Double.valueOf(Integer.parseInt(item.getSumCount()) / pointCount);
+            if (pointCount != null && item.getSumCount() != null) {
+                Double count = Double.parseDouble(item.getSumCount()) / pointCount;
                 item.setSumCount(count.toString());
             }
-            if (pointCount!=null && item.getNumCount()!=null){
+            if (pointCount != null && item.getNumCount() != null) {
                 int i = item.getNumCount() / pointCount;
                 item.setNumCount(i);
             }
@@ -171,8 +171,8 @@ public class DataQueryServiceImpl implements DataQueryService {
     }
 
     @Override
-    public R qualityAnalyse(Long pointId, Integer cityId,Long startTime,Long endTime) {
-        List<AfterCountVo> qualityCount = workOrderService.qualityCount(pointId, cityId, startTime,endTime);
+    public R qualityAnalyse(Long pointId, Integer cityId, Long startTime, Long endTime) {
+        List<AfterCountVo> qualityCount = workOrderService.qualityCount(pointId, cityId, startTime, endTime);
         qualityCount.forEach(item -> {
             if (item.getReasonId() != null) {
                 WorkOrderReason workOrderReason = workOrderReasonService.getById(item.getReasonId());
@@ -186,7 +186,7 @@ public class DataQueryServiceImpl implements DataQueryService {
 
 
     @Override
-    public R qualityAnalyseList(Long pointId, Integer cityId, Long stratTime,Long endTime) {
+    public R qualityAnalyseList(Long pointId, Integer cityId, Long stratTime, Long endTime) {
 //        Long datestamp = null;
 //
 //        if (Objects.isNull(dateType) || dateType < 0 || dateType > 90) {
@@ -194,7 +194,7 @@ public class DataQueryServiceImpl implements DataQueryService {
 //        }
 //        datestamp = ((dateType == 1) ? null : DateUtils.daysToStamp(-(dateType - 1)));
 
-        List<AfterCountListVo> qualityCount = workOrderService.qualityCountList(pointId, cityId, stratTime,endTime);
+        List<AfterCountListVo> qualityCount = workOrderService.qualityCountList(pointId, cityId, stratTime, endTime);
         qualityCount.forEach(item -> {
             if (item.getReasonId() != null) {
                 WorkOrderReason workOrderReason = workOrderReasonService.getById(item.getReasonId());
