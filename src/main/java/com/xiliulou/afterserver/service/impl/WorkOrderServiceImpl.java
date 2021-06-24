@@ -262,7 +262,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
             workOrderExcelVo.setWorkOrderReasonName(o.getThirdReason());
             workOrderExcelVo.setThirdCompanyPay(o.getThirdCompanyPay());
-            workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
+//            workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
 
             if (o.getThirdCompanyType() != null && o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)){
