@@ -297,7 +297,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
             workOrderExcelVo2.setWorkOrderReasonName(o.getThirdReason());
             workOrderExcelVo2.setThirdCompanyPay(o.getThirdCompanyPay());
-            workOrderExcelVo2.setStatusStr(getStatusStr(o.getStatus()));
+//            workOrderExcelVo2.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo2.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
             if (o.getThirdCompanyType() != null && o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
                 Supplier supplier = supplierService.getById(o.getThirdCompanyId());
@@ -335,7 +335,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrderExcelVo3.setPointName(point.getName());
             }
             workOrderExcelVo3.setThirdCompanyPay(o.getThirdCompanyPay());
-            workOrderExcelVo3.setStatusStr(getStatusStr(o.getStatus()));
+//            workOrderExcelVo3.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo3.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
             if (o.getServerId()!=null){
                 Server server = serverService.getById(o.getServerId());
