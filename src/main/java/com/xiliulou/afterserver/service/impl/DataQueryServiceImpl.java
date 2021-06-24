@@ -45,8 +45,8 @@ public class DataQueryServiceImpl implements DataQueryService {
                 }
             }
             if (pointCount != null && item.getSumCount() != null) {
-                Double count = Double.parseDouble(item.getSumCount()) / pointCount;
-                item.setSumCount(count.toString());
+                Double count = item.getSumCount() / pointCount;
+                item.setSumCount(count);
             }
         });
 
@@ -68,11 +68,11 @@ public class DataQueryServiceImpl implements DataQueryService {
                 }
             }
             if (Objects.nonNull(item.getSumCount())) {
-                add(finalAvg.toString(), item.getSumCount());
+                add(finalAvg.toString(), item.getSumCount().toString());
             }
         });
 
-        avg = installWorkOrderByPointList.stream().mapToDouble(item -> Double.parseDouble(item.getSumCount())).average().getAsDouble();
+        avg = installWorkOrderByPointList.stream().mapToDouble(item -> item.getSumCount()).average().getAsDouble();
 
         Map<Long, List<AfterOrderVo>> collect = installWorkOrderByPointList
                 .stream()
@@ -81,7 +81,7 @@ public class DataQueryServiceImpl implements DataQueryService {
         ArrayList<InstallSumCountVo> list = new ArrayList<>();
         collect.forEach((k, v) -> {
             InstallSumCountVo installSumCountVo = new InstallSumCountVo();
-            double sum = v.stream().mapToDouble(item -> Double.parseDouble(item.getSumCount())).sum();
+            double sum = v.stream().mapToDouble(item -> item.getSumCount()).sum();
 
             v.forEach(item -> {
                 installSumCountVo.setPointName(item.getPointName());
@@ -105,8 +105,8 @@ public class DataQueryServiceImpl implements DataQueryService {
                 }
             }
             if (pointCount != null && item.getSumCount() != null) {
-                Double count = Double.parseDouble(item.getSumCount()) / pointCountFromList;
-                item.setSumCount(count.toString());
+                Double count = item.getSumCount() / pointCountFromList;
+                item.setSumCount(count);
             }
         });
 
@@ -132,8 +132,8 @@ public class DataQueryServiceImpl implements DataQueryService {
             }
 
             if (pointCount != null && item.getSumCount() != null) {
-                Double count = Double.parseDouble(item.getSumCount()) / pointCount;
-                item.setSumCount(count.toString());
+                Double count = item.getSumCount() / pointCount;
+                item.setSumCount(count);
             }
 
             if (pointCount != null && item.getNumCount() != null) {
@@ -154,8 +154,8 @@ public class DataQueryServiceImpl implements DataQueryService {
             }
 
             if (pointCount != null && item.getSumCount() != null) {
-                Double count = Double.parseDouble(item.getSumCount()) / pointCount;
-                item.setSumCount(count.toString());
+                Double count = item.getSumCount() / pointCount;
+                item.setSumCount(count);
             }
             if (pointCount != null && item.getNumCount() != null) {
                 int i = item.getNumCount() / pointCount;
