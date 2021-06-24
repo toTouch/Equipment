@@ -11,7 +11,7 @@ import java.math.BigDecimal;
  */
 @Data
 public class AfterOrderVo {
-    private String sumCount;
+    private Double sumCount;
     private Integer city;
     private String cityName;
     private String date;
