@@ -45,7 +45,7 @@ public class DataQueryServiceImpl implements DataQueryService {
                 }
             }
             if (pointCount !=null && item.getSumCount()!=null){
-                Integer count = Integer.parseInt(item.getSumCount()) / pointCount;
+                Double count = Double.valueOf(Integer.parseInt(item.getSumCount()) / pointCount);
                 item.setSumCount(count.toString());
             }
         });
@@ -105,7 +105,7 @@ public class DataQueryServiceImpl implements DataQueryService {
                 }
             }
             if (pointCount !=null && item.getSumCount()!=null){
-                Integer count = Integer.parseInt(item.getSumCount()) / pointCountFromList;
+                Double count = Double.valueOf(Integer.parseInt(item.getSumCount()) / pointCount);
                 item.setSumCount(count.toString());
             }
         });
@@ -132,7 +132,7 @@ public class DataQueryServiceImpl implements DataQueryService {
             }
 
             if (pointCount !=null && item.getSumCount()!=null){
-                Integer count = Integer.parseInt(item.getSumCount()) / pointCount;
+                Double count = Double.valueOf(Integer.parseInt(item.getSumCount()) / pointCount);
                 item.setSumCount(count.toString());
             }
 
@@ -154,7 +154,7 @@ public class DataQueryServiceImpl implements DataQueryService {
             }
 
             if (pointCount !=null && item.getSumCount()!=null){
-                Integer count = Integer.parseInt(item.getSumCount()) / pointCount;
+                Double count = Double.valueOf(Integer.parseInt(item.getSumCount()) / pointCount);
                 item.setSumCount(count.toString());
             }
             if (pointCount!=null && item.getNumCount()!=null){
