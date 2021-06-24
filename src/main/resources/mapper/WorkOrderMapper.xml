@@ -220,8 +220,8 @@
         WHERE
             a.work_order_reason_id IS NOT NULL
             and b.parent_id = 9
-        <if test="stratTime != null and endTime != null ">
-            and a.create_time BETWEEN #{stratTime} and #{endTime}
+        <if test="startTime != null and endTime != null ">
+            and a.create_time BETWEEN #{startTime} and #{endTime}
         </if>
         GROUP BY
            date,work_order_reason_id
@@ -246,8 +246,8 @@
         <if test="cityId != null">
             and b.city = #{cityId}
         </if>
-        <if test="stratTime != null and endTime != null ">
-            and a.create_time BETWEEN #{stratTime} and #{endTime}
+        <if test="startTime != null and endTime != null ">
+            and o.create_time BETWEEN #{startTime} and #{endTime}
         </if>
         GROUP BY
             b.city
@@ -274,8 +274,8 @@
         <if test="cityId != null">
             and b.city = #{cityId}
         </if>
-        <if test="stratTime != null and endTime != null ">
-            and a.create_time BETWEEN #{stratTime} and #{endTime}
+        <if test="startTime != null and endTime != null ">
+            and o.create_time BETWEEN #{startTime} and #{endTime}
         </if>
         GROUP BY
         b.id
@@ -295,8 +295,8 @@
             LEFT JOIN point b ON o.point_id = b.id
         WHERE
             o.type = 5
-        <if test="stratTime != null and endTime != null ">
-            and o.create_time BETWEEN #{stratTime} and #{endTime}
+        <if test="startTime != null and endTime != null ">
+            and o.create_time BETWEEN #{startTime} and #{endTime}
         </if>
         <if test="cityId != null">
             and b.city = #{cityId}

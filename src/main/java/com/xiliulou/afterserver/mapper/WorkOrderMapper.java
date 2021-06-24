@@ -23,16 +23,16 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
                                     @Param("startTime") Long startTime, @Param("endTime") Long endTime);
 
     List<AfterCountListVo> qualityCountList(@Param("pointId") Long pointId, @Param("cityId") Integer cityId,
-                                            @Param("stratTime") Long stratTime, @Param("endTime") Long endTime);
+                                            @Param("startTime") Long startTime, @Param("endTime") Long endTime);
 
     List<AfterOrderVo> afterWorkOrderByCity(@Param("pointId") Long pointId, @Param("cityId") Integer cityId,
-                                            @Param("stratTime") Long stratTime, @Param("endTime") Long endTime);
+                                            @Param("startTime") Long startTime, @Param("endTime") Long endTime);
 
     List<AfterOrderVo> afterWorkOrderByPoint(@Param("pointId") Long pointId, @Param("cityId") Integer cityId,
-                                             @Param("stratTime") Long stratTime, @Param("endTime") Long endTime);
+                                             @Param("startTime") Long startTime, @Param("endTime") Long endTime);
 
     List<AfterOrderVo> afterWorkOrderList(@Param("pointId") Long pointId, @Param("cityId") Integer cityId,
-                                          @Param("stratTime") Long stratTime, @Param("endTime") Long endTime);
+                                          @Param("startTime") Long startTime, @Param("endTime") Long endTime);
 
     List<AfterOrderVo> installWorkOrderByCity(@Param("pointId") Long pointId, @Param("cityId") Integer cityId,
                                               @Param("startTime") Long startTime, @Param("endTime") Long endTime);
