@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.service.impl;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Objects;
 
 
 @Service
@@ -23,7 +25,14 @@ public class WarehouseServiceImpl extends ServiceImpl<WareHouseMapper, WareHouse
     @Override
     public IPage getPage(Long offset, Long size, WareHouse wareHouse){
         Page page = PageUtil.getPage(offset,size);
-        return baseMapper.selectPage(page, Wrappers.lambdaQuery(wareHouse).orderByDesc(WareHouse::getCreateTime));
+
+        LambdaQueryWrapper<WareHouse> wrapper = new LambdaQueryWrapper<>();
+        wrapper.like(Objects.nonNull(wareHouse.getWareHouses()),WareHouse::getWareHouses,wareHouse.getWareHouses())
+                .like(Objects.nonNull(wareHouse.getHead()),WareHouse::getHead,wareHouse.getHead())
+                .like(Objects.nonNull(wareHouse.getAddress()),WareHouse::getAddress,wareHouse.getAddress())
+                .like(Objects.nonNull(wareHouse.getPhone()),WareHouse::getPhone,wareHouse.getPhone())
+                .orderByDesc(WareHouse::getCreateTime);
+        return baseMapper.selectPage(page, wrapper);
     }
 
     @Override
