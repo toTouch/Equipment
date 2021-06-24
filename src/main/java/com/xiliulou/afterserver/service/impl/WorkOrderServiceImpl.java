@@ -69,6 +69,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     ServerService serverService;
     @Autowired
     WorkOrderTypeService workOrderTypeService;
+    @Autowired
+    WorkOrderReasonService workOrderReasonService;
 
 
 
@@ -223,7 +225,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if (Objects.nonNull(point)){
                 o.setPointName(point.getName());
             }
-            o.setWorkOrderReasonName(o.getThirdReason());
+            WorkOrderReason workOrderReason = workOrderReasonService.getById(o.getWorkOrderReasonId());
+
+            if (Objects.nonNull(workOrderReason)) {
+                o.setWorkOrderReasonName(workOrderReason.getName());
+            }
             o.setThirdCompanyPay(o.getThirdCompanyPay());
 
             if (o.getThirdCompanyType() != null && o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)){
