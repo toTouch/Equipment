@@ -48,6 +48,7 @@
         <id property="coordY" column="p_coord_y"/>
         <id property="specificAddress" column="p_specific_address"/>
         <id property="lockerType" column="p_locker_type"/>
+        <id property="registrationCardNo" column="p_registration_card_no"/>
 
         <id property="customerName" column="c_name"/>
 
@@ -331,6 +332,7 @@
                p.coord_x               as p_coord_x,
                p.specific_address      as p_specific_address,
                p.locker_type           as p_locker_type,
+               p.registration_card_no  as p_registration_card_no,
                pt.id                   as pt_id,
                pt.name                 as pt_name,
                pt.code                 as pt_code,
