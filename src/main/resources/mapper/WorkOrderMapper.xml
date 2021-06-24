@@ -319,8 +319,8 @@
             LEFT JOIN point p ON o.point_id = p.id
         WHERE
             o.type IN ( 1, 2, 3 )
-        <if test="stratTime != null and endTime != null ">
-            and o.create_time BETWEEN #{stratTime} and #{endTime}
+        <if test="startTime != null and endTime != null ">
+            and o.create_time BETWEEN #{startTime} and #{endTime}
         </if>
         <if test="cityId != null">
             and p.city = #{cityId}
@@ -348,8 +348,8 @@
         LEFT JOIN point p ON o.point_id = p.id
         WHERE
         o.type IN ( 1, 2, 3 )
-        <if test="stratTime != null and endTime != null ">
-            and o.create_time BETWEEN #{stratTime} and #{endTime}
+        <if test="startTime != null and endTime != null ">
+            and o.create_time BETWEEN #{startTime} and #{endTime}
         </if>
         <if test="cityId != null">
             and p.city = #{cityId}
@@ -377,8 +377,8 @@
             LEFT JOIN point p ON o.point_id = p.id
         WHERE
             o.type IN ( 1, 2, 3 )
-        <if test="stratTime != null and endTime != null ">
-            and o.create_time BETWEEN #{stratTime} and #{endTime}
+        <if test="startTime != null and endTime != null ">
+            and o.create_time BETWEEN #{startTime} and #{endTime}
         </if>
         <if test="cityId != null">
             and p.city = #{cityId}

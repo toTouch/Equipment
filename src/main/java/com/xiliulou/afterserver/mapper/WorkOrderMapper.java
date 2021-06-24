@@ -35,13 +35,13 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
                                           @Param("stratTime") Long stratTime, @Param("endTime") Long endTime);
 
     List<AfterOrderVo> installWorkOrderByCity(@Param("pointId") Long pointId, @Param("cityId") Integer cityId,
-                                              @Param("stratTime") Long stratTime, @Param("endTime") Long endTime);
+                                              @Param("startTime") Long startTime, @Param("endTime") Long endTime);
 
     List<AfterOrderVo> installWorkOrderByPoint(@Param("pointId") Long pointId, @Param("cityId") Integer cityId,
-                                               @Param("stratTime") Long stratTime, @Param("endTime") Long endTime);
+                                               @Param("startTime") Long startTime, @Param("endTime") Long endTime);
 
     List<AfterOrderVo> installWorkOrderList(@Param("pointId") Long pointId, @Param("cityId") Integer cityId,
-                                            @Param("stratTime") Long stratTime, @Param("endTime") Long endTime);
+                                            @Param("startTime") Long startTime, @Param("endTime") Long endTime);
 
     Integer countOrderList(@Param("query") WorkOrderQuery workOrder);
 }
