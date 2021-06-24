@@ -193,30 +193,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
     @Override
     public R reconciliation(WorkOrderQuery workOrder) {
-        List<WorkOrderVo> workOrderVoList = baseMapper.orderList(workOrder);
-//        workOrderVoList.forEach(o -> {
-//            WorkOrderType workOrderType = workOrderTypeService.getById(o.getType());
-//            if (Objects.nonNull(workOrderType)){
-//                o.setWorkOrderType(workOrderType.getType());
-//            }
-//
-//            Point point = pointService.getById(o.getPointId());
-//            if (Objects.nonNull(point)){
-//                o.setPointName(point.getName());
-//            }
-//            o.setWorkOrderReasonName(o.getThirdReason());
-//            o.setThirdCompanyPay(o.getThirdCompanyPay());
-//
-//            if (o.getThirdCompanyType() != null && o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)){
-//                Customer customer = customerService.getById(o.getThirdCompanyId());
-//                if (Objects.nonNull(customer)){
-//                    o.setThirdCompanyName(customer.getName());
-//                }
-//
-//
-//            }
-//        });
-        return R.ok(workOrderVoList);
+        Page<WorkOrderVo> page = baseMapper.getPage(PageUtil.getPage(workOrder.getOffset(), workOrder.getSize()), workOrder);
+        return R.ok(page);
     }
 
     @Override
