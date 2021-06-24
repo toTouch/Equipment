@@ -246,7 +246,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
             }
         });
-        return R.ok();
+        return R.ok(workOrderVoList);
     }
 
     @Override
