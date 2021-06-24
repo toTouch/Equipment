@@ -414,8 +414,8 @@
             point
         WHERE
             1 = 1
-        <if test="stratTime != null and endTime != null ">
-            and create_time BETWEEN #{stratTime} and #{endTime}
+        <if test="startTime != null and endTime != null ">
+            and create_time BETWEEN #{startTime} and #{endTime}
         </if>
     </select>
 
