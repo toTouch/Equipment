@@ -122,7 +122,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         for (WorkOrderVo o : workOrderVoList) {
             WorkOrderExcelVo workOrderExcelVo = new WorkOrderExcelVo();
             BeanUtil.copyProperties(o, workOrderExcelVo);
-            workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
+//            workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
 //            if (ObjectUtil.isNotEmpty(o.getProcessTime())) {
 //                workOrderExcelVo.setProcessorTimeStr(simpleDateFormat.format(new Date(o.getProcessTime())));
