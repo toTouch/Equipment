@@ -24,8 +24,8 @@ public class WorkOrderExcelVo3 {
     private String pointName;
 //    @ExcelProperty("工单原因")
 //    private String workOrderReasonName;
-    @ExcelProperty("工单状态")
-    private String statusStr;
+//    @ExcelProperty("工单状态")
+//    private String statusStr;
     @ExcelProperty("费用")
     private BigDecimal thirdCompanyPay;
     @ExcelProperty("创建时间")
