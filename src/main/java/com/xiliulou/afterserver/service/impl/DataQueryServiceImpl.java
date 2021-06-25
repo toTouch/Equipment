@@ -218,7 +218,7 @@ public class DataQueryServiceImpl implements DataQueryService {
         HashMap<String, Object> map = new HashMap<>();
         map.put("data",collect);
         map.put("weeks",weeks);
-        return R.ok(collect);
+        return R.ok(map);
     }
 
 
