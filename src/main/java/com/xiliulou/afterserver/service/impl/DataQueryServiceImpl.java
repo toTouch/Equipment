@@ -114,11 +114,17 @@ public class DataQueryServiceImpl implements DataQueryService {
             }
         });
 
-        HashMap<String, Object> map = new HashMap<>(4);
+        Long weeks = 0L;
+        if (Objects.nonNull(installWorkOrderList) && installWorkOrderList.size()>0){
+            weeks = getWeeks(installWorkOrderList.get(installWorkOrderList.size() - 1).getDateTime(), installWorkOrderList.get(0).getDateTime());
+        }
+        HashMap<String, Object> map = new HashMap<>(5);
         map.put("installWorkOrderByCityList", installWorkOrderByCityList);
         map.put("installWorkOrderByPointMap", collect1);
         map.put("installWorkOrderList", installWorkOrderList);
         map.put("avg", String.format("%.2f", avg));
+        map.put("week",weeks+1);
+
         return R.ok().data(map);
     }
 
@@ -168,10 +174,16 @@ public class DataQueryServiceImpl implements DataQueryService {
             }
         });
 
-        HashMap<String, Object> map = new HashMap<>(3);
+        Long weeks = 0L;
+        if (Objects.nonNull(afterWorkOrderList) && afterWorkOrderList.size()>0){
+            weeks = getWeeks(afterWorkOrderList.get(afterWorkOrderList.size() - 1).getDateTime(), afterWorkOrderList.get(0).getDateTime());
+        }
+
+        HashMap<String, Object> map = new HashMap<>(4);
         map.put("afterWorkOrderByCityList", afterWorkOrderByCityList);
         map.put("afterWorkOrderByPointList", afterWorkOrderByPointList);
         map.put("afterWorkOrderList", afterWorkOrderList);
+        map.put("week",weeks+1);
         return R.ok().data(map);
     }
 
@@ -199,7 +211,7 @@ public class DataQueryServiceImpl implements DataQueryService {
 //        }
 //        datestamp = ((dateType == 1) ? null : DateUtils.daysToStamp(-(dateType - 1)));
 
-        Long weeks = 0L;
+
         List<AfterCountListVo> qualityCount = workOrderService.qualityCountList(pointId, cityId, stratTime, endTime);
         qualityCount.forEach(item -> {
             if (item.getReasonId() != null) {
@@ -210,6 +222,7 @@ public class DataQueryServiceImpl implements DataQueryService {
             }
         });
 
+        Long weeks = 0L;
         if (Objects.nonNull(qualityCount) && qualityCount.size()>0){
             weeks = getWeeks(qualityCount.get(qualityCount.size() - 1).getDateTime(), qualityCount.get(0).getDateTime());
         }
