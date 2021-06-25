@@ -212,7 +212,7 @@
 
     <select id="qualityCountList" resultType="com.xiliulou.afterserver.web.vo.AfterCountListVo">
         SELECT
-            FROM_UNIXTIME( a.create_time / 1000, '%Y-%m-%d' ) AS date,
+            DATE_FORMAT(FROM_UNIXTIME( create_time / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
             count( a.work_order_reason_id ) AS count,
              a.work_order_reason_id as reasonId
         FROM
