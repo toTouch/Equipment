@@ -217,7 +217,7 @@ public class DataQueryServiceImpl implements DataQueryService {
         Map<Long, List<AfterCountListVo>> collect = qualityCount.stream().collect(Collectors.groupingBy(AfterCountListVo::getReasonId));
         HashMap<String, Object> map = new HashMap<>();
         map.put("data",collect);
-        map.put("weeks",weeks);
+        map.put("weeks",weeks+1);
         return R.ok(map);
     }
 
