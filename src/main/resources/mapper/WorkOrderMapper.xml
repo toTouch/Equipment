@@ -212,8 +212,8 @@
 
     <select id="qualityCountList" resultType="com.xiliulou.afterserver.web.vo.AfterCountListVo">
         SELECT
-            FROM_UNIXTIME( create_time / 1000, '%Y-%m-%d' ) as dateTime,
-            DATE_FORMAT(FROM_UNIXTIME( create_time / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
+            FROM_UNIXTIME( a.create_time / 1000, '%Y-%m-%d' ) as dateTime,
+            DATE_FORMAT(FROM_UNIXTIME( a.create_time / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
             count( a.work_order_reason_id ) AS count,
             a.work_order_reason_id as reasonId
         FROM
@@ -287,7 +287,7 @@
     <select id="afterWorkOrderList" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
 
         SELECT
-            FROM_UNIXTIME( create_time / 1000, '%Y-%m-%d' ) as dateTime,
+            FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ) as dateTime,
             DATE_FORMAT(FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
 --         count( a.work_order_reason_id ) AS count,
 --             FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ) AS date,
@@ -370,7 +370,7 @@
             p.NAME AS pointName,
             p.city,
             count( 1 ) AS numCount,
-            FROM_UNIXTIME( create_time / 1000, '%Y-%m-%d' ) as dateTime,
+            FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ) as dateTime,
             DATE_FORMAT(FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
             ( CASE
             WHEN o.third_company_pay IS NOT NULL THEN
