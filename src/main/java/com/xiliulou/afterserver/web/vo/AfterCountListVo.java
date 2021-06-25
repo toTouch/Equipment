@@ -10,6 +10,7 @@ import lombok.Data;
 @Data
 public class AfterCountListVo {
     private String date;
+    private String dateTime;
     private Integer count;
     private Long reasonId;
     private String reasonName;
