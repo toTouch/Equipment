@@ -14,6 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -195,6 +199,7 @@ public class DataQueryServiceImpl implements DataQueryService {
 //        }
 //        datestamp = ((dateType == 1) ? null : DateUtils.daysToStamp(-(dateType - 1)));
 
+        Long weeks = 0L;
         List<AfterCountListVo> qualityCount = workOrderService.qualityCountList(pointId, cityId, stratTime, endTime);
         qualityCount.forEach(item -> {
             if (item.getReasonId() != null) {
@@ -205,9 +210,26 @@ public class DataQueryServiceImpl implements DataQueryService {
             }
         });
 
+        if (Objects.nonNull(qualityCount) && qualityCount.size()>0){
+            weeks = getWeeks(qualityCount.get(qualityCount.size() - 1).getDateTime(), qualityCount.get(0).getDateTime());
+        }
+
         Map<Long, List<AfterCountListVo>> collect = qualityCount.stream().collect(Collectors.groupingBy(AfterCountListVo::getReasonId));
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("data",collect);
+        map.put("weeks",weeks);
         return R.ok(collect);
     }
+
+
+
+    private static Long getWeeks(String startTime,String endTime){
+        LocalDate localDate1 = LocalDate.parse(startTime);
+        LocalDate localDate2 = LocalDate.parse(endTime);
+        return localDate1.until(localDate2, ChronoUnit.WEEKS);
+    }
+
+
 
 
     private Double formatCount(Double count) {
