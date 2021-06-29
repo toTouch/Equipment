@@ -116,7 +116,7 @@ public class DataQueryServiceImpl implements DataQueryService {
 
         Long weeks = 0L;
         if (Objects.nonNull(installWorkOrderList) && installWorkOrderList.size()>0){
-            weeks = getWeeks(installWorkOrderList.get(installWorkOrderList.size() - 1).getDateTime(), installWorkOrderList.get(0).getDateTime());
+            weeks = getWeeks(installWorkOrderList.get(installWorkOrderList.size() - 1).getDateTime(), DateUtils.stampToDate(String.valueOf(System.currentTimeMillis())));
         }
         HashMap<String, Object> map = new HashMap<>(5);
         map.put("installWorkOrderByCityList", installWorkOrderByCityList);
@@ -176,7 +176,7 @@ public class DataQueryServiceImpl implements DataQueryService {
 
         Long weeks = 0L;
         if (Objects.nonNull(afterWorkOrderList) && afterWorkOrderList.size()>0){
-            weeks = getWeeks(afterWorkOrderList.get(afterWorkOrderList.size() - 1).getDateTime(), afterWorkOrderList.get(0).getDateTime());
+            weeks = getWeeks(afterWorkOrderList.get(afterWorkOrderList.size() - 1).getDateTime(), DateUtils.stampToDate(String.valueOf(System.currentTimeMillis())));
         }
 
         HashMap<String, Object> map = new HashMap<>(4);
@@ -224,7 +224,7 @@ public class DataQueryServiceImpl implements DataQueryService {
 
         Long weeks = 0L;
         if (Objects.nonNull(qualityCount) && qualityCount.size()>0){
-            weeks = getWeeks(qualityCount.get(qualityCount.size() - 1).getDateTime(), qualityCount.get(0).getDateTime());
+            weeks = getWeeks(qualityCount.get(qualityCount.size() - 1).getDateTime(), DateUtils.stampToDate(String.valueOf(System.currentTimeMillis())));
         }
 
         Map<Long, List<AfterCountListVo>> collect = qualityCount.stream().collect(Collectors.groupingBy(AfterCountListVo::getReasonId));
