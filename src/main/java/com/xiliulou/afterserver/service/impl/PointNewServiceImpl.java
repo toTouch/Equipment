@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.PointNew;
 import com.xiliulou.afterserver.entity.PointProductBind;
 import com.xiliulou.afterserver.mapper.PointNewMapper;
@@ -26,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service("pointNewService")
 @Slf4j
-public class PointNewServiceImpl implements PointNewService {
+public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> implements PointNewService {
     @Resource
     private PointNewMapper pointNewMapper;
     @Autowired
@@ -107,6 +108,8 @@ public class PointNewServiceImpl implements PointNewService {
 
     @Override
     public R saveAdminPointNew(PointNew pointNew) {
+        pointNew.setDelFlag(PointNew.DEL_NORMAL);
+        pointNew.setCreateTime(System.currentTimeMillis());
         this.insert(pointNew);
         return R.ok();
     }

@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.PointNew;
 import com.xiliulou.afterserver.util.R;
 
@@ -11,7 +12,7 @@ import java.util.List;
  * @author Hardy
  * @since 2021-08-17 10:28:43
  */
-public interface PointNewService {
+public interface PointNewService extends IService<PointNew> {
 
     /**
      * 通过ID查询单条数据从数据库
