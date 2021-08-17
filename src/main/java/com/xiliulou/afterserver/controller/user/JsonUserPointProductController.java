@@ -90,6 +90,7 @@ public class JsonUserPointProductController {
      */
     @PutMapping("/user/update/point")
     public R userUpdatePoint(@RequestBody PointNew pointNew){
+        pointNew.setCreateTime(System.currentTimeMillis());
         return R.ok(pointNewService.putAdminPointNew(pointNew));
     }
 
