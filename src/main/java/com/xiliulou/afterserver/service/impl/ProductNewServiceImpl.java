@@ -158,7 +158,11 @@ public class ProductNewServiceImpl implements ProductNewService {
     public R updateList(List<ProductNew> productNewList) {
         productNewList.forEach(item -> {
             item.setCreateTime(System.currentTimeMillis());
-            productNewMapper.update(item);
+            int update = productNewMapper.update(item);
+            if (update == 0){
+                log.error("WX ERROR!   update ProductNew error data:{}",item.toString());
+                throw new NullPointerException("数据库异常，请联系管理员");
+            }
         });
         return R.ok();
     }
