@@ -157,6 +157,7 @@ public class ProductNewServiceImpl implements ProductNewService {
     @Transactional(rollbackFor = Exception.class)
     public R updateList(List<ProductNew> productNewList) {
         productNewList.forEach(item -> {
+            item.setCreateTime(System.currentTimeMillis());
             productNewMapper.update(item);
         });
         return R.ok();
