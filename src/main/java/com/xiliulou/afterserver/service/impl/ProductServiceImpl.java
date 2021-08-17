@@ -68,6 +68,13 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     }
 
     @Override
+    public IPage getPage(Long offset, Long size, String name) {
+        Page page = PageUtil.getPage(offset, size);
+        Page selectPage = baseMapper.selectPage(page, new LambdaQueryWrapper<Product>().like(Product::getName,name).orderByDesc(Product::getCreateTime));
+        return  selectPage;
+    }
+
+    @Override
     public void exportExcel(Product product, HttpServletResponse response) {
         List<Product> productList = list();
         if (ObjectUtil.isEmpty(productList)) {
