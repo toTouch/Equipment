@@ -108,19 +108,19 @@ public class AdminJsonPointController {
     public void reconciliationPage(PointQuery point, HttpServletResponse response) {
         pointService.exportExcel(point, response);
     }
-
-
-    /**
-     * 导入
-     */
-    @PostMapping("admin/point/upload")
-    public R upload(MultipartFile file) throws IOException {
-
-        ExcelReader excelReader = EasyExcel.read(file.getInputStream(), PointInfo.class,new PointListener(pointService,customerService,cityService)).build();
-        ReadSheet readSheet = EasyExcel.readSheet(0).build();
-        excelReader.read(readSheet);
-        excelReader.finish();
-        return R.ok();
-    }
+//
+//
+//    /**
+//     * 导入
+//     */
+//    @PostMapping("admin/point/upload")
+//    public R upload(MultipartFile file) throws IOException {
+//
+//        ExcelReader excelReader = EasyExcel.read(file.getInputStream(), PointInfo.class,new PointListener(pointService,customerService,cityService)).build();
+//        ReadSheet readSheet = EasyExcel.readSheet(0).build();
+//        excelReader.read(readSheet);
+//        excelReader.finish();
+//        return R.ok();
+//    }
 
 }
