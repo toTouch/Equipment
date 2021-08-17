@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiliulou.afterserver.mapper.ProductNewMapper">
+
+    <resultMap type="com.xiliulou.afterserver.entity.ProductNew" id="ProductNewMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="no" column="no" jdbcType="INTEGER"/>
+        <result property="modelId" column="model_id" jdbcType="INTEGER"/>
+        <result property="batchId" column="batch_id" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="expirationStartTime" column="expiration_start_time" jdbcType="INTEGER"/>
+        <result property="expirationEndTime" column="expiration_end_time" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="INTEGER"/>
+        <result property="delFlag" column="del_flag" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ProductNewMap">
+        select
+          id, no, model_id, batch_id, status, expiration_start_time, expiration_end_time, create_time, del_flag
+        from t_product_new
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ProductNewMap">
+        select
+          id, no, model_id, batch_id, status, expiration_start_time, expiration_end_time, create_time, del_flag
+        from t_product_new
+        <where>
+            and del_flag = 0
+        </where>
+        order by create_time desc 
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ProductNewMap">
+        select
+        id, no, model_id, batch_id, status, expiration_start_time, expiration_end_time, create_time, del_flag
+        from t_product_new
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="no != null">
+                and no = #{no}
+            </if>
+            <if test="modelId != null">
+                and model_id = #{modelId}
+            </if>
+            <if test="batchId != null">
+                and batch_id = #{batchId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="expirationStartTime != null">
+                and expiration_start_time = #{expirationStartTime}
+            </if>
+            <if test="expirationEndTime != null">
+                and expiration_end_time = #{expirationEndTime}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="delFlag != null">
+                and del_flag = #{delFlag}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
+        insert into t_product_new(no, model_id, batch_id, status, expiration_start_time, expiration_end_time, create_time, del_flag)
+        values (#{no}, #{modelId}, #{batchId}, #{status}, #{expirationStartTime}, #{expirationEndTime}, #{createTime}, #{delFlag})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update t_product_new
+        <set>
+            <if test="no != null">
+                no = #{no},
+            </if>
+            <if test="modelId != null">
+                model_id = #{modelId},
+            </if>
+            <if test="batchId != null">
+                batch_id = #{batchId},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="expirationStartTime != null">
+                expiration_start_time = #{expirationStartTime},
+            </if>
+            <if test="expirationEndTime != null">
+                expiration_end_time = #{expirationEndTime},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="delFlag != null">
+                del_flag = #{delFlag},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        update t_product_new set  del_flag = 1 where id = #{id}
+    </delete>
+
+</mapper>
