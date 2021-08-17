@@ -80,9 +80,9 @@ public class JsonUserPointProductController {
     /**
      * 获取产品
      */
-    @GetMapping("/user/product/{no}")
-    public R prdouctInfoByNo(Integer no) {
-        return R.ok(productNewService.prdouctInfoByNo(no));
+    @GetMapping("/user/product")
+    public R prdouctInfoByNo(@RequestParam(value = "name",required = false) Long name) {
+        return R.ok(productNewService.prdouctInfoByNo(name));
     }
 
     /**
