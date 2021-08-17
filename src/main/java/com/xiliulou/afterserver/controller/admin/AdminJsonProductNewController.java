@@ -1,0 +1,40 @@
+package com.xiliulou.afterserver.controller.admin;
+
+import com.xiliulou.afterserver.entity.ProductNew;
+import com.xiliulou.afterserver.service.ProductNewService;
+import com.xiliulou.afterserver.util.R;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * @author Hardy
+ * @date 2021/8/17 10:34
+ * @mood 产品模块新改
+ */
+@RestController
+public class AdminJsonProductNewController {
+    @Autowired
+    private ProductNewService productNewService;
+
+    @PostMapping("/admin/productNew")
+    public R saveAdminPointNew(@RequestBody ProductNew productNew){
+        return productNewService.saveAdminProductNew(productNew);
+    }
+
+    @PutMapping("/admin/productNew")
+    public R putAdminPointNew(@RequestBody ProductNew productNew){
+        return productNewService.putAdminProductNew(productNew);
+    }
+
+    @DeleteMapping("/admin/productNew/{id}")
+    public R delAdminPointNew(@PathVariable("id") Long id){
+        return productNewService.delAdminProductNew(id);
+    }
+
+    @GetMapping("/admin/productNew/list")
+    public R pointList(@RequestParam("offset") Integer offset,
+                       @RequestParam("limit") Integer limit){
+        return R.ok(productNewService.queryAllByLimit(offset,limit));
+    }
+
+}

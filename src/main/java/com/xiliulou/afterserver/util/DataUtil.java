@@ -11,9 +11,22 @@ public class DataUtil {
     }
 
     public static void main(String[] args) {
-        long l = System.currentTimeMillis();
-        System.out.println(l);
-        String date = getDate(l);
-        System.out.println(date);
+
+        String date = getDate(System.currentTimeMillis());
+        String[] s = date.split(" ");
+        String s1 = s[0];
+        System.out.println(s1.replaceAll("-", ""));
+
+
+
     }
+
+    public static Long getNo(){
+        String date = getDate(System.currentTimeMillis());
+        String[] s = date.split(" ");
+        String s1 = s[0];
+        return Long.parseLong(s1.replaceAll("-", ""));
+    }
+
+
 }

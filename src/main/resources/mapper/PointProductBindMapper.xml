@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiliulou.afterserver.mapper.PointProductBindMapper">
+
+    <resultMap type="com.xiliulou.afterserver.entity.PointProductBind" id="PointProductBindMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="productId" column="product_id" jdbcType="INTEGER"/>
+        <result property="pointId" column="point_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="PointProductBindMap">
+        select
+          id, product_id, point_id
+        from t_point_product_bind
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="PointProductBindMap">
+        select
+          id, product_id, point_id
+        from t_point_product_bind
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="PointProductBindMap">
+        select
+        id, product_id, point_id
+        from t_point_product_bind
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="productId != null">
+                and product_id = #{productId}
+            </if>
+            <if test="pointId != null">
+                and point_id = #{pointId}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
+        insert into t_point_product_bind(product_id, point_id)
+        values (#{productId}, #{pointId})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update t_point_product_bind
+        <set>
+            <if test="productId != null">
+                product_id = #{productId},
+            </if>
+            <if test="pointId != null">
+                point_id = #{pointId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from t_point_product_bind where id = #{id}
+    </delete>
+
+</mapper>

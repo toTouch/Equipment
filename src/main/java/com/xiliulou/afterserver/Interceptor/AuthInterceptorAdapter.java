@@ -95,6 +95,7 @@ public class AuthInterceptorAdapter extends HandlerInterceptorAdapter {
 
         urls.add("/auth/**");
         urls.add("/error**");
+        urls.add(RIDER_URL);
     }
 
 
