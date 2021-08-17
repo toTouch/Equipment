@@ -57,8 +57,8 @@ public class JsonUserPointProductController {
      * 产品型号
      */
     @GetMapping("/user/product/page")
-    public R getPage(@RequestParam("offset") Long offset, @RequestParam("limit") Long limit, Product product) {
-        return R.ok(productService.getPage(offset, limit, product));
+    public R getPage(Product product) {
+        return R.ok(productService.getPage(0L, 10L, product));
     }
 
 
@@ -66,11 +66,9 @@ public class JsonUserPointProductController {
      * 产品批次列表
      */
     @GetMapping("/user/batch/list")
-    public R selectOne(@RequestParam(value = "name",required = false) String name,
-                       @RequestParam(value = "offset") int offset,
-                       @RequestParam(value = "limit") int limit) {
+    public R selectOne(@RequestParam(value = "name",required = false) String name) {
 
-        return R.ok(this.batchService.queryAllByLimit(name,offset,limit));
+        return R.ok(this.batchService.queryAllByLimit(name,0,10));
     }
 
     /**
