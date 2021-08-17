@@ -57,8 +57,8 @@ public class JsonUserPointProductController {
      * 产品型号
      */
     @GetMapping("/user/product/page")
-    public R getPage(Product product) {
-        return R.ok(productService.getPage(0L, 10L, product));
+    public R getPage(String name) {
+        return R.ok(productService.getPage(0L, 10L, name));
     }
 
 
