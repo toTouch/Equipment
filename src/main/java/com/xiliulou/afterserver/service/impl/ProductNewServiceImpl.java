@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xiliulou.afterserver.entity.Product;
 import com.xiliulou.afterserver.entity.ProductFile;
 import com.xiliulou.afterserver.entity.ProductNew;
@@ -121,12 +122,17 @@ public class ProductNewServiceImpl implements ProductNewService {
         for (int i = Integer.parseInt(leftInterval.toString()); i <= Integer.parseInt(rightInterval.toString()); i++) {
             productNew.setNo(DataUtil.getNo()+i);
             productNew.setCreateTime(System.currentTimeMillis());
+            productNew.setDelFlag(ProductNew.DEL_NORMAL);
             this.insert(productNew);
         }
 
         return R.ok();
     }
 
+    public static void main(String[] args) {
+
+        System.out.println((Math.random()*9+1)*100000);
+    }
 
 
     @Override
@@ -154,5 +160,11 @@ public class ProductNewServiceImpl implements ProductNewService {
             productNewMapper.update(item);
         });
         return R.ok();
+    }
+
+    @Override
+    public ProductNew prdouctInfoByNo(Integer no) {
+        LambdaQueryWrapper<ProductNew> eq = new LambdaQueryWrapper<ProductNew>().eq(ProductNew::getNo, no).eq(ProductNew::getDelFlag, ProductNew.DEL_NORMAL);
+        return this.productNewMapper.selectOne(eq);
     }
 }

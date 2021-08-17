@@ -7,10 +7,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xiliulou.afterserver.entity.City;
 import com.xiliulou.afterserver.entity.Customer;
 import com.xiliulou.afterserver.entity.Point;
+import com.xiliulou.afterserver.entity.PointNew;
 import com.xiliulou.afterserver.export.CustomerInfo;
 import com.xiliulou.afterserver.export.PointInfo;
 import com.xiliulou.afterserver.service.CityService;
 import com.xiliulou.afterserver.service.CustomerService;
+import com.xiliulou.afterserver.service.PointNewService;
 import com.xiliulou.afterserver.service.PointService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -33,11 +35,11 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
     private static final int BATCH_COUNT = 2000;
     List<PointInfo> list = new ArrayList<>();
 
-    private PointService pointService;
+    private PointNewService pointService;
     private CustomerService customerService;
     private CityService cityService;
 
-    public PointListener(PointService pointService, CustomerService customerService, CityService cityService) {
+    public PointListener(PointNewService pointService, CustomerService customerService, CityService cityService) {
         this.pointService = pointService;
         this.cityService = cityService;
         this.customerService = customerService;
@@ -66,9 +68,9 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
     private void saveData() {
         log.info("{}条数据，开始存储数据库！", list.size());
 
-        List<Point> pointList = new ArrayList<>();
+        List<PointNew> pointList = new ArrayList<>();
         this.list.forEach(item -> {
-            Point point = new Point();
+            PointNew point = new PointNew();
             BeanUtils.copyProperties(item, point);
             if (item.getCustomerId() != null) {
                 LambdaQueryWrapper<Customer> like = new LambdaQueryWrapper<Customer>().like(Customer::getName, item.getCustomerId());
@@ -78,37 +80,16 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
                 }
             }
 
-            if (item.getLockerType() != null) {
-                if (item.getLockerType().equals("常温柜")) {
-                    point.setLockerType(Point.LOCKER_TPYE_NORMAL);
-                } else if (item.getLockerType().equals("加热柜")) {
-                    point.setLockerType(Point.LOCKER_TPYE_HEAT);
-                } else {
-                    point.setLockerType(0);
-                }
-
-            }
-
-
             if (item.getCity()!=null){
                 LambdaQueryWrapper<City> like = new LambdaQueryWrapper<City>().like(City::getName, item.getCity());
                 City city = cityService.getOne(like);
                 if (Objects.nonNull(city)){
-                    point.setCity(city.getId().toString());
-                }
-            }
-
-
-            if (item.getSetTime()!=null){
-                try {
-                    long dateToStamp = dateToStamp(item.getSetTime());
-                    point.setSetTime(dateToStamp);
-                } catch (ParseException e) {
-                    e.printStackTrace();
+                    point.setCityId(city.getId());
                 }
             }
 
             point.setCreateTime(System.currentTimeMillis());
+            point.setDelFlag(PointNew.DEL_NORMAL);
             pointList.add(point);
         });
 
