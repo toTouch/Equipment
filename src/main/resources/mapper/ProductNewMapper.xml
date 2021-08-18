@@ -100,7 +100,7 @@
                 expiration_start_time = #{expirationStartTime},
             </if>
             <if test="years != null">
-                years = #{years}
+                years = #{years},
             </if>
             <if test="expirationEndTime != null">
                 expiration_end_time = #{expirationEndTime},
