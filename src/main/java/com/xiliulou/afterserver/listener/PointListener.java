@@ -88,6 +88,16 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
                 }
             }
 
+            if (item.getCreateTime() != null){
+                long l = 0;
+                try {
+                    l = dateToStamp(item.getCreateTime());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                point.setCreateTime(l);
+            }
+
             point.setCreateTime(System.currentTimeMillis());
             point.setDelFlag(PointNew.DEL_NORMAL);
             pointList.add(point);
@@ -101,7 +111,7 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
      * 将时间转换为时间戳
      */
     public static long dateToStamp(String s) throws ParseException {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
         Date date = simpleDateFormat.parse(s);
         long ts = date.getTime();
         return ts;

@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.PointNew;
 import com.xiliulou.afterserver.entity.PointProductBind;
+import com.xiliulou.afterserver.entity.ProductNew;
 import com.xiliulou.afterserver.mapper.PointNewMapper;
 import com.xiliulou.afterserver.service.PointNewService;
 import com.xiliulou.afterserver.service.PointProductBindService;
+import com.xiliulou.afterserver.service.ProductNewService;
 import com.xiliulou.afterserver.util.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,8 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     private PointNewMapper pointNewMapper;
     @Autowired
     private PointProductBindService pointProductBindService;
+    @Autowired
+    private ProductNewService productNewService;
 
     /**
      * 通过ID查询单条数据从DB
@@ -109,7 +113,6 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     @Override
     public R saveAdminPointNew(PointNew pointNew) {
         pointNew.setDelFlag(PointNew.DEL_NORMAL);
-        pointNew.setCreateTime(System.currentTimeMillis());
         this.insert(pointNew);
         return R.ok();
     }
@@ -117,6 +120,11 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     @Override
     @Transactional(rollbackFor = Exception.class)
     public R putAdminPointNew(PointNew pointNew) {
+        PointNew queryById = pointNewMapper.queryById(pointNew.getId());
+        if (Objects.isNull(queryById)){
+            return R.fail("请传入点位id");
+        }
+
         Integer row = this.update(pointNew);
         if (row == 0) {
             return R.fail("数据库错误");
@@ -126,11 +134,22 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             return R.fail("请传入点位id");
         }
 
+
         pointNew.getProductIds().forEach(item -> {
             PointProductBind pointProductBind = new PointProductBind();
             pointProductBind.setPointId(pointNew.getId());
             pointProductBind.setProductId(item);
             pointProductBindService.insert(pointProductBind);
+
+            ProductNew productNew = productNewService.queryByIdFromDB(item);
+            productNew.setExpirationStartTime(queryById.getCreateTime());
+            productNew.setExpirationEndTime(queryById.getCreateTime() + (1000L * 24 * 60 * 60 * pointNew.getYears()));
+            Integer update = productNewService.update(productNew);
+            if (update == 0){
+                log.error("WX ERROR!   update ProductNew error data:{}",productNew.toString());
+                throw new NullPointerException("数据库异常，请联系管理员");
+            }
+
         });
 
         return R.ok();

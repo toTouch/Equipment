@@ -38,6 +38,7 @@ public class JsonUserPointProductController {
 
     @PostMapping("/user/file")
     public R adminPrductFile(@RequestBody File file){
+        file.setCreateTime(System.currentTimeMillis());
         int insert = fileService.getBaseMapper().insert(file);
         if (insert == 0){
             return R.fail("文件保存失败");

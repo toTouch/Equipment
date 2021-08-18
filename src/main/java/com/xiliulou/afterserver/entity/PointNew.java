@@ -78,4 +78,7 @@ public class PointNew {
 
     @TableField(exist = false)
     private List<Long> productIds;
+    @TableField(exist = false)
+    private Integer years;
+
 }

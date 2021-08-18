@@ -66,4 +66,10 @@ public class ProductNew {
     @TableField(exist = false)
     private Long rightInterval;
 
+    @TableField(exist = false)
+    private String modelName;
+    @TableField(exist = false)
+    private String batchName;
+
+
 }
