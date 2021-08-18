@@ -43,6 +43,10 @@ public class ProductNew {
      */
     private Long expirationStartTime;
     /**
+     * 保质期年份
+     */
+    private Integer years;
+    /**
      * 质保结束时间
      */
     private Long expirationEndTime;

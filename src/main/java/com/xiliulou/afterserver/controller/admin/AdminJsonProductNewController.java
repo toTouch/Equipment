@@ -1,7 +1,11 @@
 package com.xiliulou.afterserver.controller.admin;
 
+import com.xiliulou.afterserver.entity.Batch;
+import com.xiliulou.afterserver.entity.Product;
 import com.xiliulou.afterserver.entity.ProductNew;
+import com.xiliulou.afterserver.service.BatchService;
 import com.xiliulou.afterserver.service.ProductNewService;
+import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.util.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +25,10 @@ import java.util.Objects;
 public class AdminJsonProductNewController {
     @Autowired
     private ProductNewService productNewService;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private BatchService batchService;
 
     @PostMapping("/admin/productNew")
     public R saveAdminPointNew(@RequestBody ProductNew productNew){
@@ -42,7 +50,21 @@ public class AdminJsonProductNewController {
                        @RequestParam("limit") Integer limit){
         List<ProductNew> productNews = productNewService.queryAllByLimit(offset, limit);
 
+        productNews.forEach(item -> {
+            if (Objects.nonNull(item.getModelId())){
+                Product product = productService.getBaseMapper().selectById(item.getModelId());
+                if (Objects.nonNull(product)){
+                    item.setModelName(product.getName());
+                }
+            }
 
+            if (Objects.nonNull(item.getBatchId())){
+                Batch batch = batchService.queryByIdFromDB(item.getBatchId());
+                if (Objects.nonNull(batch)){
+                    item.setBatchName(batch.getBatchNo());
+                }
+            }
+        });
 
 
         Integer count = productNewService.count();

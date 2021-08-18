@@ -9,6 +9,7 @@
         <result property="batchId" column="batch_id" jdbcType="INTEGER"/>
         <result property="status" column="status" jdbcType="INTEGER"/>
         <result property="expirationStartTime" column="expiration_start_time" jdbcType="INTEGER"/>
+        <result property="years" column="years" jdbcType="INTEGER"/>
         <result property="expirationEndTime" column="expiration_end_time" jdbcType="INTEGER"/>
         <result property="createTime" column="create_time" jdbcType="INTEGER"/>
         <result property="delFlag" column="del_flag" jdbcType="INTEGER"/>
@@ -17,7 +18,7 @@
     <!--查询单个-->
     <select id="queryById" resultMap="ProductNewMap">
         select
-          id, no, model_id, batch_id, status, expiration_start_time, expiration_end_time, create_time, del_flag
+          id, no, model_id, batch_id, status, expiration_start_time,years, expiration_end_time, create_time, del_flag
         from t_product_new
         where id = #{id}
     </select>
@@ -25,19 +26,19 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="ProductNewMap">
         select
-          id, no, model_id, batch_id, status, expiration_start_time, expiration_end_time, create_time, del_flag
+          id, no, model_id, batch_id, status, expiration_start_time, years, expiration_end_time, create_time, del_flag
         from t_product_new
         <where>
             and del_flag = 0
         </where>
-        order by create_time desc 
+        order by create_time desc
         limit #{offset}, #{limit}
     </select>
 
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="ProductNewMap">
         select
-        id, no, model_id, batch_id, status, expiration_start_time, expiration_end_time, create_time, del_flag
+        id, no, model_id, batch_id, status, expiration_start_time,years,  expiration_end_time, create_time, del_flag
         from t_product_new
         <where>
             <if test="id != null">
@@ -58,6 +59,9 @@
             <if test="expirationStartTime != null">
                 and expiration_start_time = #{expirationStartTime}
             </if>
+            <if test="years != null">
+                and years = #{years}
+            </if>
             <if test="expirationEndTime != null">
                 and expiration_end_time = #{expirationEndTime}
             </if>
@@ -72,8 +76,8 @@
 
     <!--新增所有列-->
     <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
-        insert into t_product_new(no, model_id, batch_id, status, expiration_start_time, expiration_end_time, create_time, del_flag)
-        values (#{no}, #{modelId}, #{batchId}, #{status}, #{expirationStartTime}, #{expirationEndTime}, #{createTime}, #{delFlag})
+        insert into t_product_new(no, model_id, batch_id, status, expiration_start_time, years, expiration_end_time, create_time, del_flag)
+        values (#{no}, #{modelId}, #{batchId}, #{status}, #{expirationStartTime},#{years},#{expirationEndTime}, #{createTime}, #{delFlag})
     </insert>
 
     <!--通过主键修改数据-->
@@ -94,6 +98,9 @@
             </if>
             <if test="expirationStartTime != null">
                 expiration_start_time = #{expirationStartTime},
+            </if>
+            <if test="years != null">
+                years = #{years}
             </if>
             <if test="expirationEndTime != null">
                 expiration_end_time = #{expirationEndTime},
