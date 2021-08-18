@@ -49,7 +49,7 @@ public class AdminJsonPointNewController {
 
     @PutMapping("/admin/pointNew")
     public R putAdminPointNew(@RequestBody PointNew pointNew){
-        return pointNewService.putAdminPointNew(pointNew);
+        return pointNewService.putAdminPoint(pointNew);
     }
 
     @DeleteMapping("/admin/pointNew/{id}")

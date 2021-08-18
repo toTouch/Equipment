@@ -187,4 +187,13 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
         return R.fail("数据库错误");
     }
+
+    @Override
+    public R putAdminPoint(PointNew pointNew) {
+        int update = this.pointNewMapper.update(pointNew);
+        if (update>0){
+            return R.ok();
+        }
+        return R.fail("修改失败");
+    }
 }
