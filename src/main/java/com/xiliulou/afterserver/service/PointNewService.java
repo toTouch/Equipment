@@ -68,4 +68,6 @@ public interface PointNewService extends IService<PointNew> {
     R putAdminPointNew(PointNew pointNew);
 
     R delAdminPointNew(Long id);
+
+    R putAdminPoint(PointNew pointNew);
 }
