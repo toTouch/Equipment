@@ -158,8 +158,8 @@ public class ProductNewServiceImpl implements ProductNewService {
             list.add(e.getId());
         });
 
-        long count = productNewList.stream().distinct().count();
-        boolean isRepeat = count < productNewList.size();
+        long count = list.stream().distinct().count();
+        boolean isRepeat = count < list.size();
         if (isRepeat){
             return R.fail("有重复数据");
         }
