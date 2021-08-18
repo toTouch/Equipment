@@ -70,6 +70,7 @@ public class BatchServiceImpl implements BatchService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Batch insert(Batch batch) {
+        batch.setCreateTime(System.currentTimeMillis());
         this.batchMapper.insertOne(batch);
         return batch;
     }
