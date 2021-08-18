@@ -3,8 +3,11 @@ package com.xiliulou.afterserver.controller.admin;
 import com.xiliulou.afterserver.entity.ProductNew;
 import com.xiliulou.afterserver.service.ProductNewService;
 import com.xiliulou.afterserver.util.R;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author Hardy
@@ -12,12 +15,14 @@ import org.springframework.web.bind.annotation.*;
  * @mood 产品模块新改
  */
 @RestController
+@Slf4j
 public class AdminJsonProductNewController {
     @Autowired
     private ProductNewService productNewService;
 
     @PostMapping("/admin/productNew")
     public R saveAdminPointNew(@RequestBody ProductNew productNew){
+        log.error("ProductNew ===================:{}",productNew.toString());
         return productNewService.saveAdminProductNew(productNew);
     }
 
@@ -34,7 +39,9 @@ public class AdminJsonProductNewController {
     @GetMapping("/admin/productNew/list")
     public R pointList(@RequestParam("offset") Integer offset,
                        @RequestParam("limit") Integer limit){
-        return R.ok(productNewService.queryAllByLimit(offset,limit));
+        List<ProductNew> productNews = productNewService.queryAllByLimit(offset, limit);
+
+        return R.ok(productNews);
     }
 
 }
