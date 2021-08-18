@@ -83,5 +83,5 @@ public class PointNew {
     @TableField(exist = false)
     private String customerName;
     @TableField(exist = false)
-    private String provinceName;
+    private String province;
 }
