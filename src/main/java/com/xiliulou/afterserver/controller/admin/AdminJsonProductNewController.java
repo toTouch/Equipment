@@ -40,12 +40,14 @@ public class AdminJsonProductNewController {
     public R pointList(@RequestParam("offset") Integer offset,
                        @RequestParam("limit") Integer limit){
         List<ProductNew> productNews = productNewService.queryAllByLimit(offset, limit);
+
+
         Integer count = productNewService.count();
 
         HashMap<String, Object> stringObjectHashMap = new HashMap<>();
         stringObjectHashMap.put("data",productNews);
         stringObjectHashMap.put("count",count);
-        return R.ok(productNews);
+        return R.ok(stringObjectHashMap);
     }
 
 }
