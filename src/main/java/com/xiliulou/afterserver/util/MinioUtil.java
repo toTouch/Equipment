@@ -15,9 +15,9 @@ import io.minio.messages.DeleteError;
 import io.minio.messages.Item;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
-import org.omg.PortableServer.THREAD_POLICY_ID;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
