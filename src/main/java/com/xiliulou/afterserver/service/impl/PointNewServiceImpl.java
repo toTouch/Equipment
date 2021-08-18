@@ -143,7 +143,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
             ProductNew productNew = productNewService.queryByIdFromDB(item);
             productNew.setExpirationStartTime(queryById.getCreateTime());
-            productNew.setExpirationEndTime(queryById.getCreateTime() + (1000L * 24 * 60 * 60 * pointNew.getYears()));
+            productNew.setExpirationEndTime(queryById.getCreateTime() + (1000L * 24 * 60 * 60 * productNew.getYears()));
             Integer update = productNewService.update(productNew);
             if (update == 0){
                 log.error("WX ERROR!   update ProductNew error data:{}",productNew.toString());
