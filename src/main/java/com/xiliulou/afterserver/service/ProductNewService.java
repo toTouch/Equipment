@@ -71,4 +71,7 @@ public interface ProductNewService {
     R updateList(List<ProductNew> productNewList);
 
     ProductNew prdouctInfoByNo(String no);
+
+    Integer count();
+
 }

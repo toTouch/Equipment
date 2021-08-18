@@ -172,4 +172,9 @@ public class ProductNewServiceImpl implements ProductNewService {
         LambdaQueryWrapper<ProductNew> eq = new LambdaQueryWrapper<ProductNew>().eq(ProductNew::getNo, no).eq(ProductNew::getDelFlag, ProductNew.DEL_NORMAL);
         return this.productNewMapper.selectOne(eq);
     }
+
+    @Override
+    public Integer count() {
+        return this.productNewMapper.selectList( new LambdaQueryWrapper<ProductNew>().eq(ProductNew::getDelFlag,ProductNew.DEL_NORMAL)).size();
+    }
 }
