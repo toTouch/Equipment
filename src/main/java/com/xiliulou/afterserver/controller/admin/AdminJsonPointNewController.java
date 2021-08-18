@@ -7,11 +7,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xiliulou.afterserver.entity.City;
 import com.xiliulou.afterserver.entity.Customer;
 import com.xiliulou.afterserver.entity.PointNew;
+import com.xiliulou.afterserver.entity.Province;
 import com.xiliulou.afterserver.export.PointInfo;
 import com.xiliulou.afterserver.listener.PointListener;
 import com.xiliulou.afterserver.service.CityService;
 import com.xiliulou.afterserver.service.CustomerService;
 import com.xiliulou.afterserver.service.PointNewService;
+import com.xiliulou.afterserver.service.ProvinceService;
 import com.xiliulou.afterserver.util.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +38,8 @@ public class AdminJsonPointNewController {
     private CustomerService customerService;
     @Autowired
     private CityService cityService;
+    @Autowired
+    private ProvinceService provinceService;
 
 
     @PostMapping("/admin/pointNew")
@@ -64,6 +68,8 @@ public class AdminJsonPointNewController {
                 if (Objects.nonNull(item.getCityId())){
                     City byId = cityService.getById(item.getCityId());
                     item.setCityName(byId.getName());
+                    Province province = provinceService.queryByIdFromDB(byId.getPid());
+                    item.setProvinceName(province.getName());
                 }
 
                 if (Objects.nonNull(item.getCustomerId())){
@@ -72,7 +78,6 @@ public class AdminJsonPointNewController {
                         item.setCustomerName(byId.getName());
                     }
                 }
-
             });
         }
 

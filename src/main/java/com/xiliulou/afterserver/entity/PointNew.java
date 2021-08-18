@@ -82,4 +82,6 @@ public class PointNew {
     private String cityName;
     @TableField(exist = false)
     private String customerName;
+    @TableField(exist = false)
+    private String provinceName;
 }
