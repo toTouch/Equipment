@@ -58,4 +58,7 @@ public class PointInfo {
     @ExcelProperty(index = 7)
     private String cardNumber;
 
+    @ExcelProperty(index = 8)
+    private String createTime;
+
 }

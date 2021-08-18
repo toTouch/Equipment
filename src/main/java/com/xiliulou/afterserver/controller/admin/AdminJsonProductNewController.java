@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Hardy
@@ -40,6 +41,8 @@ public class AdminJsonProductNewController {
     public R pointList(@RequestParam("offset") Integer offset,
                        @RequestParam("limit") Integer limit){
         List<ProductNew> productNews = productNewService.queryAllByLimit(offset, limit);
+
+
 
 
         Integer count = productNewService.count();
