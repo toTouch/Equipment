@@ -112,9 +112,9 @@ public class ProductNewServiceImpl implements ProductNewService {
     @Override
     public R saveAdminProductNew(ProductNew productNew) {
         Product product = productService.getBaseMapper().selectById(productNew.getModelId());
-        if (Objects.isNull(product)) {
-            return R.fail("产品型号有误，请检查");
-        }
+//        if (Objects.isNull(product)) {
+//            return R.fail("产品型号有误，请检查");
+//        }
 
         Long leftInterval = productNew.getLeftInterval();
         Long rightInterval = productNew.getRightInterval();
