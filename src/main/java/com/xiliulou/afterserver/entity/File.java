@@ -14,6 +14,9 @@ import lombok.Data;
 public class File {
 
     private Long id;
+    /**
+     * 1.柜子  2.点位
+     */
     private Integer type;
     private String fileName;
     private Long createTime;
@@ -23,16 +26,11 @@ public class File {
 
     /**
      *    安装类型：
-     *    1:室外、
-     *    2:半室外、
-     *    3:室内
-     *    4: SN码照片（链接到点位管理中）
-     *    5:工控机物联网卡照片（链接到点位管理中）
-     *    6:含柜机点位环境整体照片（偏远景）
-     *    7: 点位柜机的整体正面照片一张（近景正面照）
-     *    8: 点位柜机的整体侧面照片一张（室外机连同雨棚一起拍上）
-     *    9:室外机膨胀螺丝照片（左侧、右侧、前侧、后侧）-备注将护脚盖打开后拍到膨胀螺丝
-     *    10: 室内机护脚照片（左侧、右侧、前侧、后侧）
+     *    1:机柜、
+     *    2:序列通讯 201 SN码 202 工控机物联网卡、
+     *    3:机柜照片 301 远景   302 近景正面照   303 整体侧面
+     *    4: 室外  401正面   402左侧    403右侧   404 背面
+     *    5:室内  501正面  502左侧  503右侧  504背面
      */
 
 
@@ -50,6 +48,7 @@ public class File {
     public static final Integer FILE_TYPE_AFTER = 3;
 
     public static final Integer TYPE_POINT = 1;
+    public static final Integer TYPE_PRODUCT = 2;
     public static final Integer TYPE_WORK_ORDER = 2;
 
 }
