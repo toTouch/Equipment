@@ -81,7 +81,7 @@ public class JsonUserPointProductController {
      * 获取产品
      */
     @GetMapping("/user/product")
-    public R prdouctInfoByNo(@RequestParam(value = "name",required = false) Integer name) {
+    public R prdouctInfoByNo(@RequestParam(value = "name",required = false) String name) {
         return R.ok(productNewService.prdouctInfoByNo(name));
     }
 
