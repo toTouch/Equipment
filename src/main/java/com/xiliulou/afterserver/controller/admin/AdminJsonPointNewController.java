@@ -3,6 +3,9 @@ package com.xiliulou.afterserver.controller.admin;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.read.metadata.ReadSheet;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.xiliulou.afterserver.entity.City;
+import com.xiliulou.afterserver.entity.Customer;
 import com.xiliulou.afterserver.entity.PointNew;
 import com.xiliulou.afterserver.export.PointInfo;
 import com.xiliulou.afterserver.listener.PointListener;
@@ -15,6 +18,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Hardy
@@ -51,7 +57,33 @@ public class AdminJsonPointNewController {
     public R pointList(@RequestParam("offset") Integer offset,
                        @RequestParam("limit") Integer limit,
                        @RequestParam(value = "name",required = false) String name){
-        return R.ok(pointNewService.queryAllByLimit(offset,limit,name));
+        List<PointNew> pointNews = pointNewService.queryAllByLimit(offset, limit, name);
+
+        if (Objects.nonNull(pointNews)){
+            pointNews.forEach(item -> {
+                if (Objects.nonNull(item.getCityId())){
+                    City byId = cityService.getById(item.getCityId());
+                    item.setCityName(byId.getName());
+                }
+
+                if (Objects.nonNull(item.getCustomerId())){
+                    Customer byId = customerService.getById(item.getCustomerId());
+                    if (Objects.nonNull(byId)){
+                        item.setCustomerName(byId.getName());
+                    }
+                }
+
+            });
+        }
+
+
+        Integer count =  pointNewService.count(new LambdaQueryWrapper<PointNew>().like(PointNew::getName,name));
+
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("data",pointNews);
+        map.put("count",count);
+        return R.ok(map);
     }
 
 
