@@ -68,8 +68,7 @@ public class AdminJsonPointNewController {
                 if (Objects.nonNull(item.getCityId())){
                     City byId = cityService.getById(item.getCityId());
                     item.setCityName(byId.getName());
-                    Province province = provinceService.queryByIdFromDB(byId.getPid());
-                    item.setProvinceName(province.getName());
+                    item.setProvinceName(byId.getPid());
                 }
 
                 if (Objects.nonNull(item.getCustomerId())){
