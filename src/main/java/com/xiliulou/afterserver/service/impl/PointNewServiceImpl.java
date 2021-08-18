@@ -9,6 +9,7 @@ import com.xiliulou.afterserver.mapper.PointNewMapper;
 import com.xiliulou.afterserver.service.PointNewService;
 import com.xiliulou.afterserver.service.PointProductBindService;
 import com.xiliulou.afterserver.service.ProductNewService;
+import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Objects;
 
@@ -143,7 +145,21 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
             ProductNew productNew = productNewService.queryByIdFromDB(item);
             productNew.setExpirationStartTime(queryById.getCreateTime());
-            productNew.setExpirationEndTime(queryById.getCreateTime() + (1000L * 24 * 60 * 60 * (productNew.getYears() * 365)));
+
+            String date = DateUtils.stampToDate(queryById.getCreateTime().toString());
+            String[] split = date.split("-");
+            String s = split[0];
+            long l = Long.parseLong(s);
+            long l1 = l + productNew.getYears();
+            String s1 = l1 + split[1] + split[2];
+            long l2 = 0;
+            try {
+                l2 = DateUtils.dateToStamp(s1);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            productNew.setExpirationEndTime(l2);
             Integer update = productNewService.update(productNew);
             if (update == 0){
                 log.error("WX ERROR!   update ProductNew error data:{}",productNew.toString());
