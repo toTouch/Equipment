@@ -17,8 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -129,10 +128,7 @@ public class ProductNewServiceImpl implements ProductNewService {
         return R.ok();
     }
 
-    public static void main(String[] args) {
 
-        System.out.println((Math.random()*9+1)*100000);
-    }
 
 
     @Override
@@ -156,6 +152,18 @@ public class ProductNewServiceImpl implements ProductNewService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public R updateList(List<ProductNew> productNewList) {
+
+        List<Long> list = new ArrayList();
+        productNewList.forEach(e -> {
+            list.add(e.getId());
+        });
+
+        long count = productNewList.stream().distinct().count();
+        boolean isRepeat = count < productNewList.size();
+        if (isRepeat){
+            return R.fail("有重复数据");
+        }
+
         productNewList.forEach(item -> {
             item.setCreateTime(System.currentTimeMillis());
             int update = productNewMapper.update(item);
@@ -176,5 +184,21 @@ public class ProductNewServiceImpl implements ProductNewService {
     @Override
     public Integer count() {
         return this.productNewMapper.selectList( new LambdaQueryWrapper<ProductNew>().eq(ProductNew::getDelFlag,ProductNew.DEL_NORMAL)).size();
+    }
+
+    public static void main(String[] args) {
+        List<Integer> list = new ArrayList() {
+            {
+                add(1);
+                add(2);
+                add(1);
+            }
+        };
+        long count = list.stream().distinct().count();
+        boolean isRepeat = count < list.size();
+        System.out.println(count);//输出2
+        System.out.println(isRepeat);//输出true
+
+
     }
 }
