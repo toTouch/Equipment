@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -39,7 +40,11 @@ public class AdminJsonProductNewController {
     public R pointList(@RequestParam("offset") Integer offset,
                        @RequestParam("limit") Integer limit){
         List<ProductNew> productNews = productNewService.queryAllByLimit(offset, limit);
+        Integer count = productNewService.count();
 
+        HashMap<String, Object> stringObjectHashMap = new HashMap<>();
+        stringObjectHashMap.put("data",productNews);
+        stringObjectHashMap.put("count",count);
         return R.ok(productNews);
     }
 
