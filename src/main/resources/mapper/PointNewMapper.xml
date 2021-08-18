@@ -100,7 +100,7 @@
         update t_point_new
         <set>
             <if test="name != null">
-                and name = #{name}
+                and name = #{name},
             </if>
             <if test="customerId != null">
                 customer_id = #{customerId},
