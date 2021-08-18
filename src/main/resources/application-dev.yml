@@ -51,7 +51,7 @@ jwt:
   expire: 1296000
 
 minio:
-  endpoint: http://192.168.0.236
+  endpoint: 172.26.20.230
   port: 9000
   accessKey: by-xiliulou
   secretKey: by123456
