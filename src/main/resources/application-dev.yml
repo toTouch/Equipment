@@ -10,7 +10,6 @@ spring:
       username: root
       password: y%d*IWrh1KKfQD!E
       url: jdbc:mysql://172.26.20.230:3306/xiliulou_crm?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&allowMultiQueries=true
-#      url: jdbc:mysql://192.168.0.236:3306/xiliulou_crm?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&allowMultiQueries=true
 
   servlet:
     multipart:
@@ -51,11 +50,9 @@ jwt:
   expire: 1296000
 
 minio:
-  endpoint: 172.26.20.230
+  endpoint: http://172.26.20.230
   port: 9000
   accessKey: by-xiliulou
   secretKey: by123456
-#  accessKey: xiliulou
-#  secretKey: xiliulou
   secure: false
   bucketName: test
