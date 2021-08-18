@@ -168,7 +168,7 @@ public class ProductNewServiceImpl implements ProductNewService {
     }
 
     @Override
-    public ProductNew prdouctInfoByNo(Integer no) {
+    public ProductNew prdouctInfoByNo(String no) {
         LambdaQueryWrapper<ProductNew> eq = new LambdaQueryWrapper<ProductNew>().eq(ProductNew::getNo, no).eq(ProductNew::getDelFlag, ProductNew.DEL_NORMAL);
         return this.productNewMapper.selectOne(eq);
     }

@@ -70,5 +70,5 @@ public interface ProductNewService {
 
     R updateList(List<ProductNew> productNewList);
 
-    ProductNew prdouctInfoByNo(Integer no);
+    ProductNew prdouctInfoByNo(String no);
 }
