@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xiliulou.afterserver.entity.Batch;
 import com.xiliulou.afterserver.mapper.BatchMapper;
 import com.xiliulou.afterserver.service.BatchService;
@@ -9,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -95,5 +97,10 @@ public class BatchServiceImpl implements BatchService {
     @Transactional(rollbackFor = Exception.class)
     public Boolean deleteById(Long id) {
         return this.batchMapper.deleteById(id) > 0;
+    }
+
+    @Override
+    public Long count(String batchNo) {
+        return this.batchMapper.count(batchNo);
     }
 }

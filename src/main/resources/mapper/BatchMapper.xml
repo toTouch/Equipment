@@ -51,6 +51,14 @@
             </if>
         </where>
     </select>
+    <select id="count" resultType="java.lang.Long">
+        select count(1) from t_batch
+        <where>
+            <if test="batchNo != null and batchNo != '' ">
+                and batch_no = #{batchNo}
+            </if>
+        </where>
+    </select>
 
     <!--新增所有列-->
     <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
