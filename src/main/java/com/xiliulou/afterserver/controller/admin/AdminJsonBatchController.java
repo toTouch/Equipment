@@ -6,6 +6,8 @@ import com.xiliulou.afterserver.util.R;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * (Batch)表控制层
@@ -56,6 +58,13 @@ public class AdminJsonBatchController {
                        @RequestParam(value = "offset") int offset,
                        @RequestParam(value = "limit") int limit) {
 
-        return R.ok(this.batchService.queryAllByLimit(batchNo,offset,limit));
+        List<Batch> batches = this.batchService.queryAllByLimit(batchNo, offset, limit);
+        Long count = this.batchService.count(batchNo);
+
+        HashMap<String, Object> stringObjectHashMap = new HashMap<>(2);
+        stringObjectHashMap.put("data",batches);
+        stringObjectHashMap.put("count",count);
+
+        return R.ok(stringObjectHashMap);
     }
 }
