@@ -22,7 +22,6 @@ public class AdminJsonProductNewController {
 
     @PostMapping("/admin/productNew")
     public R saveAdminPointNew(@RequestBody ProductNew productNew){
-        log.error("ProductNew ===================:{}",productNew.toString());
         return productNewService.saveAdminProductNew(productNew);
     }
 
