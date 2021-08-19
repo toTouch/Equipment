@@ -29,7 +29,7 @@ public class DataUtil {
         String data = getDateFormat(System.currentTimeMillis());
         String substring = dataTime.substring(dataTime.length() - 4);
         int random = (int) ((Math.random() * 9 + 1) * 100000);
-        return data+substring+random;
+        return "xll"+data+substring+random;
 //        String dateFormat = getDateFormat(System.currentTimeMillis());
 //        String[] split = dateFormat.split("-");
 //        String resout = "xll" + split[0] + split[1] + split[2] + (int) ((Math.random() * 9 + 1) * 100000);
