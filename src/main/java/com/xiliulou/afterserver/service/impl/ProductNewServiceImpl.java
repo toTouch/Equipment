@@ -120,7 +120,7 @@ public class ProductNewServiceImpl implements ProductNewService {
         }
 
         for (int i = 0; i < productNew.getProductCount(); i++) {
-            productNew.setNo("xll"+DataUtil.getNo()+i);
+            productNew.setNo(DataUtil.getNo());
             productNew.setCreateTime(System.currentTimeMillis());
             productNew.setDelFlag(ProductNew.DEL_NORMAL);
             this.insert(productNew);
