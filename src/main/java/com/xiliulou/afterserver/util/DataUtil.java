@@ -27,7 +27,7 @@ public class DataUtil {
     public static String getNo(){
         String dateFormat = getDateFormat(System.currentTimeMillis());
         String[] split = dateFormat.split("-");
-        String resout = "xll" + split[0] + split[1] + (int) ((Math.random() * 9 + 1) * 100000);
+        String resout = "xll" + split[0] + split[1] + split[2] + (int) ((Math.random() * 9 + 1) * 100000);
         return  resout;
     }
 
