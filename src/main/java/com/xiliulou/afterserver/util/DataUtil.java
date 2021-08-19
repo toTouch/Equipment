@@ -11,7 +11,7 @@ public class DataUtil {
     }
 
     public static String getDateFormat(Long dates){
-        SimpleDateFormat sdf=new SimpleDateFormat("yy-MM-dd");
+        SimpleDateFormat sdf=new SimpleDateFormat("yyMMddHHmmss");
         String sd = sdf.format(new Date(Long.parseLong(String.valueOf(dates))));
         return sd;
     }
@@ -25,10 +25,15 @@ public class DataUtil {
     }
 
     public static String getNo(){
-        String dateFormat = getDateFormat(System.currentTimeMillis());
-        String[] split = dateFormat.split("-");
-        String resout = "xll" + split[0] + split[1] + split[2] + (int) ((Math.random() * 9 + 1) * 100000);
-        return  resout;
+        String dataTime = String.valueOf(System.currentTimeMillis());
+        String data = getDateFormat(System.currentTimeMillis());
+        String substring = dataTime.substring(dataTime.length() - 4);
+        int random = (int) ((Math.random() * 9 + 1) * 100000);
+        return data+substring+random;
+//        String dateFormat = getDateFormat(System.currentTimeMillis());
+//        String[] split = dateFormat.split("-");
+//        String resout = "xll" + split[0] + split[1] + split[2] + (int) ((Math.random() * 9 + 1) * 100000);
+//        return  resout;
     }
 
 
