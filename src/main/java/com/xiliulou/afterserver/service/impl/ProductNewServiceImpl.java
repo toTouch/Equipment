@@ -115,11 +115,12 @@ public class ProductNewServiceImpl implements ProductNewService {
             return R.fail("产品型号有误，请检查");
         }
 
-        Long leftInterval = productNew.getLeftInterval();
-        Long rightInterval = productNew.getRightInterval();
+        if(Objects.isNull(productNew.getProductCount()) || productNew.getProductCount() <= 0){
+           return R.fail("请传入正确的产品数量");
+        }
 
-        for (int i = Integer.parseInt(leftInterval.toString()); i <= Integer.parseInt(rightInterval.toString()); i++) {
-            productNew.setNo(DataUtil.getNo()+i);
+        for (int i = 0; i < productNew.getProductCount(); i++) {
+            productNew.setNo("xll"+DataUtil.getNo()+i);
             productNew.setCreateTime(System.currentTimeMillis());
             productNew.setDelFlag(ProductNew.DEL_NORMAL);
             this.insert(productNew);

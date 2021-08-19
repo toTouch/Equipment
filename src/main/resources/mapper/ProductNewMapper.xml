@@ -4,7 +4,7 @@
 
     <resultMap type="com.xiliulou.afterserver.entity.ProductNew" id="ProductNewMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
-        <result property="no" column="no" jdbcType="INTEGER"/>
+        <result property="no" column="no" jdbcType="VARCHAR"/>
         <result property="modelId" column="model_id" jdbcType="INTEGER"/>
         <result property="batchId" column="batch_id" jdbcType="INTEGER"/>
         <result property="status" column="status" jdbcType="INTEGER"/>
