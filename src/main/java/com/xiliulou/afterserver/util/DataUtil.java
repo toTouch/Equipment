@@ -11,7 +11,7 @@ public class DataUtil {
     }
 
     public static String getDateFormat(Long dates){
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmm");
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmssSSS");
         String sd = sdf.format(new Date(Long.parseLong(String.valueOf(dates))));
         return sd;
     }

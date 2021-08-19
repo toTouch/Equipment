@@ -25,7 +25,7 @@ public class ProductNew {
     /**
      * 产品编号（纯数字）
      */
-    private Long no;
+    private String no;
     /**
      * 型号ID
      */
@@ -63,17 +63,20 @@ public class ProductNew {
     public static final Integer DEL_DEL = 1;
 
 
-    //左区间
-    @TableField(exist = false)
-    private Long leftInterval;
-    //右区间
-    @TableField(exist = false)
-    private Long rightInterval;
+//    //左区间
+//    @TableField(exist = false)
+//    private Long leftInterval;
+//    //右区间
+//    @TableField(exist = false)
+//    private Long rightInterval;
 
     @TableField(exist = false)
     private String modelName;
     @TableField(exist = false)
     private String batchName;
+
+    @TableField(exist = false)
+    private Integer productCount;
 
 
 }
