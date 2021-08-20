@@ -103,4 +103,11 @@ public class PointProductBindServiceImpl implements PointProductBindService {
         LambdaQueryWrapper<PointProductBind> queryWrapper = new LambdaQueryWrapper<PointProductBind>().eq(PointProductBind::getPointId, pid);
         return this.pointProductBindMapper.selectList(queryWrapper);
     }
+
+    @Override
+    public List<PointProductBind> queryByPointNewIdAndProductId(Long id, Long item) {
+        LambdaQueryWrapper<PointProductBind> queryWrapper = new LambdaQueryWrapper<PointProductBind>()
+                .eq(PointProductBind::getPointId, id).eq(PointProductBind::getProductId,item);
+        return this.pointProductBindMapper.selectList(queryWrapper);
+    }
 }

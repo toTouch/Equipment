@@ -148,12 +148,18 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
 
         pointNew.getProductIds().forEach(item -> {
+            ProductNew productNew = productNewService.queryByIdFromDB(item);
+            List<PointProductBind> pointProductBindList = pointProductBindService.queryByPointNewIdAndProductId(pointNew.getId(),item);
+            if (pointProductBindList.size() > 0){
+                throw new NullPointerException("机柜"+productNew.getNo()+"已存在此点位了");
+            }
+
             PointProductBind pointProductBind = new PointProductBind();
             pointProductBind.setPointId(pointNew.getId());
             pointProductBind.setProductId(item);
             pointProductBindService.insert(pointProductBind);
 
-            ProductNew productNew = productNewService.queryByIdFromDB(item);
+
             productNew.setExpirationStartTime(queryById.getCreateTime());
 
             String date = DateUtils.stampToDate(queryById.getCreateTime().toString());
