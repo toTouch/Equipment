@@ -2,6 +2,7 @@ package com.xiliulou.afterserver.vo;
 
 import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.entity.PointNew;
+import com.xiliulou.afterserver.entity.ProductNew;
 import lombok.Data;
 
 import java.util.List;
@@ -15,5 +16,6 @@ import java.util.List;
 public class PointNewInfoVo {
     private PointNew pointNew;
     private List<File> pointFileList;
+    private ProductNew productNew;
 
 }

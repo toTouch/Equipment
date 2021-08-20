@@ -255,6 +255,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
                 List<File> productFileList = fileService.queryByProductNewId(productNew.getId());
                 productNew.setFileList(productFileList);
+                pointNewInfoVo.setProductNew(productNew);
             });
 
         }
