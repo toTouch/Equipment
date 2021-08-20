@@ -103,4 +103,10 @@ public class AdminJsonPointNewController {
         excelReader.finish();
         return R.ok();
     }
+
+
+    @GetMapping("/admin/pointNew/info/{pid}")
+    public R printInfo(@PathVariable("pid") Long pid){
+        return pointNewService.pointInfo(pid);
+    }
 }

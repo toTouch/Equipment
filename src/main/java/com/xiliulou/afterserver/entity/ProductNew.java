@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.baomidou.mybatisplus.annotation.TableName;
 
+import java.util.List;
+
 /**
  * (ProductNew)实体类
  *
@@ -77,6 +79,8 @@ public class ProductNew {
 
     @TableField(exist = false)
     private Integer productCount;
+    @TableField(exist = false)
+    private List<File> fileList;
 
 
 }

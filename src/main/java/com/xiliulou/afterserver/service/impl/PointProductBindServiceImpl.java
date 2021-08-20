@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xiliulou.afterserver.entity.PointProductBind;
 import com.xiliulou.afterserver.mapper.PointProductBindMapper;
 import com.xiliulou.afterserver.service.PointProductBindService;
@@ -95,5 +96,11 @@ public class PointProductBindServiceImpl implements PointProductBindService {
     @Transactional(rollbackFor = Exception.class)
     public Boolean deleteById(Long id) {
         return this.pointProductBindMapper.deleteById(id) > 0;
+    }
+
+    @Override
+    public List<PointProductBind> queryByPointNewId(Long pid) {
+        LambdaQueryWrapper<PointProductBind> queryWrapper = new LambdaQueryWrapper<PointProductBind>().eq(PointProductBind::getPointId, pid);
+        return this.pointProductBindMapper.selectList(queryWrapper);
     }
 }

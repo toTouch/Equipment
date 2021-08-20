@@ -79,4 +79,16 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
         return R.ok(files);
     }
 
+    @Override
+    public List<File> queryByPointId(Long pid) {
+        LambdaQueryWrapper<File> queryWrapper = new LambdaQueryWrapper<File>().eq(File::getType, File.TYPE_POINTNEW).eq(File::getBindId, pid);
+        return this.baseMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public List<File> queryByProductNewId(Long productId) {
+        LambdaQueryWrapper<File> queryWrapper = new LambdaQueryWrapper<File>().eq(File::getType, File.TYPE_PRODUCT).eq(File::getBindId, productId);
+        return this.baseMapper.selectList(queryWrapper);
+    }
+
 }
