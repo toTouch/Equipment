@@ -74,4 +74,5 @@ public interface ProductNewService {
 
     Integer count(String no,Long modelId,Long startTime,Long endTime);
 
+    R getProductFile(Long id);
 }
