@@ -52,7 +52,7 @@ jwt:
 minio:
   endpoint: http://192.168.0.236
   port: 9000
-  accessKey: xiliulou
-  secretKey: xiliulou
+  accessKey: YWJ69FJGH38WISF45K7Y
+  secretKey: I45qQkxsaEtrk8p8FEPOO7y516nR6nEW25Mrh2pw
   secure: false
   bucketName: test
