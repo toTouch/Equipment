@@ -2,11 +2,9 @@ package com.xiliulou.afterserver.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.xiliulou.afterserver.entity.Product;
-import com.xiliulou.afterserver.entity.ProductFile;
-import com.xiliulou.afterserver.entity.ProductNew;
-import com.xiliulou.afterserver.entity.ProductSerialNumber;
+import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
+import com.xiliulou.afterserver.service.FileService;
 import com.xiliulou.afterserver.service.ProductNewService;
 import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.util.DataUtil;
@@ -34,6 +32,8 @@ public class ProductNewServiceImpl implements ProductNewService {
     private ProductNewMapper productNewMapper;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private FileService fileService;
 
     /**
      * 通过ID查询单条数据从DB
@@ -185,6 +185,12 @@ public class ProductNewServiceImpl implements ProductNewService {
     @Override
     public Integer count(String no,Long modelId,Long startTime,Long endTime) {
         return this.productNewMapper.countProduct(no,modelId,startTime,endTime);
+    }
+
+    @Override
+    public R getProductFile(Long id) {
+        List<File> fileList = fileService.queryByProductNewId(id);
+        return R.ok(fileList);
     }
 
     public static void main(String[] args) {
