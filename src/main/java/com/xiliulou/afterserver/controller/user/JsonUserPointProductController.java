@@ -49,7 +49,7 @@ public class JsonUserPointProductController {
 
     @GetMapping("/user/pointNew/list")
     public R pointList( @RequestParam(value = "name",required = false) String name){
-        return R.ok(pointNewService.queryAllByLimit(0,10,name));
+        return R.ok(pointNewService.queryAllByLimit(0,10,name,null,null,null,null,null));
     }
 
     /**
