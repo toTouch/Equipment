@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -236,6 +237,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         pointNewInfoVo.setPointFileList(pointFileList);
 
         List<PointProductBind> pointProductBindList = pointProductBindService.queryByPointNewId(pid);
+        ArrayList<ProductNew> productNews = new ArrayList<>();
         if (Objects.nonNull(pointProductBindList)){
             pointProductBindList.forEach(item -> {
                 ProductNew productNew = productNewService.queryByIdFromDB(item.getProductId());
@@ -255,8 +257,9 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
                 List<File> productFileList = fileService.queryByProductNewId(productNew.getId());
                 productNew.setFileList(productFileList);
-                pointNewInfoVo.setProductNew(productNew);
+                productNews.add(productNew);
             });
+            pointNewInfoVo.setProductNew(productNews);
 
         }
         return R.ok(pointNewInfoVo);
