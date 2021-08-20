@@ -30,6 +30,19 @@
         from t_product_new
         <where>
             and del_flag = 0
+            <if test="no != null and no != '' ">
+                and no like concat('%', #{no},'%')
+            </if>
+            <if test="modelId != null and modelId != ''">
+                and model_id = #{modelId}
+            </if>
+            <if test="startTime != null">
+                and create_time &gt;= #{startTime}
+            </if>
+
+            <if test="endTime != null">
+                and create_time &lt;= #{endTime}
+            </if>
         </where>
         order by create_time desc
         limit #{offset}, #{limit}
@@ -70,6 +83,25 @@
             </if>
             <if test="delFlag != null">
                 and del_flag = #{delFlag}
+            </if>
+        </where>
+    </select>
+    <select id="countProduct" resultType="java.lang.Integer">
+        select count(1) from t_product_new
+        <where>
+            and del_flag = 0
+            <if test="no != null and no != '' ">
+                and no like concat('%', #{no},'%')
+            </if>
+            <if test="modelId != null and modelId != ''">
+                and model_id = #{modelId}
+            </if>
+            <if test="startTime != null">
+                and create_time &gt;= #{startTime}
+            </if>
+
+            <if test="endTime != null">
+                and create_time &lt;= #{endTime}
             </if>
         </where>
     </select>

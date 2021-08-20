@@ -2,6 +2,7 @@ package com.xiliulou.afterserver.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.PointNew;
+import com.xiliulou.afterserver.mapper.PointNewMapper;
 import com.xiliulou.afterserver.util.R;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public interface PointNewService extends IService<PointNew> {
      * @param limit  查询条数
      * @return 对象列表
      */
-    List<PointNew> queryAllByLimit(int offset, int limit,String name);
+    List<PointNew> queryAllByLimit(int offset, int limit,String name,Integer cid,Integer status, Long customerId,Long startTime,Long endTime);
 
     /**
      * 新增数据
@@ -72,4 +73,7 @@ public interface PointNewService extends IService<PointNew> {
     R putAdminPoint(PointNew pointNew);
 
     R pointInfo(Long pid);
+
+    Integer countPoint(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime);
+
 }

@@ -79,8 +79,8 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
      * @return 对象列表
      */
     @Override
-    public List<PointNew> queryAllByLimit(int offset, int limit, String name) {
-        return this.pointNewMapper.queryAllByLimit(offset, limit, name);
+    public List<PointNew> queryAllByLimit(int offset, int limit, String name,Integer cid,Integer status, Long customerId,Long startTime,Long endTime) {
+        return this.pointNewMapper.queryAllByLimit(offset, limit, name,cid,status,customerId,startTime,endTime);
     }
 
     /**
@@ -259,5 +259,10 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
         }
         return R.ok(pointNewInfoVo);
+    }
+
+    @Override
+    public Integer countPoint(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime) {
+        return this.pointNewMapper.countPoint(name,cid,status,customerId,startTime,endTime);
     }
 }

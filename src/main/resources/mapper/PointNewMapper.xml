@@ -29,12 +29,28 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="PointNewMap">
         select
-          id, name ,customer_id, status, city_id, install_type, address, camera_count, canopy_count, sn_no, card_number, create_time, del_flag
+        id, name , customer_id, status, city_id, install_type, address, camera_count, canopy_count, sn_no, card_number, create_time, del_flag
         from t_point_new
         <where>
         and del_flag = 0
             <if test="name != null and name!='' ">
                 and name like concat('%', #{name},'%')
+            </if>
+            <if test="customerId != null">
+                and customer_id = #{customerId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="cid != null">
+                and city_id = #{cid}
+            </if>
+            <if test="startTime != null">
+                and create_time &gt;= #{startTime}
+            </if>
+
+            <if test="endTime != null">
+                and create_time &lt;= #{endTime}
             </if>
         </where>
         order by create_time desc
@@ -85,6 +101,31 @@
             </if>
             <if test="delFlag != null">
                 and del_flag = #{delFlag}
+            </if>
+        </where>
+    </select>
+    <select id="countPoint" resultType="java.lang.Integer">
+        select count(1) from t_point_new a left join customer b on a.customer_id = b.id
+        <where>
+            and del_flag = 0
+            <if test="name != null and name!='' ">
+                and name like concat('%', #{name},'%')
+            </if>
+            <if test="customerId != null">
+                and customer_id = #{customerId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="cid != null">
+                and city_id = #{cid}
+            </if>
+            <if test="startTime != null">
+                and create_time &gt;= #{startTime}
+            </if>
+
+            <if test="endTime != null">
+                and create_time &lt;= #{endTime}
             </if>
         </where>
     </select>

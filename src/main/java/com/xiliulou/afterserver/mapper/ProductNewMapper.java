@@ -30,7 +30,11 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
      * @param limit  查询条数
      * @return 对象列表
      */
-    List<ProductNew> queryAllByLimit(@Param("offset") int offset, @Param("limit") int limit);
+    List<ProductNew> queryAllByLimit(@Param("offset") int offset, @Param("limit") int limit,
+                                     @Param("no") String no,
+                                     @Param("modelId") Long modelId,
+                                     @Param("startTime") Long startTime,
+                                     @Param("endTime") Long endTime);
 
 
     /**
@@ -65,4 +69,8 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
      */
     int deleteById(Long id);
 
+    Integer countProduct(@Param("no") String no,
+                         @Param("modelId") Long modelId,
+                         @Param("startTime") Long startTime,
+                         @Param("endTime") Long endTime);
 }
