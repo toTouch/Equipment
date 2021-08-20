@@ -16,6 +16,6 @@ import java.util.List;
 public class PointNewInfoVo {
     private PointNew pointNew;
     private List<File> pointFileList;
-    private ProductNew productNew;
+    private List<ProductNew> productNew;
 
 }
