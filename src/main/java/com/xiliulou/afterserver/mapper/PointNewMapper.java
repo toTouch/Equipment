@@ -30,7 +30,12 @@ public interface PointNewMapper extends BaseMapper<PointNew> {
      * @param limit  查询条数
      * @return 对象列表
      */
-    List<PointNew> queryAllByLimit(@Param("offset") int offset, @Param("limit") int limit, @Param("name") String name);
+    List<PointNew> queryAllByLimit(@Param("offset") int offset, @Param("limit") int limit, @Param("name") String name,
+                                   @Param("cid") Integer cid,
+                                   @Param("status") Integer status,
+                                   @Param("customerId") Long customerId,
+                                   @Param("startTime") Long startTime,
+                                   @Param("endTime") Long endTime);
 
 
     /**
@@ -65,4 +70,10 @@ public interface PointNewMapper extends BaseMapper<PointNew> {
      */
     int deleteById(Long id);
 
+    Integer countPoint(@Param("name") String name,
+                       @Param("cid") Integer cid,
+                       @Param("status") Integer status,
+                       @Param("customerId") Long customerId,
+                       @Param("startTime") Long startTime,
+                       @Param("endTime") Long endTime);
 }

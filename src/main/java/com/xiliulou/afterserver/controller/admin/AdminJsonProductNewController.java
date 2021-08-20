@@ -47,8 +47,12 @@ public class AdminJsonProductNewController {
 
     @GetMapping("/admin/productNew/list")
     public R pointList(@RequestParam("offset") Integer offset,
-                       @RequestParam("limit") Integer limit){
-        List<ProductNew> productNews = productNewService.queryAllByLimit(offset, limit);
+                       @RequestParam("limit") Integer limit,
+                       @RequestParam(value = "no",required = false) String no,
+                       @RequestParam(value = "modelId",required = false) Long modelId,
+                       @RequestParam(value = "startTime",required = false) Long startTime,
+                       @RequestParam(value = "endTime",required = false) Long endTime){
+        List<ProductNew> productNews = productNewService.queryAllByLimit(offset,limit,no,modelId,startTime,endTime);
 
         productNews.forEach(item -> {
             if (Objects.nonNull(item.getModelId())){
@@ -67,7 +71,7 @@ public class AdminJsonProductNewController {
         });
 
 
-        Integer count = productNewService.count();
+        Integer count = productNewService.count(no,modelId,startTime,endTime);
 
         HashMap<String, Object> stringObjectHashMap = new HashMap<>();
         stringObjectHashMap.put("data",productNews);

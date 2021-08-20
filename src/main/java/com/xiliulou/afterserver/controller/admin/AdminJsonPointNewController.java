@@ -60,8 +60,13 @@ public class AdminJsonPointNewController {
     @GetMapping("/admin/pointNew/list")
     public R pointList(@RequestParam("offset") Integer offset,
                        @RequestParam("limit") Integer limit,
-                       @RequestParam(value = "name",required = false) String name){
-        List<PointNew> pointNews = pointNewService.queryAllByLimit(offset, limit, name);
+                       @RequestParam(value = "name",required = false) String name,
+                       @RequestParam(value = "cid",required = false) Integer cid,
+                       @RequestParam(value = "status",required = false) Integer status,
+                       @RequestParam(value = "customerId",required = false) Long customerId,
+                       @RequestParam(value = "startTime",required = false) Long startTime,
+                       @RequestParam(value = "endTime",required = false) Long endTime){
+        List<PointNew> pointNews = pointNewService.queryAllByLimit(offset, limit, name,cid,status,customerId,startTime,endTime);
 
         if (Objects.nonNull(pointNews)){
             pointNews.forEach(item -> {
@@ -81,7 +86,7 @@ public class AdminJsonPointNewController {
         }
 
 
-        Integer count =  pointNewService.count(new LambdaQueryWrapper<PointNew>().like(PointNew::getName,name));
+        Integer count =  pointNewService.countPoint(name,cid,status,customerId,startTime,endTime);
 
 
         HashMap<String, Object> map = new HashMap<>();

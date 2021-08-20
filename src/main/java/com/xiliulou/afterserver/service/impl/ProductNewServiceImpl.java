@@ -66,8 +66,8 @@ public class ProductNewServiceImpl implements ProductNewService {
      * @return 对象列表
      */
     @Override
-    public List<ProductNew> queryAllByLimit(int offset, int limit) {
-        return this.productNewMapper.queryAllByLimit(offset, limit);
+    public List<ProductNew> queryAllByLimit(int offset, int limit,String no,Long modelId,Long startTime,Long endTime) {
+        return this.productNewMapper.queryAllByLimit(offset, limit,no,modelId,startTime,endTime);
     }
 
     /**
@@ -183,8 +183,8 @@ public class ProductNewServiceImpl implements ProductNewService {
     }
 
     @Override
-    public Integer count() {
-        return this.productNewMapper.selectList( new LambdaQueryWrapper<ProductNew>().eq(ProductNew::getDelFlag,ProductNew.DEL_NORMAL)).size();
+    public Integer count(String no,Long modelId,Long startTime,Long endTime) {
+        return this.productNewMapper.countProduct(no,modelId,startTime,endTime);
     }
 
     public static void main(String[] args) {
