@@ -1,0 +1,19 @@
+package com.xiliulou.afterserver.vo;
+
+import com.xiliulou.afterserver.entity.File;
+import com.xiliulou.afterserver.entity.PointNew;
+import lombok.Data;
+
+import java.util.List;
+
+/**
+ * @author Hardy
+ * @date 2021/8/20 9:28
+ * @mood
+ */
+@Data
+public class PointNewInfoVo {
+    private PointNew pointNew;
+    private List<File> pointFileList;
+
+}

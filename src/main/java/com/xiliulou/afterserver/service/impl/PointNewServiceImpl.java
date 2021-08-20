@@ -2,15 +2,12 @@ package com.xiliulou.afterserver.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xiliulou.afterserver.entity.PointNew;
-import com.xiliulou.afterserver.entity.PointProductBind;
-import com.xiliulou.afterserver.entity.ProductNew;
+import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.PointNewMapper;
-import com.xiliulou.afterserver.service.PointNewService;
-import com.xiliulou.afterserver.service.PointProductBindService;
-import com.xiliulou.afterserver.service.ProductNewService;
+import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.vo.PointNewInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +35,18 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     private PointProductBindService pointProductBindService;
     @Autowired
     private ProductNewService productNewService;
+    @Autowired
+    private CityService cityService;
+    @Autowired
+    private ProvinceService provinceService;
+    @Autowired
+    private CustomerService customerService;
+    @Autowired
+    private FileService fileService;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private BatchService batchService;
 
     /**
      * 通过ID查询单条数据从DB
@@ -195,5 +204,60 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             return R.ok();
         }
         return R.fail("修改失败");
+    }
+
+    @Override
+    public R pointInfo(Long pid) {
+        LambdaQueryWrapper<PointNew> queryWrapper = new LambdaQueryWrapper<PointNew>().eq(PointNew::getId, pid).eq(PointNew::getDelFlag, PointNew.DEL_NORMAL);
+        PointNew pointNew = this.pointNewMapper.selectOne(queryWrapper);
+
+        if (Objects.isNull(pointNew)){
+            return R.fail("未查询到相关数据");
+        }
+
+        PointNewInfoVo pointNewInfoVo = new PointNewInfoVo();
+
+        if (Objects.nonNull(pointNew.getCityId())){
+            City byId = cityService.getById(pointNew.getCityId());
+            pointNew.setCityName(byId.getName());
+            Province province = provinceService.queryByIdFromDB(byId.getPid());
+            pointNew.setProvince(province.getName());
+        }
+
+        if (Objects.nonNull(pointNew.getCustomerId())){
+            Customer byId = customerService.getById(pointNew.getCustomerId());
+            if (Objects.nonNull(byId)){
+                pointNew.setCustomerName(byId.getName());
+            }
+        }
+
+        pointNewInfoVo.setPointNew(pointNew);
+        List<File> pointFileList = fileService.queryByPointId(pid);
+        pointNewInfoVo.setPointFileList(pointFileList);
+
+        List<PointProductBind> pointProductBindList = pointProductBindService.queryByPointNewId(pid);
+        if (Objects.nonNull(pointProductBindList)){
+            pointProductBindList.forEach(item -> {
+                ProductNew productNew = productNewService.queryByIdFromDB(item.getProductId());
+                if (Objects.isNull(productNew)){
+                    return;
+                }
+
+                Product product = productService.getBaseMapper().selectById(productNew.getModelId());
+                if (Objects.nonNull(product)){
+                    productNew.setModelName(product.getName());
+                }
+
+                Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
+                if (Objects.nonNull(batch)){
+                    productNew.setBatchName(batch.getBatchNo());
+                }
+
+                List<File> productFileList = fileService.queryByProductNewId(productNew.getId());
+                productNew.setFileList(productFileList);
+            });
+
+        }
+        return R.ok(pointNewInfoVo);
     }
 }
