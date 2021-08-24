@@ -8,10 +8,7 @@ import com.xiliulou.afterserver.util.MinioUtil;
 import com.xiliulou.afterserver.util.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @program: XILIULOU
@@ -34,6 +31,13 @@ public class AdminJsonUserController extends BaseController {
     @PostMapping("auth/login")
     public R login(@RequestBody User user) {
         return super.returnPairResult(userService.login(user));
+    }
+
+    @GetMapping("admin/user/page")
+    public R page(@RequestParam("offset") Long offset, @RequestParam("size") Long size, String username) {
+
+        return userService.list(offset,size,username);
+
     }
 
 }

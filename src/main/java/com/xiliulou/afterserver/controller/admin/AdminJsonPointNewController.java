@@ -4,21 +4,16 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.read.metadata.ReadSheet;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.xiliulou.afterserver.entity.City;
-import com.xiliulou.afterserver.entity.Customer;
-import com.xiliulou.afterserver.entity.PointNew;
-import com.xiliulou.afterserver.entity.Province;
+import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.export.PointInfo;
 import com.xiliulou.afterserver.listener.PointListener;
-import com.xiliulou.afterserver.service.CityService;
-import com.xiliulou.afterserver.service.CustomerService;
-import com.xiliulou.afterserver.service.PointNewService;
-import com.xiliulou.afterserver.service.ProvinceService;
+import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -40,10 +35,17 @@ public class AdminJsonPointNewController {
     private CityService cityService;
     @Autowired
     private ProvinceService provinceService;
+    @Autowired
+    private UserService userService;
 
 
     @PostMapping("/admin/pointNew")
-    public R saveAdminPointNew(@RequestBody PointNew pointNew){
+    public R saveAdminPointNew(@RequestBody PointNew pointNew, HttpServletRequest request){
+        Long uid = (Long) request.getAttribute("uid");
+        if (Objects.isNull(uid)){
+            return R.fail("用户为空");
+        }
+        pointNew.setCreateUid(uid);
         return pointNewService.saveAdminPointNew(pointNew);
     }
 
@@ -65,8 +67,9 @@ public class AdminJsonPointNewController {
                        @RequestParam(value = "status",required = false) Integer status,
                        @RequestParam(value = "customerId",required = false) Long customerId,
                        @RequestParam(value = "startTime",required = false) Long startTime,
-                       @RequestParam(value = "endTime",required = false) Long endTime){
-        List<PointNew> pointNews = pointNewService.queryAllByLimit(offset, limit, name,cid,status,customerId,startTime,endTime);
+                       @RequestParam(value = "endTime",required = false) Long endTime,
+                       @RequestParam(value = "createUid",required = false) Long createUid){
+        List<PointNew> pointNews = pointNewService.queryAllByLimit(offset, limit, name,cid,status,customerId,startTime,endTime,createUid);
 
         if (Objects.nonNull(pointNews)){
             pointNews.forEach(item -> {
@@ -82,11 +85,18 @@ public class AdminJsonPointNewController {
                         item.setCustomerName(byId.getName());
                     }
                 }
+
+                if (Objects.nonNull(item.getCreateUid())){
+                    User userById = userService.getUserById(item.getCreateUid());
+                    if (Objects.nonNull(userById)){
+                        item.setUserName(userById.getUserName());
+                    }
+                }
             });
         }
 
 
-        Integer count =  pointNewService.countPoint(name,cid,status,customerId,startTime,endTime);
+        Integer count =  pointNewService.countPoint(name,cid,status,customerId,startTime,endTime,createUid);
 
 
         HashMap<String, Object> map = new HashMap<>();

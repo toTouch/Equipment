@@ -8,7 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @program: XILIULOU
@@ -31,9 +34,25 @@ public class AdminJsonDeliverController {
     }
 
     @PostMapping("admin/deliver")
-    public R insert(@RequestBody Deliver deliver) {
+    public R insert(@RequestBody Deliver deliver, HttpServletRequest request) {
+        Long uid = (Long) request.getAttribute("uid");
+        if (Objects.isNull(uid)){
+            return R.fail("用户为空");
+        }
+        deliver.setCreateUid(uid);
         deliver.setCreateTime(System.currentTimeMillis());
         return R.ok(deliverService.save(deliver));
+    }
+
+    @PutMapping("/admin/deliver/update/status")
+    public R updateStatusFromBatch(@RequestParam("ids") List<Long> ids,
+                                   @RequestParam("status") Integer status){
+        if (ids.isEmpty()){
+            return R.fail("id不能为空");
+        }
+
+        return deliverService.updateStatusFromBatch(ids,status);
+
     }
 
     @PutMapping("admin/deliver")

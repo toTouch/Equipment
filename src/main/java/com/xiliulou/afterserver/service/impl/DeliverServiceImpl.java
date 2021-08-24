@@ -8,13 +8,18 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.Deliver;
+import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.DeliverMapper;
 import com.xiliulou.afterserver.service.DeliverService;
+import com.xiliulou.afterserver.service.UserService;
 import com.xiliulou.afterserver.util.PageUtil;
+import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.vo.DeliverExcelVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -24,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @program: XILIULOU
@@ -35,13 +41,30 @@ import java.util.List;
 @Slf4j
 public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> implements DeliverService {
 
+    @Autowired
+    private UserService userService;
 
     @Override
     public IPage getPage(Long offset, Long size, Deliver deliver) {
 
         Page page = PageUtil.getPage(offset, size);
+        Page selectPage = baseMapper.selectPage(page, Wrappers.lambdaQuery(deliver).orderByDesc(Deliver::getCreateTime));
+        List<Deliver> list = (List<Deliver>) selectPage.getRecords();
+        if (list.isEmpty()){
+            return selectPage;
+        }
 
-        return baseMapper.selectPage(page, Wrappers.lambdaQuery(deliver).orderByDesc(Deliver::getCreateTime));
+        list.forEach(records -> {
+            if (Objects.nonNull(records.getCreateUid())){
+                User userById = userService.getUserById(records.getCreateUid());
+                if (Objects.nonNull(userById)){
+                    records.setUserName(userById.getUserName());
+                }
+               records.setUserName(userById.getUserName());
+            }
+        });
+
+        return selectPage.setRecords(list);
     }
 
     //导出excel
@@ -79,6 +102,16 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             log.error("导出报表失败！", e);
         }
         throw new CustomBusinessException("导出报表失败！请联系客服！");
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public R updateStatusFromBatch(List<Long> ids, Integer status) {
+        int row = this.baseMapper.updateStatusFromBatch(ids,status);
+        if(row == 0){
+            return R.fail("未修改数据");
+        }
+        return R.ok();
     }
 
     private String getExpressNo(Integer status) {

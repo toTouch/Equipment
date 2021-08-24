@@ -35,7 +35,8 @@ public interface PointNewMapper extends BaseMapper<PointNew> {
                                    @Param("status") Integer status,
                                    @Param("customerId") Long customerId,
                                    @Param("startTime") Long startTime,
-                                   @Param("endTime") Long endTime);
+                                   @Param("endTime") Long endTime,
+                                   @Param("createUid") Long createUid);
 
 
     /**
@@ -75,5 +76,6 @@ public interface PointNewMapper extends BaseMapper<PointNew> {
                        @Param("status") Integer status,
                        @Param("customerId") Long customerId,
                        @Param("startTime") Long startTime,
-                       @Param("endTime") Long endTime);
+                       @Param("endTime") Long endTime,
+                       @Param("createUid") Long createUid);
 }
