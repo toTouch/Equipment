@@ -6,11 +6,13 @@ import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.service.UserService;
 import com.xiliulou.afterserver.util.MinioUtil;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.password.PasswordUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 /**
  * @program: XILIULOU
@@ -26,7 +28,9 @@ public class AdminJsonUserController extends BaseController {
 
     @PostMapping("admin/register")
     public R register(@RequestBody User user) {
-
+        if (Objects.nonNull(user.getPassWord())){
+            user.setPassWord(PasswordUtils.encode(user.getPassWord()));
+        }
         return super.returnPairResult(userService.register(user));
     }
 
