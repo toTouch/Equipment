@@ -45,7 +45,7 @@ public class AdminJsonDeliverController {
     }
 
     @PutMapping("/admin/deliver/update/status")
-    public R updateStatusFromBatch(@RequestParam("ids") List<Long> ids,
+    public R updateStatusFromBatch(List<Long> ids,
                                    @RequestParam("status") Integer status){
         if (ids.isEmpty()){
             return R.fail("id不能为空");
