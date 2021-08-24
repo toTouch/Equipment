@@ -82,7 +82,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         Page page = PageUtil.getPage(offset, size);
         page = baseMapper.getPage(page, workOrder);
 
-        List<WorkOrder> list = (List<WorkOrder>)page.getRecords();
+        List<WorkOrderVo> list = (List<WorkOrderVo>)page.getRecords();
         if (list.isEmpty()){
             return page;
         }
