@@ -67,4 +67,9 @@ public class AdminJsonBatchController {
 
         return R.ok(stringObjectHashMap);
     }
+
+    @DeleteMapping("/admin/batch/{id}")
+    public R delOne(@PathVariable("id") Long id){
+        return R.ok(batchService.deleteById(id));
+    }
 }

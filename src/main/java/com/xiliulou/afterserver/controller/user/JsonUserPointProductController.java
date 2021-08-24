@@ -94,6 +94,12 @@ public class JsonUserPointProductController {
         return R.ok(pointNewService.putAdminPointNew(pointNew));
     }
 
-
+    /**
+     * 删除文件
+     */
+    @DeleteMapping("/user/file/{id}")
+    public R delFile(@PathVariable("id") Long id){
+        return R.ok(fileService.removeById(id));
+    }
 
 }

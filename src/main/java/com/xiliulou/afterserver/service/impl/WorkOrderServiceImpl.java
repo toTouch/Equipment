@@ -82,6 +82,20 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         Page page = PageUtil.getPage(offset, size);
         page = baseMapper.getPage(page, workOrder);
 
+        List<WorkOrder> list = (List<WorkOrder>)page.getRecords();
+        if (list.isEmpty()){
+            return page;
+        }
+
+        list.forEach(item -> {
+            if (Objects.nonNull(item.getCreaterId())){
+                User userById = userService.getUserById(item.getCreaterId());
+                if (Objects.nonNull(userById)){
+                    item.setUserName(userById.getUserName());
+                }
+            }
+        });
+        page.setRecords(list);
         return page;
     }
 

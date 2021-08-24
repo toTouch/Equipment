@@ -85,5 +85,16 @@ public class AdminJsonProductNewController {
         return productNewService.getProductFile(id);
     }
 
+    @PutMapping("/admin/productNew/update/status")
+    public R updateStatusFromBatch(@RequestParam("ids") List<Long> ids,
+                          @RequestParam("status") Integer status){
+        if (ids.isEmpty()){
+            return R.fail("id不能为空");
+        }
+
+        return productNewService.updateStatusFromBatch(ids,status);
+
+    }
+
 
 }

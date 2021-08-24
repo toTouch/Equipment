@@ -193,6 +193,16 @@ public class ProductNewServiceImpl implements ProductNewService {
         return R.ok(fileList);
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public R updateStatusFromBatch(List<Long> ids, Integer status) {
+        int row = this.productNewMapper.updateStatusFromBatch(ids,status);
+        if(row == 0){
+            return R.fail("未修改数据");
+        }
+        return R.ok();
+    }
+
     public static void main(String[] args) {
         List<Integer> list = new ArrayList() {
             {

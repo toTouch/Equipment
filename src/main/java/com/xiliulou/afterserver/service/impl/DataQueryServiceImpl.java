@@ -76,7 +76,9 @@ public class DataQueryServiceImpl implements DataQueryService {
             }
         });
 
-        avg = installWorkOrderByPointList.stream().mapToDouble(item -> item.getSumCount()).average().getAsDouble();
+        if (!installWorkOrderByPointList.isEmpty()) {
+            avg = installWorkOrderByPointList.stream().mapToDouble(item -> item.getSumCount()).average().getAsDouble();
+        }
 
         Map<Long, List<AfterOrderVo>> collect = installWorkOrderByPointList
                 .stream()
