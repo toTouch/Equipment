@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.controller.admin;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xiliulou.afterserver.config.MinioConfig;
 import com.xiliulou.afterserver.controller.BaseController;
 import com.xiliulou.afterserver.entity.User;
@@ -8,6 +9,7 @@ import com.xiliulou.afterserver.util.MinioUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.password.PasswordUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,6 +56,12 @@ public class AdminJsonUserController extends BaseController {
        if (uid > 3){
            return R.fail("没有权限");
        }
+
+       User userDb = this.userService.getBaseMapper().selectOne(Wrappers.<User>lambdaQuery().eq(User::getUserName, user.getUserName()));
+       if (Objects.nonNull(userDb)) {
+           return R.fail("用户名已存在");
+       }
+
       return R.ok(userService.updateById(user));
    }
 
