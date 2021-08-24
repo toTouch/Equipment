@@ -69,11 +69,27 @@ public class AdminJsonFileController {
     }
 
 
+    /**
+     * 产品批次文件
+     * @param file
+     * @return
+     */
     @PostMapping("/admin/product/file")
     public R adminPrductFile(@RequestBody ProductFile file){
-        log.error("productFile:{}",file.toString());
         productFileMapper.insert(file);
         return R.ok(file);
+    }
+
+    /**
+     * 删除产品批次文件
+     */
+    @DeleteMapping("/admin/product/{id}")
+    public R delProductFile(@PathVariable("id") Long id){
+        int i = productFileMapper.deleteById(id);
+        if (i == 0){
+            return R.fail("数据库错误，删除失败");
+        }
+        return R.ok();
     }
 
 }
