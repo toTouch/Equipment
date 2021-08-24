@@ -36,7 +36,7 @@ public class AdminJsonUserController extends BaseController {
     }
 
     @GetMapping("admin/user/page")
-    public R page(@RequestParam("offset") Long offset, @RequestParam("size") Long size, String username, HttpServletRequest request) {
+    public R page(@RequestParam("offset") Long offset, @RequestParam("size") Long size, @RequestParam(value = "username",required = false) String username, HttpServletRequest request) {
         Long uid = (Long) request.getAttribute("uid");
         if (uid != 1){
             return R.fail("没有权限");
@@ -51,5 +51,10 @@ public class AdminJsonUserController extends BaseController {
            return R.fail("没有权限");
        }
       return R.ok(userService.updateById(user));
+   }
+
+   @DeleteMapping("/admin/user/{uid}")
+    public R delUser(@PathVariable("uid") Long uid){
+        return R.ok(userService.removeById(uid));
    }
 }
