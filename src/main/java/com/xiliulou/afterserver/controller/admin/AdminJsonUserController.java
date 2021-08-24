@@ -57,10 +57,10 @@ public class AdminJsonUserController extends BaseController {
            return R.fail("没有权限");
        }
 
-       User userDb = this.userService.getBaseMapper().selectOne(Wrappers.<User>lambdaQuery().eq(User::getUserName, user.getUserName()));
-       if (Objects.nonNull(userDb)) {
-           return R.fail("用户名已存在");
-       }
+//       User userDb = this.userService.getBaseMapper().selectOne(Wrappers.<User>lambdaQuery().eq(User::getUserName, user.getUserName()));
+//       if (Objects.nonNull(userDb)) {
+//           return R.fail("用户名已存在");
+//       }
 
       return R.ok(userService.updateById(user));
    }
