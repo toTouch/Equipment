@@ -23,7 +23,7 @@
 <mapper namespace="com.xiliulou.afterserver.mapper.DeliverMapper">
     <update id="updateStatusFromBatch">
         update deliver
-        set  status = #{status}
+        set  state = #{status}
         where id in
         <foreach collection="ids" item="c" separator="," open="(" close=")">
             #{c}
