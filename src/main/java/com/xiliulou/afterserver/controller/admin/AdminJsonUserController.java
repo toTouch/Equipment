@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @program: XILIULOU
  * @description:
@@ -34,10 +36,20 @@ public class AdminJsonUserController extends BaseController {
     }
 
     @GetMapping("admin/user/page")
-    public R page(@RequestParam("offset") Long offset, @RequestParam("size") Long size, String username) {
-
+    public R page(@RequestParam("offset") Long offset, @RequestParam("size") Long size, String username, HttpServletRequest request) {
+        Long uid = (Long) request.getAttribute("uid");
+        if (uid != 1){
+            return R.fail("没有权限");
+        }
         return userService.list(offset,size,username);
 
     }
-
+   @PutMapping("/admin/user")
+    public R updateUser(@RequestBody User user,HttpServletRequest request){
+       Long uid = (Long) request.getAttribute("uid");
+       if (uid != 1){
+           return R.fail("没有权限");
+       }
+      return R.ok(userService.updateById(user));
+   }
 }

@@ -7,6 +7,7 @@ import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.service.BatchService;
 import com.xiliulou.afterserver.util.R;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -30,6 +31,7 @@ public class AdminJsonBatchController {
     @Autowired
     private ProductFileMapper productFileMapper;
 
+
     /**
      * 通过主键查询单条数据
      *
@@ -45,8 +47,17 @@ public class AdminJsonBatchController {
      * 保存
      */
     @PostMapping("/admin/batch")
+    @Transactional(rollbackFor = Exception.class)
     public R saveBatch(@RequestBody Batch batch){
-        return R.ok(this.batchService.insert(batch));
+        Batch insert = this.batchService.insert(batch);
+
+        ProductFile productFile = new ProductFile();
+        productFile.setProductId(insert.getId());
+        productFile.setFileStr(batch.getFileStr());
+        productFile.setProductFileName(batch.getProductFileName());
+        productFileMapper.insert(productFile);
+
+        return R.ok();
     }
 
     /**
