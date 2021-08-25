@@ -38,7 +38,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public Pair<Boolean, Object> register(User user) {
-        User userDb = baseMapper.selectOne(Wrappers.<User>lambdaQuery().eq(User::getUserName, user.getUserName()));
+        User userDb = baseMapper.selectOne(Wrappers.<User>lambdaQuery().like(User::getUserName, user.getUserName()));
         if (Objects.nonNull(userDb)) {
             return Pair.of(false, "用户名已存在!");
         }

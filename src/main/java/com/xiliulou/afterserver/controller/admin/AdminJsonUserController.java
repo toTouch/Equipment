@@ -30,9 +30,6 @@ public class AdminJsonUserController extends BaseController {
 
     @PostMapping("admin/register")
     public R register(@RequestBody User user) {
-        if (Objects.nonNull(user.getPassWord())){
-            user.setPassWord(PasswordUtils.encode(user.getPassWord()));
-        }
         return super.returnPairResult(userService.register(user));
     }
 
