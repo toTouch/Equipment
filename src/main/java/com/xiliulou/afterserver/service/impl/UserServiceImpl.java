@@ -38,7 +38,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public Pair<Boolean, Object> register(User user) {
-        User userDb = baseMapper.selectOne(Wrappers.<User>lambdaQuery().like(User::getUserName, user.getUserName()));
+        User userDb = baseMapper.selectOne(Wrappers.<User>lambdaQuery().eq(User::getUserName, user.getUserName()));
         if (Objects.nonNull(userDb)) {
             return Pair.of(false, "用户名已存在!");
         }
@@ -79,7 +79,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public R list(Long offset, Long size, String username) {
         Page page = PageUtil.getPage(offset, size);
-        Page selectPage = baseMapper.selectPage(page,Wrappers.<User>lambdaQuery().eq(Objects.nonNull(username),User::getUserName, username));
+        Page selectPage = baseMapper.selectPage(page,Wrappers.<User>lambdaQuery().like(Objects.nonNull(username),User::getUserName, username));
 
         return R.ok(selectPage);
     }
