@@ -59,11 +59,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
 
     @Override
     public void downLoadFile(String fileName, HttpServletResponse response) {
-
-        int separator = fileName.lastIndexOf(StrUtil.DASHED);
-        String bucketName = fileName.substring(0, separator);
-
-        try (InputStream inputStream = minioUtil.getObject(bucketName, fileName)) {
+        try (InputStream inputStream = minioUtil.getObject(FileConstant.BUCKET_NAME, fileName)) {
             response.setContentType("application/octet-stream; charset=UTF-8");
             IoUtil.copy(inputStream, response.getOutputStream());
         } catch (Exception e) {
