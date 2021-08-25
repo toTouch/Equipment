@@ -47,6 +47,12 @@ public class AdminJsonUserController extends BaseController {
         return userService.list(offset,size,username);
 
     }
+
+    @GetMapping("admin/user/page/pull")
+    public R pagePull(@RequestParam("offset") Long offset, @RequestParam("size") Long size, @RequestParam(value = "username",required = false) String username, HttpServletRequest request) {
+        return userService.list(offset,size,username);
+
+    }
    @PutMapping("/admin/user")
     public R updateUser(@RequestBody User user,HttpServletRequest request){
        Long uid = (Long) request.getAttribute("uid");
