@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.controller.admin;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.enums.CellDataTypeEnum;
+import com.alibaba.excel.exception.ExcelAnalysisException;
 import com.alibaba.excel.exception.ExcelDataConvertException;
 import com.alibaba.excel.metadata.CellData;
 import com.alibaba.excel.read.metadata.ReadSheet;
@@ -123,7 +124,7 @@ public class AdminJsonPointNewController {
         ExcelReader excelReader = null;
         try {
             excelReader = EasyExcel.read(file.getInputStream(), PointInfo.class,new PointListener(pointNewService,customerService,cityService)).build();
-        } catch (IOException e) {
+        } catch (ExcelAnalysisException | IOException e) {
             e.printStackTrace();
             if (e.getCause() instanceof ExcelDataConvertException) {
                 ExcelDataConvertException excelDataConvertException = (ExcelDataConvertException) e.getCause();
