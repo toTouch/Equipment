@@ -123,8 +123,12 @@ public class AdminJsonPointNewController {
 
         ExcelReader excelReader = null;
         try {
-            excelReader = EasyExcel.read(file.getInputStream(), PointInfo.class,new PointListener(pointNewService,customerService,cityService)).build();
-        } catch (ExcelAnalysisException | IOException e) {
+            try {
+                excelReader = EasyExcel.read(file.getInputStream(), PointInfo.class,new PointListener(pointNewService,customerService,cityService)).build();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (ExcelAnalysisException e) {
             e.printStackTrace();
             if (e.getCause() instanceof ExcelDataConvertException) {
                 ExcelDataConvertException excelDataConvertException = (ExcelDataConvertException) e.getCause();
