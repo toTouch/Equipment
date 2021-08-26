@@ -8,16 +8,19 @@ import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.export.PointInfo;
 import com.xiliulou.afterserver.listener.PointListener;
 import com.xiliulou.afterserver.service.*;
+import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.vo.PointExcelVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.net.URLEncoder;
+import java.util.*;
 
 /**
  * @author Hardy
@@ -118,6 +121,97 @@ public class AdminJsonPointNewController {
         excelReader.finish();
         return R.ok();
     }
+
+    @GetMapping("/admin/pointNew/exportExcel")
+    public void pointExportExcel(@RequestParam(value = "name",required = false) String name,
+                              @RequestParam(value = "cid",required = false) Integer cid,
+                              @RequestParam(value = "status",required = false) Integer status,
+                              @RequestParam(value = "customerId",required = false) Long customerId,
+                              @RequestParam(value = "startTime",required = false) Long startTime,
+                              @RequestParam(value = "endTime",required = false) Long endTime,
+                              @RequestParam(value = "createUid",required = false) Long createUid,
+                              HttpServletResponse response){
+        List<PointNew> pointNews = pointNewService.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid);
+
+
+        if (Objects.isNull(startTime) || Objects.isNull(endTime)){
+            throw new NullPointerException("请选择开始时间和结束时间");
+        }
+
+        if (pointNews.isEmpty()){
+            return;
+        }
+
+        ArrayList<PointExcelVo> pointExcelVos = new ArrayList<>();
+
+        pointNews.forEach(item -> {
+            PointExcelVo pointExcelVo = new PointExcelVo();
+            pointExcelVo.setName(item.getName());
+            pointExcelVo.setAddress(item.getAddress());
+            pointExcelVo.setCameraCount(item.getCameraCount());
+            pointExcelVo.setCanopyCount(item.getCanopyCount());
+            pointExcelVo.setSnNo(item.getSnNo());
+            pointExcelVo.setCardNumber(item.getCardNumber());
+
+            // 1:室外 2:半室外3：室内
+            if (Objects.isNull(item.getInstallType())){
+                pointExcelVo.setInstallType("");
+            }else if (Objects.equals(item.getInstallType(),1)){
+                pointExcelVo.setInstallType("室外");
+            }else if (Objects.equals(item.getInstallType(),2)){
+                pointExcelVo.setInstallType("半室外");
+            }else if (Objects.equals(item.getInstallType(),3)){
+                pointExcelVo.setInstallType("室内");
+            }
+
+            // 状态 1,移机,2运营中,3:拆机
+            if (Objects.isNull(item.getStatus())){
+                pointExcelVo.setStatus("");
+            }else if (Objects.equals(item.getStatus(),1)){
+                pointExcelVo.setStatus("移机");
+            }else if (Objects.equals(item.getStatus(),2)){
+                pointExcelVo.setStatus("运营中");
+            }else if (Objects.equals(item.getStatus(),3)){
+                pointExcelVo.setStatus("拆机");
+            }
+
+            if (item.getCreateTime() != null) {
+                pointExcelVo.setCreateTime(DateUtils.stampToDate(item.getCreateTime().toString()));
+            }
+
+            if (Objects.nonNull(item.getCityId())){
+                City byId = cityService.getById(item.getCityId());
+                pointExcelVo.setCityName(byId.getName());
+            }
+
+            if (Objects.nonNull(item.getCustomerId())){
+                Customer byId = customerService.getById(item.getCustomerId());
+                if (Objects.nonNull(byId)){
+                    pointExcelVo.setCustomerName(byId.getName());
+                }
+            }
+
+            pointExcelVos.add(pointExcelVo);
+
+        });
+
+        String fileName = "点位.xlsx";
+        try {
+            ServletOutputStream outputStream = response.getOutputStream();
+            // 告诉浏览器用什么软件可以打开此文件
+            response.setHeader("content-Type", "application/vnd.ms-excel");
+            // 下载文件的默认名称
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
+            EasyExcel.write(outputStream, PointExcelVo.class).sheet("sheet").doWrite(pointExcelVos);
+            return;
+        } catch (IOException e) {
+            throw new NullPointerException("导出报表失败！请联系管理员处理！");
+        }
+
+
+    }
+
+
 
 
     @GetMapping("/admin/pointNew/info/{pid}")
