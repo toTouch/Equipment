@@ -280,6 +280,6 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
     @Override
     public List<PointNew> queryAllByLimitExcel(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime, Long createUid) {
-        return this.pointNewMapper.queryAllByLimitExcel(name,cid,status,createUid,startTime,endTime);
+        return this.pointNewMapper.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid);
     }
 }
