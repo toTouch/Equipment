@@ -96,9 +96,9 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
                     e.printStackTrace();
                 }
                 point.setCreateTime(l);
+            }else {
+                point.setCreateTime(System.currentTimeMillis());
             }
-
-            point.setCreateTime(System.currentTimeMillis());
             point.setDelFlag(PointNew.DEL_NORMAL);
             pointList.add(point);
         });
