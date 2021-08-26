@@ -78,4 +78,7 @@ public interface PointNewService extends IService<PointNew> {
     Integer countPoint(String name, Integer cid, Integer status,
                        Long customerId, Long startTime, Long endTime, Long createUid);
 
+    List<PointNew> queryAllByLimitExcel(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime, Long createUid);
+
+
 }
