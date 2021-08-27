@@ -161,7 +161,8 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             pointProductBindService.insert(pointProductBind);
 
 
-            productNew.setExpirationStartTime(queryById.getCreateTime());
+            /** 产品质保时间不取点位时间了
+             productNew.setExpirationStartTime(queryById.getCreateTime());
 
             String date = DateUtils.stampToDate(queryById.getCreateTime().toString());
             String[] split = date.split("-");
@@ -181,7 +182,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             if (update == 0){
                 log.error("WX ERROR!   update ProductNew error data:{}",productNew.toString());
                 throw new NullPointerException("数据库异常，请联系管理员");
-            }
+            }*/
 
         });
 
