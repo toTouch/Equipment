@@ -72,6 +72,14 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
         this.list.forEach(item -> {
             PointNew point = new PointNew();
             BeanUtils.copyProperties(item, point);
+            if (Objects.nonNull(item.getName())){
+                LambdaQueryWrapper<PointNew> wrapper = new LambdaQueryWrapper<PointNew>().eq(PointNew::getDelFlag, 0).eq(PointNew::getName, item.getName());
+                PointNew pointNew = pointService.getBaseMapper().selectOne(wrapper);
+                if (Objects.nonNull(pointNew)){
+                    return;
+                }
+            }
+
             if (item.getCustomerId() != null) {
                 LambdaQueryWrapper<Customer> like = new LambdaQueryWrapper<Customer>().like(Customer::getName, item.getCustomerId());
                 Customer customer = customerService.getOne(like);
