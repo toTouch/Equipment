@@ -81,8 +81,8 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
      */
     @Override
     public List<PointNew> queryAllByLimit(int offset, int limit, String name,Integer cid,
-                                          Integer status, Long customerId,Long startTime,Long endTime,Long createUid) {
-        return this.pointNewMapper.queryAllByLimit(offset, limit, name,cid,status,customerId,startTime,endTime,createUid);
+                                          Integer status, Long customerId,Long startTime,Long endTime,Long createUid,String snNo) {
+        return this.pointNewMapper.queryAllByLimit(offset, limit, name,cid,status,customerId,startTime,endTime,createUid,snNo);
     }
 
     /**
@@ -274,12 +274,12 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
     @Override
     public Integer countPoint(String name, Integer cid, Integer status, Long customerId,
-                              Long startTime, Long endTime, Long createUid) {
-        return this.pointNewMapper.countPoint(name,cid,status,customerId,startTime,endTime,createUid);
+                              Long startTime, Long endTime, Long createUid,String snNo) {
+        return this.pointNewMapper.countPoint(name,cid,status,customerId,startTime,endTime,createUid,snNo);
     }
 
     @Override
-    public List<PointNew> queryAllByLimitExcel(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime, Long createUid) {
-        return this.pointNewMapper.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid);
+    public List<PointNew> queryAllByLimitExcel(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime, Long createUid,String snNo) {
+        return this.pointNewMapper.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid,snNo);
     }
 }

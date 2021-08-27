@@ -77,8 +77,9 @@ public class AdminJsonPointNewController {
                        @RequestParam(value = "customerId",required = false) Long customerId,
                        @RequestParam(value = "startTime",required = false) Long startTime,
                        @RequestParam(value = "endTime",required = false) Long endTime,
-                       @RequestParam(value = "createUid",required = false) Long createUid){
-        List<PointNew> pointNews = pointNewService.queryAllByLimit(offset, limit, name,cid,status,customerId,startTime,endTime,createUid);
+                       @RequestParam(value = "createUid",required = false) Long createUid,
+                       @RequestParam(value = "snNo",required = false) String snNo){
+        List<PointNew> pointNews = pointNewService.queryAllByLimit(offset, limit, name,cid,status,customerId,startTime,endTime,createUid,snNo);
 
         if (Objects.nonNull(pointNews)){
             pointNews.forEach(item -> {
@@ -105,7 +106,7 @@ public class AdminJsonPointNewController {
         }
 
 
-        Integer count =  pointNewService.countPoint(name,cid,status,customerId,startTime,endTime,createUid);
+        Integer count =  pointNewService.countPoint(name,cid,status,customerId,startTime,endTime,createUid,snNo);
 
 
         HashMap<String, Object> map = new HashMap<>();
@@ -161,8 +162,9 @@ public class AdminJsonPointNewController {
                               @RequestParam(value = "startTime",required = false) Long startTime,
                               @RequestParam(value = "endTime",required = false) Long endTime,
                               @RequestParam(value = "createUid",required = false) Long createUid,
+                              @RequestParam(value = "snNo",required = false)  String snNo,
                               HttpServletResponse response){
-        List<PointNew> pointNews = pointNewService.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid);
+        List<PointNew> pointNews = pointNewService.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid,snNo);
 
 
         if (Objects.isNull(startTime) || Objects.isNull(endTime)){

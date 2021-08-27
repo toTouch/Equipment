@@ -49,6 +49,9 @@
             <if test="cid != null">
                 and city_id = #{cid}
             </if>
+            <if test="snNo != null">
+                and sn_no = #{snNo}
+            </if>
             <if test="startTime != null">
                 and create_time &gt;= #{startTime}
             </if>
@@ -128,6 +131,9 @@
             <if test="cid != null">
                 and city_id = #{cid}
             </if>
+            <if test="snNo != null">
+                and sn_no = #{snNo}
+            </if>
             <if test="startTime != null">
                 and create_time &gt;= #{startTime}
             </if>
@@ -159,6 +165,9 @@
             </if>
             <if test="cid != null">
                 and city_id = #{cid}
+            </if>
+            <if test="snNo != null">
+                and sn_no = #{snNo}
             </if>
             <if test="startTime != null">
                 and create_time &gt;= #{startTime}
