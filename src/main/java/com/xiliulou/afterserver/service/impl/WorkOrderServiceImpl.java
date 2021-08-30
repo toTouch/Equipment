@@ -97,6 +97,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     item.setUserName(userById.getUserName());
                 }
             }
+
+            if (Objects.nonNull(item.getPointId())){
+                PointNew pointNew = pointNewService.queryByIdFromDB(item.getPointId());
+                if (Objects.nonNull(pointNew)){
+                    item.setPointName(pointNew.getName());
+                }
+            }
         });
         page.setRecords(list);
         return page;
