@@ -48,7 +48,8 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     public IPage getPage(Long offset, Long size, Deliver deliver) {
 
         Page page = PageUtil.getPage(offset, size);
-        Page selectPage = baseMapper.selectPage(page, Wrappers.lambdaQuery(deliver).orderByDesc(Deliver::getCreateTime));
+        Page selectPage = baseMapper.selectPage(page, Wrappers.lambdaQuery(deliver).orderByDesc(Deliver::getCreateTime)
+                .like(Deliver::getCity,deliver.getCity()).like(Deliver::getDestination,deliver.getDestination()));
         List<Deliver> list = (List<Deliver>) selectPage.getRecords();
         if (list.isEmpty()){
             return selectPage;
