@@ -331,8 +331,15 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if (Objects.nonNull(point)){
                 workOrderExcelVo.setPointName(point.getName());
             }
+
+            if (Objects.nonNull(o.getWorkOrderReasonId())){
+                WorkOrderReason workOrderReason = workOrderReasonService.getById(o.getWorkOrderReasonId());
+                if (Objects.nonNull(workOrderReason)){
+                    workOrderExcelVo.setWorkOrderReasonName(workOrderReason.getName());
+                }
+            }
+
             workOrderExcelVo.setRemarks(o.getInfo());
-            workOrderExcelVo.setWorkOrderReasonName(o.getThirdReason());
             workOrderExcelVo.setThirdCompanyPay(o.getThirdCompanyPay());
 //            workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
@@ -367,8 +374,15 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if (Objects.nonNull(point)){
                 workOrderExcelVo2.setPointName(point.getName());
             }
+
+            if (Objects.nonNull(o.getWorkOrderReasonId())){
+                WorkOrderReason workOrderReason = workOrderReasonService.getById(o.getWorkOrderReasonId());
+                if (Objects.nonNull(workOrderReason)){
+                    workOrderExcelVo2.setWorkOrderReasonName(workOrderReason.getName());
+                }
+            }
+
             workOrderExcelVo2.setRemarks(o.getInfo());
-            workOrderExcelVo2.setWorkOrderReasonName(o.getThirdReason());
             workOrderExcelVo2.setThirdCompanyPay(o.getThirdCompanyPay());
 //            workOrderExcelVo2.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo2.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
@@ -398,6 +412,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             WorkOrderType workOrderType = workOrderTypeService.getById(o.getType());
             if (Objects.nonNull(workOrderType)){
                 workOrderExcelVo3.setWorkOrderType(workOrderType.getType());
+            }
+
+
+            if (Objects.nonNull(o.getWorkOrderReasonId())){
+                WorkOrderReason workOrderReason = workOrderReasonService.getById(o.getWorkOrderReasonId());
+                if (Objects.nonNull(workOrderReason)){
+                    workOrderExcelVo3.setWorkOrderReasonName(workOrderReason.getName());
+                }
             }
 
             Point point = pointService.getById(o.getPointId());
