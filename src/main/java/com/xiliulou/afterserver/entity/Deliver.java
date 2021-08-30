@@ -52,6 +52,13 @@ public class Deliver {
      */
     private Long createUid;
 
+    private Long thirdCompanyId;
+    private Integer thirdCompanyType;
+    private BigDecimal thirdCompanyPay;
+    private String thirdReason;
+
     @TableField(exist = false)
     private String userName;
+    @TableField(exist = false)
+    private String thirdCompanyName;
 }

@@ -8,12 +8,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xiliulou.afterserver.entity.Deliver;
-import com.xiliulou.afterserver.entity.User;
+import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.DeliverMapper;
-import com.xiliulou.afterserver.service.DeliverService;
-import com.xiliulou.afterserver.service.UserService;
+import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.vo.DeliverExcelVo;
@@ -44,6 +42,13 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private CustomerService customerService;
+    @Autowired
+    private ServerService serverService;
+    @Autowired
+    private SupplierService supplierService;
+
 
     @Override
     public IPage getPage(Long offset, Long size, Deliver deliver) {
@@ -70,6 +75,31 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                 }
                records.setUserName(userById.getUserName());
             }
+
+//            第三方类型 1：客户 2：供应商 3:服务商';
+            if (Objects.nonNull(records.getThirdCompanyType())){
+                String name = "";
+                if (records.getThirdCompanyType() == 1){
+                    Customer byId = customerService.getById(records.getThirdCompanyId());
+                    if (Objects.nonNull(byId)){
+                        name = byId.getName();
+                    }
+                }
+                if (records.getThirdCompanyType() == 2){
+                    Supplier byId = supplierService.getById(records.getThirdCompanyId());
+                    if (Objects.nonNull(byId)){
+                        name = byId.getName();
+                    }
+                }
+                if (records.getThirdCompanyType() == 3){
+                    Server byId = serverService.getById(records.getThirdCompanyId());
+                    if (Objects.nonNull(byId)){
+                        name = byId.getName();
+                    }
+                }
+                records.setThirdCompanyName(name);
+            }
+
         });
 
         return selectPage.setRecords(list);
