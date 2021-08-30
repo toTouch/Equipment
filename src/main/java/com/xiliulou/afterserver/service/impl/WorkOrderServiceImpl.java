@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -59,7 +60,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     UserService userService;
     @Autowired
     FileService fileService;
-    @Autowired
+    @Resource
     ProductSerialNumberMapper productSerialNumberMapper;
     @Autowired
     PointService pointService;
@@ -71,6 +72,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     WorkOrderTypeService workOrderTypeService;
     @Autowired
     WorkOrderReasonService workOrderReasonService;
+    @Autowired
+    PointNewService pointNewService;
 
 
 
@@ -512,7 +515,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     @Transactional(rollbackFor = Exception.class)
     public R saveWorkerOrder(WorkOrderQuery workOrder) {
-        Point point = pointService.getById(workOrder.getPointId());
+        PointNew point = pointNewService.getById(workOrder.getPointId());
         if (Objects.isNull(point)) {
             log.error("WorkOrder Error pointId:{}", workOrder.getPointId());
             return R.fail("未查询到相关点位");
@@ -538,14 +541,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         workOrder.setOrderNo(UUID.randomUUID().toString());
-        if (workOrder.getType().contains(WorkOrder.TYPE_INSTALL.toString())) {
-            point.setStatus(Point.STATUS_TRANSFER);
-            if (!pointService.updateById(point)) {
-                log.error("WorkOrder Error  update point status error data:{}", point.toString());
-                return R.fail("数据库错误");
-            }
-        }
-        saveFile(workOrder);
+//        if (workOrder.getType().contains(WorkOrder.TYPE_INSTALL.toString())) {
+//            point.setStatus(Point.STATUS_TRANSFER);
+//            if (!pointService.updateById(point)) {
+//                log.error("WorkOrder Error  update point status error data:{}", point.toString());
+//                return R.fail("数据库错误");
+//            }
+//        }
+//        saveFile(workOrder);
 
 
         if (workOrder.getThirdCompanyId() != null && workOrder.getThirdCompanyType() != null) {
