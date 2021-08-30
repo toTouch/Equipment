@@ -51,7 +51,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         Page page = PageUtil.getPage(offset, size);
         Page selectPage = baseMapper.selectPage(page,
                 new LambdaQueryWrapper<Deliver>()
-                        .like(Objects.nonNull(deliver.getCreateUid()),Deliver::getCreateUid,deliver.getCreateUid())
+                        .eq(Objects.nonNull(deliver.getCreateUid()),Deliver::getCreateUid,deliver.getCreateUid())
                         .like(Objects.nonNull(deliver.getExpressNo()),Deliver::getExpressNo,deliver.getExpressNo())
                         .like(Objects.nonNull(deliver.getExpressCompany()),Deliver::getExpressCompany,deliver.getExpressCompany())
                         .orderByDesc(Deliver::getCreateTime)
