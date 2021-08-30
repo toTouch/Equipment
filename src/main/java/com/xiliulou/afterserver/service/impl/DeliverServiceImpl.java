@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.excel.EasyExcel;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -48,9 +49,14 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     public IPage getPage(Long offset, Long size, Deliver deliver) {
 
         Page page = PageUtil.getPage(offset, size);
-        Page selectPage = baseMapper.selectPage(page, Wrappers.lambdaQuery(deliver).orderByDesc(Deliver::getCreateTime)
-                .like(Objects.nonNull(deliver.getCity()),Deliver::getCity,deliver.getCity())
-                .like(Objects.nonNull(deliver.getDestination()),Deliver::getDestination,deliver.getDestination()));
+        Page selectPage = baseMapper.selectPage(page,
+                new LambdaQueryWrapper<Deliver>()
+                        .like(Objects.nonNull(deliver.getCreateUid()),Deliver::getCreateUid,deliver.getCreateUid())
+                        .like(Objects.nonNull(deliver.getExpressNo()),Deliver::getExpressNo,deliver.getExpressNo())
+                        .like(Objects.nonNull(deliver.getExpressCompany()),Deliver::getExpressCompany,deliver.getExpressCompany())
+                        .orderByDesc(Deliver::getCreateTime)
+                        .like(Objects.nonNull(deliver.getCity()),Deliver::getCity,deliver.getCity())
+                        .like(Objects.nonNull(deliver.getDestination()),Deliver::getDestination,deliver.getDestination()));
         List<Deliver> list = (List<Deliver>) selectPage.getRecords();
         if (list.isEmpty()){
             return selectPage;
