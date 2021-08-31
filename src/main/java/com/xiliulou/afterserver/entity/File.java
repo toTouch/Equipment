@@ -15,7 +15,7 @@ public class File {
 
     private Long id;
     /**
-     * 1.柜子  2.点位
+     * 1.柜子  2.点位  3.工单
      */
     private Integer type;
     private String fileName;
@@ -48,7 +48,7 @@ public class File {
     public static final Integer FILE_TYPE_AFTER = 3;
 
     public static final Integer TYPE_POINT = 1;
-    public static final Integer TYPE_WORK_ORDER = 2;
+//    public static final Integer TYPE_WORK_ORDER = 2;
 
 
     /**
@@ -56,5 +56,6 @@ public class File {
      */
     public static final Integer TYPE_PRODUCT = 1;
     public static final Integer TYPE_POINTNEW = 2;
+    public static final Integer TYPE_WORK_ORDER = 3;
 
 }
