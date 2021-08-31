@@ -224,9 +224,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         workOrder.setStatus(WorkOrder.STATUS_FINISHED);
         workOrder.setOrderNo(String.valueOf(IdUtil.getSnowflake(1, 1).nextId()));
         baseMapper.insert(workOrder);
-        if (ObjectUtil.isNotEmpty(workOrder.getFileNameList())) {
+        if (ObjectUtil.isNotEmpty(workOrder.getFileList())) {
             List<File> filList = new ArrayList();
-            for (String name : workOrder.getFileNameList()) {
+            for (String name : workOrder.getFileList()) {
                 File file = new File();
                 file.setFileName(name);
                 file.setBindId(workOrder.getId());
@@ -586,8 +586,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("数据库保存出错");
         }
 
-        if (!workOrder.getFileNameList().isEmpty()){
-            workOrder.getFileNameList().forEach(item -> {
+        if (!workOrder.getFileList().isEmpty()){
+            workOrder.getFileList().forEach(item -> {
                 File file = new File();
                 file.setType(File.TYPE_WORK_ORDER);
                 file.setFileName(item);
