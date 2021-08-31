@@ -104,6 +104,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     item.setPointName(pointNew.getName());
                 }
             }
+
+            LambdaQueryWrapper<File> eq = new LambdaQueryWrapper<File>()
+                    .eq(File::getType, File.TYPE_WORK_ORDER)
+                    .eq(File::getFileType, workOrder.getType())
+                    .eq(File::getBindId, item.getId());
+            List<File> fileList = fileService.getBaseMapper().selectList(eq);
+            item.setFileList(fileList);
         });
         page.setRecords(list);
         return page;
@@ -549,37 +556,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             log.error("WorkOrder Error pointId:{}", workOrder.getPointId());
             return R.fail("未查询到相关点位");
         }
-        //如果工单类型包含  派送   则系统生成一个派送工单，自动新增一个发货订单
-        if (workOrder.getType().equals(WorkOrder.TYPE_SEND.toString())
-                || workOrder.getType().equals(WorkOrder.TYPE_SEND_INSERT.toString())) {
-            Deliver deliver = new Deliver();
-            deliver.setCreateTime(System.currentTimeMillis());
-            deliver.setDeliverCost(workOrder.getFee());
-            deliver.setRemark(workOrder.getInfo());
-            Server server = serverService.getById(workOrder.getServerId());
-            if (Objects.nonNull(server)) {
-                deliver.setExpressCompany(server.getName());
-            }
-
-            deliver.setDeliverTime(System.currentTimeMillis());
-            deliver.setQuantity(workOrder.getCount());
-            deliver.setCity(workOrder.getStartAddr());
-            deliver.setDestination(point.getName());
-
-            deliverService.save(deliver);
-        }
 
         workOrder.setOrderNo(UUID.randomUUID().toString());
-//        if (workOrder.getType().contains(WorkOrder.TYPE_INSTALL.toString())) {
-//            point.setStatus(Point.STATUS_TRANSFER);
-//            if (!pointService.updateById(point)) {
-//                log.error("WorkOrder Error  update point status error data:{}", point.toString());
-//                return R.fail("数据库错误");
-//            }
-//        }
-//        saveFile(workOrder);
-
-
         if (workOrder.getThirdCompanyId() != null && workOrder.getThirdCompanyType() != null) {
             if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)){
                 Customer customer = customerService.getById(workOrder.getThirdCompanyId());
@@ -604,43 +582,24 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         int insert = this.baseMapper.insert(workOrder);
-        if (insert > 0) {
-            return R.ok();
+        if (insert == 0) {
+            return R.fail("数据库保存出错");
         }
-        return R.fail("数据库保存出错");
-    }
 
-    private void saveFile(WorkOrderQuery workOrder) {
-        LambdaQueryWrapper<File> eq = new LambdaQueryWrapper<File>()
-                .eq(File::getBindId, workOrder.getPointId())
-                .eq(File::getType, File.TYPE_WORK_ORDER);
-
-        List<File> files = fileService.getBaseMapper().selectList(eq);
-        if (Objects.nonNull(files)) {
-            files.forEach(item -> {
-                fileService.removeById(item.getId());
-            });
-        }
-        //照片类型为
-        if (workOrder.getFileNameList() != null) {
+        if (!workOrder.getFileNameList().isEmpty()){
             workOrder.getFileNameList().forEach(item -> {
                 File file = new File();
-                file.setFileName(item);
                 file.setType(File.TYPE_WORK_ORDER);
-                file.setBindId(workOrder.getPointId());
-
-                if (workOrder.getType().equals(WorkOrder.TYPE_AFTER.toString())) {
-                    file.setFileType(File.FILE_TYPE_AFTER);
-                }
-                if (workOrder.getType().equals(WorkOrder.TYPE_INSTALL.toString())
-                        || workOrder.getType().equals(WorkOrder.TYPE_SEND_INSERT.toString())) {
-                    file.setFileType(File.FILE_TYPE_INSTALL);
-                }
+                file.setFileName(item);
                 file.setCreateTime(System.currentTimeMillis());
+                file.setBindId(workOrder.getId());
+                file.setFileType(Integer.parseInt(workOrder.getType()));
                 fileService.save(file);
             });
         }
+        return R.ok();
     }
+
 
     @Override
     public R updateWorkOrderStatus(WorkerOrderUpdateStatusQuery query) {
@@ -659,7 +618,28 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     @Transactional(rollbackFor = Exception.class)
     public R updateWorkOrder(WorkOrderQuery workOrder) {
-        saveFile(workOrder);
+        if (workOrder.getThirdCompanyId() != null && workOrder.getThirdCompanyType() != null) {
+            if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)){
+                Customer customer = customerService.getById(workOrder.getThirdCompanyId());
+                if(Objects.nonNull(customer)) {
+                    workOrder.setThirdCompanyName(customer.getName());
+                }
+            }
+
+            if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
+                Supplier supplier = supplierService.getById(workOrder.getThirdCompanyId());
+                if (Objects.nonNull(supplier)){
+                    workOrder.setThirdCompanyName(supplier.getName());
+                }
+            }
+        }
+
+        if (workOrder.getServerId()!=null){
+            Server server = serverService.getById(workOrder.getServerId());
+            if(Objects.nonNull(server)){
+                workOrder.setServerName(server.getName());
+            }
+        }
         this.baseMapper.updateById(workOrder);
         return R.ok();
     }
