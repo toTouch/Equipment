@@ -92,7 +92,7 @@ public class AdminJsonDeliverController {
     /**
      * 导入
      */
-    @PostMapping("admin/pointNew/upload")
+    @PostMapping("admin/deliver/upload")
     public R upload(MultipartFile file,HttpServletRequest request){
 
         ExcelReader excelReader = null;
