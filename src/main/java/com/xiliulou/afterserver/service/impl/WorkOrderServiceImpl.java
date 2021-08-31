@@ -107,7 +107,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
             LambdaQueryWrapper<File> eq = new LambdaQueryWrapper<File>()
                     .eq(File::getType, File.TYPE_WORK_ORDER)
-                    .eq(File::getFileType, workOrder.getType())
+                    .eq(Objects.nonNull(workOrder.getWorkOrderType()),File::getFileType, workOrder.getWorkOrderType())
                     .eq(File::getBindId, item.getId());
             List<File> fileList = fileService.getBaseMapper().selectList(eq);
             item.setFileList(fileList);
