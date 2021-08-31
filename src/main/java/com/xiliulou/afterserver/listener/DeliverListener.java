@@ -4,10 +4,7 @@ import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.xiliulou.afterserver.entity.City;
-import com.xiliulou.afterserver.entity.Customer;
-import com.xiliulou.afterserver.entity.Deliver;
-import com.xiliulou.afterserver.entity.PointNew;
+import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.export.DeliverInfo;
 import com.xiliulou.afterserver.export.PointInfo;
 import com.xiliulou.afterserver.service.*;
@@ -89,7 +86,26 @@ public class DeliverListener extends AnalysisEventListener<DeliverInfo> {
             deliver.setProduct(item.getProduct());
             deliver.setQuantity(item.getQuantity());
             deliver.setCreateUid((Long) request.getAttribute("uid"));
-            deliver.setThirdCompanyId(item.getThirdCompanyId());
+
+            if (Objects.nonNull(item.getThirdCompanyId()) && Objects.nonNull(item.getThirdCompanyType())){
+                Long id = null;
+                if (item.getThirdCompanyType()==1){
+                    LambdaQueryWrapper<Customer> wrapper = new LambdaQueryWrapper<Customer>().eq(Customer::getName, item.getThirdCompanyId());
+                    Customer customer = customerService.getBaseMapper().selectOne(wrapper);
+                    if (Objects.nonNull(customer)){
+                        id = customer.getId();
+                    }
+                }
+                if (item.getThirdCompanyType()==2){
+                    LambdaQueryWrapper<Supplier> wrapper = new LambdaQueryWrapper<Supplier>().eq(Supplier::getName, item.getThirdCompanyId());
+                    Supplier supplier = supplierService.getBaseMapper().selectOne(wrapper);
+                    if (Objects.nonNull(supplier)){
+                        id = supplier.getId();
+                    }
+                }
+                deliver.setThirdCompanyId(id);
+            }
+
             deliver.setThirdCompanyType(item.getThirdCompanyType());
             deliver.setThirdCompanyPay(item.getThirdCompanyPay());
             deliver.setThirdReason(item.getThirdReason());

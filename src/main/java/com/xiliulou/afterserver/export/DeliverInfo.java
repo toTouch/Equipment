@@ -23,7 +23,7 @@ public class DeliverInfo {
     private Integer status;
 
     @ExcelProperty(index = 3)
-    private Long thirdCompanyId;
+    private String thirdCompanyId;
 
     @ExcelProperty(index = 4)
     private Integer thirdCompanyType;
