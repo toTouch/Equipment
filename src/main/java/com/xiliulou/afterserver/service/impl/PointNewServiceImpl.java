@@ -80,8 +80,9 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
      * @return 对象列表
      */
     @Override
-    public List<PointNew> queryAllByLimit(int offset, int limit, String name,Integer cid,Integer status, Long customerId,Long startTime,Long endTime) {
-        return this.pointNewMapper.queryAllByLimit(offset, limit, name,cid,status,customerId,startTime,endTime);
+    public List<PointNew> queryAllByLimit(int offset, int limit, String name,Integer cid,
+                                          Integer status, Long customerId,Long startTime,Long endTime,Long createUid,String snNo) {
+        return this.pointNewMapper.queryAllByLimit(offset, limit, name,cid,status,customerId,startTime,endTime,createUid,snNo);
     }
 
     /**
@@ -160,7 +161,8 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             pointProductBindService.insert(pointProductBind);
 
 
-            productNew.setExpirationStartTime(queryById.getCreateTime());
+            /** 产品质保时间不取点位时间了
+             productNew.setExpirationStartTime(queryById.getCreateTime());
 
             String date = DateUtils.stampToDate(queryById.getCreateTime().toString());
             String[] split = date.split("-");
@@ -180,7 +182,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             if (update == 0){
                 log.error("WX ERROR!   update ProductNew error data:{}",productNew.toString());
                 throw new NullPointerException("数据库异常，请联系管理员");
-            }
+            }*/
 
         });
 
@@ -272,7 +274,13 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     }
 
     @Override
-    public Integer countPoint(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime) {
-        return this.pointNewMapper.countPoint(name,cid,status,customerId,startTime,endTime);
+    public Integer countPoint(String name, Integer cid, Integer status, Long customerId,
+                              Long startTime, Long endTime, Long createUid,String snNo) {
+        return this.pointNewMapper.countPoint(name,cid,status,customerId,startTime,endTime,createUid,snNo);
+    }
+
+    @Override
+    public List<PointNew> queryAllByLimitExcel(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime, Long createUid,String snNo) {
+        return this.pointNewMapper.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid,snNo);
     }
 }

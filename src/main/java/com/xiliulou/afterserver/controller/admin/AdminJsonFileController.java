@@ -33,47 +33,54 @@ public class AdminJsonFileController {
     ProductFileMapper productFileMapper;
 
 
-    @GetMapping("/admin/file/list")
-    public R fileList(@RequestParam("pid") Long pid){
-        return fileService.getFileList(pid);
+    @GetMapping("/admin/file/info/{id}")
+    public R fileInfo(@PathVariable("id") Long id ){
+        return R.ok(fileService.getById(id));
+    }
+
+    @PostMapping("/admin/file")
+    public R saveFile(@RequestBody File file){
+        file.setCreateTime(System.currentTimeMillis());
+        return R.ok(fileService.save(file));
+    }
+
+    @DeleteMapping("/admin/file/{id}")
+    public R delFile(@PathVariable("id") Long id){
+        return R.ok(fileService.removeById(id));
     }
 
     @PostMapping("/admin/upload")
     public R uploadFile(@RequestParam("file") MultipartFile file) {
-//        if (file.getSize() > FileConstant.FILE_MAX_SIZE) {
-//
-//            return R.failMsg("上传文件不能大于5MB!");
-//        }
         return fileService.uploadFile(file);
     }
 
     @GetMapping("/admin/downLoad")
     public void getFile(@RequestParam("fileName") String fileName, HttpServletResponse response) {
-
         fileService.downLoadFile(fileName, response);
     }
 
+
     /**
+     * 产品批次文件
+     * @param file
      * @return
      */
-    @PostMapping("admin/bindFile")
-    public R updateFile(@RequestBody FileQuery file) {
-        if (ObjectUtil.equal(FileQuery.FLAG_FALSE, file.getDelFlag())) {
-            file.setCreateTime(System.currentTimeMillis());
-            fileService.save(file);
-        }
-        if (ObjectUtil.equal(FileQuery.FLAG_TRUE, file.getDelFlag())) {
-            fileService.removeById(file.getId());
-        }
-        return R.ok();
-    }
-
-
     @PostMapping("/admin/product/file")
     public R adminPrductFile(@RequestBody ProductFile file){
-        log.error("productFile:{}",file.toString());
         productFileMapper.insert(file);
         return R.ok(file);
+    }
+
+    /**
+     * 删除产品批次文件
+     */
+    @DeleteMapping("/admin/product/{id}")
+    public R delProductFile(@PathVariable("id") Long id){
+        int i = productFileMapper.deleteById(id);
+        if (i == 0){
+            return R.fail("数据库错误，删除失败");
+        }
+        return R.ok();
     }
 
 }

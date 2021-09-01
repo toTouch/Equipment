@@ -80,4 +80,6 @@ public class WorkOrder implements Serializable {
     public static final Integer TYPE_SEND_INSERT = 7;
 
 
+    @TableField(exist = false)
+    private String userName;
 }

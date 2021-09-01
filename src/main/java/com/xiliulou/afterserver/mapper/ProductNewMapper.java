@@ -73,4 +73,6 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
                          @Param("modelId") Long modelId,
                          @Param("startTime") Long startTime,
                          @Param("endTime") Long endTime);
+
+    int updateStatusFromBatch(@Param("ids") List<Long> ids, @Param("status") Integer status);
 }

@@ -49,7 +49,7 @@ public class JsonUserPointProductController {
 
     @GetMapping("/user/pointNew/list")
     public R pointList( @RequestParam(value = "name",required = false) String name){
-        return R.ok(pointNewService.queryAllByLimit(0,10,name,null,null,null,null,null));
+        return R.ok(pointNewService.queryAllByLimit(0,10,name,null,null,null,null,null,null,null));
     }
 
     /**
@@ -94,6 +94,12 @@ public class JsonUserPointProductController {
         return R.ok(pointNewService.putAdminPointNew(pointNew));
     }
 
-
+    /**
+     * 删除文件
+     */
+    @DeleteMapping("/user/file/{id}")
+    public R delFile(@PathVariable("id") Long id){
+        return R.ok(fileService.removeById(id));
+    }
 
 }

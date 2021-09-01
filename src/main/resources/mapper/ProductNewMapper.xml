@@ -147,6 +147,15 @@
         where id = #{id}
     </update>
 
+    <update id="updateStatusFromBatch">
+        update t_product_new
+        set  status = #{status}
+        where id in
+        <foreach collection="ids" item="c" separator="," open="(" close=")">
+            #{c}
+        </foreach>
+    </update>
+
     <!--通过主键删除-->
     <delete id="deleteById">
         update t_product_new set  del_flag = 1 where id = #{id}

@@ -1,13 +1,19 @@
 package com.xiliulou.afterserver.controller.admin;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xiliulou.afterserver.entity.Batch;
+import com.xiliulou.afterserver.entity.ProductFile;
+import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.service.BatchService;
 import com.xiliulou.afterserver.util.R;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * (Batch)表控制层
@@ -22,6 +28,9 @@ public class AdminJsonBatchController {
      */
     @Resource
     private BatchService batchService;
+    @Autowired
+    private ProductFileMapper productFileMapper;
+
 
     /**
      * 通过主键查询单条数据
@@ -38,8 +47,17 @@ public class AdminJsonBatchController {
      * 保存
      */
     @PostMapping("/admin/batch")
+    @Transactional(rollbackFor = Exception.class)
     public R saveBatch(@RequestBody Batch batch){
-        return R.ok(this.batchService.insert(batch));
+        Batch insert = this.batchService.insert(batch);
+
+        ProductFile productFile = new ProductFile();
+        productFile.setProductId(insert.getId());
+        productFile.setFileStr(batch.getFileStr());
+        productFile.setProductFileName(batch.getProductFileName());
+        productFileMapper.insert(productFile);
+
+        return R.ok();
     }
 
     /**
@@ -59,6 +77,14 @@ public class AdminJsonBatchController {
                        @RequestParam(value = "limit") int limit) {
 
         List<Batch> batches = this.batchService.queryAllByLimit(batchNo, offset, limit);
+        if (Objects.nonNull(batches)){
+            batches.forEach(item -> {
+                List<ProductFile> productFiles = productFileMapper.selectList(new LambdaQueryWrapper<ProductFile>().eq(ProductFile::getProductId, item.getId()));
+                item.setProductFileList(productFiles);
+            });
+        }
+
+
         Long count = this.batchService.count(batchNo);
 
         HashMap<String, Object> stringObjectHashMap = new HashMap<>(2);
@@ -66,5 +92,10 @@ public class AdminJsonBatchController {
         stringObjectHashMap.put("count",count);
 
         return R.ok(stringObjectHashMap);
+    }
+
+    @DeleteMapping("/admin/batch/{id}")
+    public R delOne(@PathVariable("id") Long id){
+        return R.ok(batchService.deleteById(id));
     }
 }

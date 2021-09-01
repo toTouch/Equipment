@@ -112,6 +112,9 @@
             <if test="query.status != null">
                 and wo.status = #{query.status}
             </if>
+            <if test="query.createrId != null">
+                and wo.creater_id = #{query.createrId}
+            </if>
             <if test="query.orderNo != null">
                 and wo.order_no = #{query.orderNo}
             </if>

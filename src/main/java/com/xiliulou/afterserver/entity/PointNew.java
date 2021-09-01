@@ -33,7 +33,7 @@ public class PointNew {
      */
     private Long customerId;
     /**
-     * 状态 1,移机,运营中,3:拆机
+     * 状态 1,移机,2运营中,3:拆机
      */
     private Integer status;
     /**
@@ -64,6 +64,14 @@ public class PointNew {
      * 物联网卡号
      */
     private String cardNumber;
+    /***
+     * 备注
+     */
+    private String remarks;
+    /**
+     * 创建人
+     */
+    private Long createUid;
     /**
      * 创建时间
      */
@@ -84,4 +92,6 @@ public class PointNew {
     private String customerName;
     @TableField(exist = false)
     private String province;
+    @TableField(exist = false)
+    private String userName;
 }
