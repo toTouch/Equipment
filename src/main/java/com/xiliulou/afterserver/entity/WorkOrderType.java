@@ -21,7 +21,7 @@ public class WorkOrderType {
     //安装
     public static final Integer INSTALLATION = 1;
     //派送
-    public static final Integer DELIVER = 2;
+//    public static final Integer DELIVER = 2;
     //接电
     public static final Integer CONNECTION_ELECTRICITY = 3;
     //移机

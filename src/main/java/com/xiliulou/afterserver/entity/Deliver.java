@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -28,7 +29,36 @@ public class Deliver {
     private String expressCompany;//快递公司
     private String expressNo;//快递单号
     private Long pointId;
+    /**
+     *       {
+     *           value: 1,
+     *           label: '未发货'
+     *         },
+     *         {
+     *           value: 2,
+     *           label: '已发货'
+     *         },
+     *         {
+     *           value: 3,
+     *           label: '已到达'
+     *         }
+     */
     private Integer state;//物流状态
     private String product;//型号
     private String quantity;//数量
+
+    /**
+     * 创建人
+     */
+    private Long createUid;
+
+    private Long thirdCompanyId;
+    private Integer thirdCompanyType;
+    private BigDecimal thirdCompanyPay;
+    private String thirdReason;
+
+    @TableField(exist = false)
+    private String userName;
+    @TableField(exist = false)
+    private String thirdCompanyName;
 }

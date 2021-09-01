@@ -1,11 +1,14 @@
 package com.xiliulou.afterserver.entity;
 
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.baomidou.mybatisplus.annotation.TableName;
+
+import java.util.List;
 
 /**
  * (Batch)实体类
@@ -36,5 +39,14 @@ public class Batch {
 
     public static final Integer DEL_NORMAL = 0;
     public static final Integer DEL_DEL = 1;
+
+
+    @TableField(exist = false)
+    private String fileStr;
+    @TableField(exist = false)
+    private String productFileName;
+    @TableField(exist = false)
+    private List<ProductFile> productFileList;
+
 
 }

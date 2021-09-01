@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -59,7 +60,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     UserService userService;
     @Autowired
     FileService fileService;
-    @Autowired
+    @Resource
     ProductSerialNumberMapper productSerialNumberMapper;
     @Autowired
     PointService pointService;
@@ -71,6 +72,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     WorkOrderTypeService workOrderTypeService;
     @Autowired
     WorkOrderReasonService workOrderReasonService;
+    @Autowired
+    PointNewService pointNewService;
 
 
 
@@ -82,6 +85,34 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         Page page = PageUtil.getPage(offset, size);
         page = baseMapper.getPage(page, workOrder);
 
+        List<WorkOrderVo> list = (List<WorkOrderVo>)page.getRecords();
+        if (list.isEmpty()){
+            return page;
+        }
+
+        list.forEach(item -> {
+            if (Objects.nonNull(item.getCreaterId())){
+                User userById = userService.getUserById(item.getCreaterId());
+                if (Objects.nonNull(userById)){
+                    item.setUserName(userById.getUserName());
+                }
+            }
+
+            if (Objects.nonNull(item.getPointId())){
+                PointNew pointNew = pointNewService.queryByIdFromDB(item.getPointId());
+                if (Objects.nonNull(pointNew)){
+                    item.setPointName(pointNew.getName());
+                }
+            }
+
+            LambdaQueryWrapper<File> eq = new LambdaQueryWrapper<File>()
+                    .eq(File::getType, File.TYPE_WORK_ORDER)
+                    .eq(Objects.nonNull(workOrder.getWorkOrderType()),File::getFileType, workOrder.getWorkOrderType())
+                    .eq(File::getBindId, item.getId());
+            List<File> fileList = fileService.getBaseMapper().selectList(eq);
+            item.setFileList(fileList);
+        });
+        page.setRecords(list);
         return page;
     }
 
@@ -193,9 +224,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         workOrder.setStatus(WorkOrder.STATUS_FINISHED);
         workOrder.setOrderNo(String.valueOf(IdUtil.getSnowflake(1, 1).nextId()));
         baseMapper.insert(workOrder);
-        if (ObjectUtil.isNotEmpty(workOrder.getFileNameList())) {
+        if (ObjectUtil.isNotEmpty(workOrder.getFileList())) {
             List<File> filList = new ArrayList();
-            for (String name : workOrder.getFileNameList()) {
+            for (String name : workOrder.getFileList()) {
                 File file = new File();
                 file.setFileName(name);
                 file.setBindId(workOrder.getId());
@@ -307,8 +338,15 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if (Objects.nonNull(point)){
                 workOrderExcelVo.setPointName(point.getName());
             }
+
+            if (Objects.nonNull(o.getWorkOrderReasonId())){
+                WorkOrderReason workOrderReason = workOrderReasonService.getById(o.getWorkOrderReasonId());
+                if (Objects.nonNull(workOrderReason)){
+                    workOrderExcelVo.setWorkOrderReasonName(workOrderReason.getName());
+                }
+            }
+
             workOrderExcelVo.setRemarks(o.getInfo());
-            workOrderExcelVo.setWorkOrderReasonName(o.getThirdReason());
             workOrderExcelVo.setThirdCompanyPay(o.getThirdCompanyPay());
 //            workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
@@ -343,8 +381,15 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if (Objects.nonNull(point)){
                 workOrderExcelVo2.setPointName(point.getName());
             }
+
+            if (Objects.nonNull(o.getWorkOrderReasonId())){
+                WorkOrderReason workOrderReason = workOrderReasonService.getById(o.getWorkOrderReasonId());
+                if (Objects.nonNull(workOrderReason)){
+                    workOrderExcelVo2.setWorkOrderReasonName(workOrderReason.getName());
+                }
+            }
+
             workOrderExcelVo2.setRemarks(o.getInfo());
-            workOrderExcelVo2.setWorkOrderReasonName(o.getThirdReason());
             workOrderExcelVo2.setThirdCompanyPay(o.getThirdCompanyPay());
 //            workOrderExcelVo2.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo2.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
@@ -374,6 +419,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             WorkOrderType workOrderType = workOrderTypeService.getById(o.getType());
             if (Objects.nonNull(workOrderType)){
                 workOrderExcelVo3.setWorkOrderType(workOrderType.getType());
+            }
+
+
+            if (Objects.nonNull(o.getWorkOrderReasonId())){
+                WorkOrderReason workOrderReason = workOrderReasonService.getById(o.getWorkOrderReasonId());
+                if (Objects.nonNull(workOrderReason)){
+                    workOrderExcelVo3.setWorkOrderReasonName(workOrderReason.getName());
+                }
             }
 
             Point point = pointService.getById(o.getPointId());
@@ -498,42 +551,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     @Transactional(rollbackFor = Exception.class)
     public R saveWorkerOrder(WorkOrderQuery workOrder) {
-        Point point = pointService.getById(workOrder.getPointId());
+        PointNew point = pointNewService.getById(workOrder.getPointId());
         if (Objects.isNull(point)) {
             log.error("WorkOrder Error pointId:{}", workOrder.getPointId());
             return R.fail("未查询到相关点位");
         }
-        //如果工单类型包含  派送   则系统生成一个派送工单，自动新增一个发货订单
-        if (workOrder.getType().equals(WorkOrder.TYPE_SEND.toString())
-                || workOrder.getType().equals(WorkOrder.TYPE_SEND_INSERT.toString())) {
-            Deliver deliver = new Deliver();
-            deliver.setCreateTime(System.currentTimeMillis());
-            deliver.setDeliverCost(workOrder.getFee());
-            deliver.setRemark(workOrder.getInfo());
-            Server server = serverService.getById(workOrder.getServerId());
-            if (Objects.nonNull(server)) {
-                deliver.setExpressCompany(server.getName());
-            }
-
-            deliver.setDeliverTime(System.currentTimeMillis());
-            deliver.setQuantity(workOrder.getCount());
-            deliver.setCity(workOrder.getStartAddr());
-            deliver.setDestination(point.getName());
-
-            deliverService.save(deliver);
-        }
 
         workOrder.setOrderNo(UUID.randomUUID().toString());
-        if (workOrder.getType().contains(WorkOrder.TYPE_INSTALL.toString())) {
-            point.setStatus(Point.STATUS_TRANSFER);
-            if (!pointService.updateById(point)) {
-                log.error("WorkOrder Error  update point status error data:{}", point.toString());
-                return R.fail("数据库错误");
-            }
-        }
-        saveFile(workOrder);
-
-
         if (workOrder.getThirdCompanyId() != null && workOrder.getThirdCompanyType() != null) {
             if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)){
                 Customer customer = customerService.getById(workOrder.getThirdCompanyId());
@@ -558,43 +582,24 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         int insert = this.baseMapper.insert(workOrder);
-        if (insert > 0) {
-            return R.ok();
+        if (insert == 0) {
+            return R.fail("数据库保存出错");
         }
-        return R.fail("数据库保存出错");
-    }
 
-    private void saveFile(WorkOrderQuery workOrder) {
-        LambdaQueryWrapper<File> eq = new LambdaQueryWrapper<File>()
-                .eq(File::getBindId, workOrder.getPointId())
-                .eq(File::getType, File.TYPE_WORK_ORDER);
-
-        List<File> files = fileService.getBaseMapper().selectList(eq);
-        if (Objects.nonNull(files)) {
-            files.forEach(item -> {
-                fileService.removeById(item.getId());
-            });
-        }
-        //照片类型为
-        if (workOrder.getFileNameList() != null) {
-            workOrder.getFileNameList().forEach(item -> {
+        if (!workOrder.getFileList().isEmpty()){
+            workOrder.getFileList().forEach(item -> {
                 File file = new File();
-                file.setFileName(item);
                 file.setType(File.TYPE_WORK_ORDER);
-                file.setBindId(workOrder.getPointId());
-
-                if (workOrder.getType().equals(WorkOrder.TYPE_AFTER.toString())) {
-                    file.setFileType(File.FILE_TYPE_AFTER);
-                }
-                if (workOrder.getType().equals(WorkOrder.TYPE_INSTALL.toString())
-                        || workOrder.getType().equals(WorkOrder.TYPE_SEND_INSERT.toString())) {
-                    file.setFileType(File.FILE_TYPE_INSTALL);
-                }
+                file.setFileName(item);
                 file.setCreateTime(System.currentTimeMillis());
+                file.setBindId(workOrder.getId());
+                file.setFileType(Integer.parseInt(workOrder.getType()));
                 fileService.save(file);
             });
         }
+        return R.ok();
     }
+
 
     @Override
     public R updateWorkOrderStatus(WorkerOrderUpdateStatusQuery query) {
@@ -613,7 +618,28 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     @Transactional(rollbackFor = Exception.class)
     public R updateWorkOrder(WorkOrderQuery workOrder) {
-        saveFile(workOrder);
+        if (workOrder.getThirdCompanyId() != null && workOrder.getThirdCompanyType() != null) {
+            if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)){
+                Customer customer = customerService.getById(workOrder.getThirdCompanyId());
+                if(Objects.nonNull(customer)) {
+                    workOrder.setThirdCompanyName(customer.getName());
+                }
+            }
+
+            if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
+                Supplier supplier = supplierService.getById(workOrder.getThirdCompanyId());
+                if (Objects.nonNull(supplier)){
+                    workOrder.setThirdCompanyName(supplier.getName());
+                }
+            }
+        }
+
+        if (workOrder.getServerId()!=null){
+            Server server = serverService.getById(workOrder.getServerId());
+            if(Objects.nonNull(server)){
+                workOrder.setServerName(server.getName());
+            }
+        }
         this.baseMapper.updateById(workOrder);
         return R.ok();
     }

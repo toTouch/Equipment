@@ -35,7 +35,9 @@ public interface PointNewMapper extends BaseMapper<PointNew> {
                                    @Param("status") Integer status,
                                    @Param("customerId") Long customerId,
                                    @Param("startTime") Long startTime,
-                                   @Param("endTime") Long endTime);
+                                   @Param("endTime") Long endTime,
+                                   @Param("createUid") Long createUid,
+                                   @Param("snNo") String snNo);
 
 
     /**
@@ -75,5 +77,16 @@ public interface PointNewMapper extends BaseMapper<PointNew> {
                        @Param("status") Integer status,
                        @Param("customerId") Long customerId,
                        @Param("startTime") Long startTime,
-                       @Param("endTime") Long endTime);
+                       @Param("endTime") Long endTime,
+                       @Param("createUid") Long createUid,
+                       @Param("snNo") String snNo);
+
+    List<PointNew> queryAllByLimitExcel(@Param("name") String name,
+                                        @Param("cid") Integer cid,
+                                        @Param("status") Integer status,
+                                        @Param("customerId") Long customerId,
+                                        @Param("startTime") Long startTime,
+                                        @Param("endTime") Long endTime,
+                                        @Param("createUid") Long createUid,
+                                        @Param("snNo") String snNo);
 }

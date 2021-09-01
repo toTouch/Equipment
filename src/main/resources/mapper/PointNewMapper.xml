@@ -14,6 +14,8 @@
         <result property="canopyCount" column="canopy_count" jdbcType="INTEGER"/>
         <result property="snNo" column="sn_no" jdbcType="VARCHAR"/>
         <result property="cardNumber" column="card_number" jdbcType="VARCHAR"/>
+        <result property="remarks" column="remarks" jdbcType="VARCHAR"/>
+        <result property="createUid" column="create_uid" jdbcType="INTEGER"/>
         <result property="createTime" column="create_time" jdbcType="INTEGER"/>
         <result property="delFlag" column="del_flag" jdbcType="INTEGER"/>
     </resultMap>
@@ -21,7 +23,8 @@
     <!--查询单个-->
     <select id="queryById" resultMap="PointNewMap">
         select
-          id, name,customer_id, status, city_id, install_type, address, camera_count, canopy_count, sn_no, card_number, create_time, del_flag
+          id, name,customer_id, status, city_id, install_type, address, camera_count, canopy_count, sn_no, card_number,
+           remarks,create_uid,create_time, del_flag
         from t_point_new
         where id = #{id}
     </select>
@@ -29,7 +32,8 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="PointNewMap">
         select
-        id, name , customer_id, status, city_id, install_type, address, camera_count, canopy_count, sn_no, card_number, create_time, del_flag
+        id, name , customer_id, status, city_id, install_type, address, camera_count, canopy_count, sn_no, card_number,
+        remarks,create_uid,create_time, del_flag
         from t_point_new
         <where>
         and del_flag = 0
@@ -45,12 +49,18 @@
             <if test="cid != null">
                 and city_id = #{cid}
             </if>
+            <if test="snNo != null">
+                and sn_no = #{snNo}
+            </if>
             <if test="startTime != null">
                 and create_time &gt;= #{startTime}
             </if>
 
             <if test="endTime != null">
                 and create_time &lt;= #{endTime}
+            </if>
+            <if test="createUid != null and createUid != ''">
+                and create_uid = #{createUid}
             </if>
         </where>
         order by create_time desc
@@ -60,7 +70,8 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="PointNewMap">
         select
-        id, name , customer_id, status, city_id, install_type, address, camera_count, canopy_count, sn_no, card_number, create_time, del_flag
+        id, name , customer_id, status, city_id, install_type, address, camera_count, canopy_count, sn_no, card_number,
+        remarks,create_uid,create_time, del_flag
         from t_point_new
         <where>
             <if test="id != null">
@@ -120,6 +131,9 @@
             <if test="cid != null">
                 and city_id = #{cid}
             </if>
+            <if test="snNo != null">
+                and sn_no = #{snNo}
+            </if>
             <if test="startTime != null">
                 and create_time &gt;= #{startTime}
             </if>
@@ -127,13 +141,54 @@
             <if test="endTime != null">
                 and create_time &lt;= #{endTime}
             </if>
+            <if test="createUid != null and createUid != ''">
+                and create_uid = #{createUid}
+            </if>
         </where>
+    </select>
+
+    <select id="queryAllByLimitExcel" resultType="com.xiliulou.afterserver.entity.PointNew">
+        select
+        id, name , customer_id, status, city_id, install_type, address, camera_count, canopy_count, sn_no, card_number,
+        remarks,create_uid,create_time, del_flag
+        from t_point_new
+        <where>
+            and del_flag = 0
+            <if test="name != null and name!='' ">
+                and name like concat('%', #{name},'%')
+            </if>
+            <if test="customerId != null">
+                and customer_id = #{customerId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="cid != null">
+                and city_id = #{cid}
+            </if>
+            <if test="snNo != null">
+                and sn_no = #{snNo}
+            </if>
+            <if test="startTime != null">
+                and create_time &gt;= #{startTime}
+            </if>
+
+            <if test="endTime != null">
+                and create_time &lt;= #{endTime}
+            </if>
+            <if test="createUid != null and createUid != ''">
+                and create_uid = #{createUid}
+            </if>
+        </where>
+        order by create_time desc
     </select>
 
     <!--新增所有列-->
     <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
-        insert into t_point_new(name,customer_id, status, city_id, install_type, address, camera_count, canopy_count, sn_no, card_number, create_time, del_flag)
-        values (#{name},#{customerId}, #{status}, #{cityId}, #{installType}, #{address}, #{cameraCount}, #{canopyCount}, #{snNo}, #{cardNumber}, #{createTime}, #{delFlag})
+        insert into t_point_new(name,customer_id, status, city_id, install_type, address, camera_count, canopy_count,
+         sn_no, card_number, remarks,create_uid,create_time, del_flag)
+        values (#{name},#{customerId}, #{status}, #{cityId}, #{installType}, #{address}, #{cameraCount}, #{canopyCount},
+         #{snNo}, #{cardNumber},#{remarks},#{createUid},#{createTime}, #{delFlag})
     </insert>
 
     <!--通过主键修改数据-->
@@ -169,6 +224,12 @@
             </if>
             <if test="cardNumber != null and cardNumber != ''">
                 card_number = #{cardNumber},
+            </if>
+            <if test="remarks != null ">
+                remarks = #{remarks},
+            </if>
+            <if test="createUid != null">
+                create_uid = #{createUid},
             </if>
             <if test="createTime != null">
                 create_time = #{createTime},

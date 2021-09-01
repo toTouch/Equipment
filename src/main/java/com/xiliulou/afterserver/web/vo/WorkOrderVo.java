@@ -53,4 +53,6 @@ public class WorkOrderVo {
     private String product;
     //产品编码
     private String code;
+
+    private String userName;
 }

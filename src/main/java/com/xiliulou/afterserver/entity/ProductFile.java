@@ -23,6 +23,9 @@ public class ProductFile implements Serializable {
     @TableId
     private Long id;
 
+    /**
+     * 批次主键id
+     */
     private Long productId;
 
     private String fileStr;
