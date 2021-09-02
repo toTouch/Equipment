@@ -57,7 +57,7 @@ public class JsonUserPointProductController {
      */
     @GetMapping("/user/product/page")
     public R getPage(String name) {
-        return R.ok(productService.getPage(0L, 10L, name));
+        return R.ok(productService.getPage(0L, 20L, name));
     }
 
 
@@ -67,7 +67,7 @@ public class JsonUserPointProductController {
     @GetMapping("/user/batch/list")
     public R selectOne(@RequestParam(value = "name",required = false) String name) {
 
-        return R.ok(this.batchService.queryAllByLimit(name,0,10));
+        return R.ok(this.batchService.queryAllByLimit(name,0,20));
     }
 
     /**
