@@ -37,7 +37,6 @@ public class JwtHelper {
 
     public JSONObject generateToken(Map<String, Object> claims) {
 
-
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());
         c.add(Calendar.SECOND, EXPIRATION_TIME.intValue());
