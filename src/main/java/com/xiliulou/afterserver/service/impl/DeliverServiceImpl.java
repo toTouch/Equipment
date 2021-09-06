@@ -2,6 +2,8 @@ package com.xiliulou.afterserver.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -98,6 +100,10 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                     }
                 }
                 records.setThirdCompanyName(name);
+            }
+
+            if(StrUtil.isEmpty(records.getProduct())) {
+                records.setProduct(JSONUtil.toJsonStr(new ArrayList<>()));
             }
 
         });
