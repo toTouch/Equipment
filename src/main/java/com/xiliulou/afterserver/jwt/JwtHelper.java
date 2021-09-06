@@ -23,8 +23,7 @@ public class JwtHelper {
     private String SECRET;
     private final String TOKEN_PREFIX = "Bearer";
     private final String HEADER_STRING = "Authorization";
-
-
+    
 
     @Autowired
     JwtConfig jwtConfig;
