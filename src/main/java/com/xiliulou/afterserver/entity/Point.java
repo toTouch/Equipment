@@ -14,6 +14,7 @@ import java.math.BigDecimal;
  **/
 @Data
 @TableName("point")
+@Deprecated
 public class Point {
     private Long id;
     private String city;
