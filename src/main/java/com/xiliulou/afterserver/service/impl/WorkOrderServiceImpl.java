@@ -334,7 +334,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrderExcelVo.setWorkOrderType(workOrderType.getType());
             }
 
-            Point point = pointService.getById(o.getPointId());
+            PointNew point = pointNewService.getById(o.getPointId());
             if (Objects.nonNull(point)){
                 workOrderExcelVo.setPointName(point.getName());
             }
@@ -377,7 +377,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrderExcelVo2.setWorkOrderType(workOrderType.getType());
             }
 
-            Point point = pointService.getById(o.getPointId());
+            PointNew point = pointNewService.getById(o.getPointId());
             if (Objects.nonNull(point)){
                 workOrderExcelVo2.setPointName(point.getName());
             }
@@ -429,7 +429,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
             }
 
-            Point point = pointService.getById(o.getPointId());
+            PointNew point = pointNewService.getById(o.getPointId());
             if (Objects.nonNull(point)){
                 workOrderExcelVo3.setPointName(point.getName());
             }
@@ -461,7 +461,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             String fileName = URLEncoder.encode("客商信息表", "UTF-8");
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding("utf-8");
-            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xls");
             ServletOutputStream outputStream = response.getOutputStream();
             excelWriter = EasyExcel.write(outputStream).build();
             /**
