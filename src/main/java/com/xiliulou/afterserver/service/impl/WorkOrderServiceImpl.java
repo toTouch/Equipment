@@ -252,7 +252,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 o.setWorkOrderType(workOrderType.getType());
             }
 
-            Point point = pointService.getById(o.getPointId());
+            PointNew point = pointNewService.getById(o.getPointId());
             if (Objects.nonNull(point)){
                 o.setPointName(point.getName());
             }
