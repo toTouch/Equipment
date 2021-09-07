@@ -334,7 +334,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrderExcelVo.setWorkOrderType(workOrderType.getType());
             }
 
-            Point point = pointService.getById(o.getPointId());
+            PointNew point = pointNewService.getById(o.getPointId());
             if (Objects.nonNull(point)){
                 workOrderExcelVo.setPointName(point.getName());
             }
@@ -377,7 +377,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrderExcelVo2.setWorkOrderType(workOrderType.getType());
             }
 
-            Point point = pointService.getById(o.getPointId());
+            PointNew point = pointNewService.getById(o.getPointId());
             if (Objects.nonNull(point)){
                 workOrderExcelVo2.setPointName(point.getName());
             }
@@ -415,13 +415,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         workOrderVoList.forEach(o -> {
             WorkOrderExcelVo3 workOrderExcelVo3 = new WorkOrderExcelVo3();
 
-            // TODO: 2021/6/8 0008 工单原因
+            //根据工单ID获取工单类型
             WorkOrderType workOrderType = workOrderTypeService.getById(o.getType());
             if (Objects.nonNull(workOrderType)){
                 workOrderExcelVo3.setWorkOrderType(workOrderType.getType());
             }
 
-
+            //根据工单原因id 获取工单原因对象
             if (Objects.nonNull(o.getWorkOrderReasonId())){
                 WorkOrderReason workOrderReason = workOrderReasonService.getById(o.getWorkOrderReasonId());
                 if (Objects.nonNull(workOrderReason)){
@@ -429,27 +429,32 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
             }
 
-            Point point = pointService.getById(o.getPointId());
+            //根据点位id获取点位名称
+            PointNew point = pointNewService.getById(o.getPointId());
             if (Objects.nonNull(point)){
                 workOrderExcelVo3.setPointName(point.getName());
             }
+
             workOrderExcelVo3.setRemarks(o.getInfo());
+
             workOrderExcelVo3.setThirdCompanyPay(o.getThirdCompanyPay());
-//            workOrderExcelVo3.setStatusStr(getStatusStr(o.getStatus()));
+            //workOrderExcelVo3.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo3.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
             if (o.getServerId()!=null){
+                //根据server id 获取server
                 Server server = serverService.getById(o.getServerId());
                 if (Objects.nonNull(server)){
                     workOrderExcelVo3.setThirdCompanyName(server.getName());
                 }
+
                 workOrderExcelVo3.setThirdCompanyType("服务商");
+
                 if (o.getThirdCompanyPay()!=null) {
                     serverPayAmount.addAndGet((int) o.getFee().doubleValue());
                 }
                 workOrderExcelVo3.setThirdCompanyPay(o.getFee());
                 serverExcelVoList.add(workOrderExcelVo3);
             }
-
         });
 //        WorkOrderExcelVo3 tailLine3 = new WorkOrderExcelVo3();
 //        tailLine3.setThirdCompanyType("服务商总金额");
@@ -461,7 +466,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             String fileName = URLEncoder.encode("客商信息表", "UTF-8");
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding("utf-8");
-            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xls");
             ServletOutputStream outputStream = response.getOutputStream();
             excelWriter = EasyExcel.write(outputStream).build();
             /**
@@ -476,6 +481,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             WriteSheet writeSheet3 = EasyExcel.writerSheet(2, "服务商").head(WorkOrderExcelVo3.class).build();
             excelWriter.write(serverExcelVoList, writeSheet3);
 
+
         } catch (Exception e) {
             log.error("导出报表失败!", e);
             throw new CustomBusinessException("导出报表失败!请联系客服!");
@@ -483,6 +489,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             excelWriter.finish();
         }
     }
+
+
 
 
 

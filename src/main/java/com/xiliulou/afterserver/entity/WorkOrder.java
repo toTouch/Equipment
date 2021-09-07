@@ -20,8 +20,17 @@ public class WorkOrder implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Long id;
+    /**
+     * 工单类型 {@link WorkOrderType}
+     */
     private String type;
+    /**
+     * 点位id {@link PointNew}
+     */
     private Long pointId;
+    /**
+     * 备注信息
+     */
     private String info;
     private BigDecimal fee;
     private Long thirdCompanyId;
@@ -34,8 +43,8 @@ public class WorkOrder implements Serializable {
     //服务商接单人
     private String processor;
     private Long processTime;
-    private Integer status;
-    private String orderNo;
+    private Integer status; //状态
+    private String orderNo;  //工单编号·
     private Long createrId;
     private Long createTime;
     private String thirdCompanyName;
@@ -53,7 +62,9 @@ public class WorkOrder implements Serializable {
     private Long transferDestinationPointId;
     //客户
     public static final Integer COMPANY_TYPE_CUSTOMER = 1;
-    //供应商
+    /**
+     *    供应商
+     */
     public static final Integer COMPANY_TYPE_SUPPLIER = 2;
 
     // 1;待处理2:已处理3:待分析4：已完结
