@@ -67,6 +67,9 @@
             <if test="createUid != null and createUid != ''">
                 and d.create_uid = #{createUid}
             </if>
+            <if test="state != null and state != ''">
+                and d.state = #{state}
+            </if>
         </where>
     </select>
 
