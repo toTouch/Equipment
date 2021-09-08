@@ -341,9 +341,9 @@
     <select id="installWorkOrderByPoint" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
         SELECT
         p.NAME AS pointName,
-        p.city,
+        p.city_id,
         p.id as pointId,
-        count( o.type) AS numCount,
+        count(o.type) AS numCount,
         o.type,
         ( CASE
         WHEN o.third_company_pay IS NOT NULL THEN
@@ -352,14 +352,14 @@
         AS sumCount
         FROM
         work_order o
-        LEFT JOIN point p ON o.point_id = p.id
+        LEFT JOIN t_point_new p ON o.point_id = p.id
         WHERE
         o.type IN ( 1, 2, 3 )
         <if test="startTime != null and endTime != null ">
             and o.create_time BETWEEN #{startTime} and #{endTime}
         </if>
         <if test="cityId != null">
-            and p.city = #{cityId}
+            and p.city_id = #{cityId}
         </if>
         GROUP BY
         o.point_id,o.type
