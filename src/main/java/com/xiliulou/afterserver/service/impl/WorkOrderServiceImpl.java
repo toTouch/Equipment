@@ -151,26 +151,78 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        List<WorkOrderExcelVo> workOrderExcelVoList = new ArrayList<>(workOrderVoList.size());
+        List<WorkOrderListExcelVo> workOrderExcelVoList = new ArrayList<>(workOrderVoList.size());
         for (WorkOrderVo o : workOrderVoList) {
-            WorkOrderExcelVo workOrderExcelVo = new WorkOrderExcelVo();
+            WorkOrderListExcelVo workOrderExcelVo = new WorkOrderListExcelVo();
             BeanUtil.copyProperties(o, workOrderExcelVo);
-//            workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
-            workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
-//            if (ObjectUtil.isNotEmpty(o.getProcessTime())) {
-//                workOrderExcelVo.setProcessorTimeStr(simpleDateFormat.format(new Date(o.getProcessTime())));
-//            }
+            //typeName
+            if(Objects.nonNull(o.getType())){
+                WorkOrderType workOrderType = workOrderTypeService.getById(o.getType());
+                if (Objects.nonNull(workOrderType)){
+                    workOrderExcelVo.setTypeName(workOrderType.getType());
+                }
+            }
+            //pointName
+            if(Objects.nonNull(o.getPointId())){
+                PointNew pointNew = pointNewService.getById(o.getPointId());
+                if (Objects.nonNull(pointNew)){
+                    workOrderExcelVo.setPointName(pointNew.getName());
+                    workOrderExcelVo.setSnNo(pointNew.getSnNo());
+                }
+            }
+            //workOrderReasonName
+            if(Objects.nonNull(o.getWorkOrderReasonId())){
+                WorkOrderReason workOrderReason = workOrderReasonService.getById(o.getWorkOrderReasonId());
+                if (Objects.nonNull(workOrderReason)){
+                    workOrderExcelVo.setWorkOrderReasonName(workOrderReason.getName());
+                }
+            }
+            //processTime
+            if(Objects.nonNull(o.getProcessTime())){
+                workOrderExcelVo.setProcessTime(simpleDateFormat.format(new Date(o.getProcessTime())));
+            }
+            //status  1;待处理2:已处理3:待分析4：已完结
+            if(Objects.nonNull(o.getStatus())){
+                if(o.getStatus().equals(1)){
+                    workOrderExcelVo.setStatusName("待处理");
+                }
+                if(o.getStatus().equals(2)){
+                    workOrderExcelVo.setStatusName("已处理");
+                }
+                if(o.getStatus().equals(3)){
+                    workOrderExcelVo.setStatusName("待分析");
+                }
+                if(o.getStatus().equals(4)){
+                    workOrderExcelVo.setStatusName("已完结");
+                }
+            }
+            //createrName
+            if(Objects.nonNull(o.getCreaterId())){
+                User user = userService.getUserById(o.getCreaterId());
+                if (Objects.nonNull(user)){
+                    workOrderExcelVo.setCreaterName(user.getUserName());
+                }
+            }
+
+            if(Objects.nonNull(o.getThirdCompanyId())){
+                if(Objects.isNull(workOrderExcelVo.getThirdCompanyName())){
+                    Customer customer = customerService.getById(o.getThirdCompanyId());
+                    if(Objects.nonNull(customer)){
+                        workOrderExcelVo.setThirdCompanyName(customer.getName());
+                    }
+                }
+            }
             workOrderExcelVoList.add(workOrderExcelVo);
         }
 
-        String fileName = "工单列表.xlsx";
+        String fileName = "工单列表.xls";
         try {
             ServletOutputStream outputStream = response.getOutputStream();
             // 告诉浏览器用什么软件可以打开此文件
             response.setHeader("content-Type", "application/vnd.ms-excel");
             // 下载文件的默认名称
             response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
-            EasyExcel.write(outputStream, WorkOrderExcelVo.class).sheet("sheet").doWrite(workOrderExcelVoList);
+            EasyExcel.write(outputStream, WorkOrderListExcelVo.class).sheet("sheet").doWrite(workOrderExcelVoList);
             return;
         } catch (IOException e) {
             log.error("导出报表失败！", e);
