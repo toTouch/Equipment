@@ -21,5 +21,8 @@ public class DeliverQuery extends Deliver {
     private Long deliverTimeStart;
     private Long deliverTimeEnd;
 
+    private Long createTimeStart;
+    private Long createTimeEnd;
+
 
 }

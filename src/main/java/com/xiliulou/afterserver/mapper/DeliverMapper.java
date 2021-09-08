@@ -9,6 +9,8 @@ import java.util.List;
 public interface DeliverMapper extends BaseMapper<Deliver> {
     int updateStatusFromBatch(@Param("ids") List<Long> ids, @Param("status") Integer status);
 
+    List<Deliver> orderList(Deliver deliver);
+
 //    IPage<DeliverVo> getDeliverPage(Page page, @Param("query") DeliverQuery deliver);
 
 }
