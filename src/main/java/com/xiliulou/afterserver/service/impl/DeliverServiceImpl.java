@@ -18,7 +18,6 @@ import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.DeliverQuery;
-import com.xiliulou.afterserver.web.vo.DeliverExcelVo;
 import com.xiliulou.afterserver.web.vo.DeliverExportExcelVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
