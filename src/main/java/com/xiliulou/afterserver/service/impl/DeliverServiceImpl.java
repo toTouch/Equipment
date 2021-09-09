@@ -5,8 +5,10 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -27,10 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @program: XILIULOU
@@ -50,6 +49,8 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     private ServerService serverService;
     @Autowired
     private SupplierService supplierService;
+    @Autowired
+    private ProductService productService;
 
 
     @Override
@@ -69,7 +70,17 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             return selectPage;
         }
 
+
+
         list.forEach(records -> {
+
+            Map map = new HashMap();
+
+            if("null".equals(records.getQuantity()) || null == records.getQuantity()){
+                records.setQuantity(JSON.toJSONString(new String[]{null}));
+            }
+
+
             if (Objects.nonNull(records.getCreateUid())){
                 User userById = userService.getUserById(records.getCreateUid());
                 if (Objects.nonNull(userById)){
@@ -104,6 +115,23 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
 
             if(StrUtil.isEmpty(records.getProduct())) {
                 records.setProduct(JSONUtil.toJsonStr(new ArrayList<>()));
+            }
+
+            if(ObjectUtils.isNotNull(records.getProduct())
+                    && !"[]".equals(records.getProduct())
+                    && ObjectUtils.isNotNull(records.getQuantity())
+                    && !"[null]".equals(records.getQuantity())){
+
+                ArrayList<Integer> products = JSON.parseObject(records.getProduct(), ArrayList.class);
+                ArrayList<Integer> quantitys = JSON.parseObject(records.getQuantity(), ArrayList.class);
+
+                for(int i = 0; i < products.size() && ( quantitys.size() == products.size() ); i++){
+                    Product p = productService.getById(products.get(i));
+                    if(ObjectUtils.isNotNull(p)){
+                        map.put(p.getName(), quantitys.get(i));
+                    }
+                }
+                records.setDetails(map);
             }
 
         });
