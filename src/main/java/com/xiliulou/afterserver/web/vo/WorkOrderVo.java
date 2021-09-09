@@ -55,4 +55,6 @@ public class WorkOrderVo {
     private String code;
 
     private String userName;
+
+    private String describeinfo;
 }

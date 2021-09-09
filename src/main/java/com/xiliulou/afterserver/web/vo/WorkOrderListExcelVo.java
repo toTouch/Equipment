@@ -50,4 +50,6 @@ public class WorkOrderListExcelVo {
     @ExcelProperty("备注")
     private String info;
 
+    @ExcelProperty("描述")
+    private String describeinfo;
 }
