@@ -53,6 +53,7 @@
         <id property="workOrderReasonName" column="wor_name"/>
         <id property="creater" column="u_user_name"/>
         <id property="pointName" column="p_name"/>
+        <id property="describeinfo" column="wo_describeinfo"></id>
         <collection property="fileList" ofType="com.xiliulou.afterserver.entity.File">
             <id property="id" column="f_id"/>
             <id property="type" column="f_type"/>
@@ -86,6 +87,7 @@
         wo.product as wo_product,
         wo.code as wo_code,
         wo.reason as wo_reason,
+        wo.describeinfo as wo_describeinfo,
         (SELECT name FROM point WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM point WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
@@ -154,6 +156,7 @@
         wo.transfer_destination_point_id as wo_transfer_destination_point_id,
         wo.product as wo_product,
         wo.code as wo_code,
+        wo.describeinfo as wo_describeinfo,
         (SELECT name FROM point WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM point WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,

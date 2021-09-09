@@ -30,6 +30,8 @@ public class WorkOrderExcelVo3 {
     private BigDecimal thirdCompanyPay;
     @ExcelProperty("备注")
     private String remarks;
+    @ExcelProperty("描述")
+    private String describeinfo;
     @ExcelProperty("创建时间")
     private String createTimeStr;
 }

@@ -60,6 +60,8 @@ public class WorkOrder implements Serializable {
     private Long transferSourcePointId;
     //终点
     private Long transferDestinationPointId;
+
+    private String describeinfo;
     //客户
     public static final Integer COMPANY_TYPE_CUSTOMER = 1;
     /**
