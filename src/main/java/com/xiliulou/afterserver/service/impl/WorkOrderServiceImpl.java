@@ -380,6 +380,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         workOrderVoList.forEach(o -> {
             WorkOrderExcelVo workOrderExcelVo = new WorkOrderExcelVo();
+
             // TODO: 2021/6/8 0008 工单原因
             WorkOrderType workOrderType = workOrderTypeService.getById(o.getType());
             if (Objects.nonNull(workOrderType)){
@@ -397,7 +398,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     workOrderExcelVo.setWorkOrderReasonName(workOrderReason.getName());
                 }
             }
-
+            workOrderExcelVo.setDescribeinfo(o.getDescribeinfo());
             workOrderExcelVo.setRemarks(o.getInfo());
             workOrderExcelVo.setThirdCompanyPay(o.getThirdCompanyPay());
 //            workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
@@ -443,6 +444,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
             workOrderExcelVo2.setRemarks(o.getInfo());
             workOrderExcelVo2.setThirdCompanyPay(o.getThirdCompanyPay());
+            workOrderExcelVo2.setDescribeinfo(o.getDescribeinfo());
 //            workOrderExcelVo2.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo2.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
             if (o.getThirdCompanyType() != null && o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
@@ -487,6 +489,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
             workOrderExcelVo3.setRemarks(o.getInfo());
             workOrderExcelVo3.setThirdCompanyPay(o.getThirdCompanyPay());
+            workOrderExcelVo3.setDescribeinfo(o.getDescribeinfo());
 //            workOrderExcelVo3.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo3.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
             if (o.getServerId()!=null){
