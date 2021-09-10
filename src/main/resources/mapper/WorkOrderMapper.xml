@@ -105,9 +105,6 @@
         LEFT JOIN t_point_new as p on p.id = wo.point_id
         LEFT JOIN file as f on f.bind_id = wo.id and f.type =2
         <where>
-            <if test="true">
-                and wo.type = "4"
-            </if>
             <if test="query.pointId != null">
                 and wo.point_id = #{query.pointId}
             </if>
