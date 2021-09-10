@@ -53,7 +53,7 @@
         <id property="workOrderReasonName" column="wor_name"/>
         <id property="creater" column="u_user_name"/>
         <id property="pointName" column="p_name"/>
-        <id property="describeinfo" column="describeinfo"/>
+        <id property="describeinfo" column="wo_describeinfo"/>
         <collection property="fileList" ofType="com.xiliulou.afterserver.entity.File">
             <id property="id" column="f_id"/>
             <id property="type" column="f_type"/>
