@@ -18,7 +18,7 @@
     <!--查询单个-->
     <select id="queryById" resultMap="ProductNewMap">
         select
-          id, no, model_id, batch_id, status, expiration_start_time,years, expiration_end_time, create_time, del_flag
+          id, no, model_id, batch_id, status, expiration_start_time,years, expiration_end_time, create_time, del_flag, cache
         from t_product_new
         where id = #{id}
     </select>
@@ -30,6 +30,7 @@
         from t_product_new
         <where>
             and del_flag = 0
+            and cache is null
             <if test="no != null and no != '' ">
                 and no like concat('%', #{no},'%')
             </if>
@@ -108,8 +109,8 @@
 
     <!--新增所有列-->
     <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
-        insert into t_product_new(no, model_id, batch_id, status, expiration_start_time, years, expiration_end_time, create_time, del_flag)
-        values (#{no}, #{modelId}, #{batchId}, #{status}, #{expirationStartTime},#{years},#{expirationEndTime}, #{createTime}, #{delFlag})
+        insert into t_product_new(no, model_id, batch_id, status, expiration_start_time, years, expiration_end_time, create_time, del_flag, cache)
+        values (#{no}, #{modelId}, #{batchId}, #{status}, #{expirationStartTime},#{years},#{expirationEndTime}, #{createTime}, #{delFlag}, #{cache})
     </insert>
 
     <!--通过主键修改数据-->
