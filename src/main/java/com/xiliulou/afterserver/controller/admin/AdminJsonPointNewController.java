@@ -16,6 +16,7 @@ import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.vo.PointExcelVo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -244,11 +245,22 @@ public class AdminJsonPointNewController {
 
     }
 
-
-
-
     @GetMapping("/admin/pointNew/info/{pid}")
     public R printInfo(@PathVariable("pid") Long pid){
         return pointNewService.pointInfo(pid);
+    }
+
+    @PostMapping("/admin/pointNew/saveCache")
+    public R saveCache(Long pointId,
+                       @RequestParam(value = "modelId", required = false) Long modelId,
+                       @RequestParam(value = "no", required = false) String no,
+                       @RequestParam(value = "batch", required = false, defaultValue = "16") Long batch){
+
+            return pointNewService.saveCache(pointId, modelId, no, batch);
+    }
+
+    @DeleteMapping("/admin/pointNew/deleteProduct")
+    public R deleteProduct(Long pointId, Long producutId){
+        return pointNewService.deleteProduct(pointId, producutId);
     }
 }
