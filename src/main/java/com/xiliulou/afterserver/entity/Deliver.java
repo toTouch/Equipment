@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  * @program: XILIULOU
@@ -61,4 +62,7 @@ public class Deliver {
     private String userName;
     @TableField(exist = false)
     private String thirdCompanyName;
+
+    @TableField(exist = false)
+    private Map details;
 }
