@@ -2,8 +2,12 @@ package com.xiliulou.afterserver.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
+import com.xiliulou.afterserver.service.BatchService;
 import com.xiliulou.afterserver.service.FileService;
 import com.xiliulou.afterserver.service.ProductNewService;
 import com.xiliulou.afterserver.service.ProductService;
@@ -34,6 +38,8 @@ public class ProductNewServiceImpl implements ProductNewService {
     private ProductService productService;
     @Autowired
     private FileService fileService;
+    @Autowired
+    private BatchService batchService;
 
     /**
      * 通过ID查询单条数据从DB
@@ -217,5 +223,49 @@ public class ProductNewServiceImpl implements ProductNewService {
         System.out.println(isRepeat);//输出true
 
 
+    }
+
+    @Override
+    public R queryProductInfo(String no) {
+        Map<String, Object> map = new HashMap<>();
+
+        QueryWrapper<ProductNew> wrapper = new QueryWrapper<>();
+        wrapper.eq("no", no);
+        ProductNew productNew = productNewMapper.selectOne(wrapper);
+
+        if(ObjectUtils.isNotNull(productNew)){
+            Product product = productService.getById(productNew.getModelId());
+            if(ObjectUtils.isNotNull(product)){
+                map.put("name", product.getName());
+            }
+            Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
+            if(ObjectUtils.isNotNull(batch)){
+                map.put("batchNo", batch.getBatchNo());
+            }
+            map.put("no", no);
+        }
+
+        if(map.size() < 3 && map.size() > 1){
+            log.error("查询结果有误，请重新录入: name={}, batchNo={}, no={}", map.get("name"), map.get("batchNo"), map.get("no"));
+            return R.fail("查询结果有误，请重新录入");
+        }
+
+        if(map.isEmpty()){
+            log.info("查无此产品");
+            return R.fail("查无此产品");
+        }
+
+        return R.fail(map);
+    }
+
+    @Override
+    public R queryLikeProductByNo(String no){
+        QueryWrapper<ProductNew> wrapper = null;
+        if(!StringUtils.checkValNull(no)){
+            wrapper = new QueryWrapper<>();
+            wrapper.like("no", no);
+        }
+        List<ProductNew> list = productNewMapper.selectList(wrapper);
+        return  R.fail(list);
     }
 }

@@ -77,4 +77,8 @@ public interface ProductNewService {
     R getProductFile(Long id);
 
     R updateStatusFromBatch(List<Long> ids, Integer status);
+
+    R queryProductInfo(String no);
+
+    R queryLikeProductByNo(String no);
 }
