@@ -19,6 +19,7 @@ import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.DeliverQuery;
+import com.xiliulou.afterserver.web.vo.DeliverExcelVo;
 import com.xiliulou.afterserver.web.vo.DeliverExportExcelVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         Page page = PageUtil.getPage(offset, size);
         Page selectPage = baseMapper.selectPage(page,
                 new LambdaQueryWrapper<Deliver>()
+                        .eq(Objects.nonNull(deliver.getState()), Deliver::getState, deliver.getState())
                         .eq(Objects.nonNull(deliver.getCreateUid()),Deliver::getCreateUid,deliver.getCreateUid())
                         .like(Objects.nonNull(deliver.getExpressNo()),Deliver::getExpressNo,deliver.getExpressNo())
                         .like(Objects.nonNull(deliver.getExpressCompany()),Deliver::getExpressCompany,deliver.getExpressCompany())

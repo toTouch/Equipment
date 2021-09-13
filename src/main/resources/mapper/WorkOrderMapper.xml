@@ -191,6 +191,9 @@
             <if test="query.createTimeStart != null and query.createTimeEnd != null">
                 and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
             </if>
+            <if test="query.type != null">
+                and wo.type = #{query.type}
+            </if>
         </where>
         ORDER BY wo.create_time DESC
         <if test="query.offset != null and query.size != null ">
