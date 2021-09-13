@@ -1,6 +1,8 @@
 package com.xiliulou.afterserver.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.xiliulou.afterserver.entity.PointNew;
 import com.xiliulou.afterserver.entity.PointProductBind;
 import com.xiliulou.afterserver.mapper.PointProductBindMapper;
 import com.xiliulou.afterserver.service.PointProductBindService;
@@ -110,4 +112,13 @@ public class PointProductBindServiceImpl implements PointProductBindService {
                 .eq(PointProductBind::getPointId, id).eq(PointProductBind::getProductId,item);
         return this.pointProductBindMapper.selectList(queryWrapper);
     }
+
+    @Override
+    public PointProductBind queryByProductId(Long productId) {
+        QueryWrapper<PointProductBind> wrapper = new QueryWrapper<>();
+        wrapper.eq("product_id",productId);
+        return pointProductBindMapper.selectOne(wrapper);
+    }
+
+
 }

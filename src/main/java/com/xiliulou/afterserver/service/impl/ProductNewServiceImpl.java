@@ -279,7 +279,7 @@ public class ProductNewServiceImpl implements ProductNewService {
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public R bindPoint(Long productId, Long pointId) {
-        PointProductBind pointProductBind = pointProductBindMapper
+        /*PointProductBind pointProductBind = pointProductBindMapper
                 .selectOne(new QueryWrapper<PointProductBind>().eq("product_id", productId));
 
         if(ObjectUtils.isNotNull(pointProductBind)){
@@ -287,6 +287,14 @@ public class ProductNewServiceImpl implements ProductNewService {
             if(ObjectUtils.isNotNull(pointNew)){
                 return R.fail("您选择的产品已绑定到【" + pointNew.getName() + "】点位,请解绑！");
             }
+        }*/
+
+        PointProductBind pointProductBind = pointProductBindMapper
+                    .selectOne(new QueryWrapper<PointProductBind>()
+                        .eq("product_id", productId));
+
+        if(ObjectUtils.isNotNull(pointProductBind)){
+            pointProductBindMapper.deleteById(pointProductBind.getId());
         }
 
         PointProductBind bind = new PointProductBind();

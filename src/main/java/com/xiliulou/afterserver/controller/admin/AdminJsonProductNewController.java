@@ -1,11 +1,8 @@
 package com.xiliulou.afterserver.controller.admin;
 
-import com.xiliulou.afterserver.entity.Batch;
-import com.xiliulou.afterserver.entity.Product;
-import com.xiliulou.afterserver.entity.ProductNew;
-import com.xiliulou.afterserver.service.BatchService;
-import com.xiliulou.afterserver.service.ProductNewService;
-import com.xiliulou.afterserver.service.ProductService;
+import com.xiliulou.afterserver.entity.*;
+import com.xiliulou.afterserver.mapper.PointProductBindMapper;
+import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +26,10 @@ public class AdminJsonProductNewController {
     private ProductService productService;
     @Autowired
     private BatchService batchService;
+    @Autowired
+    private PointProductBindService pointProductBindService;
+    @Autowired
+    private PointNewService pointNewService;
 
     @PostMapping("/admin/productNew")
     public R saveAdminPointNew(@RequestBody ProductNew productNew){
@@ -55,6 +56,16 @@ public class AdminJsonProductNewController {
         List<ProductNew> productNews = productNewService.queryAllByLimit(offset,limit,no,modelId,startTime,endTime);
 
         productNews.forEach(item -> {
+
+            PointProductBind pointProductBind = pointProductBindService.queryByProductId(item.getId());
+            if(Objects.nonNull(pointProductBind)){
+                PointNew pointNew = pointNewService.getById(pointProductBind.getPointId());
+                if(Objects.nonNull(pointNew)){
+                    item.setPointId(pointNew.getId().intValue());
+                    item.setPointName(pointNew.getName());
+                }
+            }
+
             if (Objects.nonNull(item.getModelId())){
                 Product product = productService.getBaseMapper().selectById(item.getModelId());
                 if (Objects.nonNull(product)){
