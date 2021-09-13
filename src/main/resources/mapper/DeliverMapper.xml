@@ -30,6 +30,49 @@
         </foreach>
     </update>
 
+    <select id="orderList" resultType="com.xiliulou.afterserver.web.query.DeliverQuery">
+        select
+        d.id,
+        d.customer_id,
+        d.phone,
+        d.city,
+        d.destination,
+        d.state,
+        d.third_company_id,
+        d.third_company_pay,
+        d.deliver_cost,
+        d.deliver_time,
+        d.express_company,
+        d.express_no,
+        d.create_uid,
+        d.remark
+        from
+        deliver AS d
+        <where>
+            <if test="city != null and city != ''">
+                and d.city LIKE CONCAT('%',#{city},'%')
+            </if>
+            <if test="destination != null and destination != ''">
+                and d.destination LIKE CONCAT('%',#{destination},'%')
+            </if>
+            <if test="expressCompany != null and expressCompany != ''">
+                and d.express_company LIKE CONCAT('%',#{express_company},'%')
+            </if>
+            <if test="expressNo != null and expressNo != ''">
+                and d.express_no LIKE CONCAT('%',#{expressNo},'%')
+            </if>
+            <if test="createTimeStart != null and createTimeEnd != null ">
+                and d.deliver_time BETWEEN #{createTimeStart} and #{createTimeEnd}
+            </if>
+            <if test="createUid != null and createUid != ''">
+                and d.create_uid = #{createUid}
+            </if>
+            <if test="state != null and state != ''">
+                and d.state = #{state}
+            </if>
+        </where>
+    </select>
+
 
     <select id="getDeliverPage" resultType="com.xiliulou.afterserver.web.vo.DeliverVo">
         SELECT
