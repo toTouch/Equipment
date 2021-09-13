@@ -1,9 +1,14 @@
 package com.xiliulou.afterserver.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.Query;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.*;
-import com.xiliulou.afterserver.mapper.PointNewMapper;
+import com.xiliulou.afterserver.mapper.*;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.R;
@@ -11,6 +16,7 @@ import com.xiliulou.afterserver.vo.PointNewInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -48,6 +54,12 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     private ProductService productService;
     @Autowired
     private BatchService batchService;
+    @Autowired
+    private ProductNewMapper productNewMapper;
+    @Autowired
+    private PointProductBindMapper pointProductBindMapper;
+    @Autowired
+    private FileMapper fileMapper;
 
     /**
      * 通过ID查询单条数据从DB
@@ -283,4 +295,78 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     public List<PointNew> queryAllByLimitExcel(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime, Long createUid,String snNo) {
         return this.pointNewMapper.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid,snNo);
     }
+
+    @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    public R saveCache(Long pointId, Long modelId, String no, Long batch) {
+        if(modelId == null && no == null){
+            log.warn("柜机型号和产品编号不能都为空，请填入至少一项");
+            return R.fail("柜机型号和产品编号不能都为空，请填入至少一项");
+        }
+        if(no != null){
+            if(modelId != null){
+                log.warn("选择产品编号后，请不要选择柜机型号或批次号");
+                return R.fail("选择产品编号后，请不要选择柜机型号或批次号");
+            }
+            QueryWrapper<ProductNew> wrapper = new QueryWrapper<>();
+            wrapper.eq("no", no);
+            ProductNew productNew = productNewMapper.selectOne(wrapper);
+            if(ObjectUtils.isNotNull(productNew)){
+                PointProductBind pointProductBind = new PointProductBind();
+                pointProductBind.setPointId(pointId);
+                pointProductBind.setProductId(productNew.getId());
+                pointProductBindService.insert(pointProductBind);
+            }else{
+                log.info("查无此产品编号：no={}",no);
+                return R.fail("查无此产品编号，请检查");
+            }
+        }else{
+            ProductNew productNew = new ProductNew();
+            productNew.setModelId(modelId);
+            productNew.setBatchId(batch);
+            productNew.setStatus(3);
+            productNew.setCreateTime(System.currentTimeMillis());
+            productNew.setDelFlag(0);
+            productNew.setCache(1);
+            ProductNew productNewId = productNewService.insert(productNew);
+
+            PointProductBind pointProductBind = new PointProductBind();
+            pointProductBind.setProductId(productNewId.getId());
+            pointProductBind.setPointId(pointId);
+            pointProductBindService.insert(pointProductBind);
+        }
+        return R.ok();
+    }
+
+    @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    public R deleteProduct(Long pointId, Long producutId) {
+        if(pointId == null){
+            return R.fail("请输入点位");
+        }
+        if(producutId == null){
+            return R.fail("请输入柜机类型");
+        }
+
+        ProductNew productNew = productNewService.queryByIdFromDB(producutId);
+        if(ObjectUtils.isNotNull(productNew)){
+            if(productNew.getCache() != null){
+                productNewMapper.delete(new UpdateWrapper<ProductNew>().eq("id", producutId));
+            }else{
+                LambdaUpdateWrapper<File> wrapper = new LambdaUpdateWrapper<File>().eq(File::getType, File.TYPE_PRODUCT).eq(File::getBindId, producutId);
+                fileMapper.delete(wrapper);
+            }
+
+            UpdateWrapper<PointProductBind> wrapper = new UpdateWrapper<>();
+            wrapper.eq("product_id", producutId);
+            wrapper.eq("point_id", pointId);
+            pointProductBindMapper.delete(wrapper);
+        }else{
+            log.info("查无此产品：producutId={}",producutId);
+            return R.fail("查无此产品，请检查");
+        }
+
+        return R.ok();
+    }
+
 }

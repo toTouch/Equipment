@@ -18,9 +18,7 @@ import com.xiliulou.afterserver.mapper.DeliverMapper;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
-import com.xiliulou.afterserver.web.query.DeliverQuery;
 import com.xiliulou.afterserver.web.vo.DeliverExcelVo;
-import com.xiliulou.afterserver.web.vo.DeliverExportExcelVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,10 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @program: XILIULOU
@@ -54,6 +49,8 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     private ServerService serverService;
     @Autowired
     private SupplierService supplierService;
+    @Autowired
+    private ProductService productService;
 
 
     @Override
@@ -62,7 +59,6 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         Page page = PageUtil.getPage(offset, size);
         Page selectPage = baseMapper.selectPage(page,
                 new LambdaQueryWrapper<Deliver>()
-                        .eq(Objects.nonNull(deliver.getState()), Deliver::getState, deliver.getState())
                         .eq(Objects.nonNull(deliver.getCreateUid()),Deliver::getCreateUid,deliver.getCreateUid())
                         .like(Objects.nonNull(deliver.getExpressNo()),Deliver::getExpressNo,deliver.getExpressNo())
                         .like(Objects.nonNull(deliver.getExpressCompany()),Deliver::getExpressCompany,deliver.getExpressCompany())
@@ -74,11 +70,16 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             return selectPage;
         }
 
+
+
         list.forEach(records -> {
+
+            Map map = new HashMap();
 
             if("null".equals(records.getQuantity()) || null == records.getQuantity()){
                 records.setQuantity(JSON.toJSONString(new String[]{null}));
             }
+
 
             if (Objects.nonNull(records.getCreateUid())){
                 User userById = userService.getUserById(records.getCreateUid());
@@ -114,6 +115,23 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
 
             if(StrUtil.isEmpty(records.getProduct())) {
                 records.setProduct(JSONUtil.toJsonStr(new ArrayList<>()));
+            }
+
+            if(ObjectUtils.isNotNull(records.getProduct())
+                    && !"[]".equals(records.getProduct())
+                    && ObjectUtils.isNotNull(records.getQuantity())
+                    && !"[null]".equals(records.getQuantity())){
+
+                ArrayList<Integer> products = JSON.parseObject(records.getProduct(), ArrayList.class);
+                ArrayList<Integer> quantitys = JSON.parseObject(records.getQuantity(), ArrayList.class);
+
+                for(int i = 0; i < products.size() && ( quantitys.size() == products.size() ); i++){
+                    Product p = productService.getById(products.get(i));
+                    if(ObjectUtils.isNotNull(p)){
+                        map.put(p.getName(), quantitys.get(i));
+                    }
+                }
+                records.setDetails(map);
             }
 
         });
