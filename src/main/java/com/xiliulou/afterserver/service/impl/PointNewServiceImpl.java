@@ -54,12 +54,12 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     private ProductService productService;
     @Autowired
     private BatchService batchService;
-    @Autowired
-    private ProductNewMapper productNewMapper;
-    @Autowired
-    private PointProductBindMapper pointProductBindMapper;
-    @Autowired
-    private FileMapper fileMapper;
+    //@Autowired
+    //private ProductNewMapper productNewMapper;
+    //@Autowired
+    //private PointProductBindMapper pointProductBindMapper;
+    //@Autowired
+    //private FileMapper fileMapper;
 
     /**
      * 通过ID查询单条数据从DB
@@ -367,6 +367,5 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         }
 
         return R.ok();
-    }
-
+    }*/
 }

@@ -262,5 +262,5 @@ public class AdminJsonPointNewController {
     @DeleteMapping("/admin/pointNew/deleteProduct")
     public R deleteProduct(Long pointId, Long producutId){
         return pointNewService.deleteProduct(pointId, producutId);
-    }
+    }*/
 }
