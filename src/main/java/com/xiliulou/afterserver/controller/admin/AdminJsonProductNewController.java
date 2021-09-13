@@ -96,5 +96,13 @@ public class AdminJsonProductNewController {
 
     }
 
+    @GetMapping("/admin/queryProductInfo")
+    public R  queryProductInfo(String no){
+        return productNewService.queryProductInfo(no);
+    }
 
+    @GetMapping("/admin/queryLikeProductByNo")
+    public R queryLikeProductByNo(String no){
+        return productNewService.queryLikeProductByNo(no);
+    }
 }

@@ -88,6 +88,8 @@ public class ProductNew {
     public static final Integer DEL_NORMAL = 0;
     public static final Integer DEL_DEL = 1;
 
+    private Integer cache;
+
 
 //    //左区间
 //    @TableField(exist = false)
