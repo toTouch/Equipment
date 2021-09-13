@@ -5,6 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
@@ -74,6 +75,11 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         }
 
         list.forEach(records -> {
+
+            if("null".equals(records.getQuantity()) || null == records.getQuantity()){
+                records.setQuantity(JSON.toJSONString(new String[]{null}));
+            }
+
             if (Objects.nonNull(records.getCreateUid())){
                 User userById = userService.getUserById(records.getCreateUid());
                 if (Objects.nonNull(userById)){
