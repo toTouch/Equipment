@@ -105,4 +105,9 @@ public class AdminJsonProductNewController {
     public R queryLikeProductByNo(String no){
         return productNewService.queryLikeProductByNo(no);
     }
+
+    @PostMapping("/admin/bindPoint")
+    public R bindPoint(Long productId, Long pointId){
+        return productNewService.bindPoint(productId, pointId);
+    }
 }

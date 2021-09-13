@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.xiliulou.afterserver.entity.*;
+import com.xiliulou.afterserver.mapper.PointNewMapper;
+import com.xiliulou.afterserver.mapper.PointProductBindMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.service.BatchService;
 import com.xiliulou.afterserver.service.FileService;
@@ -16,6 +18,7 @@ import com.xiliulou.afterserver.util.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -40,6 +43,10 @@ public class ProductNewServiceImpl implements ProductNewService {
     private FileService fileService;
     @Autowired
     private BatchService batchService;
+    @Autowired
+    private PointProductBindMapper pointProductBindMapper;
+    @Autowired
+    private PointNewMapper pointNewMapper;
 
     /**
      * 通过ID查询单条数据从DB
@@ -267,5 +274,26 @@ public class ProductNewServiceImpl implements ProductNewService {
         }
         List<ProductNew> list = productNewMapper.selectList(wrapper);
         return  R.fail(list);
+    }
+
+    @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    public R bindPoint(Long productId, Long pointId) {
+        PointProductBind pointProductBind = pointProductBindMapper
+                .selectOne(new QueryWrapper<PointProductBind>().eq("product_id", productId));
+
+        if(ObjectUtils.isNotNull(pointProductBind)){
+            PointNew pointNew = pointNewMapper.selectById(pointProductBind.getPointId());
+            if(ObjectUtils.isNotNull(pointNew)){
+                return R.fail("您选择的产品已绑定到【" + pointNew.getName() + "】点位,请解绑！");
+            }
+        }
+
+        PointProductBind bind = new PointProductBind();
+        bind.setPointId(pointId);
+        bind.setProductId(productId);
+        pointProductBindMapper.insert(bind);
+
+        return R.ok();
     }
 }
