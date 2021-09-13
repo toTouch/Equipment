@@ -3,13 +3,17 @@ package com.xiliulou.afterserver.controller.admin;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.read.metadata.ReadSheet;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xiliulou.afterserver.controller.BaseController;
 import com.xiliulou.afterserver.entity.Customer;
+import com.xiliulou.afterserver.entity.PointNew;
 import com.xiliulou.afterserver.export.CustomerInfo;
 import com.xiliulou.afterserver.listener.ClientListener;
+import com.xiliulou.afterserver.mapper.PointNewMapper;
 import com.xiliulou.afterserver.service.CustomerService;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.vo.PointNewInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.sql.Wrapper;
+import java.util.List;
 
 /**
  * @program: XILIULOU
@@ -29,6 +34,7 @@ import java.sql.Wrapper;
 public class AdminJsonCustomerController extends BaseController {
     @Autowired
     CustomerService customerService;
+
 
     @PostMapping("admin/customer")
     public R insert(@RequestBody Customer customer) {
@@ -52,17 +58,13 @@ public class AdminJsonCustomerController extends BaseController {
 
 
     @DeleteMapping("admin/customer")
-    public R delete(@RequestParam("id") Long id) {
-        // TODO: 2021/1/29 0029  校验是否可以删,是否绑定其他内容
-        customerService.removeById(id);
-        return R.ok();
+    public R delete(@RequestParam("id") Long id, @RequestParam(value = "falg", required = false)Long falg) {
+        return customerService.delete(id, falg);
     }
 
     @GetMapping("admin/customer/list")
     public R list() {
-
         return R.ok(customerService.list(Wrappers.<Customer>lambdaQuery().orderByDesc(Customer::getCreateTime)));
-
     }
 
     /**
