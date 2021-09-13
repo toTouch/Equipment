@@ -296,7 +296,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         return this.pointNewMapper.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid,snNo);
     }
 
-    @Override
+    /*@Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public R saveCache(Long pointId, Long modelId, String no, Long batch) {
         if(modelId == null && no == null){
@@ -336,7 +336,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             pointProductBindService.insert(pointProductBind);
         }
         return R.ok();
-    }
+    }*/
 
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
@@ -350,12 +350,12 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
         ProductNew productNew = productNewService.queryByIdFromDB(producutId);
         if(ObjectUtils.isNotNull(productNew)){
-            if(productNew.getCache() != null){
+            /*if(productNew.getCache() != null){
                 productNewMapper.delete(new UpdateWrapper<ProductNew>().eq("id", producutId));
             }else{
                 LambdaUpdateWrapper<File> wrapper = new LambdaUpdateWrapper<File>().eq(File::getType, File.TYPE_PRODUCT).eq(File::getBindId, producutId);
                 fileMapper.delete(wrapper);
-            }
+            }*/
 
             UpdateWrapper<PointProductBind> wrapper = new UpdateWrapper<>();
             wrapper.eq("product_id", producutId);

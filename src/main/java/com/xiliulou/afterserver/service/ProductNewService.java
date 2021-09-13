@@ -81,4 +81,6 @@ public interface ProductNewService {
     R queryProductInfo(String no);
 
     R queryLikeProductByNo(String no);
+
+    R bindPoint(Long productId, Long pointId);
 }
