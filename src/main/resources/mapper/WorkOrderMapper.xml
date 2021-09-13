@@ -87,7 +87,6 @@
         wo.product as wo_product,
         wo.code as wo_code,
         wo.reason as wo_reason,
-        wo.describeinfo as wo_describeinfo,
         (SELECT name FROM point WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM point WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
@@ -157,8 +156,8 @@
         wo.product as wo_product,
         wo.code as wo_code,
         wo.describeinfo as wo_describeinfo,
-        (SELECT name FROM point WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
-        (SELECT name FROM point WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
+        (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
+        (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
         wor.name as wor_name,
         u.user_name as u_user_name,
@@ -168,7 +167,7 @@
         LEFT JOIN work_order_type as wot on wot.id = wo.id
         LEFT JOIN work_order_reason as wor on wor.id = wo.work_order_reason_id
         LEFT JOIN user u on u.id =wo.creater_id
-        LEFT JOIN point as p on p.id = wo.point_id
+        LEFT JOIN t_point_new as p on p.id = wo.point_id
         <where>
             <if test="query.pointId != null">
                 and wo.point_id = #{query.pointId}
@@ -190,6 +189,9 @@
             </if>
             <if test="query.createTimeStart != null and query.createTimeEnd != null">
                 and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
+            </if>
+            <if test="query.type != null">
+                and wo.type = #{query.type}
             </if>
         </where>
         ORDER BY wo.create_time DESC

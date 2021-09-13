@@ -85,7 +85,7 @@ public class AdminJsonDeliverController {
     }
 
     @GetMapping("admin/deliver/exportExcel")
-    public void exportExcel(Deliver deliver, HttpServletResponse response) {
+    public void exportExcel(DeliverQuery deliver, HttpServletResponse response) {
         deliverService.exportExcel(deliver, response);
     }
 
