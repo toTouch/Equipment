@@ -259,7 +259,7 @@ public class AdminJsonPointNewController {
             return pointNewService.saveCache(pointId, modelId, no, batch);
     }*/
 
-    @DeleteMapping("/admin/pointNew/deleteProduct")
+    /*@DeleteMapping("/admin/pointNew/deleteProduct")
     public R deleteProduct(Long pointId, Long producutId){
         return pointNewService.deleteProduct(pointId, producutId);
     }*/
