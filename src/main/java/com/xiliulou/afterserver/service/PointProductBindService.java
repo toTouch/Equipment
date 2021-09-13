@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service;
 
+import com.xiliulou.afterserver.entity.PointNew;
 import com.xiliulou.afterserver.entity.PointProductBind;
 
 import java.util.List;
@@ -64,4 +65,6 @@ public interface PointProductBindService {
     List<PointProductBind> queryByPointNewId(Long pid);
 
     List<PointProductBind> queryByPointNewIdAndProductId(Long id, Long item);
+
+    PointProductBind queryByProductId(Long productId);
 }

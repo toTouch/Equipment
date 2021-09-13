@@ -107,6 +107,9 @@ public class ProductNew {
     private Integer productCount;
     @TableField(exist = false)
     private List<File> fileList;
-
+    @TableField(exist = false)
+    private Integer pointId;
+    @TableField(exist = false)
+    private String pointName;
 
 }

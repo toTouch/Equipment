@@ -54,12 +54,12 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     private ProductService productService;
     @Autowired
     private BatchService batchService;
-    @Autowired
-    private ProductNewMapper productNewMapper;
-    @Autowired
-    private PointProductBindMapper pointProductBindMapper;
-    @Autowired
-    private FileMapper fileMapper;
+    //@Autowired
+    //private ProductNewMapper productNewMapper;
+    //@Autowired
+    //private PointProductBindMapper pointProductBindMapper;
+    //@Autowired
+    //private FileMapper fileMapper;
 
     /**
      * 通过ID查询单条数据从DB
@@ -296,7 +296,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         return this.pointNewMapper.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid,snNo);
     }
 
-    @Override
+    /*@Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public R saveCache(Long pointId, Long modelId, String no, Long batch) {
         if(modelId == null && no == null){
@@ -367,6 +367,5 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         }
 
         return R.ok();
-    }
-
+    }*/
 }
