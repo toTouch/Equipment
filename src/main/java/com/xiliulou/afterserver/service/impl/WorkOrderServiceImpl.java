@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
@@ -132,7 +133,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
 //            workOrder.setCreateId(saveWorkOrderQuery.getUid());
             workOrder.setStatus(WorkOrder.STATUS_FINISHED);
-            workOrder.setOrderNo(String.valueOf(IdUtil.getSnowflake(1, 1).nextId()));
+            workOrder.setOrderNo(RandomUtil.randomString(10));
             baseMapper.insert(workOrder);
         }
 
@@ -274,7 +275,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
 
         workOrder.setStatus(WorkOrder.STATUS_FINISHED);
-        workOrder.setOrderNo(String.valueOf(IdUtil.getSnowflake(1, 1).nextId()));
+        workOrder.setOrderNo(RandomUtil.randomString(10));
         baseMapper.insert(workOrder);
         if (ObjectUtil.isNotEmpty(workOrder.getFileList())) {
             List<File> filList = new ArrayList();
@@ -612,7 +613,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("未查询到相关点位");
         }
 
-        workOrder.setOrderNo(UUID.randomUUID().toString());
+        workOrder.setOrderNo(RandomUtil.randomString(10));
         if (workOrder.getThirdCompanyId() != null && workOrder.getThirdCompanyType() != null) {
             if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)){
                 Customer customer = customerService.getById(workOrder.getThirdCompanyId());
