@@ -250,7 +250,7 @@ public class AdminJsonPointNewController {
         return pointNewService.pointInfo(pid);
     }
 
-    @PostMapping("/admin/pointNew/saveCache")
+    /*@PostMapping("/admin/pointNew/saveCache")
     public R saveCache(Long pointId,
                        @RequestParam(value = "modelId", required = false) Long modelId,
                        @RequestParam(value = "no", required = false) String no,
@@ -262,5 +262,5 @@ public class AdminJsonPointNewController {
     @DeleteMapping("/admin/pointNew/deleteProduct")
     public R deleteProduct(Long pointId, Long producutId){
         return pointNewService.deleteProduct(pointId, producutId);
-    }
+    }*/
 }
