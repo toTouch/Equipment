@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface DeliverService extends IService<Deliver> {
 
-    IPage getPage(Long offset, Long size, Deliver deliver);
+    IPage getPage(Long offset, Long size, DeliverQuery deliver);
 
     void exportExcel(DeliverQuery deliver, HttpServletResponse response);
 
