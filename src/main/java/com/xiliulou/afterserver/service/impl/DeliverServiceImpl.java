@@ -56,7 +56,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
 
 
     @Override
-    public IPage getPage(Long offset, Long size, Deliver deliver) {
+    public IPage getPage(Long offset, Long size, DeliverQuery deliver) {
 
         Page page = PageUtil.getPage(offset, size);
         Page selectPage = baseMapper.selectPage(page,
@@ -65,6 +65,8 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                         .like(Objects.nonNull(deliver.getExpressNo()),Deliver::getExpressNo,deliver.getExpressNo())
                         .like(Objects.nonNull(deliver.getExpressCompany()),Deliver::getExpressCompany,deliver.getExpressCompany())
                         .orderByDesc(Deliver::getCreateTime)
+                        .ge(Objects.nonNull(deliver.getCreateTimeStart()), Deliver::getDeliverTime, deliver.getCreateTimeStart())
+                        .le(Objects.nonNull(deliver.getCreateTimeEnd()), Deliver::getDeliverTime, deliver.getCreateTimeEnd())
                         .like(Objects.nonNull(deliver.getCity()),Deliver::getCity,deliver.getCity())
                         .like(Objects.nonNull(deliver.getDestination()),Deliver::getDestination,deliver.getDestination()));
         List<Deliver> list = (List<Deliver>) selectPage.getRecords();
