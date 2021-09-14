@@ -56,7 +56,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
 
 
     @Override
-    public IPage getPage(Long offset, Long size, Deliver deliver) {
+    public IPage getPage(Long offset, Long size, DeliverQuery deliver) {
 
         Page page = PageUtil.getPage(offset, size);
         Page selectPage = baseMapper.selectPage(page,
@@ -65,70 +65,73 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                         .like(Objects.nonNull(deliver.getExpressNo()), Deliver::getExpressNo, deliver.getExpressNo())
                         .like(Objects.nonNull(deliver.getExpressCompany()), Deliver::getExpressCompany, deliver.getExpressCompany())
                         .orderByDesc(Deliver::getCreateTime)
-                        .like(Objects.nonNull(deliver.getCity()), Deliver::getCity, deliver.getCity())
-                        .like(Objects.nonNull(deliver.getDestination()), Deliver::getDestination, deliver.getDestination()));
+                        .ge(Objects.nonNull(deliver.getCreateTimeStart()), Deliver::getDeliverTime, deliver.getCreateTimeStart())
+                        .le(Objects.nonNull(deliver.getCreateTimeEnd()), Deliver::getDeliverTime, deliver.getCreateTimeEnd())
+                        .like(Objects.nonNull(deliver.getCity()),Deliver::getCity,deliver.getCity())
+                        .like(Objects.nonNull(deliver.getDestination()),Deliver::getDestination,deliver.getDestination()));
         List<Deliver> list = (List<Deliver>) selectPage.getRecords();
         if (list.isEmpty()) {
             return selectPage;
         }
 
 
+
         list.forEach(records -> {
 
             Map map = new HashMap();
 
-            if ("null".equals(records.getQuantity()) || null == records.getQuantity()) {
+            if("null".equals(records.getQuantity()) || null == records.getQuantity()){
                 records.setQuantity(JSON.toJSONString(new String[]{null}));
             }
 
 
-            if (Objects.nonNull(records.getCreateUid())) {
+            if (Objects.nonNull(records.getCreateUid())){
                 User userById = userService.getUserById(records.getCreateUid());
-                if (Objects.nonNull(userById)) {
+                if (Objects.nonNull(userById)){
                     records.setUserName(userById.getUserName());
                 }
-                records.setUserName(userById.getUserName());
+               records.setUserName(userById.getUserName());
             }
 
 //            第三方类型 1：客户 2：供应商 3:服务商';
-            if (Objects.nonNull(records.getThirdCompanyType())) {
+            if (Objects.nonNull(records.getThirdCompanyType())){
                 String name = "";
-                if (records.getThirdCompanyType() == 1) {
+                if (records.getThirdCompanyType() == 1){
                     Customer byId = customerService.getById(records.getThirdCompanyId());
-                    if (Objects.nonNull(byId)) {
+                    if (Objects.nonNull(byId)){
                         name = byId.getName();
                     }
                 }
-                if (records.getThirdCompanyType() == 2) {
+                if (records.getThirdCompanyType() == 2){
                     Supplier byId = supplierService.getById(records.getThirdCompanyId());
-                    if (Objects.nonNull(byId)) {
+                    if (Objects.nonNull(byId)){
                         name = byId.getName();
                     }
                 }
-                if (records.getThirdCompanyType() == 3) {
+                if (records.getThirdCompanyType() == 3){
                     Server byId = serverService.getById(records.getThirdCompanyId());
-                    if (Objects.nonNull(byId)) {
+                    if (Objects.nonNull(byId)){
                         name = byId.getName();
                     }
                 }
                 records.setThirdCompanyName(name);
             }
 
-            if (StrUtil.isEmpty(records.getProduct())) {
+            if(StrUtil.isEmpty(records.getProduct())) {
                 records.setProduct(JSONUtil.toJsonStr(new ArrayList<>()));
             }
 
-            if (ObjectUtils.isNotNull(records.getProduct())
+            if(ObjectUtils.isNotNull(records.getProduct())
                     && !"[]".equals(records.getProduct())
                     && ObjectUtils.isNotNull(records.getQuantity())
-                    && !"[null]".equals(records.getQuantity())) {
+                    && !"[null]".equals(records.getQuantity())){
 
                 ArrayList<Integer> products = JSON.parseObject(records.getProduct(), ArrayList.class);
                 ArrayList<Integer> quantitys = JSON.parseObject(records.getQuantity(), ArrayList.class);
 
-                for (int i = 0; i < products.size() && (quantitys.size() == products.size()); i++) {
+                for(int i = 0; i < products.size() && ( quantitys.size() == products.size() ); i++){
                     Product p = productService.getById(products.get(i));
-                    if (ObjectUtils.isNotNull(p)) {
+                    if(ObjectUtils.isNotNull(p)){
                         map.put(p.getName(), quantitys.get(i));
                     }
                 }
@@ -140,9 +143,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         return selectPage.setRecords(list);
     }
 
-    /**
-     * 导出excel
-     */
+    //导出excel
     @Override
     public void exportExcel(DeliverQuery query, HttpServletResponse response) {
         List<Deliver> deliverList = baseMapper.orderList(query);
@@ -157,37 +158,36 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             DeliverExportExcelVo deliverExcelVo = new DeliverExportExcelVo();
             BeanUtil.copyProperties(d, deliverExcelVo);
             //thirdCompanyName
-            if (ObjectUtil.isNotNull(d.getThirdCompanyId())) {
+            if(ObjectUtil.isNotNull(d.getThirdCompanyId())){
                 Customer customer = customerService.getById(d.getThirdCompanyId());
-                if (ObjectUtil.isNotNull(customer)) {
+                if(ObjectUtil.isNotNull(customer)){
                     deliverExcelVo.setThirdCompanyName(customer.getName());
                 }
             }
             //deliverTime
-            if (ObjectUtil.isNotNull(d.getDeliverTime())) {
+            if(ObjectUtil.isNotNull(d.getDeliverTime())){
                 deliverExcelVo.setDeliverTime(simpleDateFormat.format(new Date(d.getDeliverTime())));
             }
             //createUName
-            if (ObjectUtil.isNotNull(d.getCreateUid())) {
+            if(ObjectUtil.isNotNull(d.getCreateUid())){
                 User user = userService.getById(d.getCreateUid());
-                if (ObjectUtil.isNotNull(user)) {
+                if(ObjectUtil.isNotNull(user)){
                     deliverExcelVo.setCreateUName(user.getUserName());
                 }
             }
             //stateStr
-            if (ObjectUtil.isNotNull(d.getState())) {
+            if(ObjectUtil.isNotNull(d.getState())){
                 deliverExcelVo.setStateStr(getDeliverStatue(d.getState()));
             }
             //customerName
-            if (ObjectUtil.isNotNull(d.getCustomerId())) {
+            if(ObjectUtil.isNotNull(d.getCustomerId())){
                 Customer customer = customerService.getById(d.getCustomerId());
-                if (ObjectUtil.isNotNull(customer)) {
+                if(ObjectUtil.isNotNull(customer)){
                     deliverExcelVo.setCreateUName(customer.getName());
                 }
             }
             deliverExcelVoList.add(deliverExcelVo);
         }
-
 
         String fileName = "发货管理.xls";
         try {
@@ -207,8 +207,8 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     @Override
     @Transactional(rollbackFor = Exception.class)
     public R updateStatusFromBatch(List<Long> ids, Integer status) {
-        int row = this.baseMapper.updateStatusFromBatch(ids, status);
-        if (row == 0) {
+        int row = this.baseMapper.updateStatusFromBatch(ids,status);
+        if(row == 0){
             return R.fail("未修改数据");
         }
         return R.ok();
@@ -230,7 +230,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         return statusStr;
     }
 
-    private String getDeliverStatue(Integer status) {
+    private String getDeliverStatue(Integer status){
         //物流状态 1：未发货  2：已发货  3：已到达
         String statusStr = "";
         switch (status) {
