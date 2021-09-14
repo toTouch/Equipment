@@ -38,8 +38,8 @@ public interface PointNewService extends IService<PointNew> {
      * @param limit  查询条数
      * @return 对象列表
      */
-    List<PointNew> queryAllByLimit(int offset, int limit,String name,Integer cid,Integer status,
-                                   Long customerId,Long startTime,Long endTime,Long createUid,String snNo);
+    List<PointNew> queryAllByLimit(int offset, int limit, String name, Integer cid, Integer status,
+                                   Long customerId, Long startTime, Long endTime, Long createUid, String snNo);
 
     /**
      * 新增数据
@@ -76,11 +76,11 @@ public interface PointNewService extends IService<PointNew> {
     R pointInfo(Long pid);
 
     Integer countPoint(String name, Integer cid, Integer status,
-                       Long customerId, Long startTime, Long endTime, Long createUid,String snNo);
+                       Long customerId, Long startTime, Long endTime, Long createUid, String snNo);
 
-    List<PointNew> queryAllByLimitExcel(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime, Long createUid,String snNo);
+    List<PointNew> queryAllByLimitExcel(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime, Long createUid, String snNo);
 
-    R saveCache(Long pointId, Long modelId, String no, Long batch);
+    //R saveCache(Long pointId, Long modelId, String no, Long batch);
 
-    R deleteProduct(Long pointId, Long producutId);
+    //R deleteProduct(Long pointId, Long producutId);
 }
