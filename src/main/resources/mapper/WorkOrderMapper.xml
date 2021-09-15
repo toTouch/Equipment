@@ -87,8 +87,9 @@
         wo.product as wo_product,
         wo.code as wo_code,
         wo.reason as wo_reason,
-        (SELECT name FROM point WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
-        (SELECT name FROM point WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
+        wo.describeinfo as wo_describeinfo,
+        (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
+        (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
         wor.name as wor_name,
         u.user_name as u_user_name,
@@ -101,7 +102,7 @@
         LEFT JOIN work_order_type as wot on wot.id = wo.id
         LEFT JOIN work_order_reason as wor on wor.id = wo.work_order_reason_id
         LEFT JOIN user u on u.id =wo.creater_id
-        LEFT JOIN point as p on p.id = wo.point_id
+        LEFT JOIN t_point_new as p on p.id = wo.point_id
         LEFT JOIN file as f on f.bind_id = wo.id and f.type =2
         <where>
             <if test="query.pointId != null">
@@ -190,9 +191,6 @@
             <if test="query.createTimeStart != null and query.createTimeEnd != null">
                 and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
             </if>
-            <if test="query.type != null">
-                and wo.type = #{query.type}
-            </if>
         </where>
         ORDER BY wo.create_time DESC
         <if test="query.offset != null and query.size != null ">
@@ -202,56 +200,56 @@
 
     <select id="qualityCount" resultType="com.xiliulou.afterserver.web.vo.AfterCountVo">
         SELECT
-            count( a.work_order_reason_id ) AS count,
-            a.work_order_reason_id as reasonId
+        count( a.work_order_reason_id ) AS count,
+        a.work_order_reason_id as reasonId
         FROM
-            work_order a left join work_order_reason b on a.work_order_reason_id = b.id
+        work_order a left join work_order_reason b on a.work_order_reason_id = b.id
         WHERE
-            a.work_order_reason_id IS NOT NULL
-            and b.parent_id = 9
+        a.work_order_reason_id IS NOT NULL
+        and b.parent_id = 9
         <if test="startTime != null and endTime != null ">
             and a.create_time BETWEEN #{startTime} and #{endTime}
         </if>
         GROUP BY
-            a.work_order_reason_id
-            LIMIT 20
+        a.work_order_reason_id
+        LIMIT 20
 
     </select>
 
     <select id="qualityCountList" resultType="com.xiliulou.afterserver.web.vo.AfterCountListVo">
         SELECT
-            FROM_UNIXTIME( a.create_time / 1000, '%Y-%m-%d' ) as dateTime,
-            DATE_FORMAT(FROM_UNIXTIME( a.create_time / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
-            count( a.work_order_reason_id ) AS count,
-            a.work_order_reason_id as reasonId
+        FROM_UNIXTIME( a.create_time / 1000, '%Y-%m-%d' ) as dateTime,
+        DATE_FORMAT(FROM_UNIXTIME( a.create_time / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
+        count( a.work_order_reason_id ) AS count,
+        a.work_order_reason_id as reasonId
         FROM
-            work_order a left join work_order_reason b on a.work_order_reason_id = b.id
+        work_order a left join work_order_reason b on a.work_order_reason_id = b.id
         WHERE
-            a.work_order_reason_id IS NOT NULL
-            and b.parent_id = 9
+        a.work_order_reason_id IS NOT NULL
+        and b.parent_id = 9
         <if test="startTime != null and endTime != null ">
             and a.create_time BETWEEN #{startTime} and #{endTime}
         </if>
         GROUP BY
-           date,work_order_reason_id
+        date,work_order_reason_id
         ORDER BY date DESC
 
     </select>
 
     <select id="afterWorkOrderByCity" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
         SELECT
-            b.city,
-            count( 1 ) AS numCount,
-                ( CASE
-                WHEN o.third_company_pay IS NOT NULL THEN
-                sum( o.fee - o.third_company_pay ) ELSE sum( o.fee )
-                END )
-            AS sumCount
+        b.city,
+        count( 1 ) AS numCount,
+        ( CASE
+        WHEN o.third_company_pay IS NOT NULL THEN
+        sum( o.fee - o.third_company_pay ) ELSE sum( o.fee )
+        END )
+        AS sumCount
         FROM
-            work_order o
+        work_order o
         LEFT JOIN point b ON o.point_id = b.id
         WHERE
-            o.type = 5
+        o.type = 5
         <if test="cityId != null">
             and b.city = #{cityId}
         </if>
@@ -259,9 +257,9 @@
             and o.create_time BETWEEN #{startTime} and #{endTime}
         </if>
         GROUP BY
-            b.city
+        b.city
         ORDER BY
-            sumCount DESC
+        sumCount DESC
         LIMIT 20
 
     </select>
@@ -269,12 +267,12 @@
 
     <select id="afterWorkOrderByPoint" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
         SELECT
-            b.name as pointName, count(1) as numCount,
-            ( CASE
-            WHEN o.third_company_pay IS NOT NULL THEN
-            sum( o.fee - o.third_company_pay ) ELSE sum( o.fee )
-            END )
-            AS sumCount
+        b.name as pointName, count(1) as numCount,
+        ( CASE
+        WHEN o.third_company_pay IS NOT NULL THEN
+        sum( o.fee - o.third_company_pay ) ELSE sum( o.fee )
+        END )
+        AS sumCount
         FROM
         work_order o
         LEFT JOIN point b ON o.point_id = b.id
@@ -295,18 +293,18 @@
     <select id="afterWorkOrderList" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
 
         SELECT
-            FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ) as dateTime,
-            DATE_FORMAT(FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
---         count( a.work_order_reason_id ) AS count,
---             FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ) AS date,
-            sum( o.fee ) AS sumCount,
-            count(1) as numCount,
-            b.city
+        FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ) as dateTime,
+        DATE_FORMAT(FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
+        --         count( a.work_order_reason_id ) AS count,
+        --             FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ) AS date,
+        sum( o.fee ) AS sumCount,
+        count(1) as numCount,
+        b.city
         FROM
-            work_order o
-            LEFT JOIN point b ON o.point_id = b.id
+        work_order o
+        LEFT JOIN point b ON o.point_id = b.id
         WHERE
-            o.type = 5
+        o.type = 5
         <if test="startTime != null and endTime != null ">
             and o.create_time BETWEEN #{startTime} and #{endTime}
         </if>
@@ -314,23 +312,23 @@
             and b.city = #{cityId}
         </if>
         GROUP BY
-            date
+        date
         ORDER BY
-            date DESC
+        date DESC
     </select>
     <select id="installWorkOrderByCity" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
         SELECT
-            p.name as pointName,p.city,count(1) as numCount,
-            ( CASE
-            WHEN o.third_company_pay IS NOT NULL THEN
-            sum( o.fee - o.third_company_pay ) ELSE sum( o.fee )
-            END )
-            AS sumCount
+        p.name as pointName,p.city,count(1) as numCount,
+        ( CASE
+        WHEN o.third_company_pay IS NOT NULL THEN
+        sum( o.fee - o.third_company_pay ) ELSE sum( o.fee )
+        END )
+        AS sumCount
         FROM
-            work_order o
-            LEFT JOIN point p ON o.point_id = p.id
+        work_order o
+        LEFT JOIN point p ON o.point_id = p.id
         WHERE
-            o.type IN ( 1, 2, 3 )
+        o.type IN ( 1, 2, 3 )
         <if test="startTime != null and endTime != null ">
             and o.create_time BETWEEN #{startTime} and #{endTime}
         </if>
@@ -338,10 +336,10 @@
             and p.city = #{cityId}
         </if>
         GROUP BY
-            p.city
+        p.city
         ORDER BY
-            sumCount DESC
-            LIMIT 20
+        sumCount DESC
+        LIMIT 20
     </select>
     <select id="installWorkOrderByPoint" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
         SELECT
@@ -375,21 +373,21 @@
     </select>
     <select id="installWorkOrderList" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
         SELECT
-            p.NAME AS pointName,
-            p.city,
-            count( 1 ) AS numCount,
-            FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ) as dateTime,
-            DATE_FORMAT(FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
-            ( CASE
-            WHEN o.third_company_pay IS NOT NULL THEN
-            sum( o.fee - o.third_company_pay ) ELSE sum( o.fee )
-            END )
-            AS sumCount
+        p.NAME AS pointName,
+        p.city,
+        count( 1 ) AS numCount,
+        FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ) as dateTime,
+        DATE_FORMAT(FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
+        ( CASE
+        WHEN o.third_company_pay IS NOT NULL THEN
+        sum( o.fee - o.third_company_pay ) ELSE sum( o.fee )
+        END )
+        AS sumCount
         FROM
-            work_order o
-            LEFT JOIN point p ON o.point_id = p.id
+        work_order o
+        LEFT JOIN point p ON o.point_id = p.id
         WHERE
-            o.type IN ( 1, 2, 3 )
+        o.type IN ( 1, 2, 3 )
         <if test="startTime != null and endTime != null ">
             and o.create_time BETWEEN #{startTime} and #{endTime}
         </if>
@@ -397,10 +395,10 @@
             and p.city = #{cityId}
         </if>
         GROUP BY
-            date
+        date
         ORDER BY
-            date DESC
-            LIMIT 20
+        date DESC
+        LIMIT 20
     </select>
     <select id="countOrderList" resultType="java.lang.Integer">
         SELECT count(1)
