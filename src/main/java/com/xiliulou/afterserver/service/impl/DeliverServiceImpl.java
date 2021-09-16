@@ -62,16 +62,16 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         Page selectPage = baseMapper.selectPage(page,
                 new LambdaQueryWrapper<Deliver>()
                         .eq(Objects.nonNull(deliver.getState()), Deliver::getState, deliver.getState())
-                        .eq(Objects.nonNull(deliver.getCreateUid()),Deliver::getCreateUid,deliver.getCreateUid())
-                        .like(Objects.nonNull(deliver.getExpressNo()),Deliver::getExpressNo,deliver.getExpressNo())
-                        .like(Objects.nonNull(deliver.getExpressCompany()),Deliver::getExpressCompany,deliver.getExpressCompany())
+                        .eq(Objects.nonNull(deliver.getCreateUid()), Deliver::getCreateUid, deliver.getCreateUid())
+                        .like(Objects.nonNull(deliver.getExpressNo()), Deliver::getExpressNo, deliver.getExpressNo())
+                        .like(Objects.nonNull(deliver.getExpressCompany()), Deliver::getExpressCompany, deliver.getExpressCompany())
                         .orderByDesc(Deliver::getCreateTime)
                         .ge(Objects.nonNull(deliver.getCreateTimeStart()), Deliver::getDeliverTime, deliver.getCreateTimeStart())
                         .le(Objects.nonNull(deliver.getCreateTimeEnd()), Deliver::getDeliverTime, deliver.getCreateTimeEnd())
                         .like(Objects.nonNull(deliver.getCity()),Deliver::getCity,deliver.getCity())
                         .like(Objects.nonNull(deliver.getDestination()),Deliver::getDestination,deliver.getDestination()));
         List<Deliver> list = (List<Deliver>) selectPage.getRecords();
-        if (list.isEmpty()){
+        if (list.isEmpty()) {
             return selectPage;
         }
 
@@ -84,6 +84,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             if("null".equals(records.getQuantity()) || null == records.getQuantity()){
                 records.setQuantity(JSON.toJSONString(new String[]{null}));
             }
+
 
             if (Objects.nonNull(records.getCreateUid())){
                 User userById = userService.getUserById(records.getCreateUid());
