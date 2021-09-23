@@ -20,6 +20,7 @@ import com.xiliulou.afterserver.web.vo.ProductLendingApplicationItemVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -82,6 +83,7 @@ public class ProductLendingApplicationItemServiceImpl extends ServiceImpl<Produc
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public R edit(Long id, Long takeNum, Long returnNum){
         if(id == null){
             return R.fail("请输入id");
