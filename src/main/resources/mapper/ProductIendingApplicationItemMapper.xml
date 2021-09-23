@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiliulou.afterserver.mapper.ProductIendingApplicationItemMapper">
+
+    <select id="getPage" resultMap="getPageMap">
+        select id, apply_num, take_num, return_num, product_id, product_lending_app_id
+        from product_lending_application_item
+        where product_lending_app_id = #{productLendingAppId}
+    </select>
+
+    <resultMap id="getPageMap" type="com.xiliulou.afterserver.entity.ProductLendingApplicationItem">
+        <result column="id" property="id"></result>
+        <result column="apply_num" property="applyNum"></result>
+        <result column="take_num" property="takeNum"></result>
+        <result column="return_num" property="returnNum"></result>
+        <result column="product_id" property="productId"></result>
+        <result column="product_lending_app_id" property="productLendingAppId"></result>
+    </resultMap>
+</mapper>
