@@ -22,6 +22,7 @@ import com.xiliulou.afterserver.web.vo.ProductIendingApplicationVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.text.SimpleDateFormat;
@@ -77,6 +78,7 @@ public class ProductIendingApplicationServiceImpl extends ServiceImpl<ProductIen
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public R insert(ProductLendingApplicationQuery productLendingApplicationQuery, List<ProductLendingApplicationItemQuery> list) {
         WareHouse wareHouse = warehouseService.getById(productLendingApplicationQuery.getWareHouseId());
         if(Objects.isNull(wareHouse)){
@@ -126,6 +128,7 @@ public class ProductIendingApplicationServiceImpl extends ServiceImpl<ProductIen
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public R updateStatus(Long id, Long status){
         if(id == null || status == null){
             return R.fail("参数不合法");
