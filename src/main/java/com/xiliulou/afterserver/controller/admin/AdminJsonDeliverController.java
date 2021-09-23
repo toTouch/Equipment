@@ -7,6 +7,7 @@ import com.alibaba.excel.exception.ExcelAnalysisException;
 import com.alibaba.excel.exception.ExcelDataConvertException;
 import com.alibaba.excel.metadata.CellData;
 import com.alibaba.excel.read.metadata.ReadSheet;
+import com.alibaba.fastjson.JSON;
 import com.xiliulou.afterserver.entity.Deliver;
 import com.xiliulou.afterserver.export.DeliverInfo;
 import com.xiliulou.afterserver.export.PointInfo;
@@ -53,14 +54,15 @@ public class AdminJsonDeliverController {
     }
 
     @PostMapping("admin/deliver")
-    public R insert(@RequestBody Deliver deliver, HttpServletRequest request) {
-        Long uid = (Long) request.getAttribute("uid");
+    public R insert(@RequestParam("deliver") String d, HttpServletRequest request, Long wareHouseIdStart, Long wareHouseIdEnd) {
+        Deliver deliver = JSON.parseObject(d, Deliver.class);
+        /*Long uid = (Long) request.getAttribute("uid");
         if (Objects.isNull(uid)){
             return R.fail("用户为空");
         }
-        deliver.setCreateUid(uid);
+        deliver.setCreateUid(uid);*/
         deliver.setCreateTime(System.currentTimeMillis());
-        return R.ok(deliverService.save(deliver));
+        return deliverService.insert(deliver, wareHouseIdStart, wareHouseIdEnd);
     }
 
     @PutMapping("/admin/deliver/update/status")
@@ -75,8 +77,9 @@ public class AdminJsonDeliverController {
     }
 
     @PutMapping("admin/deliver")
-    public R update(@RequestBody Deliver deliver) {
-        return R.ok(deliverService.updateById(deliver));
+    public R update(@RequestParam("deliver") String d, Long wareHouseIdStart, Long wareHouseIdEnd) {
+        Deliver deliver = JSON.parseObject(d, Deliver.class);
+        return deliverService.updateDeliver(deliver, wareHouseIdStart, wareHouseIdEnd);
     }
 
     @DeleteMapping("admin/deliver")
