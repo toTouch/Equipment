@@ -54,15 +54,14 @@ public class AdminJsonDeliverController {
     }
 
     @PostMapping("admin/deliver")
-    public R insert(@RequestParam("deliver") String d, HttpServletRequest request, Long wareHouseIdStart, Long wareHouseIdEnd) {
-        Deliver deliver = JSON.parseObject(d, Deliver.class);
+    public R insert(@RequestParam("deliver") @RequestBody  Deliver deliver, HttpServletRequest request) {
         Long uid = (Long) request.getAttribute("uid");
         if (Objects.isNull(uid)){
             return R.fail("用户为空");
         }
         deliver.setCreateUid(uid);
         deliver.setCreateTime(System.currentTimeMillis());
-        return deliverService.insert(deliver, wareHouseIdStart, wareHouseIdEnd);
+        return deliverService.insert(deliver, deliver.getCityId(), deliver.getDestinationId());
     }
 
     @PutMapping("/admin/deliver/update/status")
@@ -77,9 +76,8 @@ public class AdminJsonDeliverController {
     }
 
     @PutMapping("admin/deliver")
-    public R update(@RequestParam("deliver") String d, Long wareHouseIdStart, Long wareHouseIdEnd) {
-        Deliver deliver = JSON.parseObject(d, Deliver.class);
-        return deliverService.updateDeliver(deliver, wareHouseIdStart, wareHouseIdEnd);
+    public R update(@RequestParam("deliver") @RequestBody Deliver deliver) {
+        return deliverService.updateDeliver(deliver, deliver.getCityId(), deliver.getDestinationId());
     }
 
     @DeleteMapping("admin/deliver")
