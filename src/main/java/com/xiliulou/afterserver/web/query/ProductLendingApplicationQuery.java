@@ -24,4 +24,6 @@ public class ProductLendingApplicationQuery {
     private Long startTime;
 
     private Long endTime;
+
+    private String no;
 }

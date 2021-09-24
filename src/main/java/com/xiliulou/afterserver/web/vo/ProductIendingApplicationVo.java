@@ -26,4 +26,6 @@ public class ProductIendingApplicationVo {
     private String returnTimeStr;
 
     private String statusStr;
+
+    private String no;
 }

@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
@@ -89,6 +90,7 @@ public class ProductIendingApplicationServiceImpl extends ServiceImpl<ProductIen
         BeanUtils.copyProperties(productLendingApplicationQuery, productIendingApplication);
         productIendingApplication.setCreateTime(System.currentTimeMillis());
         productIendingApplication.setStatus(ProductIendingApplication.STATUS_PENDING_REVIEW);
+        productIendingApplication.setNo(RandomUtil.randomString(10));
 
         this.save(productIendingApplication);
 
