@@ -16,7 +16,7 @@
                 and create_time &gt; #{query.startTime}
             </if>
             <if test="query.endTime != null">
-                and endTime &lt; #{query.endTime}
+                and create_time &lt; #{query.endTime}
             </if>
         </where>
         order by create_time desc
