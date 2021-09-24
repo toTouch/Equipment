@@ -21,7 +21,7 @@ public class ProductLendingApplicationQuery {
 
     private Long wareHouseId;
 
-    private Long createTimeStart;
+    private Long startTime;
 
-    private Long createTimeEnd;
+    private Long endTime;
 }

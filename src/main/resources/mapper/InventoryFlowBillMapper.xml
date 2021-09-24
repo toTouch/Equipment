@@ -8,11 +8,11 @@
            inventory_flow_bill
         <where>
             wid = #{query.wid}
-            <if test="query.createTimeStart != null">
-                and create_time &gt; #{query.createTimeStart}
+            <if test="query.startTime != null">
+                and create_time &gt; #{query.startTime}
             </if>
-            <if test="query.createTimeEnd != null">
-                and create_time &lt; #{query.createTimeEnd}
+            <if test="query.endTime != null">
+                and create_time &lt; #{query.endTime}
             </if>
             <if test="query.type">
                 and type = #{query.type}

@@ -27,7 +27,7 @@ public class AdminJsonProductIendingApplicationController extends BaseController
     ProductIendingApplicationService productIendingApplicationService;
 
     @PostMapping("admin/productIendingApplication")
-    public R insert(@RequestParam("ProductIendingApplicationQuery") String productLendingApplicationQuery, @RequestParam("ProductLendingApplicationItemQueryList") String list){
+    public R insert(@RequestParam("appQuery") String productLendingApplicationQuery, @RequestParam("appItemQuery") String list){
         ProductLendingApplicationQuery p = JSON.parseObject(productLendingApplicationQuery, ProductLendingApplicationQuery.class);
         List l = JSON.parseArray(list, ProductLendingApplicationItemQuery.class);
         return productIendingApplicationService.insert(p, l);
