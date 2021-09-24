@@ -28,6 +28,8 @@ public class ProductIendingApplication {
 
     private Long wareHouseId;
 
+    private String no;
+
     /**
      * 待审核
      */
