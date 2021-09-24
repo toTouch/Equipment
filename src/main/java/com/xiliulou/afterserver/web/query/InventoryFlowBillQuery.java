@@ -23,7 +23,7 @@ public class InventoryFlowBillQuery {
 
     private Long wid;
 
-    private Long createTimeStart;
+    private Long startTime;
 
-    private Long createTimeEnd;
+    private Long endTime;
 }
