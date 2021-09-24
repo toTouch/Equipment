@@ -9,7 +9,6 @@
         from
           product_lending_application
         <where>
-            ware_house_id = #{query.wareHouseId}
             <if test=" query.user != null and query.user != '' ">
                 and user like concat('%', #{query.user}, '%')
             </if>
