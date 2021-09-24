@@ -85,8 +85,8 @@ public class ProductLendingApplicationItemServiceImpl extends ServiceImpl<Produc
     @Override
     @Transactional(rollbackFor = Exception.class)
     public R edit(Long id, Long takeNum, Long returnNum){
-        if(id == null){
-            return R.fail("请输入id");
+        if(id == null || takeNum == null || returnNum == null){
+            return R.fail("参数异常，请重新输入！");
         }
         if(takeNum < returnNum){
             return R.fail("归还数不可大于领取数，请重新输入！");
