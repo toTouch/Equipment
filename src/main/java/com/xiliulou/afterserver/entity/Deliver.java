@@ -65,4 +65,9 @@ public class Deliver {
 
     @TableField(exist = false)
     private Map details;
+
+    @TableField(exist = false)
+    private Long cityId;
+    @TableField(exist = false)
+    private Long destinationId;
 }
