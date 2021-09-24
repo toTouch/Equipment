@@ -54,7 +54,7 @@ public class AdminJsonDeliverController {
     }
 
     @PostMapping("admin/deliver")
-    public R insert(@RequestParam("deliver") @RequestBody  Deliver deliver, HttpServletRequest request) {
+    public R insert(@RequestBody  Deliver deliver, HttpServletRequest request) {
         Long uid = (Long) request.getAttribute("uid");
         if (Objects.isNull(uid)){
             return R.fail("用户为空");
@@ -76,7 +76,7 @@ public class AdminJsonDeliverController {
     }
 
     @PutMapping("admin/deliver")
-    public R update(@RequestParam("deliver") @RequestBody Deliver deliver) {
+    public R update(@RequestBody Deliver deliver) {
         return deliverService.updateDeliver(deliver, deliver.getCityId(), deliver.getDestinationId());
     }
 
