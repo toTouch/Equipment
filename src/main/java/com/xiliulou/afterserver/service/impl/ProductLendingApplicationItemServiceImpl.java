@@ -85,14 +85,15 @@ public class ProductLendingApplicationItemServiceImpl extends ServiceImpl<Produc
     @Override
     @Transactional(rollbackFor = Exception.class)
     public R edit(Long id, Long takeNum, Long returnNum){
-        if(id == null){
-            return R.fail("请输入id");
+        if(id == null || takeNum < 0 || returnNum < 0){
+            return R.fail("参数异常，请重新输入！");
         }
         if(takeNum < returnNum){
             return R.fail("归还数不可大于领取数，请重新输入！");
         }
         ProductLendingApplicationItem productLendingApplicationItem =  this.getById(id);
         if(ObjectUtils.isNotNull(productLendingApplicationItem)){
+
             //获取状态
             Long productLendingAppId = productLendingApplicationItem.getProductLendingAppId();
             ProductIendingApplication productIendingApplication =  productIendingApplicationService.getById(productLendingAppId);
@@ -112,6 +113,18 @@ public class ProductLendingApplicationItemServiceImpl extends ServiceImpl<Produc
                 return  R.fail("领取数不能大于申请数！");
             }
 
+            Long oldTakeNum = productLendingApplicationItem.getTakeNum();
+            if(oldTakeNum != null && oldTakeNum != 0L && !oldTakeNum.equals(takeNum)){
+                return R.fail("已领取数已设置，不可更改");
+            }
+
+            if(oldTakeNum != null && oldTakeNum != 0L && oldTakeNum.equals(takeNum)){
+                productLendingApplicationItem.setTakeNum(takeNum);
+                productLendingApplicationItem.setReturnNum(returnNum);
+                this.updateById(productLendingApplicationItem);
+                return R.ok();
+            }
+
             //获取库存
             List<WareHouseProductDetails> wareHouseProductDetailsList = wareHouseProductDetailsMapper.selectList(
                     new QueryWrapper<WareHouseProductDetails>()
@@ -124,7 +137,13 @@ public class ProductLendingApplicationItemServiceImpl extends ServiceImpl<Produc
                 }
 
                 WareHouseProductDetails wareHouseProductDetails = wareHouseProductDetailsList.get(0);
-                //库存量
+
+                if(wareHouseProductDetails.getStockNum() < takeNum){
+                    return R.fail("仓库库存不足！");
+                }
+
+
+                /*//库存量
                 Long stockNum  = wareHouseProductDetails.getStockNum();
                 Long oldTakeNum =  productLendingApplicationItem.getTakeNum() == null ? 0 : productLendingApplicationItem.getTakeNum();
                 Long oldReturnNum = productLendingApplicationItem.getReturnNum() == null ? 0 : productLendingApplicationItem.getReturnNum();
@@ -154,22 +173,20 @@ public class ProductLendingApplicationItemServiceImpl extends ServiceImpl<Produc
 
                     wareHouseProductDetails.setStockNum(wareHouseProductDetails.getStockNum() + currReturnNum);
                     inventoryFlowBillService.save(inventoryFlowBill);
-                }
+                }*/
 
                 //借用柜子的流水单
-                if(currTakeNum > 0){
-                    InventoryFlowBill inventoryFlowBill = new InventoryFlowBill();
-                    inventoryFlowBill.setNo(RandomUtil.randomString(10));
-                    inventoryFlowBill.setType(InventoryFlowBill.TYPE_TAKE_DELIVERY);
-                    inventoryFlowBill.setMarkNum("-" + currTakeNum);
-                    inventoryFlowBill.setSurplusNum(wareHouseProductDetails.getStockNum() - currTakeNum + "");
-                    inventoryFlowBill.setCreateTime(System.currentTimeMillis());
-                    inventoryFlowBill.setWid(wareHouseProductDetails.getId());
 
-                    wareHouseProductDetails.setStockNum(wareHouseProductDetails.getStockNum() - currTakeNum);
-                    inventoryFlowBillService.save(inventoryFlowBill);
-                }
+                InventoryFlowBill inventoryFlowBill = new InventoryFlowBill();
+                inventoryFlowBill.setNo(RandomUtil.randomString(10));
+                inventoryFlowBill.setType(InventoryFlowBill.TYPE_TAKE_DELIVERY);
+                inventoryFlowBill.setMarkNum("-" + takeNum);
+                inventoryFlowBill.setSurplusNum(wareHouseProductDetails.getStockNum() - takeNum + "");
+                inventoryFlowBill.setCreateTime(System.currentTimeMillis());
+                inventoryFlowBill.setWid(wareHouseProductDetails.getId());
+                inventoryFlowBillService.save(inventoryFlowBill);
 
+                wareHouseProductDetails.setStockNum(wareHouseProductDetails.getStockNum() - takeNum);
                 wareHouseProductDetailsMapper.updateById(wareHouseProductDetails);
 
                 productLendingApplicationItem.setTakeNum(takeNum);
