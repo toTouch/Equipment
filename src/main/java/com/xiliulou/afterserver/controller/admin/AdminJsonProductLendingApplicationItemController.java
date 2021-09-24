@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -27,7 +28,7 @@ public class AdminJsonProductLendingApplicationItemController {
     }
 
     @PutMapping("admin/productIendingApplicationItem/edit")
-    public R edit(Long id, Long takeNum, Long returnNum){
+    public R edit(Long id, @RequestParam(defaultValue = "0") Long takeNum, @RequestParam(defaultValue = "0")Long returnNum){
         return productLendingApplicationItemService.edit(id, takeNum, returnNum);
     }
 }
