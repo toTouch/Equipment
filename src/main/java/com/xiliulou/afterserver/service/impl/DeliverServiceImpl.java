@@ -231,6 +231,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     public R insert(Deliver deliver,  Long wareHouseIdStart, Long wareHouseIdEnd) {
         R r = saveWareHouseDetails(deliver, wareHouseIdStart, wareHouseIdEnd);
         if(r == null){
+            deliver.setCreateTime(System.currentTimeMillis());
             r = R.ok(this.save(deliver));
         }
         return r;
@@ -264,6 +265,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             }
         }
         if(r == null){
+            deliver.setCreateTime(System.currentTimeMillis());
             r = R.ok(updateById(deliver));
         }
         return r;
@@ -356,7 +358,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
 
                 }
             }else{
-                R.fail("产品型号与数量个数不一致,将检查后重新提交");
+                return R.fail("产品型号与数量个数不一致,将检查后重新提交");
             }
         }
         return null;
