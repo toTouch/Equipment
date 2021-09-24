@@ -84,11 +84,11 @@ public class InventoryFlowBillServiceImpl extends ServiceImpl<InventoryFlowBillM
     private String getStatusStr(Long status){
 
         if(InventoryFlowBill.TYPE_SALES_DELIVERY.equals(status)){
-            return "销售出货";
+            return "销售出库";
         }else if(InventoryFlowBill.TYPE_TAKE_DELIVERY.equals(status)){
-            return "领用出货";
+            return "领用出库";
         }else if(InventoryFlowBill.TYPE_CALL_DELIVERY.equals(status)){
-            return "调拨出货";
+            return "调拨出库";
         }else if(InventoryFlowBill.TYPE_PURCHASE_WAREHOUSING.equals(status)){
             return "采购入库";
         }else if(InventoryFlowBill.TYPE_RETURN_WAREHOUSING.equals(status)){
