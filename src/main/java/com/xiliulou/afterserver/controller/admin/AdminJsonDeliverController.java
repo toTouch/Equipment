@@ -56,11 +56,11 @@ public class AdminJsonDeliverController {
     @PostMapping("admin/deliver")
     public R insert(@RequestParam("deliver") String d, HttpServletRequest request, Long wareHouseIdStart, Long wareHouseIdEnd) {
         Deliver deliver = JSON.parseObject(d, Deliver.class);
-        /*Long uid = (Long) request.getAttribute("uid");
+        Long uid = (Long) request.getAttribute("uid");
         if (Objects.isNull(uid)){
             return R.fail("用户为空");
         }
-        deliver.setCreateUid(uid);*/
+        deliver.setCreateUid(uid);
         deliver.setCreateTime(System.currentTimeMillis());
         return deliverService.insert(deliver, wareHouseIdStart, wareHouseIdEnd);
     }
