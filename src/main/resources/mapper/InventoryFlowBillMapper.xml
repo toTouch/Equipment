@@ -24,7 +24,7 @@
         <id property="id" column="id"></id>
         <result property="type" column="type"></result>
         <result property="createTime" column="create_time"></result>
-        <result property="markNum" column="marke_num"></result>
+        <result property="markNum" column="mark_num"></result>
         <result property="no" column="no"></result>
         <result property="surplusNum" column="surplus_num"></result>
         <result property="wid" column="wid"></result>
