@@ -22,8 +22,8 @@ public class AdminJsonProductLendingApplicationItemController {
     ProductLendingApplicationItemService productLendingApplicationItemService;
 
     @GetMapping("admin/productIendingApplicationItem/page")
-    public R getPage(Long offset, Long size, Long productLendingAppId){
-        return R.ok(productLendingApplicationItemService.getPage(offset, size, productLendingAppId));
+    public R getPage(Long offset, Long size, Long productAppId){
+        return R.ok(productLendingApplicationItemService.getPage(offset, size, productAppId));
     }
 
     @PutMapping("admin/productIendingApplicationItem/edit")
