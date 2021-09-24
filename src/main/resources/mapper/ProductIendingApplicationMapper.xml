@@ -5,7 +5,7 @@
 
     <select id="getPage" resultMap="getPageMap">
         select
-         id, user, create_time, return_time, status, ware_house_id
+         id, user, create_time, return_time, status, ware_house_id, no
         from
           product_lending_application
         <where>
@@ -29,5 +29,6 @@
         <result column="return_time" property="returnTime"></result>
         <result column="status" property="status"></result>
         <result column="ware_house_id" property="wareHouseId"></result>
+        <result column="no" property="no"></result>
     </resultMap>
 </mapper>
