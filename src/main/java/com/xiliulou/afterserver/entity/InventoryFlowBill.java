@@ -29,15 +29,15 @@ public class InventoryFlowBill {
 
     private Long wid;
     /**
-     * 销售出货
+     * 销售出库
      */
     public static final Long TYPE_SALES_DELIVERY = 1L;
     /**
-     * 领用出货
+     * 领用出库
      */
     public static final Long TYPE_TAKE_DELIVERY = 2L;
     /**
-     * 调拨出货
+     * 调拨出库
      */
     public static final Long TYPE_CALL_DELIVERY = 3L;
     /**
