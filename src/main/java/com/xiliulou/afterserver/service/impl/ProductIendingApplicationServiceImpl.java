@@ -83,7 +83,7 @@ public class ProductIendingApplicationServiceImpl extends ServiceImpl<ProductIen
     public R insert(ProductLendingApplicationQuery productLendingApplicationQuery, List<ProductLendingApplicationItemQuery> list) {
         WareHouse wareHouse = warehouseService.getById(productLendingApplicationQuery.getWareHouseId());
         if(Objects.isNull(wareHouse)){
-            R.fail("未查询到该仓库信息");
+            return R.fail("未查询到该仓库信息");
         }
 
         ProductIendingApplication productIendingApplication = new ProductIendingApplication();
@@ -94,10 +94,12 @@ public class ProductIendingApplicationServiceImpl extends ServiceImpl<ProductIen
 
         this.save(productIendingApplication);
 
-        list.forEach(item ->{
+
+        for(ProductLendingApplicationItemQuery item : list){
+
             Product product = productService.getById(item.getProductId());
             if(Objects.isNull(product)){
-                R.fail("未查询到该产品信息");
+                return R.fail("未查询到该产品信息");
             }
 
             List<WareHouseProductDetails> wareHouseProductDetailsList = wareHouseProductDetailsMapper.selectList(
@@ -106,17 +108,17 @@ public class ProductIendingApplicationServiceImpl extends ServiceImpl<ProductIen
                             .eq("ware_house_id", productLendingApplicationQuery.getWareHouseId()));
 
             if(wareHouseProductDetailsList == null || wareHouseProductDetailsList.isEmpty()){
-                R.fail("该仓库中没有此产品！");
+                return R.fail("该仓库中没有此产品！");
             }
 
             if(wareHouseProductDetailsList.size() > 1){
-                R.fail("数据错误！");
+                return R.fail("数据错误！");
             }
 
             WareHouseProductDetails wareHouseProductDetails = wareHouseProductDetailsList.get(0);
             if(wareHouseProductDetails.getStockNum()<item.getApplyNum()){
                 Product p = productService.getById(wareHouseProductDetails.getProductId());
-                R.fail("您申请的商品【"+p.getName()+"】库存不足！");
+                return R.fail("您申请的商品【"+p.getName()+"】库存不足！");
             }
 
             ProductLendingApplicationItem productLendingApplicationItem = new ProductLendingApplicationItem();
@@ -124,7 +126,7 @@ public class ProductIendingApplicationServiceImpl extends ServiceImpl<ProductIen
             productLendingApplicationItem.setProductLendingAppId(productIendingApplication.getId());
 
             productIendingApplicationItemService.save(productLendingApplicationItem);
-        });
+        }
 
         return R.ok();
     }
