@@ -62,6 +62,12 @@ public class Deliver {
     private String userName;
     @TableField(exist = false)
     private String thirdCompanyName;
+
     @TableField(exist = false)
-    private Map Details;
+    private Map details;
+
+    @TableField(exist = false)
+    private Long cityId;
+    @TableField(exist = false)
+    private Long destinationId;
 }
