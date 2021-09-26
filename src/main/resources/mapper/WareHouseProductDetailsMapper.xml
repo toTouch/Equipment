@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xiliulou.afterserver.mapper.WareHouseProductDetailsMapper">
+    <select id="getPage" resultMap="getPageMap">
+        select
+          id,
+          product_id,
+          stock_num,
+          ware_house_id
+        from
+          ware_house_product_details
+        <where>
+            ware_house_id = #{query.wareHouseId}
+            <if test="query.productId  != null">
+                and product_id = #{query.productId}
+            </if>
+            <if test="query.productName != null">
+                and product_id in(select id from product where name like #{query.productName})
+            </if>
+        </where>
+    </select>
+
+    <resultMap id="getPageMap" type="com.xiliulou.afterserver.entity.WareHouseProductDetails">
+        <id column="id" property="id"></id>
+        <result column="product_id" property="productId"></result>
+        <result column="stock_num" property="stockNum"></result>
+        <result column="ware_house_id" property="wareHouseId"></result>
+    </resultMap>
+</mapper>

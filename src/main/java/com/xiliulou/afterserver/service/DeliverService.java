@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.Deliver;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.DeliverQuery;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -16,4 +17,8 @@ public interface DeliverService extends IService<Deliver> {
     void exportExcel(DeliverQuery deliver, HttpServletResponse response);
 
     R updateStatusFromBatch(List<Long> ids, Integer status);
+
+    R insert(Deliver deliver,  Long wareHouseIdStart, Long wareHouseIdEnd);
+
+    R updateDeliver(Deliver deliver,  Long wareHouseIdStart, Long wareHouseIdEnd);
 }

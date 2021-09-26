@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xiliulou.afterserver.mapper.InventoryFlowBillMapper">
+    <select id="getPage" resultMap="getPageMap">
+        select
+           id, no, type, mark_num, surplus_num, create_time, wid
+        from
+           inventory_flow_bill
+        <where>
+            wid = #{query.wid}
+            <if test="query.startTime != null">
+                and create_time &gt; #{query.startTime}
+            </if>
+            <if test="query.endTime != null">
+                and create_time &lt; #{query.endTime}
+            </if>
+            <if test="query.type">
+                and type = #{query.type}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <resultMap id="getPageMap" type="com.xiliulou.afterserver.entity.InventoryFlowBill">
+        <id property="id" column="id"></id>
+        <result property="type" column="type"></result>
+        <result property="createTime" column="create_time"></result>
+        <result property="markNum" column="mark_num"></result>
+        <result property="no" column="no"></result>
+        <result property="surplusNum" column="surplus_num"></result>
+        <result property="wid" column="wid"></result>
+    </resultMap>
+</mapper>

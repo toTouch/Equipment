@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.controller.admin;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.read.metadata.ReadSheet;
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xiliulou.afterserver.controller.BaseController;
 import com.xiliulou.afterserver.entity.WareHouse;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -37,8 +39,26 @@ public class AdminJsonWarehouseController extends BaseController {
 
     @PostMapping("admin/warehouse")
     public R insert(@RequestBody WareHouse wareHouse) {
-        wareHouse.setCreateTime(System.currentTimeMillis());
-        return R.ok(warehouseService.save(wareHouse));
+        if(ObjectUtils.isNotNull(wareHouse)){
+            if(ObjectUtils.isNull(wareHouse.getWareHouses())){
+                return R.fail("请输入仓库名称！");
+            }
+
+            if(ObjectUtils.isNull(wareHouse.getAddress())){
+                return R.fail("请输入仓库地址！");
+            }
+
+            List<WareHouse> list = warehouseService.list();
+            for(WareHouse item : list){
+                if(Objects.equals(wareHouse.getWareHouses(), item.getWareHouses())){
+                    return R.fail("已存在该仓库！");
+                }
+            }
+
+            wareHouse.setCreateTime(System.currentTimeMillis());
+            return R.ok(warehouseService.save(wareHouse));
+        }
+        return R.fail("参数异常！");
     }
 
     @PutMapping("admin/warehouse")
