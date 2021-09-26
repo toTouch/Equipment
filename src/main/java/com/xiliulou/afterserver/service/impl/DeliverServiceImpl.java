@@ -247,8 +247,11 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         Deliver oldDeliver = this.getById(deliver.getId());
 
         if(ObjectUtils.isNotNull(oldDeliver)){
-            wareHouseIdStart = oldDeliver.getCityId();
-            wareHouseIdEnd = oldDeliver.getDestinationId();
+            WareHouse wareHouseStart = warehouseService.getOne(new QueryWrapper<WareHouse>().eq("ware_houses", oldDeliver.getCity()));
+            WareHouse wareHouseEnd = warehouseService.getOne(new QueryWrapper<WareHouse>().eq("ware_houses", oldDeliver.getDestination()));
+
+            wareHouseIdStart = Long.valueOf(wareHouseStart == null ? null : wareHouseStart.getId());
+            wareHouseIdEnd = Long.valueOf(wareHouseEnd == null ? null : wareHouseEnd.getId());
 
             if(Integer.valueOf(2).equals(oldDeliver.getState())
                     || Integer.valueOf(3).equals(oldDeliver.getState())){
