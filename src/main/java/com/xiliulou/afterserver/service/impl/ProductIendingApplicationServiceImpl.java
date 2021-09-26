@@ -69,6 +69,10 @@ public class ProductIendingApplicationServiceImpl extends ServiceImpl<ProductIen
             productIendingApplication.setReturnTimeStr(sdf.format(new Date(item.getReturnTime())));
             productIendingApplication.setStatusStr(this.getStatus(item.getStatus()));
 
+            WareHouse warehouse = warehouseService.getById(item.getId());
+            if(ObjectUtils.isNotNull(warehouse)){
+                productIendingApplication.setWareHouseName(warehouse.getWareHouses());
+            }
             pageList.add(productIendingApplication);
         });
 

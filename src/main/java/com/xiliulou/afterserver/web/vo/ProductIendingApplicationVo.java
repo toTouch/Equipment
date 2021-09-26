@@ -28,4 +28,6 @@ public class ProductIendingApplicationVo {
     private String statusStr;
 
     private String no;
+
+    private String wareHouseName;
 }
