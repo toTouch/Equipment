@@ -96,9 +96,6 @@ public class ProductIendingApplicationServiceImpl extends ServiceImpl<ProductIen
         productIendingApplication.setStatus(ProductIendingApplication.STATUS_PENDING_REVIEW);
         productIendingApplication.setNo(RandomUtil.randomString(10));
 
-        this.save(productIendingApplication);
-
-
         for(ProductLendingApplicationItemQuery item : list){
 
             Product product = productService.getById(item.getProductId());
@@ -130,6 +127,7 @@ public class ProductIendingApplicationServiceImpl extends ServiceImpl<ProductIen
             productLendingApplicationItem.setProductLendingAppId(productIendingApplication.getId());
 
             productIendingApplicationItemService.save(productLendingApplicationItem);
+            this.save(productIendingApplication);
         }
 
         return R.ok();
