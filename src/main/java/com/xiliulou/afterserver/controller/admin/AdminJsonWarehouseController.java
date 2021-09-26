@@ -40,23 +40,22 @@ public class AdminJsonWarehouseController extends BaseController {
     @PostMapping("admin/warehouse")
     public R insert(@RequestBody WareHouse wareHouse) {
         if(ObjectUtils.isNotNull(wareHouse)){
-            if(ObjectUtils.isNotNull(wareHouse.getWareHouses())){
+            if(ObjectUtils.isNull(wareHouse.getWareHouses())){
                 return R.fail("请输入仓库名称！");
             }
 
-            if(ObjectUtils.isNotNull(wareHouse.getAddress())){
+            if(ObjectUtils.isNull(wareHouse.getAddress())){
                 return R.fail("请输入仓库地址！");
             }
 
-            wareHouse.setCreateTime(System.currentTimeMillis());
             List<WareHouse> list = warehouseService.list();
-
             for(WareHouse item : list){
                 if(Objects.equals(wareHouse.getWareHouses(), item.getWareHouses())){
                     return R.fail("已存在该仓库！");
                 }
             }
 
+            wareHouse.setCreateTime(System.currentTimeMillis());
             return R.ok(warehouseService.save(wareHouse));
         }
         return R.fail("参数异常！");
