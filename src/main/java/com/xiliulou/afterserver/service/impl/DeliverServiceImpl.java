@@ -247,6 +247,9 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         Deliver oldDeliver = this.getById(deliver.getId());
 
         if(ObjectUtils.isNotNull(oldDeliver)){
+            wareHouseIdStart = oldDeliver.getCityId();
+            wareHouseIdEnd = oldDeliver.getDestinationId();
+
             if(Integer.valueOf(2).equals(oldDeliver.getState())
                     || Integer.valueOf(3).equals(oldDeliver.getState())){
                 //product 型号
