@@ -272,8 +272,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     }
 
     private R saveWareHouseDetails(Deliver deliver,  Long wareHouseIdStart, Long wareHouseIdEnd){
-        if(deliver.getState() != 1
-                && (wareHouseIdStart != null || wareHouseIdEnd != null)
+        if( (wareHouseIdStart != null || wareHouseIdEnd != null)
                 && deliver.getProduct() != null
                 && deliver.getQuantity() != null){
 
@@ -310,6 +309,10 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                                 return R.fail("仓库中【"+product.getName()+"】库存不足！库存余量：" + wareHouseProductDetails.getStockNum());
                             }
 
+                            if(deliver.getState() == 1){
+                                return null;
+                            }
+
                             wareHouseProductDetails.setStockNum(wareHouseProductDetails.getStockNum() - Integer.parseInt(quantityIds.get(i)));
                             wareHouseProductDetailsMapper.updateById(wareHouseProductDetails);
 
@@ -325,7 +328,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                         } else {
                             WareHouse wareHouseStart = warehouseService.getById(wareHouseIdStart);
                             Product product = productService.getById(productIds.get(i));
-                            return R.fail("仓库【" + wareHouseStart.getWareHouses() + "】没有【"+product.getName()+"】产品");
+                            return R.fail("仓库【" + wareHouseStart.getWareHouses() + "】没有"+ (product == null ? "【未知】" : "【"+ product.getName() +"】") + "产品");
                         }
                     }
 
