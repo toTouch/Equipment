@@ -7,6 +7,7 @@ import com.alibaba.excel.exception.ExcelAnalysisException;
 import com.alibaba.excel.exception.ExcelDataConvertException;
 import com.alibaba.excel.metadata.CellData;
 import com.alibaba.excel.read.metadata.ReadSheet;
+import com.alibaba.fastjson.JSON;
 import com.xiliulou.afterserver.entity.Deliver;
 import com.xiliulou.afterserver.export.DeliverInfo;
 import com.xiliulou.afterserver.export.PointInfo;
@@ -53,14 +54,14 @@ public class AdminJsonDeliverController {
     }
 
     @PostMapping("admin/deliver")
-    public R insert(@RequestBody Deliver deliver, HttpServletRequest request) {
+    public R insert(@RequestBody  Deliver deliver, HttpServletRequest request) {
         Long uid = (Long) request.getAttribute("uid");
         if (Objects.isNull(uid)){
             return R.fail("用户为空");
         }
         deliver.setCreateUid(uid);
         deliver.setCreateTime(System.currentTimeMillis());
-        return R.ok(deliverService.save(deliver));
+        return deliverService.insert(deliver, deliver.getCityId(), deliver.getDestinationId());
     }
 
     @PutMapping("/admin/deliver/update/status")
@@ -76,7 +77,7 @@ public class AdminJsonDeliverController {
 
     @PutMapping("admin/deliver")
     public R update(@RequestBody Deliver deliver) {
-        return R.ok(deliverService.updateById(deliver));
+        return deliverService.updateDeliver(deliver, deliver.getCityId(), deliver.getDestinationId());
     }
 
     @DeleteMapping("admin/deliver")

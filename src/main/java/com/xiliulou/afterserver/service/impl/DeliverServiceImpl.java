@@ -2,11 +2,13 @@ package com.xiliulou.afterserver.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -15,6 +17,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.DeliverMapper;
+import com.xiliulou.afterserver.mapper.WareHouseProductDetailsMapper;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
@@ -24,11 +27,14 @@ import com.xiliulou.afterserver.web.vo.DeliverExportExcelVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -53,7 +59,12 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     private SupplierService supplierService;
     @Autowired
     private ProductService productService;
-
+    @Autowired
+    private WarehouseService warehouseService;
+    @Autowired
+    private WareHouseProductDetailsMapper wareHouseProductDetailsMapper;
+    @Autowired
+    private InventoryFlowBillService inventoryFlowBillService;
 
     @Override
     public IPage getPage(Long offset, Long size, DeliverQuery deliver) {
@@ -214,6 +225,154 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         }
         return R.ok();
     }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public R insert(Deliver deliver,  Long wareHouseIdStart, Long wareHouseIdEnd) {
+        R r = saveWareHouseDetails(deliver, wareHouseIdStart, wareHouseIdEnd);
+        if(r == null){
+            deliver.setCreateTime(System.currentTimeMillis());
+            r = R.ok(this.save(deliver));
+        }
+        return r;
+    }
+
+
+
+    @Override
+    public R updateDeliver(Deliver deliver, Long wareHouseIdStart, Long wareHouseIdEnd) {
+
+        R r = null;
+
+        Deliver oldDeliver = this.getById(deliver.getId());
+
+        if(ObjectUtils.isNotNull(oldDeliver)){
+            WareHouse wareHouseStart = warehouseService.getOne(new QueryWrapper<WareHouse>().eq("ware_houses", oldDeliver.getCity()));
+            WareHouse wareHouseEnd = warehouseService.getOne(new QueryWrapper<WareHouse>().eq("ware_houses", oldDeliver.getDestination()));
+
+            wareHouseIdStart = Long.valueOf(wareHouseStart == null ? null : wareHouseStart.getId());
+            wareHouseIdEnd = Long.valueOf(wareHouseEnd == null ? null : wareHouseEnd.getId());
+
+            if(Integer.valueOf(2).equals(oldDeliver.getState())
+                    || Integer.valueOf(3).equals(oldDeliver.getState())){
+                //product 型号
+                //quantity 数量
+                if(!oldDeliver.getProduct().equals(deliver.getProduct())
+                        || !oldDeliver.getQuantity().equals(deliver.getQuantity())){
+
+                    return R.fail("已发货或已到达的订单不可改变产品型号和数量");
+                }
+
+                if(Integer.valueOf(1).equals(deliver.getState())){
+                    return R.fail("已发货或已到达的订单不可改变物流状态为未发货");
+                }
+            }else{
+                r = saveWareHouseDetails(deliver, wareHouseIdStart, wareHouseIdEnd);
+            }
+        }
+        if(r == null){
+            deliver.setCreateTime(System.currentTimeMillis());
+            r = R.ok(updateById(deliver));
+        }
+        return r;
+    }
+
+    private R saveWareHouseDetails(Deliver deliver,  Long wareHouseIdStart, Long wareHouseIdEnd){
+        if( (wareHouseIdStart != null || wareHouseIdEnd != null)
+                && deliver.getProduct() != null
+                && deliver.getQuantity() != null){
+
+            Long inventoryFlowBillStatus = null;
+            if(wareHouseIdStart != null){
+                if(wareHouseIdEnd != null){
+                    inventoryFlowBillStatus = InventoryFlowBill.TYPE_CALL_DELIVERY;
+                }else{
+                    inventoryFlowBillStatus = InventoryFlowBill.TYPE_SALES_DELIVERY;
+                }
+            }
+
+            if(wareHouseIdStart != null && ObjectUtils.isNull(warehouseService.getById(wareHouseIdStart))){
+                return R.fail("未查询到起点仓库");
+            }
+            if(wareHouseIdEnd != null && ObjectUtils.isNull(warehouseService.getById(wareHouseIdEnd))){
+                return R.fail("未查询到终点仓库");
+            }
+            //product  型号
+            //quantity  数量
+            ArrayList<Integer> productIds = JSON.parseObject(deliver.getProduct(), ArrayList.class);
+            ArrayList<String> quantityIds = JSON.parseObject(deliver.getQuantity(), ArrayList.class);
+            if(productIds.size() == quantityIds.size()){
+                for(int i = 0; i < productIds.size(); i++){
+                    if(wareHouseIdStart != null){
+                        WareHouseProductDetails wareHouseProductDetails = wareHouseProductDetailsMapper.selectOne(
+                                new QueryWrapper<WareHouseProductDetails>()
+                                        .eq("ware_house_id", wareHouseIdStart)
+                                        .eq("product_id", productIds.get(i)));
+                        if(ObjectUtils.isNotNull(wareHouseProductDetails)){
+
+                            if(wareHouseProductDetails.getStockNum() - Integer.parseInt(quantityIds.get(i)) < 0){
+                                Product product = productService.getById(wareHouseProductDetails.getProductId());
+                                return R.fail("仓库中【"+product.getName()+"】库存不足！库存余量：" + wareHouseProductDetails.getStockNum());
+                            }
+
+                            if(deliver.getState() == 1){
+                                return null;
+                            }
+
+                            wareHouseProductDetails.setStockNum(wareHouseProductDetails.getStockNum() - Integer.parseInt(quantityIds.get(i)));
+                            wareHouseProductDetailsMapper.updateById(wareHouseProductDetails);
+
+                            InventoryFlowBill inventoryFlowBill = new InventoryFlowBill();
+                            inventoryFlowBill.setNo(RandomUtil.randomString(10));
+                            inventoryFlowBill.setType(inventoryFlowBillStatus);
+                            inventoryFlowBill.setMarkNum("-" + quantityIds.get(i));
+                            inventoryFlowBill.setSurplusNum(wareHouseProductDetails.getStockNum() + "");
+                            inventoryFlowBill.setCreateTime(System.currentTimeMillis());
+                            inventoryFlowBill.setWid(wareHouseProductDetails.getId());
+
+                            inventoryFlowBillService.save(inventoryFlowBill);
+                        } else {
+                            WareHouse wareHouseStart = warehouseService.getById(wareHouseIdStart);
+                            Product product = productService.getById(productIds.get(i));
+                            return R.fail("仓库【" + wareHouseStart.getWareHouses() + "】没有"+ (product == null ? "【未知】" : "【"+ product.getName() +"】") + "产品");
+                        }
+                    }
+
+                    if(wareHouseIdEnd != null){
+                        WareHouseProductDetails wareHouseProductDetails = wareHouseProductDetailsMapper.selectOne(
+                                new QueryWrapper<WareHouseProductDetails>()
+                                        .eq("ware_house_id", wareHouseIdEnd)
+                                        .eq("product_id", productIds.get(i)));
+
+                        if(ObjectUtils.isNotNull(wareHouseProductDetails)){
+                            wareHouseProductDetails.setStockNum(wareHouseProductDetails.getStockNum() + Integer.parseInt(quantityIds.get(i)));
+                            wareHouseProductDetailsMapper.updateById(wareHouseProductDetails);
+                        }else{
+                            wareHouseProductDetails = new WareHouseProductDetails();
+                            wareHouseProductDetails.setProductId(Long.valueOf(productIds.get(i)));
+                            wareHouseProductDetails.setWareHouseId(wareHouseIdEnd);
+                            wareHouseProductDetails.setStockNum(Long.valueOf(quantityIds.get(i)));
+                            wareHouseProductDetailsMapper.insert(wareHouseProductDetails);
+                        }
+
+                        InventoryFlowBill inventoryFlowBill = new InventoryFlowBill();
+                        inventoryFlowBill.setNo(RandomUtil.randomString(10));
+                        inventoryFlowBill.setType(InventoryFlowBill.TYPE_CALL_WAREHOUSING);
+                        inventoryFlowBill.setMarkNum("+" + quantityIds.get(i));
+                        inventoryFlowBill.setSurplusNum(wareHouseProductDetails.getStockNum() + "");
+                        inventoryFlowBill.setCreateTime(System.currentTimeMillis());
+                        inventoryFlowBill.setWid(wareHouseProductDetails.getId());
+                        inventoryFlowBillService.save(inventoryFlowBill);
+                    }
+
+                }
+            }else{
+                return R.fail("产品型号与数量个数不一致,将检查后重新提交");
+            }
+        }
+        return null;
+    }
+
 
     private String getExpressNo(Integer status) {
         String statusStr = "";
