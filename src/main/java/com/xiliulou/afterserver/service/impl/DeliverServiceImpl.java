@@ -148,8 +148,8 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                     }
                 }
                 records.setDetails(map);
+                records.setDeliver(true);
             }
-
         });
 
         return selectPage.setRecords(list);
