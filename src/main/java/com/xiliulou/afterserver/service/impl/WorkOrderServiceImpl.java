@@ -144,6 +144,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     public void exportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
         workOrder.setType(String.valueOf(workOrder.getWorkOrderType()));
+        if("null".equals(workOrder.getType())){
+            workOrder.setType(null);
+        }
         List<WorkOrderVo> workOrderVoList = baseMapper.orderList(workOrder);
 
 

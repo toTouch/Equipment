@@ -62,7 +62,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                     boo = true;
                 }
             }else{
-                return R.fail(id+"-您想要删除的客户有其他关联，是否继续删除？");
+                return R.fail("您想要删除的客户有其他关联，不能删除！");
             }
         }
         if(boo){
