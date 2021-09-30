@@ -106,6 +106,10 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                records.setUserName(userById.getUserName());
             }
 
+            if(records.getState() == 1){
+                records.setDeliver(true);
+            }
+
 //            第三方类型 1：客户 2：供应商 3:服务商';
             if (Objects.nonNull(records.getThirdCompanyType())){
                 String name = "";
@@ -150,7 +154,6 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                 }
                 records.setDetails(map);
             }
-
         });
 
         return selectPage.setRecords(list);
