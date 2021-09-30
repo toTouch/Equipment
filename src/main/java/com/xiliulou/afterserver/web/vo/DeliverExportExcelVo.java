@@ -45,4 +45,6 @@ public class DeliverExportExcelVo {
     private String createUName; //set方法
     @ExcelProperty("备注")
     private String remark;
+    @ExcelProperty("产品类型及数量")
+    private String productAndNum;
 }

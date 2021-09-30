@@ -198,6 +198,27 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                     deliverExcelVo.setCreateUName(customer.getName());
                 }
             }
+            //productAndNum
+            if(ObjectUtils.isNotNull(d.getProduct())
+                    && !d.getProduct().equals("null")
+                    && ObjectUtils.isNotNull(d.getQuantity())
+                    && !d.getQuantity().equals("null")){
+
+                ArrayList<Integer> products = JSON.parseObject(d.getProduct(), ArrayList.class);
+                ArrayList<Integer> quantitys = JSON.parseObject(d.getQuantity(), ArrayList.class);
+                StringBuilder sb = new StringBuilder();
+
+                if( quantitys.size() == products.size() ){
+                    for(int i = 0; i < products.size(); i++){
+                        Product p = productService.getById(products.get(i));
+                        if(ObjectUtils.isNotNull(p)){
+                            sb.append(p.getName()).append(" -- ").append(quantitys.get(i)).append("\r\n");
+                        }
+                    }
+                }
+
+                deliverExcelVo.setProductAndNum(sb.toString());
+            }
             deliverExcelVoList.add(deliverExcelVo);
         }
 
