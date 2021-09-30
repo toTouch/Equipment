@@ -203,9 +203,9 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                 }
             }
             //productAndNum
-            if(StrUtil.isEmpty(d.getProduct())
+            if(!StrUtil.isEmpty(d.getProduct())
                     && !d.getProduct().equals("null")
-                    && StrUtil.isEmpty(d.getProduct())
+                    && !StrUtil.isEmpty(d.getProduct())
                     && !d.getQuantity().equals("null")
                     && !d.getQuantity().equals("[null]")){
 
