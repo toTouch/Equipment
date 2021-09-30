@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -202,16 +203,17 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                 }
             }
             //productAndNum
-            if(ObjectUtils.isNotNull(d.getProduct())
+            if(StrUtil.isEmpty(d.getProduct())
                     && !d.getProduct().equals("null")
-                    && ObjectUtils.isNotNull(d.getQuantity())
-                    && !d.getQuantity().equals("null")){
+                    && StrUtil.isEmpty(d.getProduct())
+                    && !d.getQuantity().equals("null")
+                    && !d.getQuantity().equals("[null]")){
 
                 ArrayList<Integer> products = JSON.parseObject(d.getProduct(), ArrayList.class);
                 ArrayList<Integer> quantitys = JSON.parseObject(d.getQuantity(), ArrayList.class);
                 StringBuilder sb = new StringBuilder();
 
-                if( quantitys.size() == products.size() ){
+                if( quantitys.size() == products.size() && products.size() != 0 && quantitys.size() != 0 && products.get(0) != null && quantitys.get(0) != null ){
                     for(int i = 0; i < products.size(); i++){
                         Product p = productService.getById(products.get(i));
                         if(ObjectUtils.isNotNull(p)){
