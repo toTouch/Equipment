@@ -215,7 +215,10 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                     for(int i = 0; i < products.size(); i++){
                         Product p = productService.getById(products.get(i));
                         if(ObjectUtils.isNotNull(p)){
-                            sb.append(p.getName()).append(" -- ").append(quantitys.get(i)).append("\r\n");
+                            sb.append(p.getName()).append(" -- ").append(quantitys.get(i));
+                            if(i < quantitys.size() - 1){
+                                sb.append(" ,\n");
+                            }
                         }
                     }
                 }
