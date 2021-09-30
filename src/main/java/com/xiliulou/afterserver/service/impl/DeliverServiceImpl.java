@@ -204,10 +204,10 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             }
             //productAndNum
             if(!StrUtil.isEmpty(d.getProduct())
-                    && !d.getProduct().equals("null")
+                    && d.getProduct().contains("[")
                     && !StrUtil.isEmpty(d.getProduct())
-                    && !d.getQuantity().equals("null")
-                    && !d.getQuantity().equals("[null]")){
+                    && !d.getQuantity().equals("[null]")
+                    && d.getQuantity().contains("[")){
 
                 ArrayList<Integer> products = JSON.parseObject(d.getProduct(), ArrayList.class);
                 ArrayList<Integer> quantitys = JSON.parseObject(d.getQuantity(), ArrayList.class);
