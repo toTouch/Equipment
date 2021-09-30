@@ -1,7 +1,6 @@
 package com.xiliulou.afterserver.web.vo;
 
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
 import java.math.BigDecimal;
