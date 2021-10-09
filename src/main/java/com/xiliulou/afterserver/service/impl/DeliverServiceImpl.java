@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -105,6 +106,10 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                records.setUserName(userById.getUserName());
             }
 
+            if(records.getState() == 1){
+                records.setDeliver(true);
+            }
+
 //            第三方类型 1：客户 2：供应商 3:服务商';
             if (Objects.nonNull(records.getThirdCompanyType())){
                 String name = "";
@@ -149,7 +154,6 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                 }
                 records.setDetails(map);
             }
-
         });
 
         return selectPage.setRecords(list);
@@ -197,6 +201,31 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                 if(ObjectUtil.isNotNull(customer)){
                     deliverExcelVo.setCreateUName(customer.getName());
                 }
+            }
+            //productAndNum
+            if(!StrUtil.isEmpty(d.getProduct())
+                    && d.getProduct().matches("\\[.*\\]")
+                    && !StrUtil.isEmpty(d.getQuantity())
+                    && !d.getQuantity().equals("[null]")
+                    && d.getQuantity().matches("\\[.*\\]")){
+
+                ArrayList<Integer> products = JSON.parseObject(d.getProduct(), ArrayList.class);
+                ArrayList<Integer> quantitys = JSON.parseObject(d.getQuantity(), ArrayList.class);
+                StringBuilder sb = new StringBuilder();
+
+                if( quantitys.size() == products.size() && products.size() != 0 && quantitys.size() != 0 && products.get(0) != null && quantitys.get(0) != null ){
+                    for(int i = 0; i < products.size(); i++){
+                        Product p = productService.getById(products.get(i));
+                        if(ObjectUtils.isNotNull(p)){
+                            sb.append(p.getName()).append(" -- ").append(quantitys.get(i));
+                            if(i < quantitys.size() - 1){
+                                sb.append(" ,\n");
+                            }
+                        }
+                    }
+                }
+
+                deliverExcelVo.setProductAndNum(sb.toString());
             }
             deliverExcelVoList.add(deliverExcelVo);
         }
