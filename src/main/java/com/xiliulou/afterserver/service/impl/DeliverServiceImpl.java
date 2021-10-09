@@ -254,7 +254,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                 wareHouseIdStart = Long.valueOf(wareHouseStart.getId());
             }
 
-            if(ObjectUtils.isNotNull(wareHouseIdEnd)){
+            if(ObjectUtils.isNotNull(wareHouseEnd)){
                 wareHouseIdEnd = Long.valueOf(wareHouseEnd.getId());
             }
 
@@ -262,8 +262,8 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                     || Integer.valueOf(3).equals(oldDeliver.getState())){
                 //product 型号
                 //quantity 数量
-                if(!oldDeliver.getProduct().equals(deliver.getProduct())
-                        || !oldDeliver.getQuantity().equals(deliver.getQuantity())){
+                if(Objects.nonNull(oldDeliver.getProduct()) && (!oldDeliver.getProduct().equals(deliver.getProduct())
+                        || !oldDeliver.getQuantity().equals(deliver.getQuantity()))){
 
                     return R.fail("已发货或已到达的订单不可改变产品型号和数量");
                 }
