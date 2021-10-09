@@ -336,9 +336,9 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             pointProductBindService.insert(pointProductBind);
         }
         return R.ok();
-    }
+    }*/
 
-    @Override
+    /*@Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public R deleteProduct(Long pointId, Long producutId) {
         if(pointId == null){

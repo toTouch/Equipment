@@ -70,4 +70,6 @@ public class Deliver {
     private Long cityId;
     @TableField(exist = false)
     private Long destinationId;
+    @TableField(exist = false)
+    private boolean isDeliver;
 }
