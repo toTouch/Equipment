@@ -33,7 +33,7 @@ public class PointNew {
      */
     private Long customerId;
     /**
-     * 状态 1,移机,2运营中,3:拆机
+     * 状态 1,移机,2运营中,3:拆机,4初始化,5待安装
      */
     private Integer status;
     /**
