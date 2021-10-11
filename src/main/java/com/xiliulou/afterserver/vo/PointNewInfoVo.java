@@ -18,5 +18,5 @@ public class PointNewInfoVo {
     private PointNew pointNew;
     private List<File> pointFileList;
     private List<ProductNew> productNew;
-    private Map productTypeAndNum;
+    private List<Map> productTypeAndNum;
 }
