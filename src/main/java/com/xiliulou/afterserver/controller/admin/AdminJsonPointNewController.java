@@ -259,7 +259,7 @@ public class AdminJsonPointNewController {
                 }
 
                 for(Map.Entry<String, Long> entry : productStatisticsMap.entrySet()){
-                    productAndNum = entry.getKey() + " --- " + entry.getValue() + "   \n";
+                    productAndNum += entry.getKey() + " --- " + entry.getValue() + "   \n";
                 }
             }
 
