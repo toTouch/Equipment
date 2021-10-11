@@ -66,4 +66,7 @@ public class PointExcelVo {
     @ExcelProperty("客户名称")
     private String customerName;
 
+
+    @ExcelProperty("产品类型及数量")
+    private String peoductNumAndType;
 }
