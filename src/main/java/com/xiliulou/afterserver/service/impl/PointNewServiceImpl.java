@@ -257,6 +257,8 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         List<PointProductBind> pointProductBindList = pointProductBindService.queryByPointNewId(pid);
         ArrayList<ProductNew> productNews = new ArrayList<>();
         Map<String, Long> map = new HashMap<>();
+        List<Map> productTypeAndNumList = new ArrayList<>();
+
         if (Objects.nonNull(pointProductBindList)){
             pointProductBindList.forEach(item -> {
                 ProductNew productNew = productNewService.queryByIdFromDB(item.getProductId());
@@ -281,8 +283,16 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
                 //productTypeAndNum
                 map.put(product.getName(), map.containsKey(product.getName()) ? map.get(product.getName()) + 1 : 1);
             });
+
             pointNewInfoVo.setProductNew(productNews);
-            pointNewInfoVo.setProductTypeAndNum(map);
+
+            for (Map.Entry entry : map.entrySet()){
+                Map item = new HashMap();
+                item.put("productType", entry.getKey());
+                item.put("productNum", entry.getValue());
+                productTypeAndNumList.add(item);
+            }
+            pointNewInfoVo.setProductTypeAndNum(productTypeAndNumList);
         }
         return R.ok(pointNewInfoVo);
     }
