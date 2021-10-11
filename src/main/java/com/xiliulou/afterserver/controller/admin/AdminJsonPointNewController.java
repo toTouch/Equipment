@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.controller.admin;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.enums.CellDataTypeEnum;
@@ -8,9 +9,14 @@ import com.alibaba.excel.exception.ExcelDataConvertException;
 import com.alibaba.excel.metadata.CellData;
 import com.alibaba.excel.read.metadata.ReadSheet;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.export.PointInfo;
 import com.xiliulou.afterserver.listener.PointListener;
+import com.xiliulou.afterserver.mapper.PointBindProductMapper;
+import com.xiliulou.afterserver.mapper.PointProductBindMapper;
+import com.xiliulou.afterserver.mapper.ProductMapper;
+import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.R;
@@ -18,6 +24,7 @@ import com.xiliulou.afterserver.vo.PointExcelVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,6 +54,12 @@ public class AdminJsonPointNewController {
     private ProvinceService provinceService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private PointProductBindMapper pointProductBindMapper;
+    @Autowired
+    private ProductNewMapper productNewMapper;
+    @Autowired
+    private ProductService productService;
 
 
     @PostMapping("/admin/pointNew")
@@ -198,7 +211,7 @@ public class AdminJsonPointNewController {
                 pointExcelVo.setInstallType("室内");
             }
 
-            // 状态 1,移机,2运营中,3:拆机
+            // 状态 1,移机,2运营中,3:拆机，4：初始化，5：待安装
             if (Objects.isNull(item.getStatus())){
                 pointExcelVo.setStatus("");
             }else if (Objects.equals(item.getStatus(),1)){
@@ -207,6 +220,10 @@ public class AdminJsonPointNewController {
                 pointExcelVo.setStatus("运营中");
             }else if (Objects.equals(item.getStatus(),3)){
                 pointExcelVo.setStatus("拆机");
+            }else if (Objects.equals(item.getStatus(),4)){
+                pointExcelVo.setStatus("初始化");
+            }else if (Objects.equals(item.getStatus(),5)){
+                pointExcelVo.setStatus("待安装");
             }
 
             if (item.getCreateTime() != null) {
@@ -225,6 +242,29 @@ public class AdminJsonPointNewController {
                 }
             }
 
+            //peoductNumAndType
+            Map<String, Long> productStatisticsMap = new HashMap<>();
+            String productAndNum = "";
+
+            List<PointProductBind> pointProductBinds = pointProductBindMapper.selectList(new QueryWrapper<PointProductBind>().eq("point_id", item.getId()));
+            if(!CollectionUtil.isEmpty(pointProductBinds)){
+                for(PointProductBind pointProductBind : pointProductBinds){
+
+                    ProductNew productNew = productNewMapper.selectById(pointProductBind.getProductId());
+
+                    if(!Objects.isNull(productNew)){
+                        Product product = productService.getById(productNew.getModelId());
+                        productStatisticsMap.put(product.getName(), productStatisticsMap.containsKey(product.getName()) ? productStatisticsMap.get(product.getName()) + 1 : 1);
+                    }
+                }
+
+                for(Map.Entry<String, Long> entry : productStatisticsMap.entrySet()){
+                    productAndNum = entry.getKey() + " --- " + entry.getValue() + "   \n";
+                }
+            }
+
+
+            pointExcelVo.setPeoductNumAndType(productAndNum);
             pointExcelVos.add(pointExcelVo);
 
         });
