@@ -45,7 +45,7 @@
                 and p.create_time &lt;= #{endTime}
             </if>
             <if test="pointId != null">
-                and b.product_id = #{pointId}
+                and b.point_id = #{pointId}
             </if>
         </where>
         order by create_time desc
