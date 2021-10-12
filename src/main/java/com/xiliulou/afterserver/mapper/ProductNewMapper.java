@@ -73,7 +73,8 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
     Integer countProduct(@Param("no") String no,
                          @Param("modelId") Long modelId,
                          @Param("startTime") Long startTime,
-                         @Param("endTime") Long endTime);
+                         @Param("endTime") Long endTime,
+                         @Param("pointId")Long pointId);
 
     int updateStatusFromBatch(@Param("ids") List<Long> ids, @Param("status") Integer status);
 }

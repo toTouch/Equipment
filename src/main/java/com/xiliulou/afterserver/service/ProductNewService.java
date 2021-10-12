@@ -72,7 +72,7 @@ public interface ProductNewService {
 
     ProductNew prdouctInfoByNo(String no);
 
-    Integer count(String no,Long modelId,Long startTime,Long endTime);
+    Integer count(String no,Long modelId,Long startTime,Long endTime, Long pointId);
 
     R getProductFile(Long id);
 

@@ -196,8 +196,8 @@ public class ProductNewServiceImpl implements ProductNewService {
     }
 
     @Override
-    public Integer count(String no,Long modelId,Long startTime,Long endTime) {
-        return this.productNewMapper.countProduct(no,modelId,startTime,endTime);
+    public Integer count(String no,Long modelId,Long startTime,Long endTime, Long pointId) {
+        return this.productNewMapper.countProduct(no,modelId,startTime,endTime,pointId);
     }
 
     @Override
