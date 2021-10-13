@@ -292,13 +292,13 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                     if(falg){
                         row.add(quantitys.get(index));
                     }else{
-                        row.add("0");
+                        row.add("");
                     }
                 }
 
             }else{
                 for (Product p : productAll){
-                    row.add("0");
+                    row.add("");
                 }
             }
             list.add(row);
