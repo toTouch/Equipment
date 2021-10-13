@@ -298,7 +298,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
 
             }else{
                 for (Product p : productAll){
-                    row.add("0");
+                    row.add("0----");
                 }
             }
             list.add(row);
