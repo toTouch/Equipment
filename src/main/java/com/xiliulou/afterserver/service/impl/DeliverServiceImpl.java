@@ -183,6 +183,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         Table table = new Table(1);
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
+
         String[] header = {"客户", "客户电话", "起点", "终点", "物流状态", "第三方公司", "第三方承担费用（元）", "运费", "发货时间", "快递公司", "快递单号", "创建人", "备注"};
         for(String s : header){
             List<String> headTitle = new ArrayList<String>();
@@ -194,6 +195,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             headTitle.add(p.getName());
             headList.add(headTitle);
         }
+        table.setHead(headList);
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<List<Object>> list = new ArrayList<>();
