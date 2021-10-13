@@ -293,7 +293,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             response.setHeader("content-Type", "application/vnd.ms-excel");
             // 下载文件的默认名称
             response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
-            EasyExcelFactory.getWriter(outputStream).write1(list,sheet,table);
+            EasyExcelFactory.getWriter(outputStream).write1(list,sheet,table).finish();
             //EasyExcel.write(outputStream, DeliverExportExcelVo.class).sheet("sheet").doWrite(deliverExcelVoList);
             return;
         } catch (IOException e) {
