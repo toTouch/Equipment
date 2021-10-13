@@ -6,6 +6,9 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.EasyExcelFactory;
+import com.alibaba.excel.metadata.Sheet;
+import com.alibaba.excel.metadata.Table;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -154,6 +157,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                 }
                 records.setDetails(map);
             }
+
         });
 
         return selectPage.setRecords(list);
@@ -163,45 +167,90 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     @Override
     public void exportExcel(DeliverQuery query, HttpServletResponse response) {
         List<Deliver> deliverList = baseMapper.orderList(query);
+        List<Product> productAll = productService.list();
 
         if (ObjectUtil.isEmpty(deliverList)) {
+            throw new CustomBusinessException("没有查询到发货信息!无法导出！");
+        }
+
+        if(ObjectUtil.isEmpty(productAll)){
             throw new CustomBusinessException("没有查询到产品型号!无法导出！");
         }
 
+        //headerSet
+        Sheet sheet = new Sheet(1,0);
+        sheet.setSheetName("Sheet");
+        Table table = new Table(1);
+        // 动态添加 表头 headList --> 所有表头行集合
+        List<List<String>> headList = new ArrayList<List<String>>();
+        String[] header = {"客户", "客户电话", "起点", "终点", "物流状态", "第三方公司", "第三方承担费用（元）", "运费", "发货时间", "快递公司", "快递单号", "创建人", "备注"};
+        for(String s : header){
+            List<String> headTitle = new ArrayList<String>();
+            headTitle.add(s);
+            headList.add(headTitle);
+        }
+        for (Product p : productAll){
+            List<String> headTitle = new ArrayList<String>();
+            headTitle.add(p.getName());
+            headList.add(headTitle);
+        }
+
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        List<DeliverExportExcelVo> deliverExcelVoList = new ArrayList<>(deliverList.size());
+        List<List<Object>> list = new ArrayList<>();
+
+        //List<Object> deliverExcelVoList = new ArrayList<>(deliverList.size());
         for (Deliver d : deliverList) {
             DeliverExportExcelVo deliverExcelVo = new DeliverExportExcelVo();
-            BeanUtil.copyProperties(d, deliverExcelVo);
-            //thirdCompanyName
-            if(ObjectUtil.isNotNull(d.getThirdCompanyId())){
-                Customer customer = customerService.getById(d.getThirdCompanyId());
-                if(ObjectUtil.isNotNull(customer)){
-                    deliverExcelVo.setThirdCompanyName(customer.getName());
-                }
-            }
-            //deliverTime
-            if(ObjectUtil.isNotNull(d.getDeliverTime())){
-                deliverExcelVo.setDeliverTime(simpleDateFormat.format(new Date(d.getDeliverTime())));
-            }
-            //createUName
-            if(ObjectUtil.isNotNull(d.getCreateUid())){
-                User user = userService.getById(d.getCreateUid());
-                if(ObjectUtil.isNotNull(user)){
-                    deliverExcelVo.setCreateUName(user.getUserName());
-                }
-            }
-            //stateStr
-            if(ObjectUtil.isNotNull(d.getState())){
-                deliverExcelVo.setStateStr(getDeliverStatue(d.getState()));
-            }
+
+            List<Object> row = new ArrayList<>();
+
             //customerName
             if(ObjectUtil.isNotNull(d.getCustomerId())){
                 Customer customer = customerService.getById(d.getCustomerId());
                 if(ObjectUtil.isNotNull(customer)){
-                    deliverExcelVo.setCreateUName(customer.getName());
+                    row.add(customer.getName());
                 }
             }
+            //phone
+            row.add(d.getPhone());
+            //city
+            row.add(d.getCity());
+            //destination
+            row.add(d.getDestination());
+            //stateStr
+            if(ObjectUtil.isNotNull(d.getState())){
+                row.add(getDeliverStatue(d.getState()));
+            }
+            //thirdCompanyName
+            if(ObjectUtil.isNotNull(d.getThirdCompanyId())){
+                Customer customer = customerService.getById(d.getThirdCompanyId());
+                if(ObjectUtil.isNotNull(customer)){
+                    row.add(customer.getName());
+                }
+            }
+            //thirdCompanyPay
+            row.add(d.getThirdCompanyPay());
+            //deliverCost
+            row.add(d.getDeliverCost());
+            //deliverTime
+            if(ObjectUtil.isNotNull(d.getDeliverTime())){
+                row.add(simpleDateFormat.format(new Date(d.getDeliverTime())));
+            }
+            //expressCompany
+            row.add(d.getExpressCompany());
+            //expressNo
+            row.add(d.getExpressNo());
+            //createUName
+            if(ObjectUtil.isNotNull(d.getCreateUid())){
+                User user = userService.getById(d.getCreateUid());
+                if(ObjectUtil.isNotNull(user)){
+                    row.add(user.getUserName());
+                }
+            }
+            //remark
+            row.add(d.getRemark());
+
+
             //productAndNum
             if(!StrUtil.isEmpty(d.getProduct())
                     && d.getProduct().matches("\\[.*\\]")
@@ -211,23 +260,30 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
 
                 ArrayList<Integer> products = JSON.parseObject(d.getProduct(), ArrayList.class);
                 ArrayList<Integer> quantitys = JSON.parseObject(d.getQuantity(), ArrayList.class);
-                StringBuilder sb = new StringBuilder();
 
-                if( quantitys.size() == products.size() && products.size() != 0 && quantitys.size() != 0 && products.get(0) != null && quantitys.get(0) != null ){
+                for (Product p : productAll){
+                    boolean falg = false;
+                    int index = -1;
                     for(int i = 0; i < products.size(); i++){
-                        Product p = productService.getById(products.get(i));
-                        if(ObjectUtils.isNotNull(p)){
-                            sb.append(p.getName()).append(" -- ").append(quantitys.get(i));
-                            if(i < quantitys.size() - 1){
-                                sb.append(" ,\n");
-                            }
+                        if(Objects.equals(p.getId(), products.get(i))){
+                            falg = true;
+                            index = i;
                         }
+                    }
+
+                    if(falg){
+                        row.add(quantitys.get(index));
+                    }else{
+                        row.add("0");
                     }
                 }
 
-                deliverExcelVo.setProductAndNum(sb.toString());
+            }else{
+                for (Product p : productAll){
+                    row.add("0");
+                }
             }
-            deliverExcelVoList.add(deliverExcelVo);
+            list.add(row);
         }
 
         String fileName = "发货管理.xls";
@@ -237,7 +293,8 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             response.setHeader("content-Type", "application/vnd.ms-excel");
             // 下载文件的默认名称
             response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
-            EasyExcel.write(outputStream, DeliverExportExcelVo.class).sheet("sheet").doWrite(deliverExcelVoList);
+            EasyExcelFactory.getWriter(outputStream).write1(list,sheet,table);
+            //EasyExcel.write(outputStream, DeliverExportExcelVo.class).sheet("sheet").doWrite(deliverExcelVoList);
             return;
         } catch (IOException e) {
             log.error("导出报表失败！", e);

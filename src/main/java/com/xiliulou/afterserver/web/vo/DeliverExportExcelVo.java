@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 public class DeliverExportExcelVo {
 
    @ExcelProperty("客户")
-    private String customerName;
+    private String customerName; //set
    @ExcelProperty("客户电话")
    private Long phone;
 
@@ -27,7 +27,7 @@ public class DeliverExportExcelVo {
      * 物流状态 1：未发货  2：已发货  3：已到达
      */
     @ExcelProperty("物流状态")
-    private String stateStr;
+    private String stateStr;  //set
     @ExcelProperty("第三方公司")
     private String thirdCompanyName; //set方法
     @ExcelProperty("第三方承担费用（元）")
