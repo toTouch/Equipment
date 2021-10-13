@@ -211,46 +211,62 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                 Customer customer = customerService.getById(d.getCustomerId());
                 if(ObjectUtil.isNotNull(customer)){
                     row.add(customer.getName());
+                }else{
+                    row.add("");
                 }
+            }else{
+                row.add("");
             }
             //phone
-            row.add(d.getPhone());
+            row.add(d.getPhone() == null ? "" : d.getPhone());
             //city
-            row.add(d.getCity());
+            row.add(d.getCity() == null ? "" : d.getCity() );
             //destination
-            row.add(d.getDestination());
+            row.add(d.getDestination() == null ? "" : d.getDestination());
             //stateStr
             if(ObjectUtil.isNotNull(d.getState())){
                 row.add(getDeliverStatue(d.getState()));
+            }else{
+                row.add("");
             }
             //thirdCompanyName
             if(ObjectUtil.isNotNull(d.getThirdCompanyId())){
                 Customer customer = customerService.getById(d.getThirdCompanyId());
                 if(ObjectUtil.isNotNull(customer)){
                     row.add(customer.getName());
+                }else{
+                    row.add("");
                 }
+            }else{
+                row.add("");
             }
             //thirdCompanyPay
-            row.add(d.getThirdCompanyPay());
+            row.add(d.getThirdCompanyPay()  == null ? "" : d.getThirdCompanyPay());
             //deliverCost
-            row.add(d.getDeliverCost());
+            row.add(d.getDeliverCost() == null ? "" : d.getDeliverCost() );
             //deliverTime
             if(ObjectUtil.isNotNull(d.getDeliverTime())){
                 row.add(simpleDateFormat.format(new Date(d.getDeliverTime())));
+            }else{
+                row.add("");
             }
             //expressCompany
-            row.add(d.getExpressCompany());
+            row.add(d.getExpressCompany() == null ? "" : d.getExpressCompany() );
             //expressNo
-            row.add(d.getExpressNo());
+            row.add(d.getExpressNo() == null ? "" : d.getExpressNo());
             //createUName
             if(ObjectUtil.isNotNull(d.getCreateUid())){
                 User user = userService.getById(d.getCreateUid());
                 if(ObjectUtil.isNotNull(user)){
                     row.add(user.getUserName());
+                }else{
+                    row.add("");
                 }
+            }else{
+                row.add("");
             }
             //remark
-            row.add(d.getRemark());
+            row.add(d.getRemark() == null ? "" : d.getRemark() );
 
 
             //productAndNum
