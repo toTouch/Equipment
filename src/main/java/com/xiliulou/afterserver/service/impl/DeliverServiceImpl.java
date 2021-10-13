@@ -283,7 +283,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                     boolean falg = false;
                     int index = -1;
                     for(int i = 0; i < products.size(); i++){
-                        if(Objects.equals(p.getId(), products.get(i))){
+                        if(Objects.equals(p.getId().intValue(), products.get(i).intValue())){
                             falg = true;
                             index = i;
                         }
