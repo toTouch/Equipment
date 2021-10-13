@@ -292,7 +292,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                     }
 
                     if(falg){
-                        row.add(new BigInteger(quantitys.get(index) + ""));
+                        row.add(quantitys.get(index));
                     }else{
                         row.add("");
                     }
