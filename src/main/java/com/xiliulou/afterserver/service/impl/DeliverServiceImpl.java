@@ -291,7 +291,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                     }
 
                     if(falg){
-                        row.add(new BigDecimal(quantitys.get(index)));
+                        row.add(quantitys.get(index));
                     }else{
                         row.add("");
                     }
