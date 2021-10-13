@@ -286,7 +286,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             list.add(row);
         }
 
-        String fileName = "发货管理.xls";
+        String fileName = "发货管理.xlsx";
         try {
             ServletOutputStream outputStream = response.getOutputStream();
             // 告诉浏览器用什么软件可以打开此文件
