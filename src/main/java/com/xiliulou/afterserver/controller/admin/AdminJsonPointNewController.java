@@ -2,6 +2,7 @@ package com.xiliulou.afterserver.controller.admin;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.EasyExcelFactory;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.enums.CellDataTypeEnum;
 import com.alibaba.excel.exception.ExcelAnalysisException;
@@ -214,7 +215,7 @@ public class AdminJsonPointNewController {
         ArrayList<List<Object>> pointExcelVos = new ArrayList<>();
 
         pointNews.forEach(item -> {
-            PointExcelVo pointExcelVo = new PointExcelVo();
+            //PointExcelVo pointExcelVo = new PointExcelVo();
             List<Object> list = new ArrayList<>();
 
             //柜机名称
@@ -246,7 +247,6 @@ public class AdminJsonPointNewController {
             }else if (Objects.equals(item.getInstallType(),3)){
                 list.add("室内");
             }
-
 
             //详细地址
             list.add(item.getAddress() == null ? "" : item.getAddress());
@@ -332,7 +332,8 @@ public class AdminJsonPointNewController {
             response.setHeader("content-Type", "application/vnd.ms-excel");
             // 下载文件的默认名称
             response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
-            EasyExcel.write(outputStream, PointExcelVo.class).sheet("sheet").doWrite(pointExcelVos);
+            //EasyExcel.write(outputStream, PointExcelVo.class).sheet("sheet").doWrite(pointExcelVos);
+            EasyExcelFactory.getWriter(outputStream).write1(pointExcelVos,sheet,table).finish();
             return;
         } catch (IOException e) {
             throw new NullPointerException("导出报表失败！请联系管理员处理！");
