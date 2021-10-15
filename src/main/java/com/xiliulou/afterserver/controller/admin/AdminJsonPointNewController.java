@@ -318,6 +318,10 @@ public class AdminJsonPointNewController {
                             list.add("0");
                         }
                     }
+                }else{
+                    for (Product p : productAll) {
+                        list.add("0");
+                    }
                 }
             }
 
