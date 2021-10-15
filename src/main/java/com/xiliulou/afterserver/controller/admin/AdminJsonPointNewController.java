@@ -315,12 +315,12 @@ public class AdminJsonPointNewController {
                         if (index != null) {
                             list.add(index.getValue());
                         } else {
-                            list.add("0");
+                            list.add("");
                         }
                     }
                 }else{
                     for (Product p : productAll) {
-                        list.add("0");
+                        list.add("");
                     }
                 }
             }
