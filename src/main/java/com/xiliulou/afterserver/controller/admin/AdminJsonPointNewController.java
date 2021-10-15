@@ -315,7 +315,7 @@ public class AdminJsonPointNewController {
                         if (index != null) {
                             list.add(index.getValue());
                         } else {
-                            list.add("");
+                            list.add("0");
                         }
                     }
                 }
