@@ -6,6 +6,7 @@ import com.xiliulou.afterserver.entity.ProductNew;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Hardy
@@ -17,5 +18,5 @@ public class PointNewInfoVo {
     private PointNew pointNew;
     private List<File> pointFileList;
     private List<ProductNew> productNew;
-
+    private List<Map> productTypeAndNum;
 }
