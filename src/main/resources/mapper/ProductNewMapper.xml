@@ -26,23 +26,26 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="ProductNewMap">
         select
-          id, no, model_id, batch_id, status, expiration_start_time, years, expiration_end_time, create_time, del_flag
-        from t_product_new
+          p.id, p.no, p.model_id, p.batch_id, p.status, p.expiration_start_time, p.years, p.expiration_end_time, p.create_time, p.del_flag
+        from t_product_new p, t_point_product_bind b
         <where>
-            and del_flag = 0
-            and cache is null
+            p.id = b.product_id
+            and p.del_flag = 0
+            and p.cache is null
             <if test="no != null and no != '' ">
-                and no like concat('%', #{no},'%')
+                and p.no like concat('%', #{no},'%')
             </if>
             <if test="modelId != null and modelId != ''">
-                and model_id = #{modelId}
+                and p.model_id = #{modelId}
             </if>
             <if test="startTime != null">
-                and create_time &gt;= #{startTime}
+                and p.create_time &gt;= #{startTime}
             </if>
-
             <if test="endTime != null">
-                and create_time &lt;= #{endTime}
+                and p.create_time &lt;= #{endTime}
+            </if>
+            <if test="pointId != null">
+                and b.point_id = #{pointId}
             </if>
         </where>
         order by create_time desc
@@ -88,21 +91,24 @@
         </where>
     </select>
     <select id="countProduct" resultType="java.lang.Integer">
-        select count(1) from t_product_new
+        select count(1) from t_product_new p left join t_point_product_bind b on p.id = b.product_id
         <where>
-            and del_flag = 0
+            and p.del_flag = 0
             <if test="no != null and no != '' ">
-                and no like concat('%', #{no},'%')
+                and p.no like concat('%', #{no},'%')
             </if>
             <if test="modelId != null and modelId != ''">
-                and model_id = #{modelId}
+                and p.model_id = #{modelId}
             </if>
             <if test="startTime != null">
-                and create_time &gt;= #{startTime}
+                and p.create_time &gt;= #{startTime}
             </if>
 
             <if test="endTime != null">
-                and create_time &lt;= #{endTime}
+                and p.create_time &lt;= #{endTime}
+            </if>
+            <if test="pointId != null">
+                and b.point_id = #{pointId}
             </if>
         </where>
     </select>
