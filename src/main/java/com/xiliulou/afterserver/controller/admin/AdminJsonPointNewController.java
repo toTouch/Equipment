@@ -176,56 +176,87 @@ public class AdminJsonPointNewController {
             return;
         }
 
-        ArrayList<PointExcelVo> pointExcelVos = new ArrayList<>();
+        ArrayList<List<Object>> pointExcelVos = new ArrayList<>();
 
         pointNews.forEach(item -> {
             PointExcelVo pointExcelVo = new PointExcelVo();
-            pointExcelVo.setName(item.getName());
-            pointExcelVo.setAddress(item.getAddress());
-            pointExcelVo.setCameraCount(item.getCameraCount());
-            pointExcelVo.setCanopyCount(item.getCanopyCount());
-            pointExcelVo.setSnNo(item.getSnNo());
-            pointExcelVo.setCardNumber(item.getCardNumber());
+            List<Object> list = new ArrayList<>();
 
-            // 1:室外 2:半室外3：室内
-            if (Objects.isNull(item.getInstallType())){
-                pointExcelVo.setInstallType("");
-            }else if (Objects.equals(item.getInstallType(),1)){
-                pointExcelVo.setInstallType("室外");
-            }else if (Objects.equals(item.getInstallType(),2)){
-                pointExcelVo.setInstallType("半室外");
-            }else if (Objects.equals(item.getInstallType(),3)){
-                pointExcelVo.setInstallType("室内");
-            }
+            //柜机名称
+            list.add(item.getName() == null ? "" : item.getName());
 
-            // 状态 1,移机,2运营中,3:拆机
+            //机柜状态
+            // 状态 1,移机,2运营中,3:拆机,4:初始化，5：待安装
             if (Objects.isNull(item.getStatus())){
-                pointExcelVo.setStatus("");
+                list.add("");
             }else if (Objects.equals(item.getStatus(),1)){
-                pointExcelVo.setStatus("移机");
+                list.add("移机");
             }else if (Objects.equals(item.getStatus(),2)){
-                pointExcelVo.setStatus("运营中");
+                list.add("运营中");
             }else if (Objects.equals(item.getStatus(),3)){
-                pointExcelVo.setStatus("拆机");
+                list.add("拆机");
+            }else if (Objects.equals(item.getStatus(),4)){
+                list.add("初始化");
+            }else if (Objects.equals(item.getStatus(),5)){
+                list.add("待安装");
             }
 
+            // 安装类型 1:室外 2:半室外3：室内
+            if (Objects.isNull(item.getInstallType())){
+                list.add("");
+            }else if (Objects.equals(item.getInstallType(),1)){
+                list.add("室外");
+            }else if (Objects.equals(item.getInstallType(),2)){
+                list.add("半室外");
+            }else if (Objects.equals(item.getInstallType(),3)){
+                list.add("室内");
+            }
+
+
+            //详细地址
+            list.add(item.getAddress() == null ? "" : item.getAddress());
+
+            //摄像头数量
+            list.add(item.getCameraCount() == null ? "" : item.getCameraCount());
+
+            //雨棚数量
+            list.add(item.getCanopyCount() == null ? "" : item.getCanopyCount());
+
+            //SN码
+            list.add(item.getSnNo() == null ? "" : item.getSnNo());
+
+            //物联网卡号
+            list.add(item.getCardNumber() == null ? "" : item.getCardNumber());
+            //安装时间
             if (item.getCreateTime() != null) {
-                pointExcelVo.setCreateTime(DateUtils.stampToDate(item.getCreateTime().toString()));
+                list.add(DateUtils.stampToDate(item.getCreateTime().toString()));
+            }else{
+                list.add("");
             }
-
+            //城市名称
             if (Objects.nonNull(item.getCityId())){
                 City byId = cityService.getById(item.getCityId());
-                pointExcelVo.setCityName(byId.getName());
+                if (Objects.nonNull(byId)){
+                    list.add(byId.getName());
+                }else{
+                    list.add("");
+                }
+            }else{
+                list.add("");
             }
-
+            //客户名称
             if (Objects.nonNull(item.getCustomerId())){
                 Customer byId = customerService.getById(item.getCustomerId());
                 if (Objects.nonNull(byId)){
-                    pointExcelVo.setCustomerName(byId.getName());
+                    list.add(byId.getName());
+                }else{
+                    list.add("");
                 }
+            }else{
+                list.add("");
             }
 
-            pointExcelVos.add(pointExcelVo);
+            pointExcelVos.add(list);
 
         });
 
