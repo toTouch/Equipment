@@ -111,7 +111,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                records.setUserName(userById.getUserName());
             }
 
-            if(records.getState() == 1){
+            if(Objects.equals(records.getState(),1)){
                 records.setDeliver(true);
             }
 
