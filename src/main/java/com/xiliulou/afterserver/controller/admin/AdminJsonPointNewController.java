@@ -1,16 +1,22 @@
 package com.xiliulou.afterserver.controller.admin;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.enums.CellDataTypeEnum;
 import com.alibaba.excel.exception.ExcelAnalysisException;
 import com.alibaba.excel.exception.ExcelDataConvertException;
 import com.alibaba.excel.metadata.CellData;
+import com.alibaba.excel.metadata.Sheet;
+import com.alibaba.excel.metadata.Table;
 import com.alibaba.excel.read.metadata.ReadSheet;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.export.PointInfo;
 import com.xiliulou.afterserver.listener.PointListener;
+import com.xiliulou.afterserver.mapper.PointProductBindMapper;
+import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.R;
@@ -47,6 +53,12 @@ public class AdminJsonPointNewController {
     private ProvinceService provinceService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private PointProductBindMapper pointProductBindMapper;
+    @Autowired
+    private ProductNewMapper productNewMapper;
 
 
     @PostMapping("/admin/pointNew")
@@ -176,6 +188,29 @@ public class AdminJsonPointNewController {
             return;
         }
 
+        Sheet sheet = new Sheet(1,0);
+        sheet.setSheetName("Sheet");
+        Table table = new Table(1);
+        // 动态添加 表头 headList --> 所有表头行集合
+        List<List<String>> headList = new ArrayList<List<String>>();
+
+        String[] header = {"柜机名称", "机柜状态", "安装类型", "详细地址", "摄像头数量", "雨棚数量", "SN码", "物联网卡号", "安装时间", "城市名称", "客户名称"};
+        List<Product> productAll = productService.list();
+        for(String s : header){
+            List<String> headTitle = new ArrayList<>();
+            headTitle.add(s);
+            headList.add(headTitle);
+        }
+        if(productAll != null && !productAll.isEmpty()){
+            for (Product p : productAll){
+                List<String> headTitle = new ArrayList<>();
+                headTitle.add(p.getName());
+                headList.add(headTitle);
+            }
+        }
+        table.setHead(headList);
+
+
         ArrayList<List<Object>> pointExcelVos = new ArrayList<>();
 
         pointNews.forEach(item -> {
@@ -254,6 +289,36 @@ public class AdminJsonPointNewController {
                 }
             }else{
                 list.add("");
+            }
+
+            if(productAll != null && !productAll.isEmpty()) {
+                Map<Long, Long> productStatisticsMap = new HashMap<>();
+                List<PointProductBind> pointProductBinds = pointProductBindMapper.selectList(new QueryWrapper<PointProductBind>().eq("point_id", item.getId()));
+                if (!CollectionUtil.isEmpty(pointProductBinds)) {
+                    for (PointProductBind pointProductBind : pointProductBinds) {
+                        ProductNew productNew = productNewMapper.selectById(pointProductBind.getProductId());
+                        if (!Objects.isNull(productNew)) {
+                            Product product = productService.getById(productNew.getModelId());
+                            productStatisticsMap.put(product.getId(), productStatisticsMap.containsKey(product.getId()) ? productStatisticsMap.get(product.getId()) + 1 : 1);
+                        }
+                    }
+                    for (Product p : productAll) {
+                        boolean falg = false;
+                        Map.Entry index = null;
+                        for (Map.Entry<Long, Long> entry : productStatisticsMap.entrySet()) {
+                            if (Objects.equals(p.getId().intValue(), entry.getKey().intValue())) {
+                                falg = true;
+                                index = entry;
+                            }
+                        }
+
+                        if (index != null) {
+                            list.add(index.getValue());
+                        } else {
+                            list.add("");
+                        }
+                    }
+                }
             }
 
             pointExcelVos.add(list);
