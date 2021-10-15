@@ -6,6 +6,7 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.server.HttpServerResponse;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.constant.FileConstant;
 import com.xiliulou.afterserver.entity.File;
@@ -23,6 +24,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @program: XILIULOU
@@ -89,6 +91,21 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     public List<File> queryByProductNewId(Long productId) {
         LambdaQueryWrapper<File> queryWrapper = new LambdaQueryWrapper<File>().eq(File::getType, File.TYPE_PRODUCT).eq(File::getBindId, productId);
         return this.baseMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public R removeFile(Long fileId) {
+        File file = this.baseMapper.selectOne(new LambdaQueryWrapper<File>().eq(File::getId, fileId));
+        if(Objects.nonNull(file)){
+            try{
+                minioUtil.removeObject(FileConstant.BUCKET_NAME,file.getFileName());
+                this.baseMapper.delete(new LambdaUpdateWrapper<File>().eq(File::getId, fileId));
+                return R.ok();
+            }catch (Exception e){
+                log.error("文件删除异常", e);
+            }
+        }
+        return R.fail("文件删除失败");
     }
 
 }

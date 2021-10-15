@@ -36,6 +36,11 @@ public class JsonUserPointProductController {
         return fileService.uploadFile(file);
     }
 
+    @DeleteMapping("/user/removeFile")
+    public R removeFile(Long fileId){
+        return fileService.removeFile(fileId);
+    }
+
     @PostMapping("/user/file")
     public R adminPrductFile(@RequestBody File file){
         file.setCreateTime(System.currentTimeMillis());
