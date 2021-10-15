@@ -2,20 +2,21 @@ package com.xiliulou.afterserver.controller.admin;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.EasyExcelFactory;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.enums.CellDataTypeEnum;
 import com.alibaba.excel.exception.ExcelAnalysisException;
 import com.alibaba.excel.exception.ExcelDataConvertException;
 import com.alibaba.excel.metadata.CellData;
+import com.alibaba.excel.metadata.Sheet;
+import com.alibaba.excel.metadata.Table;
 import com.alibaba.excel.read.metadata.ReadSheet;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.export.PointInfo;
 import com.xiliulou.afterserver.listener.PointListener;
-import com.xiliulou.afterserver.mapper.PointBindProductMapper;
 import com.xiliulou.afterserver.mapper.PointProductBindMapper;
-import com.xiliulou.afterserver.mapper.ProductMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DateUtils;
@@ -24,7 +25,6 @@ import com.xiliulou.afterserver.vo.PointExcelVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -55,11 +55,11 @@ public class AdminJsonPointNewController {
     @Autowired
     private UserService userService;
     @Autowired
+    private ProductService productService;
+    @Autowired
     private PointProductBindMapper pointProductBindMapper;
     @Autowired
     private ProductNewMapper productNewMapper;
-    @Autowired
-    private ProductService productService;
 
 
     @PostMapping("/admin/pointNew")
@@ -189,83 +189,143 @@ public class AdminJsonPointNewController {
             return;
         }
 
-        ArrayList<PointExcelVo> pointExcelVos = new ArrayList<>();
+        Sheet sheet = new Sheet(1,0);
+        sheet.setSheetName("Sheet");
+        Table table = new Table(1);
+        // 动态添加 表头 headList --> 所有表头行集合
+        List<List<String>> headList = new ArrayList<List<String>>();
+
+        String[] header = {"柜机名称", "机柜状态", "安装类型", "详细地址", "摄像头数量", "雨棚数量", "SN码", "物联网卡号", "安装时间", "城市名称", "客户名称"};
+        List<Product> productAll = productService.list();
+        for(String s : header){
+            List<String> headTitle = new ArrayList<>();
+            headTitle.add(s);
+            headList.add(headTitle);
+        }
+        if(productAll != null && !productAll.isEmpty()){
+            for (Product p : productAll){
+                List<String> headTitle = new ArrayList<>();
+                headTitle.add(p.getName());
+                headList.add(headTitle);
+            }
+        }
+        table.setHead(headList);
+
+
+        ArrayList<List<Object>> pointExcelVos = new ArrayList<>();
 
         pointNews.forEach(item -> {
-            PointExcelVo pointExcelVo = new PointExcelVo();
-            pointExcelVo.setName(item.getName());
-            pointExcelVo.setAddress(item.getAddress());
-            pointExcelVo.setCameraCount(item.getCameraCount());
-            pointExcelVo.setCanopyCount(item.getCanopyCount());
-            pointExcelVo.setSnNo(item.getSnNo());
-            pointExcelVo.setCardNumber(item.getCardNumber());
+            //PointExcelVo pointExcelVo = new PointExcelVo();
+            List<Object> list = new ArrayList<>();
 
-            // 1:室外 2:半室外3：室内
-            if (Objects.isNull(item.getInstallType())){
-                pointExcelVo.setInstallType("");
-            }else if (Objects.equals(item.getInstallType(),1)){
-                pointExcelVo.setInstallType("室外");
-            }else if (Objects.equals(item.getInstallType(),2)){
-                pointExcelVo.setInstallType("半室外");
-            }else if (Objects.equals(item.getInstallType(),3)){
-                pointExcelVo.setInstallType("室内");
-            }
+            //柜机名称
+            list.add(item.getName() == null ? "" : item.getName());
 
-            // 状态 1,移机,2运营中,3:拆机，4：初始化，5：待安装
+            //机柜状态
+            // 状态 1,移机,2运营中,3:拆机,4:初始化，5：待安装
             if (Objects.isNull(item.getStatus())){
-                pointExcelVo.setStatus("");
+                list.add("");
             }else if (Objects.equals(item.getStatus(),1)){
-                pointExcelVo.setStatus("移机");
+                list.add("移机");
             }else if (Objects.equals(item.getStatus(),2)){
-                pointExcelVo.setStatus("运营中");
+                list.add("运营中");
             }else if (Objects.equals(item.getStatus(),3)){
-                pointExcelVo.setStatus("拆机");
+                list.add("拆机");
             }else if (Objects.equals(item.getStatus(),4)){
-                pointExcelVo.setStatus("初始化");
+                list.add("初始化");
             }else if (Objects.equals(item.getStatus(),5)){
-                pointExcelVo.setStatus("待安装");
+                list.add("待安装");
             }
 
+            // 安装类型 1:室外 2:半室外3：室内
+            if (Objects.isNull(item.getInstallType())){
+                list.add("");
+            }else if (Objects.equals(item.getInstallType(),1)){
+                list.add("室外");
+            }else if (Objects.equals(item.getInstallType(),2)){
+                list.add("半室外");
+            }else if (Objects.equals(item.getInstallType(),3)){
+                list.add("室内");
+            }
+
+            //详细地址
+            list.add(item.getAddress() == null ? "" : item.getAddress());
+
+            //摄像头数量
+            list.add(item.getCameraCount() == null ? "" : item.getCameraCount());
+
+            //雨棚数量
+            list.add(item.getCanopyCount() == null ? "" : item.getCanopyCount());
+
+            //SN码
+            list.add(item.getSnNo() == null ? "" : item.getSnNo());
+
+            //物联网卡号
+            list.add(item.getCardNumber() == null ? "" : item.getCardNumber());
+            //安装时间
             if (item.getCreateTime() != null) {
-                pointExcelVo.setCreateTime(DateUtils.stampToDate(item.getCreateTime().toString()));
+                list.add(DateUtils.stampToDate(item.getCreateTime().toString()));
+            }else{
+                list.add("");
             }
-
+            //城市名称
             if (Objects.nonNull(item.getCityId())){
                 City byId = cityService.getById(item.getCityId());
-                pointExcelVo.setCityName(byId.getName());
+                if (Objects.nonNull(byId)){
+                    list.add(byId.getName());
+                }else{
+                    list.add("");
+                }
+            }else{
+                list.add("");
             }
-
+            //客户名称
             if (Objects.nonNull(item.getCustomerId())){
                 Customer byId = customerService.getById(item.getCustomerId());
                 if (Objects.nonNull(byId)){
-                    pointExcelVo.setCustomerName(byId.getName());
+                    list.add(byId.getName());
+                }else{
+                    list.add("");
                 }
+            }else{
+                list.add("");
             }
 
-            //peoductNumAndType
-            Map<String, Long> productStatisticsMap = new HashMap<>();
-            String productAndNum = "";
+            if(productAll != null && !productAll.isEmpty()) {
+                Map<Long, Long> productStatisticsMap = new HashMap<>();
+                List<PointProductBind> pointProductBinds = pointProductBindMapper.selectList(new QueryWrapper<PointProductBind>().eq("point_id", item.getId()));
+                if (!CollectionUtil.isEmpty(pointProductBinds)) {
+                    for (PointProductBind pointProductBind : pointProductBinds) {
+                        ProductNew productNew = productNewMapper.selectById(pointProductBind.getProductId());
+                        if (!Objects.isNull(productNew)) {
+                            Product product = productService.getById(productNew.getModelId());
+                            productStatisticsMap.put(product.getId(), productStatisticsMap.containsKey(product.getId()) ? productStatisticsMap.get(product.getId()) + 1 : 1);
+                        }
+                    }
+                    for (Product p : productAll) {
+                        boolean falg = false;
+                        Map.Entry index = null;
+                        for (Map.Entry<Long, Long> entry : productStatisticsMap.entrySet()) {
+                            if (Objects.equals(p.getId().intValue(), entry.getKey().intValue())) {
+                                falg = true;
+                                index = entry;
+                            }
+                        }
 
-            List<PointProductBind> pointProductBinds = pointProductBindMapper.selectList(new QueryWrapper<PointProductBind>().eq("point_id", item.getId()));
-            if(!CollectionUtil.isEmpty(pointProductBinds)){
-                for(PointProductBind pointProductBind : pointProductBinds){
-
-                    ProductNew productNew = productNewMapper.selectById(pointProductBind.getProductId());
-
-                    if(!Objects.isNull(productNew)){
-                        Product product = productService.getById(productNew.getModelId());
-                        productStatisticsMap.put(product.getName(), productStatisticsMap.containsKey(product.getName()) ? productStatisticsMap.get(product.getName()) + 1 : 1);
+                        if (index != null) {
+                            list.add(index.getValue());
+                        } else {
+                            list.add("");
+                        }
+                    }
+                }else{
+                    for (Product p : productAll) {
+                        list.add("");
                     }
                 }
-
-                for(Map.Entry<String, Long> entry : productStatisticsMap.entrySet()){
-                    productAndNum += entry.getKey() + " --- " + entry.getValue() + "   \n";
-                }
             }
 
-
-            pointExcelVo.setPeoductNumAndType(productAndNum);
-            pointExcelVos.add(pointExcelVo);
+            pointExcelVos.add(list);
 
         });
 
@@ -276,7 +336,8 @@ public class AdminJsonPointNewController {
             response.setHeader("content-Type", "application/vnd.ms-excel");
             // 下载文件的默认名称
             response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
-            EasyExcel.write(outputStream, PointExcelVo.class).sheet("sheet").doWrite(pointExcelVos);
+            //EasyExcel.write(outputStream, PointExcelVo.class).sheet("sheet").doWrite(pointExcelVos);
+            EasyExcelFactory.getWriter(outputStream).write1(pointExcelVos,sheet,table).finish();
             return;
         } catch (IOException e) {
             throw new NullPointerException("导出报表失败！请联系管理员处理！");
@@ -297,9 +358,9 @@ public class AdminJsonPointNewController {
                        @RequestParam(value = "batch", required = false, defaultValue = "16") Long batch){
 
             return pointNewService.saveCache(pointId, modelId, no, batch);
-    }*/
+    }
 
-    /*@DeleteMapping("/admin/pointNew/deleteProduct")
+    @DeleteMapping("/admin/pointNew/deleteProduct")
     public R deleteProduct(Long pointId, Long producutId){
         return pointNewService.deleteProduct(pointId, producutId);
     }*/
