@@ -102,6 +102,8 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
 
             workOrder.setCreateTime(System.currentTimeMillis());
 
+            workOrder.setStatus(item.getStatus());
+
             workOrderList.add(workOrder);
         });
         workOrderService.saveBatch(workOrderList);
