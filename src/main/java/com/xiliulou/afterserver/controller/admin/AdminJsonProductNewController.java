@@ -51,9 +51,10 @@ public class AdminJsonProductNewController {
                        @RequestParam("limit") Integer limit,
                        @RequestParam(value = "no",required = false) String no,
                        @RequestParam(value = "modelId",required = false) Long modelId,
+                       @RequestParam(value = "pointId",required = false) Long pointId,
                        @RequestParam(value = "startTime",required = false) Long startTime,
                        @RequestParam(value = "endTime",required = false) Long endTime){
-        List<ProductNew> productNews = productNewService.queryAllByLimit(offset,limit,no,modelId,startTime,endTime);
+        List<ProductNew> productNews = productNewService.queryAllByLimit(offset,limit,no,modelId,startTime,endTime,pointId);
 
         productNews.forEach(item -> {
 
@@ -82,7 +83,7 @@ public class AdminJsonProductNewController {
         });
 
 
-        Integer count = productNewService.count(no,modelId,startTime,endTime);
+        Integer count = productNewService.count(no,modelId,startTime,endTime,pointId);
 
         HashMap<String, Object> stringObjectHashMap = new HashMap<>();
         stringObjectHashMap.put("data",productNews);
