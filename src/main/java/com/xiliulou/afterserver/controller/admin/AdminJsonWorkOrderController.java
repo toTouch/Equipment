@@ -1,9 +1,19 @@
 package com.xiliulou.afterserver.controller.admin;
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelReader;
+import com.alibaba.excel.enums.CellDataTypeEnum;
+import com.alibaba.excel.exception.ExcelAnalysisException;
+import com.alibaba.excel.exception.ExcelDataConvertException;
+import com.alibaba.excel.metadata.CellData;
+import com.alibaba.excel.read.metadata.ReadSheet;
 import com.xiliulou.afterserver.entity.WorkOrder;
 import com.xiliulou.afterserver.exception.BadRequestException;
-import com.xiliulou.afterserver.service.DeliverService;
-import com.xiliulou.afterserver.service.WorkOrderService;
+import com.xiliulou.afterserver.export.PointInfo;
+import com.xiliulou.afterserver.export.WorkOrderInfo;
+import com.xiliulou.afterserver.listener.PointListener;
+import com.xiliulou.afterserver.listener.WorkOrderLisener;
+import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
 import com.xiliulou.afterserver.web.query.WorkOrderQuery;
@@ -14,9 +24,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,6 +44,15 @@ public class AdminJsonWorkOrderController {
 
     @Autowired
     WorkOrderService workOrderService;
+
+    @Autowired
+    PointNewService pointNewService;
+
+    @Autowired
+    CustomerService customerService;
+
+    @Autowired
+    ServerService serverService;
 
 
     @GetMapping("admin/workOrder/page")
@@ -122,5 +143,39 @@ public class AdminJsonWorkOrderController {
     @PostMapping("admin/workOrder/bindSerialNumber")
     public R pointBindSerialNumber(@RequestBody WorkOrderQuery workOrderQuery) {
         return workOrderService.pointBindSerialNumber(workOrderQuery);
+    }
+
+    @PostMapping("admin/workOrder/upload")
+    public R update(MultipartFile file){
+        ExcelReader excelReader = null;
+        try {
+            try {
+                excelReader = EasyExcel.read(file.getInputStream(), WorkOrderInfo.class, new WorkOrderLisener(pointNewService, customerService,  serverService,  workOrderService)).build();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (ExcelAnalysisException e) {
+            e.printStackTrace();
+            if (e.getCause() instanceof ExcelDataConvertException) {
+                ExcelDataConvertException excelDataConvertException = (ExcelDataConvertException) e.getCause();
+                String cellMsg = "";
+                CellData cellData = excelDataConvertException.getCellData();
+                //这里有一个celldatatype的枚举值,用来判断CellData的数据类型
+                CellDataTypeEnum type = cellData.getType();
+                if (type.equals(CellDataTypeEnum.NUMBER)) {
+                    cellMsg = cellData.getNumberValue().toString();
+                } else if (type.equals(CellDataTypeEnum.STRING)) {
+                    cellMsg = cellData.getStringValue();
+                } else if (type.equals(CellDataTypeEnum.BOOLEAN)) {
+                    cellMsg = cellData.getBooleanValue().toString();
+                }
+                String errorMsg = String.format("excel表格:第%s行,第%s列,数据值为:%s,该数据值不符合要求,请检验后重新导入!<span style=\"color:red\">请检查其他的记录是否有同类型的错误!</span>", excelDataConvertException.getRowIndex() + 1, excelDataConvertException.getColumnIndex(), cellMsg);
+                log.error(errorMsg);
+            }
+        }
+        ReadSheet readSheet = EasyExcel.readSheet(0).build();
+        excelReader.read(readSheet);
+        excelReader.finish();
+        return R.ok();
     }
 }
