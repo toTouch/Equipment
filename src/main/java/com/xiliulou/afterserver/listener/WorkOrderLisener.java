@@ -106,6 +106,8 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
 
             workOrder.setThirdCompanyPay(new BigDecimal(item.getThirdCompanyPay()));
 
+            workOrder.setWorkOrderReasonId(Long.valueOf(item.getWorkOrderReasonId()));
+
             workOrderList.add(workOrder);
         });
         workOrderService.saveBatch(workOrderList);
