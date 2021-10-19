@@ -21,9 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -258,6 +256,9 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
         List<PointProductBind> pointProductBindList = pointProductBindService.queryByPointNewId(pid);
         ArrayList<ProductNew> productNews = new ArrayList<>();
+        Map<String, Long> map = new HashMap<>();
+        List<Map> productTypeAndNumList = new ArrayList<>();
+
         if (Objects.nonNull(pointProductBindList)){
             pointProductBindList.forEach(item -> {
                 ProductNew productNew = productNewService.queryByIdFromDB(item.getProductId());
@@ -278,9 +279,20 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
                 List<File> productFileList = fileService.queryByProductNewId(productNew.getId());
                 productNew.setFileList(productFileList);
                 productNews.add(productNew);
+
+                //productTypeAndNum
+                map.put(product.getName(), map.containsKey(product.getName()) ? map.get(product.getName()) + 1 : 1);
             });
+
             pointNewInfoVo.setProductNew(productNews);
 
+            for (Map.Entry entry : map.entrySet()){
+                Map item = new HashMap();
+                item.put("productType", entry.getKey());
+                item.put("productNum", entry.getValue());
+                productTypeAndNumList.add(item);
+            }
+            pointNewInfoVo.setProductTypeAndNum(productTypeAndNumList);
         }
         return R.ok(pointNewInfoVo);
     }
@@ -336,9 +348,9 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             pointProductBindService.insert(pointProductBind);
         }
         return R.ok();
-    }
+    }*/
 
-    @Override
+    /*@Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public R deleteProduct(Long pointId, Long producutId) {
         if(pointId == null){

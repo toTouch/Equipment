@@ -45,7 +45,9 @@
         d.express_company,
         d.express_no,
         d.create_uid,
-        d.remark
+        d.remark,
+        d.product,
+        d.quantity
         from
         deliver AS d
         <where>
