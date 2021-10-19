@@ -102,7 +102,9 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
 
             workOrder.setCreateTime(System.currentTimeMillis());
 
-            workOrder.setStatus(item.getStatus());
+            workOrder.setType(item.getType() + "");
+
+            workOrder.setThirdCompanyPay(new BigDecimal(item.getThirdCompanyPay()));
 
             workOrderList.add(workOrder);
         });
