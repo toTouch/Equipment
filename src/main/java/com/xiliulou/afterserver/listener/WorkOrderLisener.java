@@ -75,7 +75,9 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
                 workOrder.setPointId(pointNew.getId());
             }
 
-            workOrder.setFee(new BigDecimal(item.getFee()));
+            if(Objects.nonNull(item.getFee())){
+                workOrder.setFee(new BigDecimal(item.getFee()));
+            }
 
             Customer customer = customerService.getOne(new QueryWrapper<Customer>().eq("name", item.getThirdCompanyName()));
             if(Objects.nonNull(customer)){
@@ -98,15 +100,22 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
 
             workOrder.setCreaterId(8L);
 
-            workOrder.setDescribeinfo(item.getDescribeinfo());
+
+            if(Objects.nonNull(item.getDescribeinfo())){
+                workOrder.setDescribeinfo(item.getDescribeinfo());
+            }
 
             workOrder.setCreateTime(System.currentTimeMillis());
 
             workOrder.setType(item.getType() + "");
 
-            workOrder.setThirdCompanyPay(new BigDecimal(item.getThirdCompanyPay()));
+            if(Objects.nonNull(item.getThirdCompanyPay())){
+                workOrder.setThirdCompanyPay(new BigDecimal(item.getThirdCompanyPay()));
+            }
 
-            workOrder.setWorkOrderReasonId(Long.valueOf(item.getWorkOrderReasonId()));
+            if(Objects.nonNull(item.getWorkOrderReasonId())){
+                workOrder.setWorkOrderReasonId(Long.valueOf(item.getWorkOrderReasonId()));
+            }
 
             workOrderList.add(workOrder);
         });
