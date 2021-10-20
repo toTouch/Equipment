@@ -68,7 +68,7 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
         List<WorkOrder> workOrderList = new ArrayList<>();
         this.list.forEach(item -> {
             WorkOrder workOrder = new WorkOrder();
-            BeanUtils.copyProperties(item, workOrder);
+            //BeanUtils.copyProperties(item, workOrder);
 
             PointNew pointNew = pointNewService.getOne(new QueryWrapper<PointNew>().eq("name",item.getPointName()));
             if(Objects.nonNull(pointNew)){
@@ -91,10 +91,13 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
                 workOrder.setServerId(server.getId());
             }
 
-            long processTime = dateToStamp(item.getProcessTime());
-            if(processTime != 0){
-                workOrder.setProcessTime(processTime);
+            if(Objects.nonNull(item.getProcessTime())){
+                long processTime = dateToStamp(item.getProcessTime());
+                if(processTime != 0){
+                    workOrder.setProcessTime(processTime);
+                }
             }
+
 
             workOrder.setOrderNo(RandomUtil.randomString(10));
 
@@ -107,7 +110,9 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
 
             workOrder.setCreateTime(System.currentTimeMillis());
 
-            workOrder.setType(item.getType() + "");
+            if(Objects.nonNull(item.getType())){
+                workOrder.setType(item.getType() + "");
+            }
 
             if(Objects.nonNull(item.getThirdCompanyPay())){
                 workOrder.setThirdCompanyPay(new BigDecimal(item.getThirdCompanyPay()));
@@ -115,6 +120,14 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
 
             if(Objects.nonNull(item.getWorkOrderReasonId())){
                 workOrder.setWorkOrderReasonId(Long.valueOf(item.getWorkOrderReasonId()));
+            }
+
+            if(Objects.nonNull(item.getStatus())){
+                workOrder.setStatus(item.getStatus());
+            }
+
+            if(Objects.nonNull(item.getInfo())){
+                workOrder.setInfo(item.getInfo());
             }
 
             workOrderList.add(workOrder);
