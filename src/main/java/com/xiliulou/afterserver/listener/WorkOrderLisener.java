@@ -98,7 +98,10 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
 
             workOrder.setCreaterId(8L);
 
-            workOrder.setDescribeinfo(item.getDescribeinfo());
+
+            if(Objects.nonNull(item.getDescribeinfo())){
+                workOrder.setDescribeinfo(item.getDescribeinfo());
+            }
 
             workOrder.setCreateTime(System.currentTimeMillis());
 
@@ -108,7 +111,9 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
                 workOrder.setThirdCompanyPay(new BigDecimal(item.getThirdCompanyPay()));
             }
 
-            workOrder.setWorkOrderReasonId(Long.valueOf(item.getWorkOrderReasonId()));
+            if(Objects.nonNull(item.getWorkOrderReasonId())){
+                workOrder.setWorkOrderReasonId(Long.valueOf(item.getWorkOrderReasonId()));
+            }
 
             workOrderList.add(workOrder);
         });
