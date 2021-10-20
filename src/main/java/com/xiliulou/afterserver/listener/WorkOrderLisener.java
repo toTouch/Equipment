@@ -107,7 +107,7 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
             if(Objects.nonNull(item.getThirdCompanyPay())){
                 workOrder.setThirdCompanyPay(new BigDecimal(item.getThirdCompanyPay()));
             }
-            
+
             workOrder.setWorkOrderReasonId(Long.valueOf(item.getWorkOrderReasonId()));
 
             workOrderList.add(workOrder);
