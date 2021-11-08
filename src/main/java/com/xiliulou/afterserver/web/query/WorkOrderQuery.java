@@ -18,6 +18,8 @@ public class WorkOrderQuery extends WorkOrder {
 
     private Long createTimeStart;
     private Long createTimeEnd;
+    private Long processTimeStart;
+    private Long processTimeEnd;
     private List<String> fileList;
     private Long offset;
     private Long size;
