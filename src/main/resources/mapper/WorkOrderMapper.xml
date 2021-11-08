@@ -126,8 +126,8 @@
             <if test="query.thirdCompanyType != null">
                 and wo.third_company_type = #{query.thirdCompanyType}
             </if>
-            <if test="query.createTimeStart != null and query.createTimeEnd != null">
-                and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
+            <if test="query.processTimeStart != null and query.processTimeEnd != null">
+                and wo.process_time BETWEEN #{query.processTimeStart} and #{query.processTimeEnd}
             </if>
         </where>
         ORDER BY wo.create_time DESC
@@ -188,8 +188,8 @@
             <if test="query.thirdCompanyType != null">
                 and wo.third_company_type = #{query.thirdCompanyType}
             </if>
-            <if test="query.createTimeStart != null and query.createTimeEnd != null">
-                and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
+            <if test="query.processTimeStart != null and query.processTimeEnd != null">
+                and wo.process_time BETWEEN #{query.processTimeStart} and #{query.processTimeEnd}
             </if>
         </where>
         ORDER BY wo.process_time DESC
@@ -425,6 +425,9 @@
             </if>
             <if test="query.thirdCompanyType != null">
                 and wo.third_company_type = #{query.thirdCompanyType}
+            </if>
+            <if test="query.createTimeStart != null and query.createTimeEnd != null">
+                and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
             </if>
             <if test="query.createTimeStart != null and query.createTimeEnd != null">
                 and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
