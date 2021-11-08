@@ -83,6 +83,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         if (Objects.nonNull(workOrder.getWorkOrderType())) {
             workOrder.setType(workOrder.getWorkOrderType().toString());
         }
+
+        workOrder.setProcessTimeStart(workOrder.getCreateTimeStart());
+        workOrder.setProcessTimeEnd(workOrder.getCreateTimeEnd());
+
         Page page = PageUtil.getPage(offset, size);
         page = baseMapper.getPage(page, workOrder);
 
@@ -299,6 +303,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
     @Override
     public R reconciliation(WorkOrderQuery workOrder) {
+        workOrder.setProcessTimeStart(workOrder.getCreateTimeStart());
+        workOrder.setProcessTimeEnd(workOrder.getCreateTimeEnd());
+
         Integer count = baseMapper.countOrderList(workOrder);
         List<WorkOrderVo> workOrderVoList = baseMapper.orderList(workOrder);
         workOrderVoList.forEach(o -> {
