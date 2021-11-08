@@ -407,6 +407,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             workOrderExcelVo.setThirdCompanyPay(o.getThirdCompanyPay());
 //            workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
+            if(!Objects.isNull(o.getProcessTime())){
+                workOrderExcelVo.setProcessTimeStr(simpleDateFormat.format(new Date(o.getProcessTime())));
+            }
 
             if (o.getThirdCompanyType() != null && o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)){
                 Customer customer = customerService.getById(o.getThirdCompanyId());
@@ -451,6 +454,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             workOrderExcelVo2.setDescribeinfo(o.getDescribeinfo());
 //            workOrderExcelVo2.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo2.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
+            if(!Objects.isNull(o.getProcessTime())){
+                workOrderExcelVo2.setProcessTimeStr(simpleDateFormat.format(new Date(o.getProcessTime())));
+            }
             if (o.getThirdCompanyType() != null && o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
                 Supplier supplier = supplierService.getById(o.getThirdCompanyId());
                 if(Objects.nonNull(supplier)){
@@ -496,6 +502,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             workOrderExcelVo3.setDescribeinfo(o.getDescribeinfo());
 //            workOrderExcelVo3.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo3.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
+            if(!Objects.isNull(o.getProcessTime())){
+                workOrderExcelVo3.setProcessTimeStr(simpleDateFormat.format(new Date(o.getProcessTime())));
+            }
             if (o.getServerId()!=null){
                 Server server = serverService.getById(o.getServerId());
                 if (Objects.nonNull(server)){
