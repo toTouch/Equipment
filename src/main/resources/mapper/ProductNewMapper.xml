@@ -27,9 +27,9 @@
     <select id="queryAllByLimit" resultMap="ProductNewMap">
         select
           p.id, p.no, p.model_id, p.batch_id, p.status, p.expiration_start_time, p.years, p.expiration_end_time, p.create_time, p.del_flag
-        from t_product_new p, t_point_product_bind b
+        from t_product_new p left join t_point_product_bind b
+        on p.id = b.product_id
         <where>
-            p.id = b.product_id
             and p.del_flag = 0
             and p.cache is null
             <if test="no != null and no != '' ">
