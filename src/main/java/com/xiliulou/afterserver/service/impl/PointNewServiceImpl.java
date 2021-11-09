@@ -52,6 +52,8 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     private ProductService productService;
     @Autowired
     private BatchService batchService;
+    @Autowired
+    private PointProductBindMapper pointProductBindMapper;
     //@Autowired
     //private ProductNewMapper productNewMapper;
     //@Autowired
@@ -159,10 +161,17 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
 
         pointNew.getProductIds().forEach(item -> {
-            ProductNew productNew = productNewService.queryByIdFromDB(item);
-            List<PointProductBind> pointProductBindList = pointProductBindService.queryByPointNewIdAndProductId(pointNew.getId(),item);
+            //ProductNew productNew = productNewService.queryByIdFromDB(item);
+            /*List<PointProductBind> pointProductBindList = pointProductBindService.queryByPointNewIdAndProductId(pointNew.getId(),item);
             if (pointProductBindList.size() > 0){
                 throw new NullPointerException("机柜"+productNew.getNo()+"已存在此点位了");
+            }*/
+            PointProductBind oldPointProductBind = pointProductBindMapper
+                    .selectOne(new QueryWrapper<PointProductBind>()
+                            .eq("product_id", item));
+
+            if(ObjectUtils.isNotNull(oldPointProductBind)){
+                pointProductBindMapper.deleteById(oldPointProductBind.getId());
             }
 
             PointProductBind pointProductBind = new PointProductBind();
