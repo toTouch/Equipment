@@ -64,7 +64,13 @@ public class AdminJsonUserController extends BaseController {
 //       if (Objects.nonNull(userDb)) {
 //           return R.fail("用户名已存在");
 //       }
-
+        if(Objects.isNull(user)){
+            return R.fail("请传入用户信息");
+        }
+       if(Objects.isNull(user.getPassWord())){
+           return R.fail("请传入用户密码");
+       }
+       user.setPassWord(PasswordUtils.encode(user.getPassWord()));
       return R.ok(userService.updateById(user));
    }
 
