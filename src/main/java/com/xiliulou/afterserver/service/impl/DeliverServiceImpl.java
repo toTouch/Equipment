@@ -232,15 +232,27 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                 row.add("");
             }
             //thirdCompanyName
-            if(ObjectUtil.isNotNull(d.getThirdCompanyId())){
-                Customer customer = customerService.getById(d.getThirdCompanyId());
-                if(ObjectUtil.isNotNull(customer)){
-                    row.add(customer.getName());
-                }else{
-                    row.add("");
+            if (Objects.nonNull(d.getThirdCompanyType())){
+                String name = "";
+                if (d.getThirdCompanyType() == 1){
+                    Customer byId = customerService.getById(d.getThirdCompanyId());
+                    if (Objects.nonNull(byId)){
+                        name = byId.getName();
+                    }
                 }
-            }else{
-                row.add("");
+                if (d.getThirdCompanyType() == 2){
+                    Supplier byId = supplierService.getById(d.getThirdCompanyId());
+                    if (Objects.nonNull(byId)){
+                        name = byId.getName();
+                    }
+                }
+                if (d.getThirdCompanyType() == 3){
+                    Server byId = serverService.getById(d.getThirdCompanyId());
+                    if (Objects.nonNull(byId)){
+                        name = byId.getName();
+                    }
+                }
+                row.add(name);
             }
             //thirdCompanyPay
             row.add(d.getThirdCompanyPay()  == null ? "" : d.getThirdCompanyPay());
