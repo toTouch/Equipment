@@ -47,7 +47,8 @@
         d.create_uid,
         d.remark,
         d.product,
-        d.quantity
+        d.quantity,
+        d.third_company_type
         from
         deliver AS d
         <where>
