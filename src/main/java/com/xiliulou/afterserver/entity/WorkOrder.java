@@ -51,9 +51,13 @@ public class WorkOrder implements Serializable {
     private String serverName;
     private String product;
     private String code;
-//    private Integer boxNumber;
+    //private Integer boxNumber;
     private Integer warehourseId;
     private String reason;
+    /**
+     * 结算方式 1--月结 2--现结
+     */
+    private Integer paymentMethod;
 
     //从什么地方转移到什么地方
     //起点

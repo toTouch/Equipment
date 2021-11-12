@@ -26,6 +26,9 @@ public class WorkOrderListExcelVo {
     @ExcelProperty("费用")
     private BigDecimal fee;
 
+    @ExcelProperty("结算方式")
+    private String paymentMethodName;
+
     @ExcelProperty("第三方公司")
     private String thirdCompanyName;
 

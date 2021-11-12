@@ -28,6 +28,8 @@ public class WorkOrderExcelVo {
 //    private String statusStr;
     @ExcelProperty("费用")
     private BigDecimal thirdCompanyPay;
+    @ExcelProperty("结算方式")
+    private String paymentMethodName;
     @ExcelProperty("备注")
     private String remarks;
     @ExcelProperty("描述")
