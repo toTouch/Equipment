@@ -262,12 +262,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
     private String getPaymentMethod(Integer method){
         String methodStr = "";
+        method = method == null ? 0 : method;
         switch (method) {
             case 1:
-                methodStr = "待处理";
+                methodStr = "月结";
                 break;
             case 2:
-                methodStr = "处理中";
+                methodStr = "现结";
                 break;
         }
         return methodStr;
