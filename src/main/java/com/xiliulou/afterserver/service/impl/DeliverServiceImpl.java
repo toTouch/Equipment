@@ -253,6 +253,8 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                     }
                 }
                 row.add(name);
+            }else{
+                row.add("");
             }
             //thirdCompanyPay
             row.add(d.getThirdCompanyPay()  == null ? "" : d.getThirdCompanyPay());
