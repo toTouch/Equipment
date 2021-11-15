@@ -38,21 +38,24 @@ public class DeliverInfo {
     private BigDecimal cost;
 
     @ExcelProperty(index = 8)
-    private String expressName;
+    private String paymentMethod;
 
     @ExcelProperty(index = 9)
-    private String expressNo;
+    private String expressName;
 
     @ExcelProperty(index = 10)
-    private String deliverTime;
+    private String expressNo;
 
     @ExcelProperty(index = 11)
-    private String remarks;
+    private String deliverTime;
 
     @ExcelProperty(index = 12)
-    private String product;//型号
+    private String remarks;
 
     @ExcelProperty(index = 13)
+    private String product;//型号
+
+    @ExcelProperty(index = 14)
     private String quantity;//数量
 
 

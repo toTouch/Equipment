@@ -62,6 +62,9 @@ public class Deliver {
      */
     private Integer paymentMethod;
 
+    public static final Integer PAYMENT_METHOD_MONTHLY = 1;
+    public static final Integer PAYMENT_METHOD_NOW = 2;
+
     @TableField(exist = false)
     private String userName;
     @TableField(exist = false)
