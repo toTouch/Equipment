@@ -57,6 +57,10 @@ public class Deliver {
     private Integer thirdCompanyType;
     private BigDecimal thirdCompanyPay;
     private String thirdReason;
+    /**
+     * 结算方式 1 月结 2 现结
+     */
+    private Integer paymentMethod;
 
     @TableField(exist = false)
     private String userName;
@@ -72,4 +76,6 @@ public class Deliver {
     private Long destinationId;
     @TableField(exist = false)
     private boolean isDeliver;
+    @TableField(exist = false)
+    private String paymentMethodName;
 }

@@ -57,4 +57,8 @@ public class WorkOrderVo {
     private String userName;
 
     private String describeinfo;
+
+    private Integer paymentMethod;
+
+    private String paymentMethodName;
 }

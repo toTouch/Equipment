@@ -54,6 +54,7 @@
         <id property="creater" column="u_user_name"/>
         <id property="pointName" column="p_name"/>
         <id property="describeinfo" column="wo_describeinfo"/>
+        <id property="paymentMethod" column="wo_payment_method"></id>
         <collection property="fileList" ofType="com.xiliulou.afterserver.entity.File">
             <id property="id" column="f_id"/>
             <id property="type" column="f_type"/>
@@ -88,6 +89,7 @@
         wo.code as wo_code,
         wo.reason as wo_reason,
         wo.describeinfo as wo_describeinfo,
+        wo.payment_method as wo_payment_method,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
@@ -126,6 +128,9 @@
             <if test="query.thirdCompanyType != null">
                 and wo.third_company_type = #{query.thirdCompanyType}
             </if>
+            <if test="query.paymentMethod != null">
+                and wo.payment_method = #{query.paymentMethod}
+            </if>
             <if test="query.processTimeStart != null and query.processTimeEnd != null">
                 and wo.process_time BETWEEN #{query.processTimeStart} and #{query.processTimeEnd}
             </if>
@@ -157,6 +162,7 @@
         wo.product as wo_product,
         wo.code as wo_code,
         wo.describeinfo as wo_describeinfo,
+        wo.payment_method as wo_payment_method,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
@@ -187,6 +193,9 @@
             </if>
             <if test="query.thirdCompanyType != null">
                 and wo.third_company_type = #{query.thirdCompanyType}
+            </if>
+            <if test="query.paymentMethod != null">
+                and wo.payment_method = #{query.paymentMethod}
             </if>
             <if test="query.processTimeStart != null and query.processTimeEnd != null">
                 and wo.process_time BETWEEN #{query.processTimeStart} and #{query.processTimeEnd}
