@@ -38,7 +38,7 @@ public class DeliverInfo {
     private BigDecimal cost;
 
     @ExcelProperty(index = 8)
-    private BigDecimal paymentMethod;
+    private String paymentMethod;
 
     @ExcelProperty(index = 9)
     private String expressName;
