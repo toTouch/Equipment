@@ -59,6 +59,9 @@ public class WorkOrder implements Serializable {
      */
     private Integer paymentMethod;
 
+    public static final Integer PAYMENT_METHOD_MONTHLY = 1;
+    public static final Integer PAYMENT_METHOD_NOW = 2;
+
     //从什么地方转移到什么地方
     //起点
     private Long transferSourcePointId;

@@ -121,6 +121,17 @@ public class DeliverListener extends AnalysisEventListener<DeliverInfo> {
             }else {
                 deliver.setDeliverTime(System.currentTimeMillis());
             }
+
+            if(Objects.nonNull(item.getPaymentMethod())){
+                if("月结".equals(item.getPaymentMethod()) || String.valueOf(Deliver.PAYMENT_METHOD_MONTHLY).equals(item.getPaymentMethod())){
+                    deliver.setPaymentMethod(Deliver.PAYMENT_METHOD_MONTHLY);
+                }
+                if("现结".equals(item.getPaymentMethod()) || String.valueOf(Deliver.PAYMENT_METHOD_NOW).equals(item.getPaymentMethod())){
+                    deliver.setPaymentMethod(Deliver.PAYMENT_METHOD_NOW);
+                }
+            }
+
+
             deliverList.add(deliver);
         });
 
