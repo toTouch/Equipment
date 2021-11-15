@@ -108,6 +108,12 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
                 workOrder.setDescribeinfo(item.getDescribeinfo());
             }
 
+            /*if(Objects.nonNull(item.getPaymentMethod())){
+                if(){
+
+                }
+            }*/
+
             workOrder.setCreateTime(System.currentTimeMillis());
 
             if(Objects.nonNull(item.getType())){
