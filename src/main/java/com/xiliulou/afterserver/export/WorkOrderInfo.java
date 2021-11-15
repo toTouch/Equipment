@@ -26,15 +26,15 @@ public class WorkOrderInfo {
     @ExcelProperty(index = 2)
     private Double fee;
     /**
-     * 第三方公司
-     */
-    @ExcelProperty(index = 3)
-    private String thirdCompanyName;
-    /**
      * 结算方式
      */
-    @ExcelProperty(index = 4)
+    @ExcelProperty(index = 3)
     private String paymentMethod;
+    /**
+     * 第三方公司
+     */
+    @ExcelProperty(index = 4)
+    private String thirdCompanyName;
     /**
      * 第三方承擔費用
      */

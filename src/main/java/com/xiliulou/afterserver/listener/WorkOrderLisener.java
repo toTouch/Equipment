@@ -108,11 +108,14 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
                 workOrder.setDescribeinfo(item.getDescribeinfo());
             }
 
-            /*if(Objects.nonNull(item.getPaymentMethod())){
-                if(){
-
+            if(Objects.nonNull(item.getPaymentMethod())){
+                if("月结".equals(item.getPaymentMethod()) || String.valueOf(WorkOrder.PAYMENT_METHOD_MONTHLY).equals(item.getPaymentMethod())){
+                    workOrder.setPaymentMethod(WorkOrder.PAYMENT_METHOD_MONTHLY);
                 }
-            }*/
+                if("现结".equals(item.getPaymentMethod()) || String.valueOf(WorkOrder.PAYMENT_METHOD_NOW).equals(item.getPaymentMethod())){
+                    workOrder.setPaymentMethod(WorkOrder.PAYMENT_METHOD_NOW);
+                }
+            }
 
             workOrder.setCreateTime(System.currentTimeMillis());
 
