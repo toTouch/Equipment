@@ -86,6 +86,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                         .ge(Objects.nonNull(deliver.getCreateTimeStart()), Deliver::getDeliverTime, deliver.getCreateTimeStart())
                         .le(Objects.nonNull(deliver.getCreateTimeEnd()), Deliver::getDeliverTime, deliver.getCreateTimeEnd())
                         .like(Objects.nonNull(deliver.getCity()),Deliver::getCity,deliver.getCity())
+                        .eq(Objects.nonNull(deliver.getPaymentMethod()),Deliver::getPaymentMethod,deliver.getPaymentMethod())
                         .like(Objects.nonNull(deliver.getDestination()),Deliver::getDestination,deliver.getDestination()));
         List<Deliver> list = (List<Deliver>) selectPage.getRecords();
         if (list.isEmpty()) {
@@ -160,6 +161,8 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                 records.setDetails(map);
             }
 
+            records.setPaymentMethodName(getpaymentMethodName(records.getPaymentMethod()));
+
         });
 
         return selectPage.setRecords(list);
@@ -186,7 +189,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
 
-        String[] header = {"客户", "客户电话", "起点", "终点", "物流状态", "第三方公司", "第三方承担费用（元）", "运费", "发货时间", "快递公司", "快递单号", "创建人", "备注"};
+        String[] header = {"客户", "客户电话", "起点", "终点", "物流状态", "第三方公司", "第三方承担费用（元）", "运费", "结算方式", "发货时间", "快递公司", "快递单号", "创建人", "备注"};
         for(String s : header){
             List<String> headTitle = new ArrayList<String>();
             headTitle.add(s);
@@ -260,6 +263,8 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             row.add(d.getThirdCompanyPay()  == null ? "" : d.getThirdCompanyPay());
             //deliverCost
             row.add(d.getDeliverCost() == null ? "" : d.getDeliverCost() );
+            //paymentMethod
+            row.add(getpaymentMethodName(d.getPaymentMethod()));
             //deliverTime
             if(ObjectUtil.isNotNull(d.getDeliverTime())){
                 row.add(simpleDateFormat.format(new Date(d.getDeliverTime())));
@@ -498,6 +503,19 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         return null;
     }
 
+    private String getpaymentMethodName(Integer method){
+        String methodStr = "";
+        method = method == null ? 0 : method;
+        switch (method) {
+            case 1:
+                methodStr = "月结";
+                break;
+            case 2:
+                methodStr = "现结";
+                break;
+        }
+        return methodStr;
+    }
 
     private String getExpressNo(Integer status) {
         String statusStr = "";

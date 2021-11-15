@@ -96,6 +96,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         list.forEach(item -> {
+
+            item.setPaymentMethodName(getPaymentMethod(item.getPaymentMethod()));
+
             if (Objects.nonNull(item.getCreaterId())){
                 User userById = userService.getUserById(item.getCreaterId());
                 if (Objects.nonNull(userById)){
@@ -178,6 +181,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     workOrderExcelVo.setSnNo(pointNew.getSnNo());
                 }
             }
+            //PaymentMethod
+            workOrderExcelVo.setPaymentMethodName(getPaymentMethod(o.getPaymentMethod()));
             //workOrderReasonName
             if(Objects.nonNull(o.getWorkOrderReasonId())){
                 WorkOrderReason workOrderReason = workOrderReasonService.getById(o.getWorkOrderReasonId());
@@ -212,14 +217,31 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
             }
 
-            if(Objects.nonNull(o.getThirdCompanyId())){
-                if(Objects.isNull(workOrderExcelVo.getThirdCompanyName())){
-                    Customer customer = customerService.getById(o.getThirdCompanyId());
-                    if(Objects.nonNull(customer)){
-                        workOrderExcelVo.setThirdCompanyName(customer.getName());
+            //ThirdCompanyName
+
+            if (Objects.nonNull(o.getThirdCompanyType())){
+                String name = "";
+                if (o.getThirdCompanyType() == 1){
+                    Customer byId = customerService.getById(o.getThirdCompanyId());
+                    if (Objects.nonNull(byId)){
+                        name = byId.getName();
                     }
                 }
+                if (o.getThirdCompanyType() == 2){
+                    Supplier byId = supplierService.getById(o.getThirdCompanyId());
+                    if (Objects.nonNull(byId)){
+                        name = byId.getName();
+                    }
+                }
+                if (o.getThirdCompanyType() == 3){
+                    Server byId = serverService.getById(o.getThirdCompanyId());
+                    if (Objects.nonNull(byId)){
+                        name = byId.getName();
+                    }
+                }
+                workOrderExcelVo.setThirdCompanyName(name);
             }
+
             workOrderExcelVoList.add(workOrderExcelVo);
         }
 
@@ -236,6 +258,20 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             log.error("导出报表失败！", e);
         }
         throw new CustomBusinessException("导出报表失败！请联系客服！");
+    }
+
+    private String getPaymentMethod(Integer method){
+        String methodStr = "";
+        method = method == null ? 0 : method;
+        switch (method) {
+            case 1:
+                methodStr = "月结";
+                break;
+            case 2:
+                methodStr = "现结";
+                break;
+        }
+        return methodStr;
     }
 
 
@@ -309,6 +345,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         Integer count = baseMapper.countOrderList(workOrder);
         List<WorkOrderVo> workOrderVoList = baseMapper.orderList(workOrder);
         workOrderVoList.forEach(o -> {
+
+            o.setPaymentMethodName(getPaymentMethod(o.getPaymentMethod()));
 
             WorkOrderType workOrderType = workOrderTypeService.getById(o.getType());
             if (Objects.nonNull(workOrderType)){
@@ -413,6 +451,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             workOrderExcelVo.setRemarks(o.getInfo());
             workOrderExcelVo.setThirdCompanyPay(o.getThirdCompanyPay());
 //            workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
+            workOrderExcelVo.setPaymentMethodName(getPaymentMethod(o.getPaymentMethod()));
             workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
             if(!Objects.isNull(o.getProcessTime())){
                 workOrderExcelVo.setProcessTimeStr(simpleDateFormat.format(new Date(o.getProcessTime())));
@@ -460,6 +499,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             workOrderExcelVo2.setThirdCompanyPay(o.getThirdCompanyPay());
             workOrderExcelVo2.setDescribeinfo(o.getDescribeinfo());
 //            workOrderExcelVo2.setStatusStr(getStatusStr(o.getStatus()));
+            workOrderExcelVo2.setPaymentMethodName(getPaymentMethod(o.getPaymentMethod()));
             workOrderExcelVo2.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
             if(!Objects.isNull(o.getProcessTime())){
                 workOrderExcelVo2.setProcessTimeStr(simpleDateFormat.format(new Date(o.getProcessTime())));
@@ -508,6 +548,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             workOrderExcelVo3.setThirdCompanyPay(o.getThirdCompanyPay());
             workOrderExcelVo3.setDescribeinfo(o.getDescribeinfo());
 //            workOrderExcelVo3.setStatusStr(getStatusStr(o.getStatus()));
+            workOrderExcelVo3.setPaymentMethodName(getPaymentMethod(o.getPaymentMethod()));
             workOrderExcelVo3.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
             if(!Objects.isNull(o.getProcessTime())){
                 workOrderExcelVo3.setProcessTimeStr(simpleDateFormat.format(new Date(o.getProcessTime())));
