@@ -27,6 +27,7 @@ public class Supplier {
     private String billType;
     //费用明细
     private String scheduleOfFees;
+    private String code;
 
     @TableField(exist = false)
     private String cityName;
