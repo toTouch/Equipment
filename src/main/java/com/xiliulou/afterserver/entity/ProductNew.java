@@ -114,5 +114,5 @@ public class ProductNew {
     @TableField(exist = false)
     private String pointName;
     @TableField(exist = false)
-    private String supplierCode;
+    private String supplierName;
 }
