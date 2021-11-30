@@ -46,8 +46,6 @@ public class ProductNewServiceImpl implements ProductNewService {
     private PointNewMapper pointNewMapper;
     @Autowired
     private SupplierService supplierService;
-    @Autowired
-    private BatchService batchService;
 
     /**
      * 通过ID查询单条数据从DB
