@@ -9,10 +9,7 @@ import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.PointNewMapper;
 import com.xiliulou.afterserver.mapper.PointProductBindMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
-import com.xiliulou.afterserver.service.BatchService;
-import com.xiliulou.afterserver.service.FileService;
-import com.xiliulou.afterserver.service.ProductNewService;
-import com.xiliulou.afterserver.service.ProductService;
+import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DataUtil;
 import com.xiliulou.afterserver.util.R;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +44,10 @@ public class ProductNewServiceImpl implements ProductNewService {
     private PointProductBindMapper pointProductBindMapper;
     @Autowired
     private PointNewMapper pointNewMapper;
+    @Autowired
+    private SupplierService supplierService;
+    @Autowired
+    private BatchService batchService;
 
     /**
      * 通过ID查询单条数据从DB
@@ -132,8 +133,30 @@ public class ProductNewServiceImpl implements ProductNewService {
            return R.fail("请传入正确的产品数量");
         }
 
+        Supplier supplier = supplierService.getById(productNew.getSupplierId());
+        if (Objects.isNull(product)) {
+            return R.fail("供应商选择有误，请检查");
+        }
+
+        Batch batch = batchService.queryByIdFromCache(productNew.getBatchId());
+        if(Objects.isNull(batch)){
+            return R.fail("批次号选择有误，请检查");
+        }
+
+        Integer serialNum = productNewMapper.queryMaxSerialNum();
+        if(Objects.isNull(serialNum)){
+            serialNum = 1;
+        }
+        String serialNumStr = String.format("%04d", serialNum);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(product.getCode()).append("-");
+        sb.append(supplier.getCode()).append(productNew.getBatchName())
+                .append(batch.getBatchNo()).append(serialNumStr).append(productNew.getType());
+
         for (int i = 0; i < productNew.getProductCount(); i++) {
-            productNew.setNo(DataUtil.getNo());
+            productNew.setSerialNum(serialNumStr);
+            productNew.setNo(sb.toString());
             productNew.setCreateTime(System.currentTimeMillis());
             productNew.setDelFlag(ProductNew.DEL_NORMAL);
             this.insert(productNew);
