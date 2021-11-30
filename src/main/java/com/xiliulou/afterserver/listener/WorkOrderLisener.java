@@ -70,7 +70,7 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
             WorkOrder workOrder = new WorkOrder();
             //BeanUtils.copyProperties(item, workOrder);
 
-            PointNew pointNew = pointNewService.getOne(new QueryWrapper<PointNew>().eq("name",item.getPointName()));
+            PointNew pointNew = pointNewService.getOne(new QueryWrapper<PointNew>().eq("name",item.getPointName()).eq("del_flag", PointNew.DEL_NORMAL));
             if(Objects.nonNull(pointNew)){
                 workOrder.setPointId(pointNew.getId());
             }
