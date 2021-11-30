@@ -149,13 +149,14 @@ public class ProductNewServiceImpl implements ProductNewService {
 
         Integer serialNum = productNewMapper.queryMaxSerialNum();
         if(Objects.isNull(serialNum)){
-            serialNum = 1;
+            serialNum = 0;
         }
 
 
 
 
         for (int i = 0; i < productNew.getProductCount(); i++) {
+            serialNum++;
             String serialNumStr = String.format("%04d", serialNum);
             StringBuilder sb = new StringBuilder();
             sb.append(product.getCode()).append("-");
@@ -164,7 +165,7 @@ public class ProductNewServiceImpl implements ProductNewService {
             if(Objects.nonNull(productNew.getType())){
                 sb.append(productNew.getType());
             }
-            serialNum++;
+
 
             productNew.setSerialNum(serialNumStr);
             productNew.setNo(sb.toString());
