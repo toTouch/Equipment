@@ -116,7 +116,7 @@
     <!--新增所有列-->
     <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
         insert into t_product_new(no, model_id, batch_id, status, expiration_start_time, years, expiration_end_time, create_time, del_flag, cache, serial_num, supplier_id, type)
-        values (#{no}, #{modelId}, #{batchId}, #{status}, #{expirationStartTime},#{years},#{expirationEndTime}, #{createTime}, #{delFlag}, #{cache},#{serialNum} #{supplierId}, #{type})
+        values (#{no}, #{modelId}, #{batchId}, #{status}, #{expirationStartTime},#{years},#{expirationEndTime}, #{createTime}, #{delFlag}, #{cache},#{serialNum}, #{supplierId}, #{type})
     </insert>
 
     <!--通过主键修改数据-->
