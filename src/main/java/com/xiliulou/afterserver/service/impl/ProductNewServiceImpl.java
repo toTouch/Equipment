@@ -136,7 +136,7 @@ public class ProductNewServiceImpl implements ProductNewService {
             return R.fail("供应商选择有误，请检查");
         }
 
-        Batch batch = batchService.queryByIdFromCache(productNew.getBatchId());
+        Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
         if(Objects.isNull(batch)){
             return R.fail("批次号选择有误，请检查");
         }
