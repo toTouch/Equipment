@@ -132,27 +132,37 @@ public class ProductNewServiceImpl implements ProductNewService {
         }
 
         Supplier supplier = supplierService.getById(productNew.getSupplierId());
-        if (Objects.isNull(product)) {
+        if (Objects.isNull(supplier)) {
             return R.fail("供应商选择有误，请检查");
+        }
+        if(Objects.isNull(supplier.getCode())){
+            return R.fail("供应商编码为空,请重新选择");
         }
 
         Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
         if(Objects.isNull(batch)){
             return R.fail("批次号选择有误，请检查");
         }
+        if(Objects.isNull(batch.getBatchNo())){
+            return R.fail("批次号为空，请重新选择");
+        }
 
         Integer serialNum = productNewMapper.queryMaxSerialNum();
         if(Objects.isNull(serialNum)){
             serialNum = 1;
         }
-        String serialNumStr = String.format("%04d", serialNum);
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(product.getCode()).append("-");
-        sb.append(supplier.getCode()).append(productNew.getBatchName())
-                .append(batch.getBatchNo()).append(serialNumStr).append(productNew.getType());
+
+
 
         for (int i = 0; i < productNew.getProductCount(); i++) {
+            String serialNumStr = String.format("%04d", serialNum);
+            StringBuilder sb = new StringBuilder();
+            sb.append(product.getCode()).append("-");
+            sb.append(supplier.getCode()).append(batch.getBatchNo())
+                    .append(serialNumStr).append(productNew.getType());
+            serialNum++;
+
             productNew.setSerialNum(serialNumStr);
             productNew.setNo(sb.toString());
             productNew.setCreateTime(System.currentTimeMillis());
