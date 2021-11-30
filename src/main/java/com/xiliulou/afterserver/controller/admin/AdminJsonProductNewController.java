@@ -86,7 +86,7 @@ public class AdminJsonProductNewController {
             if(Objects.nonNull(item.getSupplierId())){
                 Supplier supplier = supplierService.getById(item.getSupplierId());
                 if(Objects.nonNull(supplier)){
-                    item.setSupplierCode(supplier.getCode());
+                    item.setSupplierName(supplier.getName());
                 }
             }
         });
