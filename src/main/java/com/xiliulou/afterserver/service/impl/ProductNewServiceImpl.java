@@ -160,7 +160,10 @@ public class ProductNewServiceImpl implements ProductNewService {
             StringBuilder sb = new StringBuilder();
             sb.append(product.getCode()).append("-");
             sb.append(supplier.getCode()).append(batch.getBatchNo())
-                    .append(serialNumStr).append(productNew.getType());
+                    .append(serialNumStr);
+            if(Objects.nonNull(productNew.getType())){
+                sb.append(productNew.getType());
+            }
             serialNum++;
 
             productNew.setSerialNum(serialNumStr);
