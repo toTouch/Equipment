@@ -147,13 +147,18 @@ public class ProductNewServiceImpl implements ProductNewService {
             return R.fail("批次号为空，请重新选择");
         }
 
-        Integer serialNum = productNewMapper.queryMaxSerialNum();
+        StringBuilder codeStr = new StringBuilder();
+        codeStr.append(product.getCode()).append("-");
+        codeStr.append(supplier.getCode()).append(batch.getBatchNo());
+        if(Objects.nonNull(productNew.getType())){
+            codeStr.append(productNew.getType());
+        }
+        productNew.setCode(codeStr.toString());
+
+        Integer serialNum = productNewMapper.queryMaxSerialNum(codeStr.toString());
         if(Objects.isNull(serialNum)){
             serialNum = 0;
         }
-
-
-
 
         for (int i = 0; i < productNew.getProductCount(); i++) {
             serialNum++;
