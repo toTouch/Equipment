@@ -92,6 +92,7 @@ public class ProductNew {
     private String serialNum;
     private Long supplierId;
     private String type;
+    private String code;
 
 //    //左区间
 //    @TableField(exist = false)
