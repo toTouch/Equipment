@@ -68,7 +68,7 @@ public class PermissionResourceServiceImpl implements PermissionResourceService 
             return Pair.of(false, "查询不到任何权限！");
         }
 
-        List<PermissionResourceTree> permissionResourceTrees = TreeUtils.buildTree(permissionResources, (int) PermissionResource.MENU_ROOT);
+        List<PermissionResourceTree> permissionResourceTrees = TreeUtils.buildTree(permissionResources, PermissionResource.MENU_ROOT);
 
 
         return Pair.of(true, permissionResourceTrees);
