@@ -9,10 +9,7 @@ import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.PointNewMapper;
 import com.xiliulou.afterserver.mapper.PointProductBindMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
-import com.xiliulou.afterserver.service.BatchService;
-import com.xiliulou.afterserver.service.FileService;
-import com.xiliulou.afterserver.service.ProductNewService;
-import com.xiliulou.afterserver.service.ProductService;
+import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DataUtil;
 import com.xiliulou.afterserver.util.R;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +44,8 @@ public class ProductNewServiceImpl implements ProductNewService {
     private PointProductBindMapper pointProductBindMapper;
     @Autowired
     private PointNewMapper pointNewMapper;
+    @Autowired
+    private SupplierService supplierService;
 
     /**
      * 通过ID查询单条数据从DB
@@ -132,8 +131,49 @@ public class ProductNewServiceImpl implements ProductNewService {
            return R.fail("请传入正确的产品数量");
         }
 
+        Supplier supplier = supplierService.getById(productNew.getSupplierId());
+        if (Objects.isNull(supplier)) {
+            return R.fail("供应商选择有误，请检查");
+        }
+        if(Objects.isNull(supplier.getCode())){
+            return R.fail("供应商编码为空,请重新选择");
+        }
+
+        Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
+        if(Objects.isNull(batch)){
+            return R.fail("批次号选择有误，请检查");
+        }
+        if(Objects.isNull(batch.getBatchNo())){
+            return R.fail("批次号为空，请重新选择");
+        }
+
+        StringBuilder codeStr = new StringBuilder();
+        codeStr.append(product.getCode()).append("-");
+        codeStr.append(supplier.getCode()).append(batch.getBatchNo());
+        if(Objects.nonNull(productNew.getType())){
+            codeStr.append(productNew.getType());
+        }
+        productNew.setCode(codeStr.toString());
+
+        Integer serialNum = productNewMapper.queryMaxSerialNum(codeStr.toString());
+        if(Objects.isNull(serialNum)){
+            serialNum = 0;
+        }
+
         for (int i = 0; i < productNew.getProductCount(); i++) {
-            productNew.setNo(DataUtil.getNo());
+            serialNum++;
+            String serialNumStr = String.format("%04d", serialNum);
+            StringBuilder sb = new StringBuilder();
+            sb.append(product.getCode()).append("-");
+            sb.append(supplier.getCode()).append(batch.getBatchNo())
+                    .append(serialNumStr);
+            if(Objects.nonNull(productNew.getType())){
+                sb.append(productNew.getType());
+            }
+
+
+            productNew.setSerialNum(serialNumStr);
+            productNew.setNo(sb.toString());
             productNew.setCreateTime(System.currentTimeMillis());
             productNew.setDelFlag(ProductNew.DEL_NORMAL);
             this.insert(productNew);

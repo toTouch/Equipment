@@ -40,6 +40,7 @@ public class SupplierServiceImpl extends ServiceImpl<SupplierMapper, Supplier> i
         wrapper.like(Objects.nonNull(supplier.getName()),Supplier::getName,supplier.getName())
                 .like(Objects.nonNull(supplier.getManager()),Supplier::getManager,supplier.getManager())
                 .like(Objects.nonNull(supplier.getPhone()),Supplier::getPhone,supplier.getPhone())
+                .like(Objects.nonNull(supplier.getCode()),Supplier::getCode,supplier.getCode())
                 .orderByDesc(Supplier::getCreateTime);
 
         Page page1 = baseMapper.selectPage(page,wrapper);

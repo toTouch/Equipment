@@ -89,7 +89,10 @@ public class ProductNew {
     public static final Integer DEL_DEL = 1;
 
     private Integer cache;
-
+    private String serialNum;
+    private Long supplierId;
+    private String type;
+    private String code;
 
 //    //左区间
 //    @TableField(exist = false)
@@ -111,5 +114,6 @@ public class ProductNew {
     private Integer pointId;
     @TableField(exist = false)
     private String pointName;
-
+    @TableField(exist = false)
+    private String supplierName;
 }
