@@ -4,6 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -82,5 +83,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Page selectPage = baseMapper.selectPage(page,Wrappers.<User>lambdaQuery().like(Objects.nonNull(username),User::getUserName, username));
 
         return R.ok(selectPage);
+    }
+
+    @Override
+    public User findByUserName(String username) {
+        return baseMapper.selectOne(new QueryWrapper<User>().eq("userName",username));
     }
 }
