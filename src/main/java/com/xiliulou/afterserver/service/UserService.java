@@ -14,5 +14,6 @@ public interface UserService extends IService<User> {
 
     R list(Long offset, Long size, String username);
 
+    User findByUserName(String username);
 
 }
