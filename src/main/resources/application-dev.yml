@@ -10,6 +10,22 @@ spring:
       username: root
       password: y%d*IWrh1KKfQD!E
       url: jdbc:mysql://172.26.20.230:3306/xiliulou_crm?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&allowMultiQueries=true
+  redis:
+    lettuce:
+      pool:
+        max-active: 50
+        max-idle: 50
+        min-idle: 50
+    host:  ${REDIS-HOST:xiliulou-redis}
+    password: xll_redis_nihao...333
+    database: 2
+
+  klock:
+    address: ${REDIS-HOST:xiliulou-redis}:6379
+    password: ${spring.redis.password}
+    wait-time: 20
+    lease-time: 20
+    database: 15
 
   servlet:
     multipart:
