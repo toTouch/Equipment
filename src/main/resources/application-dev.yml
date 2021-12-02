@@ -13,9 +13,9 @@ spring:
   redis:
     lettuce:
       pool:
-        max-active: 50
-        max-idle: 50
-        min-idle: 50
+        max-active: 1
+        max-idle: 1
+        min-idle: 1
     host:  ${REDIS-HOST:xiliulou-redis}
     password: xll_redis_nihao...333
     database: 2
