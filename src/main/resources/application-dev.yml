@@ -17,12 +17,10 @@ spring:
         max-idle: 1
         min-idle: 1
     host:  ${REDIS-HOST:xiliulou-redis}
-    password: xll_redis_nihao...333
     database: 2
 
   klock:
     address: ${REDIS-HOST:xiliulou-redis}:6379
-    password: ${spring.redis.password}
     wait-time: 20
     lease-time: 20
     database: 15
