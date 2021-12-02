@@ -15,7 +15,7 @@ import java.util.List;
  * @Description:
  */
 public class TreeUtils {
-	public static List<PermissionResourceTree> buildTree(List<PermissionResource> permissionResources, Integer menuRoot) {
+	public static List<PermissionResourceTree> buildTree(List<PermissionResource> permissionResources, Long menuRoot) {
 		List<PermissionResourceTree> trees = new ArrayList<>();
 
 		PermissionResourceTree node;
