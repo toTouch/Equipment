@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * (ProductNew)表数据库访问层
@@ -77,4 +78,7 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
                          @Param("pointId")Long pointId);
 
     int updateStatusFromBatch(@Param("ids") List<Long> ids, @Param("status") Integer status);
+
+    @Select("select max(serial_num) from t_product_new where code = #{code}")
+    Integer queryMaxSerialNum(String code);
 }

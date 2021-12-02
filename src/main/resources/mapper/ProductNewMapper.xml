@@ -26,7 +26,7 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="ProductNewMap">
         select
-          p.id, p.no, p.model_id, p.batch_id, p.status, p.expiration_start_time, p.years, p.expiration_end_time, p.create_time, p.del_flag
+          p.id, p.no, p.model_id, p.batch_id, p.status, p.expiration_start_time, p.years, p.expiration_end_time, p.create_time, p.del_flag, p.serial_num, p.type, p.supplier_id
         from t_product_new p left join t_point_product_bind b
         on p.id = b.product_id
         <where>
@@ -115,8 +115,8 @@
 
     <!--新增所有列-->
     <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
-        insert into t_product_new(no, model_id, batch_id, status, expiration_start_time, years, expiration_end_time, create_time, del_flag, cache)
-        values (#{no}, #{modelId}, #{batchId}, #{status}, #{expirationStartTime},#{years},#{expirationEndTime}, #{createTime}, #{delFlag}, #{cache})
+        insert into t_product_new(no, model_id, batch_id, status, expiration_start_time, years, expiration_end_time, create_time, del_flag, cache, serial_num, supplier_id, type, code)
+        values (#{no}, #{modelId}, #{batchId}, #{status}, #{expirationStartTime},#{years},#{expirationEndTime}, #{createTime}, #{delFlag}, #{cache},#{serialNum}, #{supplierId}, #{type}, #{code})
     </insert>
 
     <!--通过主键修改数据-->

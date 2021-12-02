@@ -30,6 +30,8 @@ public class AdminJsonProductNewController {
     private PointProductBindService pointProductBindService;
     @Autowired
     private PointNewService pointNewService;
+    @Autowired
+    private SupplierService supplierService;
 
     @PostMapping("/admin/productNew")
     public R saveAdminPointNew(@RequestBody ProductNew productNew){
@@ -78,6 +80,13 @@ public class AdminJsonProductNewController {
                 Batch batch = batchService.queryByIdFromDB(item.getBatchId());
                 if (Objects.nonNull(batch)){
                     item.setBatchName(batch.getBatchNo());
+                }
+            }
+
+            if(Objects.nonNull(item.getSupplierId())){
+                Supplier supplier = supplierService.getById(item.getSupplierId());
+                if(Objects.nonNull(supplier)){
+                    item.setSupplierName(supplier.getName());
                 }
             }
         });
