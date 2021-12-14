@@ -103,6 +103,7 @@ public class PermissionResourceServiceImpl implements PermissionResourceService 
         return Objects.isNull(insert.getId()) ? Pair.of(false, "保存失败") : Pair.of(true, "保存成功");
     }
 
+    @Override
     public PermissionResource queryByIdFromCache(Long id) {
         PermissionResource permissionResource = permissionResourceMapper.queryById(id);
         if (Objects.isNull(permissionResource)) {

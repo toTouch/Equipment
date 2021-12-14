@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver;
 
 import com.xiliulou.afterserver.config.MinioConfig;
+import com.xiliulou.cache.redis.EnableRedis;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -10,6 +11,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @SpringBootApplication
 @MapperScan("com.xiliulou.afterserver.mapper")
 @EnableConfigurationProperties
+@EnableRedis
 public class AfterServerApplication {
 
 

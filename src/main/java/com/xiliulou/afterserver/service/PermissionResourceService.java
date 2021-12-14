@@ -32,4 +32,5 @@ public interface PermissionResourceService {
     Pair<Boolean, Object> getPermissionsByRole(Long rid);
 
     List<PermissionResource> findPermissionsByRole(Long rid);
+
 }

@@ -34,8 +34,8 @@ import java.util.Objects;
 @Service
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
-    @Autowired
-    JwtHelper jwtHelper;
+   // @Autowired
+    //JwtHelper jwtHelper;
 
     @Override
     public Pair<Boolean, Object> register(User user) {
@@ -67,8 +67,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         userClaims.put("roleId", userDb.getRoleId());
 
 
-        JSONObject jsonToken = jwtHelper.generateToken(userClaims);
-        return Pair.of(true, jsonToken);
+        //JSONObject jsonToken = jwtHelper.generateToken(userClaims);
+        return Pair.of(true, null);
     }
 
     @Override
@@ -87,6 +87,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public User findByUserName(String username) {
-        return baseMapper.selectOne(new QueryWrapper<User>().eq("userName",username));
+        return baseMapper.selectOne(new QueryWrapper<User>().eq("user_name",username));
     }
 }
