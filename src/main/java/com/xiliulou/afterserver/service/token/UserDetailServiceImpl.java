@@ -1,9 +1,10 @@
-package com.xiliulou.afterserver.service.impl;
+package com.xiliulou.afterserver.service.token;
 
 import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.service.UserService;
-import com.xiliulou.afterserver.util.SecurityUser;
+
 import com.xiliulou.security.authentication.authorization.AuthorizationService;
+import com.xiliulou.security.bean.SecurityUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,8 +29,8 @@ public class UserDetailServiceImpl implements UserDetailsService {
         if (user==null){
             throw new UsernameNotFoundException("用户名不存在!");
         }
-        Collection<? extends GrantedAuthority> authorities=authorizationService.acquireAllAuthorities(user.getId(),user.getRoleId());
+        Collection<? extends GrantedAuthority> authorities=authorizationService.acquireAllAuthorities(user.getId(),0);
 
-        return new SecurityUser(user.getId(),user.getUserName(),user.getPassWord(),user.getRoleId(),user.getCreateTime(),authorities);
+        return new SecurityUser(user.getUserName(),null,user.getId(),1,user.getPassWord(),false,authorities);
     }
 }
