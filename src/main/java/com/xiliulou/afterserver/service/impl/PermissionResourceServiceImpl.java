@@ -41,7 +41,7 @@ public class PermissionResourceServiceImpl implements PermissionResourceService 
 
     @Override
     public PermissionResource insert(PermissionResource permissionResource) {
-      this.permissionResourceMapper.insert(permissionResource);
+      this.permissionResourceMapper.insertOne(permissionResource);
       return permissionResource;
     }
 
