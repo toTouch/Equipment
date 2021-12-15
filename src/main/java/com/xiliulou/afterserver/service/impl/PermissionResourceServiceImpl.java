@@ -65,7 +65,7 @@ public class PermissionResourceServiceImpl implements PermissionResourceService 
         }
 
         //如果不是超级管理员，就不用返回前4个权限
-        if (userInfo.getUid() > 2L) {
+        if (userInfo.getUid() > 3L) {
             permissionResources = permissionResources.stream().filter(e -> e.getId() > 4&& !rolePermissionConfig.getUnShow().contains(e.getId())).collect(Collectors.toList());
         }
 
