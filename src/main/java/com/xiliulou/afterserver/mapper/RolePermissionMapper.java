@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 public interface RolePermissionMapper extends BaseMapper<RolePermission> {
 
-    @Delete("delete id,rid,cid from t_role_permission where rid= #{rid}")
+    @Delete("delete from t_role_permission where rid= #{rid}")
       int deleteByRid(@Param("rid")Long rid);
 
 }

@@ -85,12 +85,12 @@ public class AdminJsonUserController extends BaseController {
         return R.ok(userService.removeById(uid));
    }
 
-    @GetMapping("/user/menu")
+    @GetMapping("admin/user/menu")
     public R getUserMenu() {
         return returnPairResult(roleService.getMenuByUid());
     }
 
-    @PostMapping("/user/role/bind")
+    @PostMapping("admin/user/role/bind")
     public R bindUserRole(@RequestParam("uid") Long uid, @RequestParam("roleIds") String jsonRoleIds) {
         List<Long> roleIds = JsonUtil.fromJsonArray(jsonRoleIds, Long.class);
         if (!DataUtil.collectionIsUsable(roleIds)) {

@@ -4,7 +4,7 @@
 
   <!--添加角色-->
  <insert id="addRole" keyProperty="id" useGeneratedKeys="true">
-     insert into t_role(name,code,create_time,update_time) values(#{name},#{code},#{create_time},#{update_time})
+     insert into t_role(name,code,create_time,update_time) values(#{name},#{code},#{createTime},#{updateTime})
  </insert>
     
     <!--根据id查找一行数据-->
@@ -23,10 +23,10 @@
         update t_role
         <set>
             <if test="name !=null and name !=''">
-                name = #{name}
+                name = #{name},
             </if>
             <if test="code !=null and code !=''">
-                code = #{code}
+                code = #{code},
             </if>
         </set>
         where id =#{id}
@@ -35,7 +35,7 @@
 
     <select id="queryByRoleIds" resultType="com.xiliulou.afterserver.entity.Role">
         select
-        id, name, code, `desc`, create_time, update_time
+        id, name, code, create_time, update_time
         from t_role
         where id in
         <foreach collection="list" close=")" open="(" item="r" separator=",">
