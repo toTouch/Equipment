@@ -36,7 +36,7 @@ public class PermissionResource {
     /**修改时间*/
     private Long updateTime;
 
-    private Integer delFag;
+    private Integer delFlag;
 
     public static final long MENU_ROOT = 0;
 
