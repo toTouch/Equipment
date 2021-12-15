@@ -23,7 +23,7 @@ public class TreeUtils {
 			node = new PermissionResourceTree();
 			node.setId(permissionResource.getId());
 			node.setCreateTime(permissionResource.getCreateTime());
-			node.setDesc(permissionResource.getDeesc());
+			node.setDesc(permissionResource.getDesc());
 			node.setMethod(permissionResource.getMethod());
 			node.setName(permissionResource.getName());
 			node.setType(permissionResource.getType());
