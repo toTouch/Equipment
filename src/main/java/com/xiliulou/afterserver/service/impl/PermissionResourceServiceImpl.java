@@ -97,7 +97,7 @@ public class PermissionResourceServiceImpl implements PermissionResourceService 
 
         permissionResource.setCreateTime(System.currentTimeMillis());
         permissionResource.setUpdateTime(System.currentTimeMillis());
-        permissionResource.setDelFag(PermissionResource.DEL_NORMAL);
+        permissionResource.setDelFlag(PermissionResource.DEL_NORMAL);
 
         PermissionResource insert = insert(permissionResource);
 
