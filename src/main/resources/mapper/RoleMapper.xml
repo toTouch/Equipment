@@ -4,18 +4,18 @@
 
   <!--添加角色-->
  <insert id="addRole" keyProperty="id" useGeneratedKeys="true">
-     insert into t_role(name,create_time,update_time) values(#{name},#{create_time},#{update_time})
+     insert into t_role(name,code,create_time,update_time) values(#{name},#{code},#{create_time},#{update_time})
  </insert>
     
     <!--根据id查找一行数据-->
     <select id="findRoleById" resultType="com.xiliulou.afterserver.entity.Role" parameterType="long">
-        select id,name,create_time,update_time from t_role where id =#{id}
+        select id,name,code,create_time,update_time from t_role where id =#{id}
     </select>
 
 
     <!--查找所有的角色-->
     <select id="findRoleAll" resultType="com.xiliulou.afterserver.entity.Role">
-      select id,name,create_time,update_time from t_role order by create_time desc
+      select id,name,code,create_time,update_time from t_role order by create_time desc limit #{offset}, #{size}
     </select>
 
     <!--修改角色-->
@@ -25,15 +25,22 @@
             <if test="name !=null and name !=''">
                 name = #{name}
             </if>
-            <if test="createTime !=null">
-                create_time = #{createTime}
-            </if>
-            <if test="updateTime !=null">
-                update_time = #{updateTime}
+            <if test="code !=null and code !=''">
+                code = #{code}
             </if>
         </set>
         where id =#{id}
     </update>
 
 
+    <select id="queryByRoleIds" resultType="com.xiliulou.afterserver.entity.Role">
+        select
+        id, name, code, `desc`, create_time, update_time
+        from t_role
+        where id in
+        <foreach collection="list" close=")" open="(" item="r" separator=",">
+            #{r}
+        </foreach>
+
+    </select>
 </mapper>

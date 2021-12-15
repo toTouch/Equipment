@@ -16,7 +16,7 @@ public interface RoleService{
     /**根据id查找一行角色*/
     Role findRoleById(Long id);
     /**查找所有的角色*/
-    List<Role> findRoleAll();
+    List<Role> findRoleAll(Long offset, Long size);
 
     Boolean deleteById(Long id);
 
@@ -26,11 +26,14 @@ public interface RoleService{
 
     R updateRole(RoleQuery roleQuery);
 
-    Pair<Boolean, Object> findBindUidRids(Long uid);
+    Pair<Boolean, Object> findBindUid(Long uid);
 
     List<Long> queryRidsByUid(Long uid);
 
     Pair<Boolean, Object> deleteRole(Long id);
 
+    Pair<Boolean, Object> bindUserRole(Long uid, List<Long> roleIds);
+
+    public Pair<Boolean, Object> getMenuByUid();
 }
 

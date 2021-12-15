@@ -19,8 +19,8 @@ public class AdminJsonUserRoleController extends BaseController {
     RoleService roleService;
 
     @GetMapping("/role/list")
-    public R getRoleList(){
-        return (R<List<Role>>) roleService.findRoleAll();
+    public R getRoleList(@RequestParam("offset") Long offset, @RequestParam("size") Long size){
+        return R.ok(roleService.findRoleAll(offset, size));
     }
 
     @PostMapping("role/add")
@@ -54,6 +54,6 @@ public class AdminJsonUserRoleController extends BaseController {
             return R.fail("SYSTEM.0002", "参数错误");
         }
 
-        return returnPairResult(roleService.findBindUidRids(uid));
+        return returnPairResult(roleService.findBindUid(uid));
     }
 }

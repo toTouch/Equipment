@@ -22,6 +22,10 @@ public class Role {
      * */
     private String name;
     /**
+     * 标识
+     */
+    private String code;
+    /**
      * 创建时间
      * */
     private Long createTime;

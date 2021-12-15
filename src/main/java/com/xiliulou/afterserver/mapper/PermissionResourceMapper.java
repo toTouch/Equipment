@@ -9,8 +9,10 @@ import java.util.List;
 
 public interface PermissionResourceMapper extends BaseMapper<PermissionResource> {
 
-        /**查询一条数据*/
-       List<PermissionResource> findByIds(List<Long> pid);
+    /**
+     * 查询一条数据
+     */
+    List<PermissionResource> findByIds(List<Long> pid);
 
     List<PermissionResource> queryAll();
 

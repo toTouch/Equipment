@@ -15,8 +15,10 @@ public interface RoleMapper extends BaseMapper<Role> {
      /**根据id查找一行角色*/
      Role findRoleById(Long id);
      /**查找所有的角色*/
-     List<Role> findRoleAll();
+     List<Role> findRoleAll(@Param("offset")Long offset, @Param("size")Long size);
 
      @Select("select id,name,create_time,update_time from t_role where name=#{name}")
      Role findByName(@Param("name") String name);
+
+     List<Role> queryByRoleIds(@Param("list") List<Long> roleIds);
 }

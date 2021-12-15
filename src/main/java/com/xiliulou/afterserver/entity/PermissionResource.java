@@ -30,7 +30,7 @@ public class PermissionResource {
     /**父菜单id*/
     private Long parent;
     /**描述*/
-    private String deesc;
+    private String desc;
     /**创建时间*/
     private Long createTime;
     /**修改时间*/

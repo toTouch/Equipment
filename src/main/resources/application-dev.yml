@@ -70,3 +70,6 @@ minio:
   secretKey: by123456
   secure: false
   bucketName: test
+
+userrole:
+  unShow: [1,2,3,4]
