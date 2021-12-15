@@ -21,7 +21,7 @@ public interface PermissionResourceService {
 
     Pair<Boolean, Object> addPermissionResource(PermissionResourceQuery permissionResourceQuery);
 
-    PermissionResource queryByIdFromCache(Long id);
+    PermissionResource queryByIdFromDB(Long id);
 
     Pair<Boolean, Object> updatePermissionResource(PermissionResourceQuery permissionResourceQuery);
 

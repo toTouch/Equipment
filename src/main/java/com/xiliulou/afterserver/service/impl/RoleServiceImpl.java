@@ -1,21 +1,26 @@
 package com.xiliulou.afterserver.service.impl;
 
-import com.xiliulou.afterserver.entity.Role;
+import com.google.common.collect.Lists;
+import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.RoleMapper;
+import com.xiliulou.afterserver.service.PermissionResourceService;
 import com.xiliulou.afterserver.service.RoleService;
 import com.xiliulou.afterserver.service.UserRoleService;
+import com.xiliulou.afterserver.service.UserService;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
+import com.xiliulou.afterserver.util.TreeUtils;
 import com.xiliulou.afterserver.web.query.RoleQuery;
+import com.xiliulou.core.json.JsonUtil;
 import com.xiliulou.core.utils.DataUtil;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service("roleService")
@@ -24,6 +29,10 @@ public class RoleServiceImpl implements RoleService {
     RoleMapper roleMapper;
     @Autowired
     UserRoleService userRoleService;
+    @Autowired
+    UserService userService;
+    @Autowired
+    PermissionResourceService permissionResourceService;
 
     @Override
     public Role insert(Role role) {
@@ -44,13 +53,13 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<Role> findRoleAll() {
-//       List<Role> roles=this.roleMapper.findRoleAll();
-//       if (!DataUtil.collectionIsUsable(roles)){
-//           return R.ok(Collections.EMPTY_LIST);
-//       }
-//       return R.ok();
-        return this.roleMapper.findRoleAll();
+    public List<Role> findRoleAll(Long offset, Long size) {
+       List<Role> roles=this.roleMapper.findRoleAll(offset, size);
+       if (!DataUtil.collectionIsUsable(roles)){
+           return Collections.EMPTY_LIST;
+       }
+        //不显示超级管理员角色
+       return roles.stream().filter(e -> e.getId() > 1).collect(Collectors.toList());
     }
 
     @Override
@@ -90,9 +99,10 @@ public class RoleServiceImpl implements RoleService {
         return update > 0 ? R.ok() : R.fail("更新失败！");
     }
 
+
     @Override
-    public Pair<Boolean, Object> findBindUidRids(Long uid) {
-        List<Long> ids = (List<Long>) findBindUidRids(uid);
+    public Pair<Boolean, Object> findBindUid(Long uid) {
+        List<Long> ids = queryRidsByUid(uid);
         return Pair.of(true, ids);
     }
 
@@ -122,5 +132,54 @@ public class RoleServiceImpl implements RoleService {
         }
 
         return Pair.of(false, "删除失败!");
+    }
+
+    @Override
+    public Pair<Boolean, Object> bindUserRole(Long uid, List<Long> roleIds) {
+        User user = userService.getUserById(uid);
+        if (Objects.isNull(user)) {
+            return Pair.of(false, "用户不存在，无法绑定！");
+        }
+        userRoleService.deleteByUid(uid);
+
+        List<Role> roles = this.roleMapper.queryByRoleIds(roleIds);
+        if (!DataUtil.collectionIsUsable(roles)) {
+            return Pair.of(false, "角色不存在，无法绑定！");
+        }
+
+        roles.parallelStream().forEach(r -> {
+            UserRole userRole = UserRole.builder()
+                    .uid(uid)
+                    .rid(r.getId())
+                    .build();
+            userRoleService.insert(userRole);
+        });
+        return Pair.of(true, "绑定成功!");
+    }
+
+    @Override
+    public Pair<Boolean, Object> getMenuByUid() {
+        Long uid = SecurityUtils.getUid();
+        if (Objects.isNull(uid)) {
+            return Pair.of(false, "未能查到相关用户！");
+        }
+
+        List<Long> rids = queryRidsByUid(uid);
+        if (!DataUtil.collectionIsUsable(rids)) {
+            return Pair.of(true, Collections.emptyList());
+        }
+
+        ArrayList<PermissionResource> result = Lists.newArrayList();
+
+        for (Long rid : rids) {
+            List<PermissionResource> permissionResources = permissionResourceService.findPermissionsByRole(rid);
+            if (!DataUtil.collectionIsUsable(permissionResources)) {
+                continue;
+            }
+            result.addAll(permissionResources.stream().filter(e -> e.getType().equals(PermissionResource.TYPE_PAGE)).sorted(Comparator.comparing(PermissionResource::getSort)).collect(Collectors.toList()));
+        }
+
+        List<PermissionResourceTree> permissionResourceTrees = TreeUtils.buildTree(result, PermissionResource.MENU_ROOT);
+        return Pair.of(true, permissionResourceTrees);
     }
 }
