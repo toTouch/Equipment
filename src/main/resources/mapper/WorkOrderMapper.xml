@@ -113,8 +113,11 @@
             <if test="query.type != null">
                 and wo.type = #{query.type}
             </if>
-            <if test="query.status != null">
+            <if test="query.status != null and query.status != 0">
                 and wo.status = #{query.status}
+            </if>
+            <if test="query.status != null query.status == 0">
+                and wo.status in(1,2,3)
             </if>
             <if test="query.createrId != null">
                 and wo.creater_id = #{query.createrId}
