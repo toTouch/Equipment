@@ -75,6 +75,17 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     }
 
     @Override
+    public IPage getAllByName(String name) {
+        List<Product> product = baseMapper.selectList(new LambdaQueryWrapper<Product>().like(Product::getName,name).orderByDesc(Product::getCreateTime));
+        Integer count = baseMapper.selectCount(new LambdaQueryWrapper<Product>().like(Product::getName,name));
+        Page<Product> selectPage = new Page();
+        selectPage.setRecords(product);
+        selectPage.setTotal(count);
+        selectPage.setSize(count);
+        return selectPage;
+    }
+
+    @Override
     public void exportExcel(Product product, HttpServletResponse response) {
         List<Product> productList = list();
         if (ObjectUtil.isEmpty(productList)) {
