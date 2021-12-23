@@ -232,7 +232,21 @@ public class ProductNewServiceImpl implements ProductNewService {
     @Override
     public ProductNew prdouctInfoByNo(String no) {
         LambdaQueryWrapper<ProductNew> eq = new LambdaQueryWrapper<ProductNew>().eq(ProductNew::getNo, no).eq(ProductNew::getDelFlag, ProductNew.DEL_NORMAL);
-        return this.productNewMapper.selectOne(eq);
+        ProductNew productNew = this.productNewMapper.selectOne(eq);
+        if(Objects.nonNull(productNew)){
+            Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
+            if(Objects.nonNull(batch)){
+                productNew.setBatchName(batch.getBatchNo());
+            }
+
+            Product product = productService.getById(productNew.getModelId());
+            if(Objects.nonNull(product)){
+                productNew.setModelName(product.getName());
+            }
+
+            return productNew;
+        }
+        return null;
     }
 
     @Override
