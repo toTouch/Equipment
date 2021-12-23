@@ -62,7 +62,7 @@ public class JsonUserPointProductController {
      */
     @GetMapping("/user/product/page")
     public R getPage(String name) {
-        return R.ok(productService.getPage(0L, 20L, name));
+        return R.ok(productService.getAllByName(name));
     }
 
 

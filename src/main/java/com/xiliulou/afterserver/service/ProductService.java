@@ -23,6 +23,8 @@ public interface ProductService extends IService<Product> {
 
     IPage getPage(Long offset, Long size, String name);
 
+    IPage getAllByName(String name);
+
     void exportExcel(Product product, HttpServletResponse response);
 
     R insertSerialNumber(ProductSerialNumberQuery productSerialNumberQuery);
