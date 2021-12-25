@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.listener;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.fastjson.JSON;
@@ -14,9 +15,12 @@ import com.xiliulou.afterserver.service.CityService;
 import com.xiliulou.afterserver.service.CustomerService;
 import com.xiliulou.afterserver.service.PointNewService;
 import com.xiliulou.afterserver.service.PointService;
+import com.xiliulou.afterserver.util.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,11 +42,13 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
     private PointNewService pointService;
     private CustomerService customerService;
     private CityService cityService;
+    private HttpServletRequest request;
 
-    public PointListener(PointNewService pointService, CustomerService customerService, CityService cityService) {
+    public PointListener(PointNewService pointService, CustomerService customerService, CityService cityService, HttpServletRequest request) {
         this.pointService = pointService;
         this.cityService = cityService;
         this.customerService = customerService;
+        this.request = request;
     }
 
     @Override
@@ -72,6 +78,7 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
         this.list.forEach(item -> {
             PointNew point = new PointNew();
             BeanUtils.copyProperties(item, point);
+
             if (Objects.nonNull(item.getName())){
                 LambdaQueryWrapper<PointNew> wrapper = new LambdaQueryWrapper<PointNew>().eq(PointNew::getDelFlag, 0).eq(PointNew::getName, item.getName());
                 PointNew pointNew = pointService.getBaseMapper().selectOne(wrapper);
@@ -107,7 +114,56 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
             }else {
                 point.setCreateTime(System.currentTimeMillis());
             }
+
+            if (item.getCompletionTime() != null){
+                long l = 0;
+                try {
+                    l = dateToStamp(item.getCompletionTime());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                point.setCompletionTime(l);
+            }else {
+                point.setCompletionTime(System.currentTimeMillis());
+            }
+
+            if(Objects.nonNull(item.getIsEntry())){
+                if("1".equals(item.getIsEntry()) || "是".equals(item.getIsEntry())){
+                    point.setIsEntry(1);
+                }
+                if("0".equals(item.getIsEntry()) || "否".equals(item.getIsEntry())){
+                    point.setIsEntry(0);
+                }
+            }
+
+            if(Objects.nonNull(item.getIsAcceptance())){
+                if("1".equals(item.getIsAcceptance()) || "是".equals(item.getIsAcceptance())){
+                    point.setIsAcceptance(1);
+                }
+                if("0".equals(item.getIsAcceptance()) || "否".equals(item.getIsAcceptance())){
+                    point.setIsAcceptance(0);
+                }
+            }
+
+            if (item.getOrderTime()!= null){
+                long l = 0;
+                try {
+                    l = dateToStamp(item.getOrderTime());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                point.setOrderTime(l);
+            }else {
+                point.setOrderTime(System.currentTimeMillis());
+            }
+
+            Long uid = (Long) request.getAttribute("uid");
+            if (Objects.nonNull(uid)){
+                point.setCreateUid(uid);
+            }
+
             point.setDelFlag(PointNew.DEL_NORMAL);
+
             pointList.add(point);
         });
 

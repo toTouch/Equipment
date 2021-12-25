@@ -54,7 +54,8 @@
         <id property="creater" column="u_user_name"/>
         <id property="pointName" column="p_name"/>
         <id property="describeinfo" column="wo_describeinfo"/>
-        <id property="paymentMethod" column="wo_payment_method"></id>
+        <id property="paymentMethod" column="wo_payment_method"/>
+        <id property="thirdPaymentStatus" column="wo_third_payment_status"/>
         <collection property="fileList" ofType="com.xiliulou.afterserver.entity.File">
             <id property="id" column="f_id"/>
             <id property="type" column="f_type"/>
@@ -90,6 +91,7 @@
         wo.reason as wo_reason,
         wo.describeinfo as wo_describeinfo,
         wo.payment_method as wo_payment_method,
+        wo.third_payment_status as wo_third_payment_status,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
@@ -137,6 +139,12 @@
             <if test="query.processTimeStart != null and query.processTimeEnd != null">
                 and wo.process_time BETWEEN #{query.processTimeStart} and #{query.processTimeEnd}
             </if>
+            <if test="query.thirdCompanyName != null and query.thirdCompanyName != null">
+                and wo.third_company_name = #{query.thirdCompanyName}
+            </if>
+            <if test="query.serverName != null and query.serverName != null">
+                and wo.server_name = #{query.serverName}
+            </if>
         </where>
         ORDER BY wo.create_time DESC
     </select>
@@ -166,6 +174,7 @@
         wo.code as wo_code,
         wo.describeinfo as wo_describeinfo,
         wo.payment_method as wo_payment_method,
+        wo.third_payment_status as wo_third_payment_status,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
@@ -208,6 +217,12 @@
             </if>
             <if test="query.processTimeStart != null and query.processTimeEnd != null">
                 and wo.process_time BETWEEN #{query.processTimeStart} and #{query.processTimeEnd}
+            </if>
+            <if test="query.thirdCompanyName != null and query.thirdCompanyName != null">
+                and wo.third_company_name = #{query.thirdCompanyName}
+            </if>
+            <if test="query.serverName != null and query.serverName != null">
+                and wo.server_name = #{query.serverName}
             </if>
         </where>
         ORDER BY wo.process_time DESC

@@ -2,6 +2,8 @@ package com.xiliulou.afterserver.entity;
 
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.xiliulou.afterserver.web.query.CameraInfoQuery;
+import com.xiliulou.afterserver.web.query.ProductInfoQuery;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,7 +35,7 @@ public class PointNew {
      */
     private Long customerId;
     /**
-     * 状态 1,移机,2运营中,3:拆机,4初始化,5待安装
+     * 状态 1,移机,2运营中,3:拆机,4初始化,5待安装,6运输中，7安装中，8安装完成，9已暂停，10已取消
      */
     private Integer status;
     /**
@@ -81,6 +83,19 @@ public class PointNew {
      */
     private Integer delFlag;
 
+    //新需求
+    private String cardSupplier;
+    private Long completionTime;
+    private Integer isEntry;
+    private Integer isAcceptance;
+    private String orderSource;
+    private Long orderTime;
+    private String operator;
+    private String logisticsInfo;
+    private String productInfo;
+    private String cameraInfo;
+
+
     public static final Integer DEL_NORMAL = 0;
     public static final Integer DEL_DEL = 1;
 
@@ -94,4 +109,8 @@ public class PointNew {
     private String province;
     @TableField(exist = false)
     private String userName;
+    @TableField(exist = false)
+    private List<ProductInfoQuery> productInfoList;
+    @TableField(exist = false)
+    private List<CameraInfoQuery> cameraInfoList;
 }

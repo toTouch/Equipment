@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xiliulou.afterserver.mapper.PointNewMapper">
-
     <resultMap type="com.xiliulou.afterserver.entity.PointNew" id="PointNewMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="name" column="name" jdbcType="VARCHAR"/>
@@ -18,6 +17,16 @@
         <result property="createUid" column="create_uid" jdbcType="INTEGER"/>
         <result property="createTime" column="create_time" jdbcType="INTEGER"/>
         <result property="delFlag" column="del_flag" jdbcType="INTEGER"/>
+        <result property="cardSupplier" column="card_supplier" jdbcType="VARCHAR"/>
+        <result property="completionTime" column="completion_time" jdbcType="INTEGER"/>
+        <result property="isEntry" column="is_entry" jdbcType="INTEGER"/>
+        <result property="isAcceptance" column="is_acceptance" jdbcType="INTEGER"/>
+        <result property="orderSource" column="order_source" jdbcType="VARCHAR"/>
+        <result property="orderTime" column="order_time" jdbcType="INTEGER"/>
+        <result property="operator" column="operator" jdbcType="VARCHAR"/>
+        <result property="logisticsInfo" column="logistics_info" jdbcType="VARCHAR"/>
+        <result property="productInfo" column="product_info" jdbcType="VARCHAR"/>
+        <result property="cameraInfo" column="camera_info" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!--查询单个-->
@@ -33,7 +42,8 @@
     <select id="queryAllByLimit" resultMap="PointNewMap">
         select
         id, name , customer_id, status, city_id, install_type, address, camera_count, canopy_count, sn_no, card_number,
-        remarks,create_uid,create_time, del_flag
+        remarks,create_uid,create_time, del_flag, card_supplier, completion_time, is_entry, is_acceptance, order_source,
+        order_time, operator, logistics_info, product_info, camera_info
         from t_point_new
         <where>
         and del_flag = 0
@@ -150,7 +160,8 @@
     <select id="queryAllByLimitExcel" resultType="com.xiliulou.afterserver.entity.PointNew">
         select
         id, name , customer_id, status, city_id, install_type, address, camera_count, canopy_count, sn_no, card_number,
-        remarks,create_uid,create_time, del_flag
+        remarks,create_uid,create_time, del_flag,card_supplier, completion_time, is_entry, is_acceptance, order_source,
+        order_time, operator, logistics_info, product_info, camera_info
         from t_point_new
         <where>
             and del_flag = 0
@@ -186,9 +197,10 @@
     <!--新增所有列-->
     <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
         insert into t_point_new(name,customer_id, status, city_id, install_type, address, camera_count, canopy_count,
-         sn_no, card_number, remarks,create_uid,create_time, del_flag)
+         sn_no, card_number, remarks,create_uid,create_time, del_flag, card_supplier, completion_time, is_entry, is_acceptance, order_source, order_time, operator, logistics_info, product_info, camera_info)
         values (#{name},#{customerId}, #{status}, #{cityId}, #{installType}, #{address}, #{cameraCount}, #{canopyCount},
-         #{snNo}, #{cardNumber},#{remarks},#{createUid},#{createTime}, #{delFlag})
+         #{snNo}, #{cardNumber},#{remarks},#{createUid},#{createTime}, #{delFlag}, #{cardSupplier}, #{completionTime},
+         #{isEntry}, #{isAcceptance},#{orderSource},#{orderTime},#{operator}, #{logisticsInfo},#{productInfo},#{cameraInfo})
     </insert>
 
     <!--通过主键修改数据-->
@@ -236,6 +248,36 @@
             </if>
             <if test="delFlag != null">
                 del_flag = #{delFlag},
+            </if>
+            <if test="cardSupplier != null and cardSupplier != ''">
+                card_supplier = #{cardSupplier},
+            </if>
+            <if test="completionTime != null">
+                completion_time = #{completionTime},
+            </if>
+            <if test="isEntry != null and isEntry != ''">
+                is_entry = #{isEntry},
+            </if>
+            <if test="isAcceptance != null and isAcceptance != ''">
+                is_acceptance = #{isAcceptance},
+            </if>
+            <if test="orderSource != null and orderSource != ''">
+                order_source = #{orderSource},
+            </if>
+            <if test="orderTime != null">
+                order_time = #{orderTime},
+            </if>
+            <if test="operator != null and operator != ''">
+                operator = #{operator},
+            </if>
+            <if test="logisticsInfo != null and logisticsInfo != ''">
+                logistics_info = #{logisticsInfo},
+            </if>
+            <if test="productInfo != null and productInfo != ''">
+                product_info = #{productInfo},
+            </if>
+            <if test="cameraInfo != null and cameraInfo != ''">
+                camera_info = #{cameraInfo},
             </if>
         </set>
         where id = #{id}

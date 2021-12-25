@@ -58,7 +58,21 @@ public class WorkOrder implements Serializable {
      * 结算方式 1--月结 2--现结
      */
     private Integer paymentMethod;
+    /**
+     * 第三方结算状态 无需结算 1，未结算 2，已结算 3
+     */
+    private Integer thirdPaymentStatus;
 
+    /**
+     * 第三方结算状态 无需结算 1，未结算 2，已结算 3
+     */
+    public static final Integer THIRD_PAYMENT_UNWANTED = 1;
+    public static final Integer THIRD_PAYMENT_UNFINISHED = 2;
+    public static final Integer THIRD_PAYMENT_FINISHED = 3;
+
+    /**
+     * 结算方式 1--月结 2--现结
+     */
     public static final Integer PAYMENT_METHOD_MONTHLY = 1;
     public static final Integer PAYMENT_METHOD_NOW = 2;
 
@@ -76,11 +90,13 @@ public class WorkOrder implements Serializable {
      */
     public static final Integer COMPANY_TYPE_SUPPLIER = 2;
 
-    // 1;待处理2:已处理3:待分析4：已完结
+    // 0：未完成1;待处理2:已处理3:待分析4：已完结5：已完成
+    public static final Integer STATUS_UNFINISHED = 0;
     public static final Integer STATUS_INIT = 1;
     public static final Integer STATUS_PROCESSING = 2;
     public static final Integer STATUS_ANALYSE = 3;
     public static final Integer STATUS_FINISHED = 4;
+    public static final Integer STATUS_SUSPEND = 5;
 
 
     //工单类型

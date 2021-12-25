@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.Query;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -137,6 +138,14 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
     @Override
     public R saveAdminPointNew(PointNew pointNew) {
+        if(Objects.nonNull(pointNew.getProductInfoList())) {
+            String productInfo = JSON.toJSONString(pointNew.getProductInfoList());
+            pointNew.setProductInfo(productInfo);
+        }
+        if(Objects.nonNull(pointNew.getCameraInfoList())) {
+            String cameraInfo = JSON.toJSONString(pointNew.getCameraInfoList());
+            pointNew.setCameraInfo(cameraInfo);
+        }
         pointNew.setDelFlag(PointNew.DEL_NORMAL);
         this.insert(pointNew);
         return R.ok();
@@ -227,6 +236,14 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
     @Override
     public R putAdminPoint(PointNew pointNew) {
+        if(Objects.nonNull(pointNew.getProductInfoList())) {
+            String productInfo = JSON.toJSONString(pointNew.getProductInfoList());
+            pointNew.setProductInfo(productInfo);
+        }
+        if(Objects.nonNull(pointNew.getCameraInfoList())) {
+            String cameraInfo = JSON.toJSONString(pointNew.getCameraInfoList());
+            pointNew.setCameraInfo(cameraInfo);
+        }
         int update = this.pointNewMapper.update(pointNew);
         if (update>0){
             return R.ok();

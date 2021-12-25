@@ -30,6 +30,8 @@ public class WorkOrderExcelVo3 {
     private BigDecimal thirdCompanyPay;
     @ExcelProperty("结算方式")
     private String paymentMethodName;
+    @ExcelProperty("第三方结算状态")
+    private String thirdPaymentStatus;
     @ExcelProperty("备注")
     private String remarks;
     @ExcelProperty("描述")

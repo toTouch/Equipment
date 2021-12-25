@@ -13,6 +13,7 @@
         <result property="expirationEndTime" column="expiration_end_time" jdbcType="INTEGER"/>
         <result property="createTime" column="create_time" jdbcType="INTEGER"/>
         <result property="delFlag" column="del_flag" jdbcType="INTEGER"/>
+        <result property="remarks" column="remarks" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!--查询单个-->
@@ -26,7 +27,7 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="ProductNewMap">
         select
-          p.id, p.no, p.model_id, p.batch_id, p.status, p.expiration_start_time, p.years, p.expiration_end_time, p.create_time, p.del_flag, p.serial_num, p.type, p.supplier_id
+          p.id, p.no, p.model_id, p.batch_id, p.status, p.expiration_start_time, p.years, p.expiration_end_time, p.create_time, p.del_flag, p.serial_num, p.type, p.supplier_id,p.remarks
         from t_product_new p left join t_point_product_bind b
         on p.id = b.product_id
         <where>
@@ -149,6 +150,9 @@
             </if>
             <if test="delFlag != null">
                 del_flag = #{delFlag},
+            </if>
+            <if test="remarks != null and remarks != ''">
+                remarks = #{remarks},
             </if>
         </set>
         where id = #{id}
