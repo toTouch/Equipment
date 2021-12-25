@@ -35,6 +35,9 @@ public class WorkOrderListExcelVo {
     @ExcelProperty("第三方承担费用（元）")
     private BigDecimal thirdCompanyPay;
 
+    @ExcelProperty("第三方结算状态")
+    private String thirdPaymentStatus;
+
     @ExcelProperty("工单原因")
     private String workOrderReasonName;
 

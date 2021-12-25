@@ -55,6 +55,9 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
     @Override
     public void invoke(WorkOrderInfo workOrderInfo, AnalysisContext analysisContext) {
         log.info("工单导入=====解析到一条数据:{}", JSON.toJSONString(workOrderInfo));
+        if(Objects.isNull(workOrderInfo.getStatus())){
+            throw new RuntimeException("status is required the current value is empty!");
+        }
         list.add(workOrderInfo);
         if (list.size() >= BATCH_COUNT) {
             saveData();
@@ -114,6 +117,18 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
                 }
                 if("现结".equals(item.getPaymentMethod()) || String.valueOf(WorkOrder.PAYMENT_METHOD_NOW).equals(item.getPaymentMethod())){
                     workOrder.setPaymentMethod(WorkOrder.PAYMENT_METHOD_NOW);
+                }
+            }
+
+            if(Objects.nonNull(item.getThirdPaymentStatus())){
+                if("无需结算".equals(item.getThirdPaymentStatus()) || String.valueOf(WorkOrder.THIRD_PAYMENT_UNWANTED).equals(item.getThirdPaymentStatus())){
+                    workOrder.setThirdPaymentStatus(WorkOrder.THIRD_PAYMENT_UNWANTED);
+                }
+                if("未结算".equals(item.getThirdPaymentStatus()) || String.valueOf(WorkOrder.THIRD_PAYMENT_UNFINISHED).equals(item.getThirdPaymentStatus())){
+                    workOrder.setThirdPaymentStatus(WorkOrder.THIRD_PAYMENT_UNFINISHED);
+                }
+                if("已结算".equals(item.getThirdPaymentStatus()) || String.valueOf(WorkOrder.THIRD_PAYMENT_FINISHED).equals(item.getThirdPaymentStatus())){
+                    workOrder.setThirdPaymentStatus(WorkOrder.THIRD_PAYMENT_FINISHED);
                 }
             }
 

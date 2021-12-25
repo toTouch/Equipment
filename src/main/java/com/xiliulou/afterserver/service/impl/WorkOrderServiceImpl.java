@@ -208,6 +208,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 if(o.getStatus().equals(4)){
                     workOrderExcelVo.setStatusName("已完结");
                 }
+                if(o.getStatus().equals(5)){
+                    workOrderExcelVo.setStatusName("已暂停");
+                }
             }
             //createrName
             if(Objects.nonNull(o.getCreaterId())){
@@ -242,6 +245,19 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrderExcelVo.setThirdCompanyName(name);
             }
 
+            //thirdPaymentStatus
+            if(Objects.nonNull(o.getThirdPaymentStatus())){
+                if(o.getThirdPaymentStatus().equals(1)){
+                    workOrderExcelVo.setThirdPaymentStatus("无需结算");
+                }
+                if(o.getThirdPaymentStatus().equals(2)){
+                    workOrderExcelVo.setThirdPaymentStatus("未结算");
+                }
+                if(o.getThirdPaymentStatus().equals(3)){
+                    workOrderExcelVo.setThirdPaymentStatus("已结算");
+                }
+            }
+
             workOrderExcelVoList.add(workOrderExcelVo);
         }
 
@@ -274,7 +290,22 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         return methodStr;
     }
 
-
+    private String getThirdPaymentStatus(Integer status){
+        String statusStr = "";
+        status = status == null ? 0 : status;
+        switch (status) {
+            case 1:
+                statusStr = "无需结算";
+                break;
+            case 2:
+                statusStr = "未结算";
+                break;
+            case 3:
+                statusStr = "已结算";
+                break;
+        }
+        return statusStr;
+    }
 
     private String getStatusStr(Integer status) {
         String statusStr = "";
@@ -452,6 +483,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             workOrderExcelVo.setThirdCompanyPay(o.getThirdCompanyPay());
 //            workOrderExcelVo.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo.setPaymentMethodName(getPaymentMethod(o.getPaymentMethod()));
+            workOrderExcelVo.setThirdPaymentStatus(getThirdPaymentStatus(o.getThirdPaymentStatus()));
             workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
             if(!Objects.isNull(o.getProcessTime())){
                 workOrderExcelVo.setProcessTimeStr(simpleDateFormat.format(new Date(o.getProcessTime())));
@@ -500,6 +532,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             workOrderExcelVo2.setDescribeinfo(o.getDescribeinfo());
 //            workOrderExcelVo2.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo2.setPaymentMethodName(getPaymentMethod(o.getPaymentMethod()));
+            workOrderExcelVo2.setThirdPaymentStatus(getThirdPaymentStatus(o.getThirdPaymentStatus()));
             workOrderExcelVo2.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
             if(!Objects.isNull(o.getProcessTime())){
                 workOrderExcelVo2.setProcessTimeStr(simpleDateFormat.format(new Date(o.getProcessTime())));
@@ -549,6 +582,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             workOrderExcelVo3.setDescribeinfo(o.getDescribeinfo());
 //            workOrderExcelVo3.setStatusStr(getStatusStr(o.getStatus()));
             workOrderExcelVo3.setPaymentMethodName(getPaymentMethod(o.getPaymentMethod()));
+            workOrderExcelVo3.setThirdPaymentStatus(getThirdPaymentStatus(o.getThirdPaymentStatus()));
             workOrderExcelVo3.setCreateTimeStr(simpleDateFormat.format(new Date(o.getCreateTime())));
             if(!Objects.isNull(o.getProcessTime())){
                 workOrderExcelVo3.setProcessTimeStr(simpleDateFormat.format(new Date(o.getProcessTime())));

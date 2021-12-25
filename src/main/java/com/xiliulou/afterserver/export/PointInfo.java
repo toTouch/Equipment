@@ -46,19 +46,59 @@ public class PointInfo {
      */
     @ExcelProperty(index = 5)
     private String city;
-
+    /**
+     * 创建时间
+     */
+    @ExcelProperty(index = 6)
+    private String createTime;
+    /**
+     * '物联网卡供应商
+     */
+    @ExcelProperty(index = 7)
+    private String cardSupplier;
     /**
      *sn码
      */
-    @ExcelProperty(index = 6)
+    @ExcelProperty(index = 8)
     private String snNo;
     /**
      * 物联网卡
      */
-    @ExcelProperty(index = 7)
+    @ExcelProperty(index = 9)
     private String cardNumber;
-
-    @ExcelProperty(index = 8)
-    private String createTime;
-
+    /**
+     * 施工完成时间
+     */
+    @ExcelProperty(index = 10)
+    private String completionTime;
+    /**
+     * 入账
+     */
+    @ExcelProperty(index = 11)
+    private String isEntry;
+    /**
+     * 验收
+     */
+    @ExcelProperty(index = 12)
+    private String isAcceptance;
+    /**
+     * 订单来源
+     */
+    @ExcelProperty(index = 13)
+    private String orderSource;
+    /**
+     * 下单时间
+     */
+    @ExcelProperty(index = 14)
+    private String orderTime;
+    /**
+     * '运营商'
+     */
+    @ExcelProperty(index = 15)
+    private String operator;
+    /**
+     * '物流信息'
+     */
+    @ExcelProperty(index = 16)
+    private String logisticsInfo;
 }

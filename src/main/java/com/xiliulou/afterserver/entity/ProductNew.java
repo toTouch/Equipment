@@ -93,6 +93,7 @@ public class ProductNew {
     private Long supplierId;
     private String type;
     private String code;
+    private String remarks;
 
 //    //左区间
 //    @TableField(exist = false)
