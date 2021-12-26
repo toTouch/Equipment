@@ -213,11 +213,18 @@ public class AdminJsonPointNewController {
 
         String[] header = {"柜机名称", "机柜状态", "安装类型", "详细地址",  "安装时间", "施工完成时间", "城市名称", "客户名称","入账","验收","订单来源","下单时间","运营商","物流信息","雨棚数量","物联网卡供应商","SN码", "物联网卡号"};
         List<Product> productAll = productService.list();
-        Optional<PointNew> maxPointNew = pointNews.stream()
-                .collect(Collectors.maxBy(
-                        (e1, e2) -> Double.compare(e1.getCameraCount(), e1.getCameraCount())
-                ));
+        Integer max = 0;
 
+        for(PointNew pointNew: pointNews){
+            if(Objects.nonNull(pointNew.getCameraInfo()) && pointNew.getCameraInfo().matches("\\[.*\\]")){
+                List<CameraInfoQuery> cameraInfoQuery = JSON.parseArray(pointNew.getCameraInfo(), CameraInfoQuery.class);;
+                if(!CollectionUtils.isEmpty(cameraInfoQuery)){
+                    max = max < cameraInfoQuery.size() ? cameraInfoQuery.size() : max;
+                }
+            }
+        }
+
+        final Integer finalMax = max;
         for(String s : header){
             List<String> headTitle = new ArrayList<>();
             headTitle.add(s);
@@ -235,9 +242,8 @@ public class AdminJsonPointNewController {
         headTitle.add("摄像头数量");
         headList.add(headTitle);
 
-        if(Objects.nonNull(maxPointNew)){
-             Integer max = maxPointNew.get().getCameraCount();
-            for (int i = 0; i < max; i++){
+        if(Objects.nonNull(finalMax)){
+            for (int i = 0; i < finalMax; i++){
                 List<String> headTitle1 = new ArrayList<>();
                 headTitle1.add("摄像头卡供应商" + (1 + i));
                 List<String> headTitle2 = new ArrayList<>();
@@ -418,8 +424,7 @@ public class AdminJsonPointNewController {
                     }
                 }
             }else{
-                Integer max = maxPointNew.get().getCameraCount();
-                for (int i = 0; i < max; i++) {
+                for (int i = 0; i < finalMax; i++) {
                     list.add("");
                 }
             }
