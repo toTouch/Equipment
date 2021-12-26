@@ -139,11 +139,11 @@
             <if test="query.processTimeStart != null and query.processTimeEnd != null">
                 and wo.process_time BETWEEN #{query.processTimeStart} and #{query.processTimeEnd}
             </if>
-            <if test="query.thirdCompanyName != null and query.thirdCompanyName != null">
-                and wo.third_company_name = #{query.thirdCompanyName}
+            <if test="query.thirdCompanyName != null and query.thirdCompanyName != ''">
+                and wo.third_company_name like concat('%',#{query.thirdCompanyName},'%')
             </if>
-            <if test="query.serverName != null and query.serverName != null">
-                and wo.server_name = #{query.serverName}
+            <if test="query.serverName != null and query.serverName != ''">
+                and wo.server_name =  like concat('%',#{query.serverName},'%')
             </if>
         </where>
         ORDER BY wo.create_time DESC
@@ -218,11 +218,11 @@
             <if test="query.processTimeStart != null and query.processTimeEnd != null">
                 and wo.process_time BETWEEN #{query.processTimeStart} and #{query.processTimeEnd}
             </if>
-            <if test="query.thirdCompanyName != null and query.thirdCompanyName != null">
-                and wo.third_company_name = #{query.thirdCompanyName}
+            <if test="query.thirdCompanyName != null and query.thirdCompanyName != ''">
+                and wo.third_company_name  like concat('%',#{query.thirdCompanyName},'%')
             </if>
-            <if test="query.serverName != null and query.serverName != null">
-                and wo.server_name = #{query.serverName}
+            <if test="query.serverName != null and query.serverName != ''">
+                and wo.server_name = like concat('%',#{query.serverName},'%')
             </if>
         </where>
         ORDER BY wo.process_time DESC
