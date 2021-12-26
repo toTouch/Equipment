@@ -184,6 +184,11 @@ public class AdminJsonPointNewController {
         return R.ok();
     }
 
+    @PutMapping("admin/pointNew/upload/createUser")
+    public R putAdminPointNewCreateUser(@RequestParam("id") Long id, @RequestParam("createUid") Long createUid){
+        return pointNewService.putAdminPointNewCreateUser(id, createUid);
+    }
+
     @GetMapping("/admin/pointNew/exportExcel")
     public void pointExportExcel(@RequestParam(value = "name",required = false) String name,
                               @RequestParam(value = "cid",required = false) Integer cid,

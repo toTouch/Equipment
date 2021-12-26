@@ -61,6 +61,8 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     //private PointProductBindMapper pointProductBindMapper;
     //@Autowired
     //private FileMapper fileMapper;
+    @Autowired
+    private UserService userService;
 
     /**
      * 通过ID查询单条数据从DB
@@ -332,6 +334,25 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     @Override
     public List<PointNew> queryAllByLimitExcel(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime, Long createUid,String snNo) {
         return this.pointNewMapper.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid,snNo);
+    }
+
+    public R putAdminPointNewCreateUser(Long id, Long createUid){
+        if(Objects.isNull(id) || Objects.isNull(createUid)){
+            return R.fail("参数非法，请检查");
+        }
+
+        User user = userService.getUserById(createUid);
+        if(Objects.isNull(user)){
+            return R.fail("没有查询到该用户");
+        }
+
+        Integer len = pointNewMapper.putAdminPointNewCreateUser(id, createUid);
+
+        if(len != null && len > 0){
+            return R.ok();
+        }
+
+        return R.fail("修改失败");
     }
 
     /*@Override
