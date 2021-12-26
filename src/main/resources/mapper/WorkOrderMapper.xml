@@ -119,7 +119,7 @@
                 and wo.status = #{query.status}
             </if>
             <if test="query.status != null and query.status == 0">
-                and wo.status in(1,2,3)
+                and wo.status in(1,2,3,5)
             </if>
             <if test="query.createrId != null">
                 and wo.creater_id = #{query.createrId}
@@ -198,7 +198,7 @@
                 and wo.status = #{query.status}
             </if>
             <if test="query.status != null and query.status == 0">
-                and wo.status in(1,2,3)
+                and wo.status in(1,2,3,5)
             </if>
             <if test="query.createrId != null">
                 and wo.creater_id = #{query.createrId}
