@@ -184,7 +184,7 @@ public class AdminJsonPointNewController {
         return R.ok();
     }
 
-    @PutMapping("admin/pointNew/upload/createUser")
+    @PutMapping("admin/pointNew/update/createUser")
     public R putAdminPointNewCreateUser(@RequestParam("id") Long id, @RequestParam("createUid") Long createUid){
         return pointNewService.putAdminPointNewCreateUser(id, createUid);
     }
