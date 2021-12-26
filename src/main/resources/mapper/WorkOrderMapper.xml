@@ -143,7 +143,7 @@
                 and wo.third_company_name like concat('%',#{query.thirdCompanyName},'%')
             </if>
             <if test="query.serverName != null and query.serverName != ''">
-                and wo.server_name =  like concat('%',#{query.serverName},'%')
+                and wo.server_name like concat('%',#{query.serverName},'%')
             </if>
         </where>
         ORDER BY wo.create_time DESC
@@ -222,7 +222,7 @@
                 and wo.third_company_name  like concat('%',#{query.thirdCompanyName},'%')
             </if>
             <if test="query.serverName != null and query.serverName != ''">
-                and wo.server_name = like concat('%',#{query.serverName},'%')
+                and wo.server_name like concat('%',#{query.serverName},'%')
             </if>
         </where>
         ORDER BY wo.process_time DESC
