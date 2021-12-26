@@ -84,16 +84,16 @@ public class PointNew {
     private Integer delFlag;
 
     //新需求
-    private String cardSupplier;
-    private Long completionTime;
-    private Integer isEntry;
-    private Integer isAcceptance;
-    private String orderSource;
-    private Long orderTime;
-    private String operator;
-    private String logisticsInfo;
-    private String productInfo;
-    private String cameraInfo;
+    private String cardSupplier;//物联网卡供应商
+    private Long completionTime;//施工完成时间
+    private Integer isEntry;//是否入账
+    private Integer isAcceptance;//是否验收
+    private String orderSource;//工单来源
+    private Long orderTime;//工单时间
+    private String operator;//运营商
+    private String logisticsInfo;//物流信息
+    private String productInfo;//柜子信息
+    private String cameraInfo;//摄像头信息
 
 
     public static final Integer DEL_NORMAL = 0;
