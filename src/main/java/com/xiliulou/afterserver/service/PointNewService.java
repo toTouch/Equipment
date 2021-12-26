@@ -80,6 +80,8 @@ public interface PointNewService extends IService<PointNew> {
 
     List<PointNew> queryAllByLimitExcel(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime, Long createUid, String snNo);
 
+    R putAdminPointNewCreateUser(Long id, Long createUid);
+
     //R saveCache(Long pointId, Long modelId, String no, Long batch);
 
     //R deleteProduct(Long pointId, Long producutId);

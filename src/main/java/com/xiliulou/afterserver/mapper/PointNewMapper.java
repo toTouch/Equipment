@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Update;
 
 /**
  * (PointNew)表数据库访问层
@@ -89,4 +90,7 @@ public interface PointNewMapper extends BaseMapper<PointNew> {
                                         @Param("endTime") Long endTime,
                                         @Param("createUid") Long createUid,
                                         @Param("snNo") String snNo);
+
+    @Update("update t_point_new set create_uid = #{createUid} where id = #{id}")
+    Integer putAdminPointNewCreateUser(@Param("id")Long id, @Param("createUid")Long createUid);
 }
