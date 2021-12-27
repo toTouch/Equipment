@@ -16,7 +16,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.export.PointInfo;
+import com.xiliulou.afterserver.export.PointUpdateInfo;
 import com.xiliulou.afterserver.listener.PointListener;
+import com.xiliulou.afterserver.listener.PointUpdateListener;
 import com.xiliulou.afterserver.mapper.PointProductBindMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.service.*;
@@ -156,6 +158,44 @@ public class AdminJsonPointNewController {
         try {
             try {
                 excelReader = EasyExcel.read(file.getInputStream(), PointInfo.class,new PointListener(pointNewService,customerService,cityService,request)).build();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (ExcelAnalysisException e) {
+            e.printStackTrace();
+            if (e.getCause() instanceof ExcelDataConvertException) {
+                ExcelDataConvertException excelDataConvertException = (ExcelDataConvertException) e.getCause();
+                String cellMsg = "";
+                CellData cellData = excelDataConvertException.getCellData();
+                //这里有一个celldatatype的枚举值,用来判断CellData的数据类型
+                CellDataTypeEnum type = cellData.getType();
+                if (type.equals(CellDataTypeEnum.NUMBER)) {
+                    cellMsg = cellData.getNumberValue().toString();
+                } else if (type.equals(CellDataTypeEnum.STRING)) {
+                    cellMsg = cellData.getStringValue();
+                } else if (type.equals(CellDataTypeEnum.BOOLEAN)) {
+                    cellMsg = cellData.getBooleanValue().toString();
+                }
+                String errorMsg = String.format("excel表格:第%s行,第%s列,数据值为:%s,该数据值不符合要求,请检验后重新导入!<span style=\"color:red\">请检查其他的记录是否有同类型的错误!</span>", excelDataConvertException.getRowIndex() + 1, excelDataConvertException.getColumnIndex(), cellMsg);
+                log.error(errorMsg);
+            }
+        }
+        ReadSheet readSheet = EasyExcel.readSheet(0).build();
+        excelReader.read(readSheet);
+        excelReader.finish();
+        return R.ok();
+    }
+
+    /**
+     * 导入
+     */
+    @PostMapping("admin/pointNew/update/upload")
+    public R updateUpload(MultipartFile file, HttpServletRequest request){
+
+        ExcelReader excelReader = null;
+        try {
+            try {
+                excelReader = EasyExcel.read(file.getInputStream(), PointUpdateInfo.class,new PointUpdateListener(pointNewService,customerService,cityService,request, userService)).build();
             } catch (IOException e) {
                 e.printStackTrace();
             }
