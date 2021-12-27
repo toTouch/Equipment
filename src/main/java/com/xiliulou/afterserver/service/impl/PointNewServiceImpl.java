@@ -427,4 +427,9 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
         return R.ok();
     }*/
+
+    @Override
+    public void updateMany(List<PointNew> pointNew){
+        pointNewMapper.updateMany(pointNew);
+    }
 }

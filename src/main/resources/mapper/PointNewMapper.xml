@@ -288,4 +288,45 @@
        update t_point_new set  del_flag = 1 where id = #{id}
     </delete>
 
+    <update id="updateMany">
+        <foreach collection="list" item="pointNew">
+            update t_point_new
+            <set>
+                <if test="pointNew.name!= null and pointNew.name != ''">
+                    name = #{pointNew.name},
+                </if>
+                <if test="pointNew.status != null">
+                    status = #{pointNew.status},
+                </if>
+                <if test="pointNew.cityId != null">
+                    city_id = #{pointNew.cityId},
+                </if>
+                <if test="pointNew.createTime != null">
+                    create_time = #{pointNew.createTime},
+                </if>
+                <if test="pointNew.delFlag != null">
+                    del_flag = #{pointNew.delFlag},
+                </if>
+                customer_id = #{pointNew.customerId},
+                install_type = #{pointNew.installType},
+                address = #{pointNew.address},
+                camera_count = #{pointNew.cameraCount},
+                canopy_count = #{pointNew.canopyCount},
+                sn_no = #{pointNew.snNo},
+                card_number = #{pointNew.cardNumber},
+                card_supplier = #{pointNew.cardSupplier},
+                remarks = #{pointNew.remarks},
+                create_uid = #{pointNew.createUid},
+                completion_time = #{pointNew.completionTime},
+                is_entry = #{pointNew.isEntry},
+                is_acceptance = #{pointNew.isAcceptance},
+                order_source = #{pointNew.orderSource},
+                order_time = #{pointNew.orderTime},
+                operator = #{pointNew.operator},
+                logistics_info = #{pointNew.logisticsInfo}
+            </set>
+            where id = #{pointNew.id};
+        </foreach>
+    </update>
+
 </mapper>
