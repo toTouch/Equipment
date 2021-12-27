@@ -93,4 +93,6 @@ public interface PointNewMapper extends BaseMapper<PointNew> {
 
     @Update("update t_point_new set create_uid = #{createUid} where id = #{id}")
     Integer putAdminPointNewCreateUser(@Param("id")Long id, @Param("createUid")Long createUid);
+
+    void updateMany(@Param("list")List<PointNew> list);
 }
