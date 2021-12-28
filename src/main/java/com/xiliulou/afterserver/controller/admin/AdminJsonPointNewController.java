@@ -199,7 +199,7 @@ public class AdminJsonPointNewController {
             excelReader = EasyExcel.read(file.getInputStream(), PointUpdateInfo.class,new PointUpdateListener(pointNewService,customerService,cityService,request, userService, supplierService)).build();
         } catch (Exception e) {
             log.error("handle upload excel error!",e);
-            if (e.getCause() instanceof ExcelDataConvertException) {
+            if (e instanceof ExcelDataConvertException) {
                 ExcelDataConvertException excelDataConvertException = (ExcelDataConvertException) e.getCause();
                 String cellMsg = "";
                 CellData cellData = excelDataConvertException.getCellData();
