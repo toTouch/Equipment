@@ -198,6 +198,7 @@ public class AdminJsonPointNewController {
         try {
             excelReader = EasyExcel.read(file.getInputStream(), PointUpdateInfo.class,new PointUpdateListener(pointNewService,customerService,cityService,request, userService, supplierService)).build();
         } catch (Exception e) {
+            log.error("handle upload excel error!",e);
             if (e.getCause() instanceof ExcelDataConvertException) {
                 ExcelDataConvertException excelDataConvertException = (ExcelDataConvertException) e.getCause();
                 String cellMsg = "";
@@ -212,8 +213,7 @@ public class AdminJsonPointNewController {
                     cellMsg = cellData.getBooleanValue().toString();
                 }
                 String errorMsg = String.format("excel表格:第%s行,第%s列,数据值为:%s,该数据值不符合要求,请检验后重新导入!<span style=\"color:red\">请检查其他的记录是否有同类型的错误!</span>", excelDataConvertException.getRowIndex() + 1, excelDataConvertException.getColumnIndex(), cellMsg);
-                log.error(errorMsg);
-                log.error("error msg:",e);
+                log.error("handle upload excel error! msg={}",errorMsg);
             }
         }
         ReadSheet readSheet = EasyExcel.readSheet(0).build();
