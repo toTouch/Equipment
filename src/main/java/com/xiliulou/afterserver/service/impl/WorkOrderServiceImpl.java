@@ -131,7 +131,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         User user = userService.getUserById(saveWorkOrderQuery.getUid());
         if (Objects.isNull(user)) {
             log.error("SAVE_WORK_ORDER ERROR ,NOT FOUND USER BY ID ,ID:{}", saveWorkOrderQuery.getUid());
-            return R.failMsg("用户不存在!2");
+            return R.failMsg("用户不存在!");
         }
         for (WorkOrder workOrder : saveWorkOrderQuery.getWorkOrderList()) {
             workOrder.setProcessTime(System.currentTimeMillis());
@@ -328,7 +328,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         User user = userService.getUserById(workOrder.getCreaterId());
         if (Objects.isNull(user)) {
             log.error("SAVE_WORK_ORDER ERROR ,NOT FOUND USER BY ID ,ID:{}", workOrder.getCreaterId());
-            return R.failMsg("用户不存在!3");
+            return R.failMsg("用户不存在!");
         }
         if (ObjectUtil.equal(WorkOrderType.TRANSFER, workOrder.getWorkOrderType()) && ObjectUtil.isNotEmpty(workOrder.getProductSerialNumberIdList())) {
             //移机

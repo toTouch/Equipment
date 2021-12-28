@@ -73,7 +73,7 @@ public class AuthInterceptorAdapter extends HandlerInterceptorAdapter {
         // TODO: 2021/2/2 0002   ThreadLocal
 
         if (Objects.isNull(user)) {
-            throw new CusTomBusinessAccessDeniedException("用户不存在!1");
+            throw new CusTomBusinessAccessDeniedException("用户不存在!");
         }
         request.setAttribute("uid", uid);
         return user;
