@@ -53,7 +53,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public Pair<Boolean, Object> login(User user) {
         User userDb = baseMapper.selectOne(Wrappers.<User>lambdaQuery().eq(User::getUserName, user.getUserName()));
         if (Objects.isNull(userDb)) {
-            return Pair.of(false, "用户不存在!");
+            return Pair.of(false, "用户不存在!4");
         }
         log.info("pass:{}", user.getPassWord());
         Boolean passwordMatchResult = PasswordUtils.matches(user.getPassWord(), userDb.getPassWord());
