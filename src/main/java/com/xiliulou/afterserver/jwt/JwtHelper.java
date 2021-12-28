@@ -23,16 +23,16 @@ public class JwtHelper {
     private String SECRET;
     //private final String TOKEN_PREFIX = "Bearer";
     private final String HEADER_STRING = "xll-sin-token";
-//
-//
-//    @Autowired
-//    JwtConfig jwtConfig;
-//
-//    @PostConstruct
-//    public void init() {
-//        this.EXPIRATION_TIME = jwtConfig.getExpire();
-//        this.SECRET = jwtConfig.getSecret();
-//    }
+
+
+    @Autowired
+    JwtConfig jwtConfig;
+
+    @PostConstruct
+    public void init() {
+        this.EXPIRATION_TIME = jwtConfig.getExpire();
+        this.SECRET = jwtConfig.getSecret();
+    }
 //
 //    public JSONObject generateToken(Map<String, Object> claims) {
 //
