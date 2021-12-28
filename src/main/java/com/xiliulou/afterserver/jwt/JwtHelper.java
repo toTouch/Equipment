@@ -15,14 +15,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
-//@Service
-//@NoArgsConstructor
-//@Slf4j
+@Service
+@NoArgsConstructor
+@Slf4j
 public class JwtHelper {
-//    private Long EXPIRATION_TIME;
-//    private String SECRET;
-//    private final String TOKEN_PREFIX = "Bearer";
-//    private final String HEADER_STRING = "Authorization";
+    private Long EXPIRATION_TIME;
+    private String SECRET;
+    //private final String TOKEN_PREFIX = "Bearer";
+    private final String HEADER_STRING = "xll-sin-token";
 //
 //
 //    @Autowired
@@ -56,15 +56,15 @@ public class JwtHelper {
 //        return json;
 //    }
 //
-//    public Map<String, Object> validateTokenAndGetClaims(HttpServletRequest request) {
-//        String token = request.getHeader(HEADER_STRING);
-//        if (token == null) {
-//            return null;
-//        }
-//        Map<String, Object> body = Jwts.parser()
-//                .setSigningKey(SECRET)
-//                .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
-//                .getBody();
-//        return body;
-//    }
+    public Map<String, Object> validateTokenAndGetClaims(HttpServletRequest request) {
+        String token = request.getHeader(HEADER_STRING);
+        if (token == null) {
+            return null;
+        }
+        Map<String, Object> body = Jwts.parser()
+                .setSigningKey(SECRET)
+                .parseClaimsJws(token)
+                .getBody();
+        return body;
+    }
 }
