@@ -5,16 +5,10 @@ import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.xiliulou.afterserver.entity.City;
-import com.xiliulou.afterserver.entity.Customer;
-import com.xiliulou.afterserver.entity.PointNew;
-import com.xiliulou.afterserver.entity.User;
+import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.export.PointInfo;
 import com.xiliulou.afterserver.export.PointUpdateInfo;
-import com.xiliulou.afterserver.service.CityService;
-import com.xiliulou.afterserver.service.CustomerService;
-import com.xiliulou.afterserver.service.PointNewService;
-import com.xiliulou.afterserver.service.UserService;
+import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.vo.PointNewInfoVo;
 import jdk.net.SocketFlow;
 import lombok.extern.slf4j.Slf4j;
@@ -38,12 +32,14 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
     private CityService cityService;
     private HttpServletRequest request;
     private UserService userService;
+    private SupplierService supplierService;
 
-    public PointUpdateListener(PointNewService pointService, CustomerService customerService, CityService cityService, HttpServletRequest request, UserService userService) {
+    public PointUpdateListener(PointNewService pointService, CustomerService customerService, CityService cityService, HttpServletRequest request, UserService userService, SupplierService supplierService) {
         this.pointService = pointService;
         this.cityService = cityService;
         this.customerService = customerService;
         this.userService = userService;
+        this.supplierService = supplierService;
         this.request = request;
     }
 
@@ -118,6 +114,14 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
             if(isAcceptance.equals(-1)){
                 log.error("PointNew Update Upload Error! Not Find isAcceptance! id={},数据={}", pointInfo.getId(), JSON.toJSONString(pointInfo));
                 throw new RuntimeException("Not Find isAcceptance");
+            }
+        }
+
+        if(Objects.nonNull(pointInfo.getCardSupplier())){
+            Supplier supplier = supplierService.getOne(new QueryWrapper<Supplier>().eq("name", pointInfo.getCardSupplier()));
+            if(Objects.isNull(supplier)){
+                log.error("PointNew Update Upload Error! Not Find supplier! id={},数据={}", pointInfo.getId(), JSON.toJSONString(pointInfo));
+                throw new RuntimeException("Not Find supplier");
             }
         }
 

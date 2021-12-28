@@ -68,6 +68,8 @@ public class AdminJsonPointNewController {
     private PointProductBindMapper pointProductBindMapper;
     @Autowired
     private ProductNewMapper productNewMapper;
+    @Autowired
+    private SupplierService supplierService;
 
 
     @PostMapping("/admin/pointNew")
@@ -187,7 +189,7 @@ public class AdminJsonPointNewController {
     }
 
     /**
-     * 导入
+     * 更新导入
      */
     @PostMapping("admin/pointNew/update/upload")
     public R updateUpload(MultipartFile file, HttpServletRequest request){
@@ -195,7 +197,7 @@ public class AdminJsonPointNewController {
         ExcelReader excelReader = null;
         try {
             try {
-                excelReader = EasyExcel.read(file.getInputStream(), PointUpdateInfo.class,new PointUpdateListener(pointNewService,customerService,cityService,request, userService)).build();
+                excelReader = EasyExcel.read(file.getInputStream(), PointUpdateInfo.class,new PointUpdateListener(pointNewService,customerService,cityService,request, userService, supplierService)).build();
             } catch (IOException e) {
                 e.printStackTrace();
             }
