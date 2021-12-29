@@ -68,7 +68,7 @@ public class AuthInterceptorAdapter extends HandlerInterceptorAdapter {
             throw new CusTomBusinessAccessDeniedException("token异常!");
         }
         log.info("hhh" + body);
-        Long uid = Long.parseLong((String) body.get("uid"));
+        Long uid = (Long)body.get("uid");
         User user = userService.getById(uid);
         // TODO: 2021/2/2 0002   ThreadLocal
 
