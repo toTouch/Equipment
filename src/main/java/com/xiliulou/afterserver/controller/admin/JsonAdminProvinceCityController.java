@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @Description:
  */
 @RestController
-@CrossOrigin(origins = "*")
+@CrossOrigin("*")
 public class JsonAdminProvinceCityController {
 	@Autowired
 	CityService cityService;
