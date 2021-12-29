@@ -16,7 +16,7 @@ public interface RoleService{
     /**根据id查找一行角色*/
     Role findRoleById(Long id);
     /**查找所有的角色*/
-    List<Role> findRoleAll(Long offset, Long size);
+    List<Role> findRoleAll();
 
     Boolean deleteById(Long id);
 

@@ -15,7 +15,7 @@
 
     <!--查找所有的角色-->
     <select id="findRoleAll" resultType="com.xiliulou.afterserver.entity.Role">
-      select id,name,code,create_time,update_time from t_role order by create_time desc limit #{offset}, #{size}
+      select id,name,code,create_time,update_time from t_role order by create_time desc
     </select>
 
     <!--修改角色-->
