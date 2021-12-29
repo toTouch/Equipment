@@ -8,6 +8,7 @@ import com.xiliulou.security.authentication.authorization.AuthorizationService;
 import com.xiliulou.security.authentication.authorization.UrlFilterInvocationSecurityMetadataSource;
 import com.xiliulou.security.authentication.authorization.UrlFilterSecurityInterceptor;
 import com.xiliulou.security.authentication.authorization.UrlMatchVoter;
+import com.xiliulou.security.authentication.console.AESDecryptUsernamePasswordAuthenticationFilter;
 import com.xiliulou.security.authentication.console.CustomPasswordEncoder;
 import com.xiliulou.security.authentication.console.CustomUsernamePasswordAuthenticationFilter;
 import com.xiliulou.security.authentication.thirdauth.CustomThirdAuthAuthenticationFilter;
@@ -75,9 +76,9 @@ public class TokenWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addLogoutHandler(new TokenLogoutHandler(redisService, jwtTokenManager()))
 //				.authorizeRequests()
 //				.antMatchers("/auth/token/**", "/actuator/**", "/error").permitAll()
-                .and().addFilter(new CustomUsernamePasswordAuthenticationFilter(jwtTokenManager(), authenticationManager(),loginSuccessPostProcessor))
+                .and().addFilter(new AESDecryptUsernamePasswordAuthenticationFilter(jwtTokenManager(), authenticationManager(),loginSuccessPostProcessor))
                 .addFilter(new CustomTokenAuthenticationFilter(authenticationManager(), jwtTokenManager(), authorizationService))
-                .addFilterAfter(new CustomThirdAuthAuthenticationFilter(jwtTokenManager(), authenticationManager(),loginSuccessPostProcessor), CustomUsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new CustomThirdAuthAuthenticationFilter(jwtTokenManager(), authenticationManager(),loginSuccessPostProcessor), AESDecryptUsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(new UrlFilterSecurityInterceptor(new UrlFilterInvocationSecurityMetadataSource(),authenticationManager(),new AffirmativeBased(Collections.singletonList(new UrlMatchVoter()))), ExceptionTranslationFilter.class)
                 .httpBasic()
                 //不缓存session
