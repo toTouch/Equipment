@@ -75,7 +75,7 @@ public class AuthInterceptorAdapter extends HandlerInterceptorAdapter {
         if (Objects.isNull(user)) {
             throw new CusTomBusinessAccessDeniedException("用户不存在!");
         }
-        request.setAttribute("uid", uid);
+        request.setAttribute("uid", Long.parseLong(uid + ""));
         return user;
     }
 
