@@ -14,7 +14,6 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/admin")
-@CrossOrigin("*")
 public class JsonAdminUserPermissionController extends BaseController {
 
     @Autowired
