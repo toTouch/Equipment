@@ -19,8 +19,8 @@ public class AdminJsonUserRoleController extends BaseController {
     RoleService roleService;
 
     @GetMapping("/role/list")
-    public R getRoleList(@RequestParam("offset") Long offset, @RequestParam("size") Long size){
-        return R.ok(roleService.findRoleAll(offset, size));
+    public R getRoleList(){
+        return R.ok(roleService.findRoleAll());
     }
 
     @PostMapping("role/add")

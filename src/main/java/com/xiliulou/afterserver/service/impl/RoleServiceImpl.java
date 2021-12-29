@@ -53,8 +53,8 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<Role> findRoleAll(Long offset, Long size) {
-       List<Role> roles=this.roleMapper.findRoleAll(offset, size);
+    public List<Role> findRoleAll() {
+       List<Role> roles=this.roleMapper.findRoleAll();
        if (!DataUtil.collectionIsUsable(roles)){
            return Collections.EMPTY_LIST;
        }
