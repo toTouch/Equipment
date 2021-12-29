@@ -13,6 +13,7 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/admin")
+@CrossOrigin("*")
 public class AdminJsonUserRoleController extends BaseController {
 
     @Autowired
