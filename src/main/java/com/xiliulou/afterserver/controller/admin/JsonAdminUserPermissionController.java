@@ -48,7 +48,7 @@ public class JsonAdminUserPermissionController extends BaseController {
 
 
     @PostMapping("/permission/role/bind")
-    public R bindPermissionToRole(@RequestParam("rid") Long rid, @RequestParam("pid") String jsonPids) {
+    public R bindPermissionToRole(@RequestParam("roleId") Long rid, @RequestParam("pids") String jsonPids) {
         List<Long> pid = JsonUtil.fromJsonArray(jsonPids, Long.class);
         if (!DataUtil.collectionIsUsable(pid)) {
             return R.fail("SYSTEM.0002", "参数不合法");
