@@ -149,6 +149,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             pointNew.setCameraInfo(cameraInfo);
         }
         pointNew.setDelFlag(PointNew.DEL_NORMAL);
+        pointNew.setCreateTime(System.currentTimeMillis());
         this.insert(pointNew);
         return R.ok();
     }

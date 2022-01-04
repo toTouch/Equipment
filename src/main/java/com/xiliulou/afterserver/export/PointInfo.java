@@ -47,10 +47,10 @@ public class PointInfo {
     @ExcelProperty(index = 5)
     private String city;
     /**
-     * 创建时间
+     * 安装时间
      */
     @ExcelProperty(index = 6)
-    private String createTime;
+    private String installTime;
     /**
      * '物联网卡供应商
      */

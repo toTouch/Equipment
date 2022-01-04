@@ -83,6 +83,8 @@ public class PointNew {
      */
     private Integer delFlag;
 
+    private Long installTime;
+
     //新需求
     private String cardSupplier;//物联网卡供应商
     private Long completionTime;//施工完成时间
