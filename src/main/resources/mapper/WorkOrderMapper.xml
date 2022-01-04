@@ -146,7 +146,7 @@
                 and wo.server_name like concat('%',#{query.serverName},'%')
             </if>
             <if test="query.workOrderReasonId != null">
-                and wo.work_order_reason_id = #{workOrderReasonId}
+                and wo.work_order_reason_id = #{query.workOrderReasonId}
             </if>
         </where>
         ORDER BY wo.create_time DESC
