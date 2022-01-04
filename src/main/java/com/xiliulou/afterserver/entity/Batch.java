@@ -47,6 +47,7 @@ public class Batch {
     private String productFileName;
     @TableField(exist = false)
     private List<ProductFile> productFileList;
-
+    @TableField(exist = false)
+    private Long fileId;
 
 }
