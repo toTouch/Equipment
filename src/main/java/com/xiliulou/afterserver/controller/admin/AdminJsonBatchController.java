@@ -69,7 +69,7 @@ public class AdminJsonBatchController {
         this.batchService.update(batch);
 
         ProductFile productFile = new ProductFile();
-        productFile.setProductId(batch.getFileId());
+        productFile.setId(batch.getFileId());
         productFile.setFileStr(batch.getFileStr());
         productFile.setProductFileName(batch.getProductFileName());
         productFileMapper.updateById(productFile);
