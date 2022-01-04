@@ -103,16 +103,18 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
                 }
             }
 
-            if (item.getCreateTime() != null){
+            point.setCreateTime(System.currentTimeMillis());
+
+            if (item.getInstallTime() != null){
                 long l = 0;
                 try {
-                    l = dateToStamp(item.getCreateTime());
+                    l = dateToStamp(item.getInstallTime());
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                point.setCreateTime(l);
+                point.setInstallTime(l);
             }else {
-                point.setCreateTime(System.currentTimeMillis());
+                point.setInstallTime(System.currentTimeMillis());
             }
 
             if (item.getCompletionTime() != null){

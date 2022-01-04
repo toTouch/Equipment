@@ -78,7 +78,7 @@ public class PointUpdateInfo {
      * 安装时间
      */
     @ExcelProperty(index = 12)
-    private String createTime;
+    private String installTime;
      @ExcelProperty(index = 13)
     private String delFlag;
     /**

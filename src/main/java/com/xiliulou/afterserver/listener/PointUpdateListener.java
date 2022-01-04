@@ -81,7 +81,7 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
             }
         }
 
-        if(Objects.isNull(pointInfo.getCreateTime())){
+        if(Objects.isNull(pointInfo.getInstallTime())){
             log.error("PointNew Update Upload Error!  CreateTime is required value! id={},数据={}", pointInfo.getId(), JSON.toJSONString(pointInfo));
             throw new RuntimeException("CreateTime is required value");
         }
@@ -174,16 +174,15 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
             point.setCardNumber(item.getCardNumber());
             point.setCardSupplier(item.getCardSupplier());
 
-            if (item.getCreateTime() != null){
+            if (item.getInstallTime() != null){
                 long l = 0;
                 try {
-                    l = dateToStamp(item.getCreateTime());
+                    l = dateToStamp(item.getInstallTime());
                 } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                point.setCreateTime(l);
-            }
 
+                }
+                point.setInstallTime(l);
+            }
 
             point.setDelFlag(getFlagDel(item.getDelFlag()));
 

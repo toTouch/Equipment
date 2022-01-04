@@ -8,6 +8,7 @@ import com.xiliulou.afterserver.service.BatchService;
 import com.xiliulou.afterserver.util.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -65,7 +66,20 @@ public class AdminJsonBatchController {
      */
     @PutMapping("/admin/batch")
     public R updateBatch(@RequestBody Batch batch){
-        return R.ok(this.batchService.update(batch));
+        this.batchService.update(batch);
+
+        if(!CollectionUtils.isEmpty(batch.getProductFileList())){
+            for(ProductFile item :batch.getProductFileList()){
+                productFileMapper.deleteById(item.getId());
+
+                ProductFile productFile = new ProductFile();
+                productFile.setProductId(batch.getId());
+                productFile.setFileStr(item.getFileStr());
+                productFile.setProductFileName(item.getProductFileName());
+                productFileMapper.insert(productFile);
+            }
+        }
+        return R.ok();
     }
 
     /**
