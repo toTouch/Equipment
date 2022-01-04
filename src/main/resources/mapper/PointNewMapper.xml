@@ -27,6 +27,7 @@
         <result property="logisticsInfo" column="logistics_info" jdbcType="VARCHAR"/>
         <result property="productInfo" column="product_info" jdbcType="VARCHAR"/>
         <result property="cameraInfo" column="camera_info" jdbcType="VARCHAR"/>
+        <result property="installTime" column="install_time" jdbcType="INTEGER"/>
     </resultMap>
 
     <!--查询单个-->
