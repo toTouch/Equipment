@@ -68,17 +68,11 @@ public class AdminJsonBatchController {
     public R updateBatch(@RequestBody Batch batch){
         this.batchService.update(batch);
 
-        if(!CollectionUtils.isEmpty(batch.getProductFileList())){
-            for(ProductFile item :batch.getProductFileList()){
-                productFileMapper.deleteById(item.getId());
-
-                ProductFile productFile = new ProductFile();
-                productFile.setProductId(batch.getId());
-                productFile.setFileStr(item.getFileStr());
-                productFile.setProductFileName(item.getProductFileName());
-                productFileMapper.insert(productFile);
-            }
-        }
+        ProductFile productFile = new ProductFile();
+        productFile.setProductId(batch.getFileId());
+        productFile.setFileStr(batch.getFileStr());
+        productFile.setProductFileName(batch.getProductFileName());
+        productFileMapper.updateById(productFile);
         return R.ok();
     }
 
