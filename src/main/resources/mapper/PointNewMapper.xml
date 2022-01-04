@@ -198,10 +198,10 @@
     <!--新增所有列-->
     <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
         insert into t_point_new(name,customer_id, status, city_id, install_type, address, camera_count, canopy_count,
-         sn_no, card_number, remarks,create_uid,create_time, del_flag, card_supplier, completion_time, is_entry, is_acceptance, order_source, order_time, operator, logistics_info, product_info, camera_info)
+         sn_no, card_number, remarks,create_uid,create_time, del_flag, card_supplier, completion_time, is_entry, is_acceptance, order_source, order_time, operator, logistics_info, product_info, camera_info, install_time)
         values (#{name},#{customerId}, #{status}, #{cityId}, #{installType}, #{address}, #{cameraCount}, #{canopyCount},
          #{snNo}, #{cardNumber},#{remarks},#{createUid},#{createTime}, #{delFlag}, #{cardSupplier}, #{completionTime},
-         #{isEntry}, #{isAcceptance},#{orderSource},#{orderTime},#{operator}, #{logisticsInfo},#{productInfo},#{cameraInfo})
+         #{isEntry}, #{isAcceptance},#{orderSource},#{orderTime},#{operator}, #{logisticsInfo},#{productInfo},#{cameraInfo},#{installTime})
     </insert>
 
     <!--通过主键修改数据-->
