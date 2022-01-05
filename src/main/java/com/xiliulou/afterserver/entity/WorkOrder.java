@@ -90,6 +90,8 @@ public class WorkOrder implements Serializable {
      */
     public static final Integer COMPANY_TYPE_SUPPLIER = 2;
 
+    public static final Integer COMPANY_TYPE_SERVER = 3;
+
     // 0：未完成1;待处理2:已处理3:待分析4：已完结5：已完成
     public static final Integer STATUS_UNFINISHED = 0;
     public static final Integer STATUS_INIT = 1;
