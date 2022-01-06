@@ -17,6 +17,10 @@ import java.util.List;
 @Data
 @RefreshScope
 public class RolePermissionConfig {
+    /**
+     * 默认绑定的角色
+     */
+    private List<Long> userRole;
 
     /**
      * 不应该给其他租户看的权限
