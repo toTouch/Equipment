@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
@@ -8,8 +9,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiliulou.afterserver.config.RolePermissionConfig;
 import com.xiliulou.afterserver.entity.Deliver;
 import com.xiliulou.afterserver.entity.User;
+import com.xiliulou.afterserver.entity.UserRole;
 import com.xiliulou.afterserver.mapper.UserMapper;
 import com.xiliulou.afterserver.service.UserService;
 import com.xiliulou.afterserver.util.PageUtil;
@@ -21,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -36,6 +40,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
    // @Autowired
     //JwtHelper jwtHelper;
 
+    @Autowired
+    RolePermissionConfig rolePermissionConfig;
+
     @Override
     public Pair<Boolean, Object> register(User user) {
         User userDb = baseMapper.selectOne(Wrappers.<User>lambdaQuery().eq(User::getUserName, user.getUserName()));
@@ -46,6 +53,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setCreateTime(System.currentTimeMillis());
         user.setPassWord(PasswordUtils.encode(user.getPassWord()));
         baseMapper.insert(user);
+
+        List<Long> userRoles = rolePermissionConfig.getUserRole();
+        if(!CollectionUtil.isEmpty(userRoles)){
+            userRoles.stream().forEach(item -> {
+                UserRole userRole = new UserRole();
+                userRole.setUid(user.getId());
+                userRole.setRid(item);
+            });
+        }
+
         return Pair.of(true, null);
     }
 
