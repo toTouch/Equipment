@@ -82,6 +82,8 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
         this.list.forEach(item -> {
             PointNew point = new PointNew();
             BeanUtils.copyProperties(item, point);
+            point.setCameraCount(item.getCameraCount());
+            point.setCanopyCount(item.getCanopyCount());
 
             if (Objects.nonNull(item.getName())){
                 LambdaQueryWrapper<PointNew> wrapper = new LambdaQueryWrapper<PointNew>().eq(PointNew::getDelFlag, 0).eq(PointNew::getName, item.getName());
@@ -150,6 +152,19 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
                     point.setIsAcceptance(0);
                 }
             }
+
+            if(Objects.nonNull(item.getInstallType())){
+                if("1".equals(item.getInstallType()) || "室外".equals(item.getInstallType())){
+                    point.setInstallType(1);
+                }
+                if("2".equals(item.getInstallType()) || "半室外".equals(item.getInstallType())){
+                    point.setInstallType(2);
+                }
+                if("3".equals(item.getInstallType()) || "室内".equals(item.getInstallType())){
+                    point.setInstallType(3);
+                }
+            }
+
 
             if (item.getOrderTime()!= null){
                 long l = 0;
