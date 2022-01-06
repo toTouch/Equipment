@@ -44,7 +44,7 @@ public class JsonUserPointProductController {
 
     @PostMapping("/user/file")
     public R adminPrductFile(@RequestBody File file){
-        QueryWrapper<File> wrapper = new QueryWrapper<>();
+        /*QueryWrapper<File> wrapper = new QueryWrapper<>();
         wrapper.eq("type", File.TYPE_POINTNEW);
         wrapper.eq("bind_id", file.getBindId());
         Integer count = fileService.getBaseMapper().selectCount(wrapper);
@@ -58,7 +58,7 @@ public class JsonUserPointProductController {
             wrapper1.eq("file_type", file.getFileType());
             wrapper1.eq("bind_id", file.getBindId());
             fileService.getBaseMapper().delete(wrapper1);
-        }
+        }*/
 
 
         file.setCreateTime(System.currentTimeMillis());
