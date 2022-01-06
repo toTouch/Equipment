@@ -54,6 +54,7 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
         if(Objects.nonNull(pointInfo.getCardSupplier())){
             Supplier supplier = supplierService.getOne(new QueryWrapper<Supplier>().eq("name", pointInfo.getCardSupplier()));
             if(Objects.isNull(supplier)){
+                log.error("insert PointInfo error! Not Find supplier pointName={}",pointInfo.getName());
                 throw new RuntimeException("Not Find supplier");
             }
         }
