@@ -47,7 +47,7 @@ public class File {
      */
     public static final Integer FILE_TYPE_AFTER = 3;
 
-   // public static final Integer TYPE_POINT = 1;
+    public static final Integer TYPE_POINT = 1;
 //    public static final Integer TYPE_WORK_ORDER = 2;
 
 
