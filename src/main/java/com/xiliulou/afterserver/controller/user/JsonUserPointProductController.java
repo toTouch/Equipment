@@ -47,7 +47,10 @@ public class JsonUserPointProductController {
         QueryWrapper<File> wrapper = new QueryWrapper<>();
         wrapper.eq("type", File.TYPE_POINTNEW);
         wrapper.eq("bind_id", file.getBindId());
-        fileService.getBaseMapper().selectCount(wrapper);
+        Integer count = fileService.getBaseMapper().selectCount(wrapper);
+        if(count >= 20){
+            return R.fail("上传图片已达上限，请删除部分图片后继续上传！");
+        }
 
         if(!(file.getFileType() % 100 == 0)){
             QueryWrapper<File> wrapper1 = new QueryWrapper<>();
