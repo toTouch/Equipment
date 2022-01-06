@@ -159,7 +159,7 @@ public class AdminJsonPointNewController {
         ExcelReader excelReader = null;
         try {
             try {
-                excelReader = EasyExcel.read(file.getInputStream(), PointInfo.class,new PointListener(pointNewService,customerService,cityService,request)).build();
+                excelReader = EasyExcel.read(file.getInputStream(), PointInfo.class,new PointListener(pointNewService,customerService,cityService,request,supplierService)).build();
             } catch (IOException e) {
                 e.printStackTrace();
             }

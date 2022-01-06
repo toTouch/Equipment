@@ -5,16 +5,11 @@ import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.xiliulou.afterserver.entity.City;
-import com.xiliulou.afterserver.entity.Customer;
-import com.xiliulou.afterserver.entity.Point;
-import com.xiliulou.afterserver.entity.PointNew;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.export.CustomerInfo;
 import com.xiliulou.afterserver.export.PointInfo;
-import com.xiliulou.afterserver.service.CityService;
-import com.xiliulou.afterserver.service.CustomerService;
-import com.xiliulou.afterserver.service.PointNewService;
-import com.xiliulou.afterserver.service.PointService;
+import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -43,17 +38,25 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
     private CustomerService customerService;
     private CityService cityService;
     private HttpServletRequest request;
+    private SupplierService supplierService;
 
-    public PointListener(PointNewService pointService, CustomerService customerService, CityService cityService, HttpServletRequest request) {
+    public PointListener(PointNewService pointService, CustomerService customerService, CityService cityService, HttpServletRequest request, SupplierService supplierService) {
         this.pointService = pointService;
         this.cityService = cityService;
         this.customerService = customerService;
+        this.supplierService =supplierService;
         this.request = request;
     }
 
     @Override
     public void invoke(PointInfo pointInfo, AnalysisContext analysisContext) {
         log.info("点位导入=====解析到一条数据:{}", JSON.toJSONString(pointInfo));
+        if(Objects.nonNull(pointInfo.getCardSupplier())){
+            Supplier supplier = supplierService.getOne(new QueryWrapper<Supplier>().eq("name", pointInfo.getCardSupplier()));
+            if(Objects.isNull(supplier)){
+                throw new RuntimeException("Not Find supplier");
+            }
+        }
         list.add(pointInfo);
         if (list.size() >= BATCH_COUNT) {
             saveData();
