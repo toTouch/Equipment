@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.controller.user;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.service.*;
@@ -43,6 +44,13 @@ public class JsonUserPointProductController {
 
     @PostMapping("/user/file")
     public R adminPrductFile(@RequestBody File file){
+
+        QueryWrapper<File> wrapper = new QueryWrapper<>();
+        wrapper.eq("type", File.TYPE_POINTNEW);
+        wrapper.eq("file_type", file.getFileType());
+        wrapper.eq("bind_id", file.getBindId());
+        fileService.getBaseMapper().delete(wrapper);
+
         file.setCreateTime(System.currentTimeMillis());
         int insert = fileService.getBaseMapper().insert(file);
         if (insert == 0){
