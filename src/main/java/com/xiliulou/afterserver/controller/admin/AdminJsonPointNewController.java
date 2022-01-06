@@ -431,7 +431,7 @@ public class AdminJsonPointNewController {
                         //boolean falg = false;
                         ProductInfoQuery index = null;
                         for (ProductInfoQuery entry : productInfoQueries) {
-                            if (Objects.equals(p.getId().intValue(), entry.getProductId().intValue())) {
+                            if (Objects.equals(p.getId(), entry.getProductId())) {
                                 //falg = true;
                                 index = entry;
                             }
