@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.Query;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -8,11 +9,13 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.*;
+import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.*;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.vo.PointNewInfoVo;
+import com.xiliulou.afterserver.web.query.PointQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +23,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.*;
 
@@ -54,6 +58,8 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     private BatchService batchService;
     @Autowired
     private PointProductBindMapper pointProductBindMapper;
+    @Autowired
+    private ProductSerialNumberMapper productSerialNumberMapper;
     //@Autowired
     //private ProductNewMapper productNewMapper;
     //@Autowired
@@ -315,6 +321,33 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     @Override
     public List<PointNew> queryAllByLimitExcel(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime, Long createUid,String snNo) {
         return this.pointNewMapper.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid,snNo);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public R pointBindSerialNumber(PointQuery pointQuery) {
+        PointNew point = getById(pointQuery.getId());
+        if (Objects.isNull(point)) {
+            return R.failMsg("未找到点位信息!");
+        }
+        if (ObjectUtil.isNotEmpty(pointQuery.getProductSerialNumberIdAndSetNoMap())) {
+            //BigDecimal totalAmount = Objects.isNull(point.getDeviceAmount()) ? BigDecimal.ZERO : point.getDeviceAmount();
+
+            pointQuery.getProductSerialNumberIdAndSetNoMap().forEach((k,v) -> {
+                ProductSerialNumber productSerialNumber = productSerialNumberMapper.selectById(k);
+                if (Objects.isNull(productSerialNumber)) {
+                    log.error("not found productSerialNumber by id:{}", k);
+                    throw new CustomBusinessException("未找到产品序列号!");
+                }
+
+                productSerialNumber.setPointId(point.getId());
+                productSerialNumber.setSetNo(v);
+                productSerialNumber.setStatus(ProductSerialNumber.IN_USE);
+                productSerialNumberMapper.updateById(productSerialNumber);
+            });
+
+        }
+        return R.ok();
+
     }
 
     /*@Override

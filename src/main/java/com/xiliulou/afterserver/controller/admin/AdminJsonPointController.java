@@ -70,7 +70,7 @@ public class AdminJsonPointController {
         return pointService.pointGetBingList(pid);
     }
 
-    @PostMapping("admin/point/bindSerialNumber")
+    //@PostMapping("admin/point/bindSerialNumber")
     public R pointBindSerialNumber(@RequestBody PointQuery pointQuery) {
 
         return pointService.pointBindSerialNumber(pointQuery);
