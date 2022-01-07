@@ -14,6 +14,7 @@ import com.xiliulou.afterserver.entity.Deliver;
 import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.entity.UserRole;
 import com.xiliulou.afterserver.mapper.UserMapper;
+import com.xiliulou.afterserver.service.UserRoleService;
 import com.xiliulou.afterserver.service.UserService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
@@ -42,6 +43,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Autowired
     RolePermissionConfig rolePermissionConfig;
+    @Autowired
+    UserRoleService userRoleService;
 
     @Override
     public Pair<Boolean, Object> register(User user) {
@@ -60,6 +63,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 UserRole userRole = new UserRole();
                 userRole.setUid(user.getId());
                 userRole.setRid(item);
+                userRoleService.insert(userRole);
             });
         }
 
