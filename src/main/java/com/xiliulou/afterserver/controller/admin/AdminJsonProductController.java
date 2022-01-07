@@ -74,7 +74,7 @@ public class AdminJsonProductController {
     @GetMapping("admin/product/serialNumber/page")
     public R getSerialNumberPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size,
                                  ProductSerialNumberQuery productSerialNumber) {
-        return R.ok(productService.getSerialNumberPage(offset, size, productSerialNumber));
+        return productService.getSerialNumberPage(offset, size, productSerialNumber);
     }
 
     @GetMapping("admin/product/serialNumber/exportExcel")
