@@ -12,6 +12,7 @@ import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.mapper.ProductMapper;
+import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.mapper.ProductSerialNumberMapper;
 import com.xiliulou.afterserver.service.PointService;
 import com.xiliulou.afterserver.service.ProductSerialNumberService;
@@ -58,6 +59,8 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     PointService pointService;
     @Autowired
     ProductFileMapper productFileMapper;
+    @Autowired
+    ProductNewMapper productNewMapper;
 
     @Override
     public IPage getPage(Long offset, Long size, Product product) {
@@ -180,20 +183,11 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     }
 
     @Override
-    public IPage getSerialNumberPage(Long offset, Long size, ProductSerialNumberQuery productSerialNumber) {
-        IPage<ProductSerialNumberVo> serialNumberPage = productSerialNumberMapper.getSerialNumberPage(PageUtil.getPage(offset, size), productSerialNumber);
-        List<ProductSerialNumberVo> records = serialNumberPage.getRecords();
-
-        records.forEach(item -> {
-
-            LambdaQueryWrapper<ProductFile> eq = new LambdaQueryWrapper<ProductFile>().eq(ProductFile::getProductId, item.getId());
-            List<ProductFile> productFiles = productFileMapper.selectList(eq);
-            item.setProductFileList(productFiles);
-
-        });
-
-        serialNumberPage.setRecords(records);
-        return serialNumberPage;
+    public R getSerialNumberPage(Long offset, Long size, ProductSerialNumberQuery productSerialNumber) {
+        List<ProductNew> data = productNewMapper.selectNoPull();
+        Map records = new HashMap();
+        records.put("records", data);
+        return R.ok(records);
     }
 
     @Override

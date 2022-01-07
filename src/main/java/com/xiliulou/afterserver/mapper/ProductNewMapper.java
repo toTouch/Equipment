@@ -81,4 +81,7 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
 
     @Select("select max(serial_num) from t_product_new where code = #{code}")
     Integer queryMaxSerialNum(String code);
+
+    @Select("select no from t_product_new where del_flag = 0")
+    List<ProductNew> selectNoPull();
 }
