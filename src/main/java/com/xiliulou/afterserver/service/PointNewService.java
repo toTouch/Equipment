@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.PointNew;
 import com.xiliulou.afterserver.mapper.PointNewMapper;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.PointQuery;
 
 import java.util.List;
 
@@ -79,6 +80,8 @@ public interface PointNewService extends IService<PointNew> {
                        Long customerId, Long startTime, Long endTime, Long createUid, String snNo);
 
     List<PointNew> queryAllByLimitExcel(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime, Long createUid, String snNo);
+
+    R pointBindSerialNumber(PointQuery pointQuery);
 
     //R saveCache(Long pointId, Long modelId, String no, Long batch);
 
