@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.PointNew;
 import com.xiliulou.afterserver.mapper.PointNewMapper;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.PointQuery;
 
 import java.util.List;
 
@@ -83,6 +84,8 @@ public interface PointNewService extends IService<PointNew> {
     R putAdminPointNewCreateUser(Long id, Long createUid);
 
     void updateMany(List<PointNew> pointNew);
+
+    R pointBindSerialNumber(PointQuery pointQuery);
 
     //R saveCache(Long pointId, Long modelId, String no, Long batch);
 
