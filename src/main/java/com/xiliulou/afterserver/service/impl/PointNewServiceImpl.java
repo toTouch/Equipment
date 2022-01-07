@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.Query;
@@ -9,11 +10,13 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.*;
+import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.*;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.vo.PointNewInfoVo;
+import com.xiliulou.afterserver.web.query.PointQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.*;
 
@@ -432,5 +436,37 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     @Override
     public void updateMany(List<PointNew> pointNew){
         pointNewMapper.updateMany(pointNew);
+    }
+
+    @Override
+    public R pointBindSerialNumber(PointQuery pointQuery) {
+        PointNew pointNew = getById(pointQuery.getId());
+        if (Objects.isNull(pointNew)) {
+            return R.failMsg("未找到点位信息!");
+        }
+        if (ObjectUtil.isNotEmpty(pointQuery.getProductSerialNumberIdAndSetNoMap())) {
+            pointQuery.getProductSerialNumberIdAndSetNoMap().forEach((k,v) -> {
+                PointProductBind pointProductBind = pointProductBindMapper
+                        .selectOne(new QueryWrapper<PointProductBind>()
+                                .eq("product_id", k));
+
+                if(ObjectUtils.isNotNull(pointProductBind)){
+                    ProductNew productNew = productNewService.queryByIdFromDB(k);
+                    R.fail("柜机 +【" + (productNew == null?"未知":productNew.getNo() )+ "】已绑定柜机");
+                }
+            });
+        }
+
+
+
+        if (ObjectUtil.isNotEmpty(pointQuery.getProductSerialNumberIdAndSetNoMap())) {
+            pointQuery.getProductSerialNumberIdAndSetNoMap().forEach((k,v) -> {
+                PointProductBind bind = new PointProductBind();
+                bind.setPointId(pointQuery.getId());
+                bind.setProductId(k);
+                pointProductBindMapper.insert(bind);
+            });
+        }
+        return R.ok();
     }
 }

@@ -26,6 +26,7 @@ import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.vo.PointExcelVo;
 import com.xiliulou.afterserver.web.query.CameraInfoQuery;
+import com.xiliulou.afterserver.web.query.PointQuery;
 import com.xiliulou.afterserver.web.query.ProductInfoQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Delete;
@@ -511,4 +512,10 @@ public class AdminJsonPointNewController {
     public R deleteProduct(Long pointId, Long producutId){
         return pointNewService.deleteProduct(pointId, producutId);
     }*/
+
+    @PostMapping("admin/point/bindSerialNumber")
+    public R pointBindSerialNumber(@RequestBody PointQuery pointQuery) {
+
+        return pointNewService.pointBindSerialNumber(pointQuery);
+    }
 }

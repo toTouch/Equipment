@@ -309,11 +309,12 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
     @Override
     public R getProductSerialNumListByPid(Long id) {
-        LambdaQueryWrapper<ProductSerialNumber> productSerialNumberLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        productSerialNumberLambdaQueryWrapper.eq(ProductSerialNumber::getProductId, id);
-        List<ProductSerialNumber> productSerialNumbers = productSerialNumberMapper.selectList(productSerialNumberLambdaQueryWrapper);
-
-        return R.ok(productSerialNumbers);
+//        LambdaQueryWrapper<ProductSerialNumber> productSerialNumberLambdaQueryWrapper = new LambdaQueryWrapper<>();
+//        productSerialNumberLambdaQueryWrapper.eq(ProductSerialNumber::getProductId, id);
+//        List<ProductSerialNumber> productSerialNumbers = productSerialNumberMapper.selectList(productSerialNumberLambdaQueryWrapper);
+        LambdaQueryWrapper<ProductNew> productNew = new LambdaQueryWrapper<>();
+        productNew.eq(ProductNew::getModelId, id);
+        return R.ok(productNewMapper.selectList(productNew));
     }
 
 
