@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * @program: XILIULOU
@@ -40,12 +41,18 @@ public class AdminJsonSupplierController extends BaseController {
 
     @PostMapping("admin/supplier")
     public R insert(@RequestBody Supplier supplier) {
+        if(Objects.isNull(supplier.getArea())){
+            return R.fail("请添加城市");
+        }
         supplier.setCreateTime(System.currentTimeMillis());
         return R.ok(supplierService.save(supplier));
     }
 
     @PutMapping("admin/supplier")
     public R update(@RequestBody Supplier supplier) {
+        if(Objects.isNull(supplier.getArea())){
+            return R.fail("请添加城市");
+        }
         return R.ok(supplierService.updateById(supplier));
     }
 
