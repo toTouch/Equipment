@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.controller.admin;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.read.metadata.ReadSheet;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xiliulou.afterserver.controller.BaseController;
 import com.xiliulou.afterserver.entity.Supplier;
@@ -41,7 +42,7 @@ public class AdminJsonSupplierController extends BaseController {
 
     @PostMapping("admin/supplier")
     public R insert(@RequestBody Supplier supplier) {
-        if(Objects.isNull(supplier.getArea())){
+        if(StringUtils.isBlank(supplier.getArea())){
             return R.fail("请添加城市");
         }
         supplier.setCreateTime(System.currentTimeMillis());
@@ -50,7 +51,7 @@ public class AdminJsonSupplierController extends BaseController {
 
     @PutMapping("admin/supplier")
     public R update(@RequestBody Supplier supplier) {
-        if(Objects.isNull(supplier.getArea())){
+        if(StringUtils.isBlank(supplier.getArea())){
             return R.fail("请添加城市");
         }
         return R.ok(supplierService.updateById(supplier));
