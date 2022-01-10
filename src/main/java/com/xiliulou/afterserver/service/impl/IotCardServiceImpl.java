@@ -1,0 +1,102 @@
+package com.xiliulou.afterserver.service.impl;
+
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiliulou.afterserver.entity.Batch;
+import com.xiliulou.afterserver.entity.IotCard;
+import com.xiliulou.afterserver.entity.Supplier;
+import com.xiliulou.afterserver.mapper.IotCardMapper;
+import com.xiliulou.afterserver.service.BatchService;
+import com.xiliulou.afterserver.service.IotCardService;
+import com.xiliulou.afterserver.service.SupplierService;
+import com.xiliulou.afterserver.util.R;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
+
+@Service
+@Slf4j
+public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> implements IotCardService {
+
+    @Autowired
+    IotCardMapper iotCardMapper;
+    @Autowired
+    BatchService batchService;
+    @Autowired
+    SupplierService supplierService;
+
+    @Override
+    public R saveOne(IotCard iotCard) {
+
+        Batch batch = batchService.queryByIdFromDB(iotCard.getBatchId());
+        if(Objects.isNull(batch)){
+            return R.fail("未查询到相关批次号");
+        }
+
+        Supplier supplier = supplierService.getById(iotCard.getSupplierId());
+        if(Objects.isNull(supplier)){
+            return R.fail("未查询到相关供应商");
+        }
+
+        if(Objects.isNull(iotCard.getActivationTime())){
+            return R.fail("请传入激活时间");
+        }
+
+        if(Objects.isNull(iotCard.getTermOfAlidity())){
+            return R.fail("请传入有效时间");
+        }
+
+        iotCard.setExpirationTime(iotCard.getTermOfAlidity() + iotCard.getActivationTime());
+        iotCard.setCreateTime(System.currentTimeMillis());
+        iotCard.setUpdateTime(System.currentTimeMillis());
+        iotCard.setDelFlag(IotCard.DEL_NORMAL);
+
+        Integer len = iotCardMapper.saveOne(iotCard);
+        if(len != null && len > 0){
+            return  R.ok();
+        }
+        return R.fail("数据库错误");
+    }
+
+    @Override
+    public R updateOne(IotCard iotCard) {
+
+        Batch batch = batchService.queryByIdFromDB(iotCard.getBatchId());
+        if(Objects.isNull(batch)){
+            return R.fail("未查询到相关批次号");
+        }
+
+        Supplier supplier = supplierService.getById(iotCard.getSupplierId());
+        if(Objects.isNull(supplier)){
+            return R.fail("未查询到相关供应商");
+        }
+
+        if(Objects.isNull(iotCard.getActivationTime())){
+            return R.fail("请传入激活时间");
+        }
+
+        if(Objects.isNull(iotCard.getTermOfAlidity())){
+            return R.fail("请传入有效时间");
+        }
+
+        iotCard.setExpirationTime(iotCard.getTermOfAlidity() + iotCard.getActivationTime());
+        iotCard.setUpdateTime(System.currentTimeMillis());
+        iotCard.setDelFlag(IotCard.DEL_NORMAL);
+
+        Integer len = iotCardMapper.updateOne(iotCard);
+        if(len != null && len > 0){
+            return  R.ok();
+        }
+        return R.fail("数据库错误");
+    }
+
+    @Override
+    public R deleteOne(Long id) {
+        Integer len = iotCardMapper.deleteById(id);
+        if(len != null && len > 0){
+            return R.ok();
+        }
+        return R.fail("数据库错误");
+    }
+}
