@@ -57,7 +57,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setPassWord(PasswordUtils.encode(user.getPassWord()));
         baseMapper.insert(user);
 
-        List<Long> userRoles = rolePermissionConfig.getUserRole();
+        List<Long> userRoles = user.getRids();
         if(!CollectionUtil.isEmpty(userRoles)){
             userRoles.stream().forEach(item -> {
                 UserRole userRole = new UserRole();
