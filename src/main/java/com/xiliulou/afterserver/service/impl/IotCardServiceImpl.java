@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.Batch;
 import com.xiliulou.afterserver.entity.IotCard;
@@ -8,6 +9,7 @@ import com.xiliulou.afterserver.mapper.IotCardMapper;
 import com.xiliulou.afterserver.service.BatchService;
 import com.xiliulou.afterserver.service.IotCardService;
 import com.xiliulou.afterserver.service.SupplierService;
+import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,5 +100,12 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
             return R.ok();
         }
         return R.fail("数据库错误");
+    }
+
+    @Override
+    public R getPage(Long offset, Long size, IotCard iotCard) {
+        Page page = PageUtil.getPage(offset, size);
+        iotCardMapper.getPage(page, iotCard);
+        return null;
     }
 }

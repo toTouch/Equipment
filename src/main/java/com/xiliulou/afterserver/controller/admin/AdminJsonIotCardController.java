@@ -20,8 +20,7 @@ public class AdminJsonIotCardController extends BaseController {
 
     @GetMapping("admin/iotCard/list")
     public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, IotCard iotCard) {
-        //return R.ok(iotCardService.getPage(offset, size, iotCard));
-        return null;
+        return iotCardService.getPage(offset, size, iotCard);
     }
 
     @PostMapping("admin/iotCard")
