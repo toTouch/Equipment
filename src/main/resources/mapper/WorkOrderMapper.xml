@@ -56,6 +56,7 @@
         <id property="describeinfo" column="wo_describeinfo"/>
         <id property="paymentMethod" column="wo_payment_method"/>
         <id property="thirdPaymentStatus" column="wo_third_payment_status"/>
+        <id property="destinationType" column="wo_destination_type"></id>
         <collection property="fileList" ofType="com.xiliulou.afterserver.entity.File">
             <id property="id" column="f_id"/>
             <id property="type" column="f_type"/>
@@ -92,6 +93,7 @@
         wo.describeinfo as wo_describeinfo,
         wo.payment_method as wo_payment_method,
         wo.third_payment_status as wo_third_payment_status,
+        wo.destination_type as wo_destination_type,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
