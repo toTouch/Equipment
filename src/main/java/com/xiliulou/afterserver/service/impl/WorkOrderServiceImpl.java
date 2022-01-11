@@ -115,7 +115,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
             }
 
-            if(Objects.equals(item.getDestinationType(), 2)){
+            if(Objects.equals(item.getDestinationType(), "2")){
                 WareHouse wareHouse = warehouseService.getById(item.getTransferDestinationPointId());
                 if (Objects.nonNull(wareHouse)){
                     item.setTransferDestinationPointName(wareHouse.getWareHouses());

@@ -18,12 +18,12 @@ public class AdminJsonIotCardController extends BaseController {
     @Autowired
     IotCardService iotCardService;
 
-    @GetMapping("admin/iotCard/list")
+    //@GetMapping("admin/iotCard/list")
     public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, IotCard iotCard) {
         return iotCardService.getPage(offset, size, iotCard);
     }
 
-    @PostMapping("admin/iotCard")
+    //@PostMapping("admin/iotCard")
     public R saveOne(@RequestBody IotCard iotCard){
         if(Objects.isNull(iotCard)){
             return R.fail("参数错误");
@@ -31,7 +31,7 @@ public class AdminJsonIotCardController extends BaseController {
         return iotCardService.saveOne(iotCard);
     }
 
-    @PutMapping("admin/iotCard")
+    //@PutMapping("admin/iotCard")
     public R updateOne(@RequestBody IotCard iotCard){
         if(Objects.isNull(iotCard)){
             return R.fail("参数错误");
@@ -39,7 +39,7 @@ public class AdminJsonIotCardController extends BaseController {
         return iotCardService.updateOne(iotCard);
     }
 
-    @DeleteMapping("admin/iotCard/{id}")
+    //@DeleteMapping("admin/iotCard/{id}")
     public R deleteOne(@PathVariable("id") Long id){
         return iotCardService.deleteOne(id);
     }
