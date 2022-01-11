@@ -71,6 +71,10 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     private WareHouseProductDetailsMapper wareHouseProductDetailsMapper;
     @Autowired
     private InventoryFlowBillService inventoryFlowBillService;
+    @Autowired
+    private PointNewService pointNewService;
+    @Autowired
+    private WarehouseService warehouseService;
 
     @Override
     public IPage getPage(Long offset, Long size, DeliverQuery deliver) {
@@ -163,6 +167,37 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
 
             records.setPaymentMethodName(getpaymentMethodName(records.getPaymentMethod()));
 
+            //起点type
+            List<PointNew> pointNew = pointNewService.list(
+                      new LambdaQueryWrapper<PointNew>()
+                    .eq( PointNew::getName , records.getCity()));
+
+            if(Objects.nonNull(pointNew)){
+                records.setCityType(Deliver.CITY_TYPE_POINT);
+            }else{
+                List<WareHouse> warehouse = warehouseService.list(
+                        new LambdaQueryWrapper<WareHouse>()
+                                .eq(WareHouse::getWareHouses , records.getCity()));
+                if(Objects.nonNull(warehouse)){
+                    records.setCityType(Deliver.CITY_TYPE_WAREHOUSE);
+                }
+            }
+
+            //终点type
+            List<PointNew> pointNew1 = pointNewService.list(
+                    new LambdaQueryWrapper<PointNew>()
+                            .eq(PointNew::getName , records.getDestination()));
+
+            if(Objects.nonNull(pointNew1)){
+                records.setDestinationType(Deliver.DESTINATION_TYPE_POINT);
+            }else{
+                List<WareHouse> warehouse = warehouseService.list(
+                        new LambdaQueryWrapper<WareHouse>()
+                                .eq(WareHouse::getWareHouses , records.getDestination()));
+                if(Objects.nonNull(warehouse)){
+                    records.setDestinationType(Deliver.DESTINATION_TYPE_WAREHOUSE);
+                }
+            }
         });
 
         return selectPage.setRecords(list);
