@@ -75,6 +75,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     WorkOrderReasonService workOrderReasonService;
     @Autowired
     PointNewService pointNewService;
+    @Autowired
+    WarehouseService warehouseService;
 
 
 
@@ -110,6 +112,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 PointNew pointNew = pointNewService.queryByIdFromDB(item.getPointId());
                 if (Objects.nonNull(pointNew)){
                     item.setPointName(pointNew.getName());
+                }
+            }
+
+            if(Objects.equals(item.getDestinationType(), 2)){
+                WareHouse wareHouse = warehouseService.getById(item.getTransferDestinationPointId());
+                if (Objects.nonNull(wareHouse)){
+                    item.setPointName(wareHouse.getWareHouses());
                 }
             }
 
