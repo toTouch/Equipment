@@ -73,8 +73,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     private InventoryFlowBillService inventoryFlowBillService;
     @Autowired
     private PointNewService pointNewService;
-    @Autowired
-    private WarehouseService warehouseService;
+
 
     @Override
     public IPage getPage(Long offset, Long size, DeliverQuery deliver) {
