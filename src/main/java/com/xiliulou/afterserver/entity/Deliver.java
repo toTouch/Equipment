@@ -62,6 +62,12 @@ public class Deliver {
      */
     private Integer paymentMethod;
 
+    public static final String CITY_TYPE_POINT = "1";
+    public static final String CITY_TYPE_WAREHOUSE = "2";
+    public static final String DESTINATION_TYPE_POINT = "1";
+    public static final String DESTINATION_TYPE_WAREHOUSE = "2";
+
+
     public static final Integer PAYMENT_METHOD_MONTHLY = 1;
     public static final Integer PAYMENT_METHOD_NOW = 2;
 
@@ -81,4 +87,8 @@ public class Deliver {
     private boolean isDeliver;
     @TableField(exist = false)
     private String paymentMethodName;
+    @TableField(exist = false)
+    private String cityType;
+    @TableField(exist = false)
+    private String destinationType;
 }
