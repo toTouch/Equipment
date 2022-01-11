@@ -64,7 +64,7 @@ public class WorkOrderVo {
 
     private Integer thirdPaymentStatus;
 
-    private Integer destinationType;
+    private String destinationType;
 
     //private String thirdPaymentStatusName;
 }
