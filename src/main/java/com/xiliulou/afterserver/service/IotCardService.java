@@ -11,4 +11,6 @@ public interface IotCardService extends IService<IotCard> {
     R updateOne(IotCard iotCard);
 
     R deleteOne(Long id);
+
+    R getPage(Long offset, Long size, IotCard iotCard);
 }
