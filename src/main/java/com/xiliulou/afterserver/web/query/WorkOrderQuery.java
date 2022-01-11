@@ -30,6 +30,8 @@ public class WorkOrderQuery extends WorkOrder {
     private String code;
     private Integer thirdCompanyType;
     private BigDecimal sendManey;
+    //1点位 2仓库
+
 
     private String startAddr;
     private String count;
