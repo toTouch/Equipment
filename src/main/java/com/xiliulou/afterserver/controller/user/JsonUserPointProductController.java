@@ -49,7 +49,16 @@ public class JsonUserPointProductController {
         wrapper.eq("type", File.TYPE_POINTNEW);
         wrapper.eq("file_type", file.getFileType());
         wrapper.eq("bind_id", file.getBindId());
+
+        if(file.getFileType() % 100 == 0){
+            Integer count = fileService.getBaseMapper().selectCount(wrapper);
+            if(count >= 2){
+                return R.fail("该类其他图片已达上限，请删除图片后继续上传！");
+            }
+        }
+        
         fileService.getBaseMapper().delete(wrapper);
+
 
         file.setCreateTime(System.currentTimeMillis());
         int insert = fileService.getBaseMapper().insert(file);
