@@ -56,8 +56,10 @@ public class JsonUserPointProductController {
                 return R.fail("该类其他图片已达上限，请删除图片后继续上传！");
             }
         }
-        
-        fileService.getBaseMapper().delete(wrapper);
+
+        if(!(file.getFileType() % 100 == 0)){
+            fileService.getBaseMapper().delete(wrapper);
+        }
 
 
         file.setCreateTime(System.currentTimeMillis());
