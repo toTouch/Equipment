@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
@@ -171,13 +172,13 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                       new LambdaQueryWrapper<PointNew>()
                     .eq( PointNew::getName , records.getCity()));
 
-            if(Objects.nonNull(pointNew)){
+            if(!CollectionUtil.isEmpty(pointNew)){
                 records.setCityType(Deliver.CITY_TYPE_POINT);
             }else{
                 List<WareHouse> warehouse = warehouseService.list(
                         new LambdaQueryWrapper<WareHouse>()
                                 .eq(WareHouse::getWareHouses , records.getCity()));
-                if(Objects.nonNull(warehouse)){
+                if(!CollectionUtil.isEmpty(warehouse)){
                     records.setCityType(Deliver.CITY_TYPE_WAREHOUSE);
                 }
             }
@@ -187,13 +188,13 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                     new LambdaQueryWrapper<PointNew>()
                             .eq(PointNew::getName , records.getDestination()));
 
-            if(Objects.nonNull(pointNew1)){
+            if(!CollectionUtil.isEmpty(pointNew1)){
                 records.setDestinationType(Deliver.DESTINATION_TYPE_POINT);
             }else{
                 List<WareHouse> warehouse = warehouseService.list(
                         new LambdaQueryWrapper<WareHouse>()
                                 .eq(WareHouse::getWareHouses , records.getDestination()));
-                if(Objects.nonNull(warehouse)){
+                if(!CollectionUtil.isEmpty(warehouse)){
                     records.setDestinationType(Deliver.DESTINATION_TYPE_WAREHOUSE);
                 }
             }
