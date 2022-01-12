@@ -8,10 +8,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.export.DeliverInfo;
 import com.xiliulou.afterserver.export.WorkOrderInfo;
-import com.xiliulou.afterserver.service.CustomerService;
-import com.xiliulou.afterserver.service.PointNewService;
-import com.xiliulou.afterserver.service.ServerService;
-import com.xiliulou.afterserver.service.WorkOrderService;
+import com.xiliulou.afterserver.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 
@@ -39,16 +36,19 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
     private CustomerService customerService;
     private ServerService serverService;
     private WorkOrderService workOrderService;
+    private SupplierService supplierService;
 
     public WorkOrderLisener(PointNewService pointNewService,
                             CustomerService customerService,
                             ServerService serverService,
-                             WorkOrderService workOrderService){
+                             WorkOrderService workOrderService,
+                            SupplierService supplierService){
 
         this.pointNewService = pointNewService;
         this.customerService = customerService;
         this.serverService = serverService;
         this.workOrderService = workOrderService;
+        this.supplierService = supplierService;
     }
 
 
@@ -82,11 +82,40 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
                 workOrder.setFee(new BigDecimal(item.getFee()));
             }
 
-            Customer customer = customerService.getOne(new QueryWrapper<Customer>().eq("name", item.getThirdCompanyName()));
-            if(Objects.nonNull(customer)){
-                workOrder.setThirdCompanyName(customer.getName());
-                workOrder.setThirdCompanyId(customer.getId());
+            /**
+             * 第三方公司
+             */
+            if(Objects.nonNull(item.getThirdCompanyType())){
+                Integer thirdCompanyType = this.getThirdCompanyType(item.getThirdCompanyType());
+                if(Objects.nonNull(thirdCompanyType)){
+                    workOrder.setThirdCompanyType(thirdCompanyType);
+                    if(thirdCompanyType == 1){
+                        Customer customer = customerService.getOne(new QueryWrapper<Customer>().eq("name", item.getThirdCompanyName()));
+                        if(Objects.nonNull(customer)){
+                            workOrder.setThirdCompanyName(customer.getName());
+                            workOrder.setThirdCompanyId(customer.getId());
+                        }
+                    }
+                    if(thirdCompanyType == 2){
+                        Supplier supplier = supplierService.getOne(new QueryWrapper<Supplier>().eq("name", item.getThirdCompanyName()));
+                        if(Objects.nonNull(supplier)){
+                            workOrder.setThirdCompanyName(supplier.getName());
+                            workOrder.setThirdCompanyId(supplier.getId());
+                        }
+                    }
+                    if(thirdCompanyType == 3){
+                        Server server = serverService.getOne(new QueryWrapper<Server>().eq("name", item.getThirdCompanyName()));
+                        if(Objects.nonNull(server)){
+                            workOrder.setThirdCompanyName(server.getName());
+                            workOrder.setThirdCompanyId(server.getId());
+                        }
+                    }
+                }
             }
+
+
+
+            workOrder.setThirdResponsiblePerson(item.getThirdResponsiblePerson());
 
             Server server = serverService.getOne(new QueryWrapper<Server>().eq("name", item.getServerName()));
             if(Objects.nonNull(server)){
@@ -180,5 +209,19 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
             log.error("工单导入：转换时间戳异常！dateTime={}",s);
             return 0;
         }
+    }
+
+    private Integer getThirdCompanyType(String thirdCompanyType){
+        Integer thirdCompanyTypeNum = null;
+        if("1".equals(thirdCompanyType) || "客户".equals(thirdCompanyType)){
+            thirdCompanyTypeNum = 1;
+        }
+        if("2".equals(thirdCompanyType) || "供应商".equals(thirdCompanyType)){
+            thirdCompanyTypeNum = 2;
+        }
+        if("3".equals(thirdCompanyType) || "服务商".equals(thirdCompanyType)){
+            thirdCompanyTypeNum = 3;
+        }
+        return thirdCompanyTypeNum;
     }
 }
