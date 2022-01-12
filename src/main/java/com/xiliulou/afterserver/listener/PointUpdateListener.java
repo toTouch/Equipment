@@ -205,7 +205,7 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
 
             point.setIsEntry(getIsEntry(item.getIsEntry()) == -1 ? null : getIsEntry(item.getIsEntry()));
             point.setIsAcceptance(getIsAcceptance(item.getIsAcceptance()) == -1 ? null : getIsAcceptance(item.getIsAcceptance()));
-            point.setOrderSource(item.getOrderSource());
+            point.setProductSeries(getProductSeries(item.getProductSeries()));
 
             if (item.getOrderTime() != null){
                 long l = 0;
@@ -235,6 +235,28 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
         Date date = simpleDateFormat.parse(s);
         long ts = date.getTime();
         return ts;
+    }
+
+    public Integer getProductSeries(String productSeries){
+        if("1".equals(productSeries) || "取餐柜".equals(productSeries)){
+            return 1;
+        }
+        if("2".equals(productSeries) || "餐厅柜".equals(productSeries)){
+            return 2;
+        }
+        if("3".equals(productSeries) || "换电柜".equals(productSeries)){
+            return 3;
+        }
+        if("4".equals(productSeries) || "充电柜".equals(productSeries)){
+            return 4;
+        }
+        if("5".equals(productSeries) || "寄存柜".equals(productSeries)){
+            return 5;
+        }
+        if("6".equals(productSeries) || "生鲜柜".equals(productSeries)){
+            return 6;
+        }
+        return null;
     }
 
 
