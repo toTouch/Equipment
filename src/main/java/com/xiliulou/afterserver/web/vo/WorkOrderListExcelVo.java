@@ -32,7 +32,7 @@ public class WorkOrderListExcelVo {
     @ExcelProperty("第三方公司")
     private String thirdCompanyName;
 
-    @ExcelProperty("第三方承担费用（元）")
+    @ExcelProperty("第三方费用")
     private BigDecimal thirdCompanyPay;
 
     @ExcelProperty("第三方结算状态")
@@ -58,4 +58,7 @@ public class WorkOrderListExcelVo {
 
     @ExcelProperty("描述")
     private String describeinfo;
+
+    @ExcelProperty("创建时间")
+    private String createTime;
 }
