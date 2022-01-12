@@ -508,7 +508,7 @@
             <if test="processor != null and processor != ''">
                 processor = #{processor},
             </if>
-            <if test="process_time != null">
+            <if test="processTime != null">
                 process_time = #{processTime},
             </if>
             <if test="status != null">
