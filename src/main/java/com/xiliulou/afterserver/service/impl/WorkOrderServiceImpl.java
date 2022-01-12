@@ -267,6 +267,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
             }
 
+            //createTime
+            if(Objects.nonNull(o.getCreateTime())){
+                workOrderExcelVo.setCreateTime(simpleDateFormat.format(new Date(o.getCreateTime())));
+            }
+
             workOrderExcelVoList.add(workOrderExcelVo);
         }
 
