@@ -255,17 +255,17 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 if (Objects.nonNull(pointNew)){
                     row.add(pointNew.getName());
                 }else{
-                    row.add("");
+                    row.add("1");
                 }
             }else if("2".equals(o.getDestinationType())){
                 WareHouse warehouse = warehouseService.getById(o.getTransferDestinationPointId());
                 if (Objects.nonNull(warehouse)){
                     row.add(warehouse.getWareHouses());
                 }else{
-                    row.add("");
+                    row.add("2");
                 }
             }else{
-                row.add("");
+                row.add("3");
             }
 
             row.add(o.getFee() == null? "" : o.getFee());
