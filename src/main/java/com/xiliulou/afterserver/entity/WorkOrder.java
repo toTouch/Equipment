@@ -32,6 +32,7 @@ public class WorkOrder implements Serializable {
      * 备注信息
      */
     private String info;
+    
     private BigDecimal fee;
     private Long thirdCompanyId;
     private Integer thirdCompanyType;

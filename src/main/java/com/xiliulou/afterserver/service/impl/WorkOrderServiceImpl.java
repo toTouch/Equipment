@@ -813,7 +813,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrder.setServerName(server.getName());
             }
         }
-        this.baseMapper.updateById(workOrder);
+        this.baseMapper.updateOne(workOrder);
+        //this.baseMapper.updateById(workOrder);
         return R.ok();
     }
 
