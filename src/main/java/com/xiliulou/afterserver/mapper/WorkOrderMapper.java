@@ -44,4 +44,6 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
                                             @Param("startTime") Long startTime, @Param("endTime") Long endTime);
 
     Integer countOrderList(@Param("query") WorkOrderQuery workOrder);
+
+    Integer updateOne(WorkOrder workOrder);
 }
