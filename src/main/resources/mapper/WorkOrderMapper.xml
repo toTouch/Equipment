@@ -182,6 +182,7 @@
         wo.describeinfo as wo_describeinfo,
         wo.payment_method as wo_payment_method,
         wo.third_payment_status as wo_third_payment_status,
+        wo.third_responsible_person as wo_third_responsible_person,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
