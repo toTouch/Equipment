@@ -69,6 +69,11 @@ public class WorkOrder implements Serializable {
     private Integer thirdPaymentStatus;
 
     /**
+     * 第三方责任人
+     */
+    private String thirdResponsiblePerson;
+
+    /**
      * 第三方结算状态 无需结算 1，未结算 2，已结算 3
      */
     public static final Integer THIRD_PAYMENT_UNWANTED = 1;
