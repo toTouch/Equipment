@@ -324,7 +324,7 @@
                 completion_time = #{pointNew.completionTime},
                 is_entry = #{pointNew.isEntry},
                 is_acceptance = #{pointNew.isAcceptance},
-                order_source = #{pointNew.orderSource},
+                product_series = #{pointNew.productSeries},
                 order_time = #{pointNew.orderTime},
                 operator = #{pointNew.operator},
                 logistics_info = #{pointNew.logisticsInfo}
