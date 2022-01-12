@@ -90,7 +90,7 @@ public class PointInfo {
      * 订单来源
      */
     @ExcelProperty(index = 14)
-    private String orderSource;
+    private String productSeries;
     /**
      * 下单时间
      */

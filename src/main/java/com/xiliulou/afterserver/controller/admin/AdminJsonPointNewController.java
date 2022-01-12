@@ -394,8 +394,23 @@ public class AdminJsonPointNewController {
             list.add(item.getIsAcceptance() == null ? "" : (item.getIsAcceptance() == 0 ? "否" : "是"));
 
 
-            //订单来源
-            list.add(item.getOrderSource() == null ? "" : item.getOrderSource());
+            //产品系列
+            String productSeriesName = "";
+            if("1".equals(item.getProductSeries())){
+                productSeriesName = "取餐柜";
+            }else if("2".equals(item.getProductSeries())){
+                productSeriesName = "餐厅柜";
+            }else if("3".equals(item.getProductSeries())){
+                productSeriesName = "换电柜";
+            }else if("4".equals(item.getProductSeries())){
+                productSeriesName = "充电柜";
+            }else if("5".equals(item.getProductSeries())){
+                productSeriesName = "寄存柜";
+            }else if("6".equals(item.getProductSeries())){
+                productSeriesName = "生鲜柜";
+            }
+
+            list.add(productSeriesName);
 
             //下单时间
             if (item.getOrderTime() != null) {
