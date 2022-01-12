@@ -38,6 +38,9 @@ public class WorkOrderListExcelVo {
     @ExcelProperty("第三方结算状态")
     private String thirdPaymentStatus;
 
+    @ExcelProperty("第三方责任对接人")
+    private String thirdResponsiblePerson;
+
     @ExcelProperty("工单原因")
     private String workOrderReasonName;
 
