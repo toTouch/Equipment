@@ -272,6 +272,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
             //PaymentMethod
             row.add(getPaymentMethod(o.getPaymentMethod()));
+
             if (Objects.nonNull(o.getThirdCompanyType())){
                 String name = "";
                 if (o.getThirdCompanyType() == 1){
@@ -293,6 +294,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     }
                 }
                 row.add(name);
+            }else{
+                row.add("");
             }
 
             //third_company_pay
@@ -309,6 +312,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }else {
                     row.add("");
                 }
+            }else{
+                row.add("");
             }
             //"第三方责任对接人"
             row.add(o.getThirdResponsiblePerson() == null? "" : o.getThirdResponsiblePerson());
