@@ -604,7 +604,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrderExcelVo3.setProcessTimeStr(simpleDateFormat.format(new Date(o.getProcessTime())));
             }
             if (o.getServerId()!=null){
-                Server server = serverService.getById(o.getServerId());
+                Server server = serverService.getById(o.getThirdCompanyId());
                 if (Objects.nonNull(server)){
                     workOrderExcelVo3.setThirdCompanyName(server.getName());
                 }
