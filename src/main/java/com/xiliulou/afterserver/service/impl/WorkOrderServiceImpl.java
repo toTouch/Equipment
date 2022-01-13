@@ -418,6 +418,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
             }
 
+            if (o.getThirdCompanyType() != null && o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SERVER)){
+                Server server = serverService.getById(o.getThirdCompanyId());
+                if(Objects.nonNull(server)){
+                    o.setThirdCompanyName(server.getName());
+                }
+            }
+
             if (o.getServerId()!=null){
                 Server server = serverService.getById(o.getServerId());
                 if (Objects.nonNull(server)){
