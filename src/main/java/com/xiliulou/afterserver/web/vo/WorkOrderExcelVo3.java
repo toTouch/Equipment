@@ -18,6 +18,8 @@ public class WorkOrderExcelVo3 {
     private String thirdCompanyType;
     @ExcelProperty("公司")
     private String thirdCompanyName;
+    @ExcelProperty("服务商")
+    private String serverName;
     @ExcelProperty("工单类型")
     private String workOrderType;
     @ExcelProperty("点位")

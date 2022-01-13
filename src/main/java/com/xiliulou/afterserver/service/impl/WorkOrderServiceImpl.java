@@ -231,7 +231,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
             //ThirdCompanyName
 
-            if (Objects.nonNull(o.getThirdCompanyType())){
+            /*if (Objects.nonNull(o.getThirdCompanyType())){
                 String name = "";
                 if (o.getThirdCompanyType() == 1){
                     Customer byId = customerService.getById(o.getThirdCompanyId());
@@ -252,8 +252,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     }
                 }
                 workOrderExcelVo.setThirdCompanyName(name);
-            }
-
+            }*/
+            workOrderExcelVo.setThirdCompanyName(o.getThirdCompanyName());
             //thirdPaymentStatus
             if(Objects.nonNull(o.getThirdPaymentStatus())){
                 if(o.getThirdPaymentStatus().equals(1)){
@@ -516,6 +516,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
                 customerExcelVoList.add(workOrderExcelVo);
             }
+
+           if(Objects.nonNull(o.getServerId())){
+               Server server = serverService.getById(o.getServerId());
+               if (Objects.nonNull(server)){
+                   workOrderExcelVo.setServerName(server.getName());
+               }
+           }
         });
 //        WorkOrderExcelVo tailLine = new WorkOrderExcelVo();
 //        tailLine.setThirdCompanyType("客户总金额");
@@ -563,6 +570,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     supplierPayAmount.addAndGet((int) o.getThirdCompanyPay().doubleValue());
                 }
                 supplierExcelVoList.add(workOrderExcelVo2);
+            }
+
+            if(Objects.nonNull(o.getServerId())){
+                Server server = serverService.getById(o.getServerId());
+                if (Objects.nonNull(server)){
+                    workOrderExcelVo2.setServerName(server.getName());
+                }
             }
         });
 
@@ -614,6 +628,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
                 workOrderExcelVo3.setThirdCompanyPay(o.getFee());
                 serverExcelVoList.add(workOrderExcelVo3);
+            }
+
+            if(Objects.nonNull(o.getServerId())){
+                Server server = serverService.getById(o.getServerId());
+                if (Objects.nonNull(server)){
+                    workOrderExcelVo3.setServerName(server.getName());
+                }
             }
 
         });
