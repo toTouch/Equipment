@@ -40,7 +40,7 @@ public interface PointNewService extends IService<PointNew> {
      * @return 对象列表
      */
     List<PointNew> queryAllByLimit(int offset, int limit, String name, Integer cid, Integer status,
-                                   Long customerId, Long startTime, Long endTime, Long createUid, String snNo);
+                                   Long customerId, Long startTime, Long endTime, Long createUid, String snNo, Integer productSeries);
 
     /**
      * 新增数据
