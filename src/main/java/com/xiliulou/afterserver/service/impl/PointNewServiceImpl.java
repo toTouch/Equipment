@@ -100,8 +100,8 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
      */
     @Override
     public List<PointNew> queryAllByLimit(int offset, int limit, String name,Integer cid,
-                                          Integer status, Long customerId,Long startTime,Long endTime,Long createUid,String snNo) {
-        return this.pointNewMapper.queryAllByLimit(offset, limit, name,cid,status,customerId,startTime,endTime,createUid,snNo);
+                                          Integer status, Long customerId,Long startTime,Long endTime,Long createUid,String snNo,Integer productSeries) {
+        return this.pointNewMapper.queryAllByLimit(offset, limit, name,cid,status,customerId,startTime,endTime,createUid,snNo, productSeries);
     }
 
     /**

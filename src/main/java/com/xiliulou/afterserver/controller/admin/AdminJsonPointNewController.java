@@ -103,8 +103,9 @@ public class AdminJsonPointNewController {
                        @RequestParam(value = "startTime",required = false) Long startTime,
                        @RequestParam(value = "endTime",required = false) Long endTime,
                        @RequestParam(value = "createUid",required = false) Long createUid,
-                       @RequestParam(value = "snNo",required = false) String snNo){
-        List<PointNew> pointNews = pointNewService.queryAllByLimit(offset, limit, name,cid,status,customerId,startTime,endTime,createUid,snNo);
+                       @RequestParam(value = "snNo",required = false) String snNo,
+                       @RequestParam(value ="productSeries", required = false) Integer productSeries){
+        List<PointNew> pointNews = pointNewService.queryAllByLimit(offset, limit, name,cid,status,customerId,startTime,endTime,createUid,snNo, productSeries);
 
         if (Objects.nonNull(pointNews)){
             pointNews.forEach(item -> {
