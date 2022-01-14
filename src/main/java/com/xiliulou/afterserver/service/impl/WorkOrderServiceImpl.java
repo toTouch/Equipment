@@ -379,8 +379,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
     @Override
     public R reconciliation(WorkOrderQuery workOrder) {
-        workOrder.setProcessTimeStart(workOrder.getCreateTimeStart());
-        workOrder.setProcessTimeEnd(workOrder.getCreateTimeEnd());
+        //workOrder.setProcessTimeStart(workOrder.getCreateTimeStart());
+        //workOrder.setProcessTimeEnd(workOrder.getCreateTimeEnd());
 
         Integer count = baseMapper.countOrderList(workOrder);
         List<WorkOrderVo> workOrderVoList = baseMapper.orderList(workOrder);
@@ -453,7 +453,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     public void reconciliationExportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
 
-        if (workOrder.getCreateTimeStart() == null || workOrder.getCreateTimeEnd() == null){
+        if (workOrder.getProcessTimeStart() == null || workOrder.getProcessTimeEnd() == null){
             throw new CustomBusinessException("请选择开始时间结束时间");
         }
 
