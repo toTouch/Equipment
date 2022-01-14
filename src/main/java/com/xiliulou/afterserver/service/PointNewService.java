@@ -77,9 +77,9 @@ public interface PointNewService extends IService<PointNew> {
     R pointInfo(Long pid);
 
     Integer countPoint(String name, Integer cid, Integer status,
-                       Long customerId, Long startTime, Long endTime, Long createUid, String snNo);
+                       Long customerId, Long startTime, Long endTime, Long createUid, String snNo, Integer productSeries);
 
-    List<PointNew> queryAllByLimitExcel(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime, Long createUid, String snNo);
+    List<PointNew> queryAllByLimitExcel(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime, Long createUid, String snNo,Integer productSeries);
 
     R putAdminPointNewCreateUser(Long id, Long createUid);
 

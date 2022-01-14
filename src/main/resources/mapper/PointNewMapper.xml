@@ -158,6 +158,9 @@
             <if test="createUid != null and createUid != ''">
                 and create_uid = #{createUid}
             </if>
+            <if test="productSeries != null">
+                and product_series = #{productSeries}
+            </if>
         </where>
     </select>
 
@@ -193,6 +196,9 @@
             </if>
             <if test="createUid != null and createUid != ''">
                 and create_uid = #{createUid}
+            </if>
+            <if test="productSeries != null">
+                and product_series = #{productSeries}
             </if>
         </where>
         order by create_time desc

@@ -236,6 +236,12 @@
             <if test="query.serverName != null and query.serverName != ''">
                 and wo.server_name like concat('%',#{query.serverName},'%')
             </if>
+            <if test="query.workOrderReasonId != null">
+                and wo.work_order_reason_id = #{query.workOrderReasonId}
+            </if>
+            <if test="query.thirdResponsiblePerson != null and query.thirdResponsiblePerson != ''">
+                and wo.third_responsible_person like concat('%', #{query.thirdResponsiblePerson}, '%')
+            </if>
         </where>
         ORDER BY wo.process_time DESC
         <if test="query.offset != null and query.size != null ">

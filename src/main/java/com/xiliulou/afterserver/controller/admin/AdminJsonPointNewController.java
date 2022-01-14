@@ -142,7 +142,7 @@ public class AdminJsonPointNewController {
         }
 
 
-        Integer count =  pointNewService.countPoint(name,cid,status,customerId,startTime,endTime,createUid,snNo);
+        Integer count =  pointNewService.countPoint(name,cid,status,customerId,startTime,endTime,createUid,snNo,productSeries);
 
 
         HashMap<String, Object> map = new HashMap<>();
@@ -238,8 +238,9 @@ public class AdminJsonPointNewController {
                               @RequestParam(value = "endTime",required = false) Long endTime,
                               @RequestParam(value = "createUid",required = false) Long createUid,
                               @RequestParam(value = "snNo",required = false)  String snNo,
+                              @RequestParam(value ="productSeries", required = false) Integer productSeries,
                               HttpServletResponse response){
-        List<PointNew> pointNews = pointNewService.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid,snNo);
+        List<PointNew> pointNews = pointNewService.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid,snNo,productSeries);
 
 
         if (Objects.isNull(startTime) || Objects.isNull(endTime)){

@@ -332,13 +332,13 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
     @Override
     public Integer countPoint(String name, Integer cid, Integer status, Long customerId,
-                              Long startTime, Long endTime, Long createUid,String snNo) {
-        return this.pointNewMapper.countPoint(name,cid,status,customerId,startTime,endTime,createUid,snNo);
+                              Long startTime, Long endTime, Long createUid,String snNo, Integer productSeries) {
+        return this.pointNewMapper.countPoint(name,cid,status,customerId,startTime,endTime,createUid,snNo,productSeries);
     }
 
     @Override
-    public List<PointNew> queryAllByLimitExcel(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime, Long createUid,String snNo) {
-        return this.pointNewMapper.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid,snNo);
+    public List<PointNew> queryAllByLimitExcel(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime, Long createUid,String snNo,Integer productSeries) {
+        return this.pointNewMapper.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid,snNo,productSeries);
     }
 
     public R putAdminPointNewCreateUser(Long id, Long createUid){
