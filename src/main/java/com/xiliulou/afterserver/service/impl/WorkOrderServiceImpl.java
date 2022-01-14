@@ -624,7 +624,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
                 workOrderExcelVo3.setThirdCompanyType("服务商");
                 if (o.getThirdCompanyPay()!=null) {
-                    serverPayAmount.addAndGet((int) o.getFee().doubleValue());
+                    serverPayAmount.addAndGet((o.getFee() == null ? 0 : o.getFee().intValue()));
                 }
                 workOrderExcelVo3.setThirdCompanyPay(o.getFee());
                 serverExcelVoList.add(workOrderExcelVo3);
