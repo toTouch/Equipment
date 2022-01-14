@@ -152,6 +152,9 @@
             <if test="query.workOrderReasonId != null">
                 and wo.work_order_reason_id = #{query.workOrderReasonId}
             </if>
+            <if test="query.thirdResponsiblePerson != null and query.thirdResponsiblePerson != ''">
+                and wo.third_responsible_person like concat('%', #{query.thirdResponsiblePerson}, '%')
+            </if>
         </where>
         ORDER BY wo.create_time DESC
     </select>
