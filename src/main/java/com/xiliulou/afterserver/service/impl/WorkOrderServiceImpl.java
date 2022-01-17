@@ -453,8 +453,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     public void reconciliationExportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
 
-        if (workOrder.getProcessTimeStart() == null || workOrder.getProcessTimeEnd() == null){
-            throw new CustomBusinessException("请选择开始时间结束时间");
+        if (workOrder.getCreateTimeStart() == null || workOrder.getCreateTimeEnd() == null){
+            throw new CustomBusinessException("请选择创建开始时间结束时间");
         }
 
         List<WorkOrderVo> workOrderVoList = baseMapper.orderList(workOrder);
