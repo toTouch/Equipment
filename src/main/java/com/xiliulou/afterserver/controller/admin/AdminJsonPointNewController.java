@@ -103,8 +103,9 @@ public class AdminJsonPointNewController {
                        @RequestParam(value = "startTime",required = false) Long startTime,
                        @RequestParam(value = "endTime",required = false) Long endTime,
                        @RequestParam(value = "createUid",required = false) Long createUid,
-                       @RequestParam(value = "snNo",required = false) String snNo){
-        List<PointNew> pointNews = pointNewService.queryAllByLimit(offset, limit, name,cid,status,customerId,startTime,endTime,createUid,snNo);
+                       @RequestParam(value = "snNo",required = false) String snNo,
+                       @RequestParam(value ="productSeries", required = false) Integer productSeries){
+        List<PointNew> pointNews = pointNewService.queryAllByLimit(offset, limit, name,cid,status,customerId,startTime,endTime,createUid,snNo, productSeries);
 
         if (Objects.nonNull(pointNews)){
             pointNews.forEach(item -> {
@@ -141,7 +142,7 @@ public class AdminJsonPointNewController {
         }
 
 
-        Integer count =  pointNewService.countPoint(name,cid,status,customerId,startTime,endTime,createUid,snNo);
+        Integer count =  pointNewService.countPoint(name,cid,status,customerId,startTime,endTime,createUid,snNo,productSeries);
 
 
         HashMap<String, Object> map = new HashMap<>();
@@ -237,8 +238,9 @@ public class AdminJsonPointNewController {
                               @RequestParam(value = "endTime",required = false) Long endTime,
                               @RequestParam(value = "createUid",required = false) Long createUid,
                               @RequestParam(value = "snNo",required = false)  String snNo,
+                              @RequestParam(value ="productSeries", required = false) Integer productSeries,
                               HttpServletResponse response){
-        List<PointNew> pointNews = pointNewService.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid,snNo);
+        List<PointNew> pointNews = pointNewService.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid,snNo,productSeries);
 
 
         if (Objects.isNull(startTime) || Objects.isNull(endTime)){
@@ -255,7 +257,7 @@ public class AdminJsonPointNewController {
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
 
-        String[] header = {"柜机名称", "机柜状态", "安装类型", "详细地址",  "安装时间", "施工完成时间", "城市名称", "客户名称","入账","验收","订单来源","下单时间","运营商","物流信息","雨棚数量","物联网卡供应商","SN码", "物联网卡号"};
+        String[] header = {"柜机名称", "机柜状态", "安装类型", "详细地址",  "安装时间", "施工完成时间", "城市名称", "客户名称","入账","验收","产品系列","下单时间","运营商","物流信息","雨棚数量","物联网卡供应商","SN码", "物联网卡号"};
         List<Product> productAll = productService.list();
         Integer max = 0;
 
@@ -394,8 +396,23 @@ public class AdminJsonPointNewController {
             list.add(item.getIsAcceptance() == null ? "" : (item.getIsAcceptance() == 0 ? "否" : "是"));
 
 
-            //订单来源
-            list.add(item.getOrderSource() == null ? "" : item.getOrderSource());
+            //产品系列
+            String productSeriesName = "";
+            if("1".equals(String.valueOf(item.getProductSeries()))){
+                productSeriesName = "取餐柜";
+            }else if("2".equals(String.valueOf(item.getProductSeries()))){
+                productSeriesName = "餐厅柜";
+            }else if("3".equals(String.valueOf(item.getProductSeries()))){
+                productSeriesName = "换电柜";
+            }else if("4".equals(String.valueOf(item.getProductSeries()))){
+                productSeriesName = "充电柜";
+            }else if("5".equals(String.valueOf(item.getProductSeries()))){
+                productSeriesName = "寄存柜";
+            }else if("6".equals(String.valueOf(item.getProductSeries()))){
+                productSeriesName = "生鲜柜";
+            }
+
+            list.add(productSeriesName);
 
             //下单时间
             if (item.getOrderTime() != null) {

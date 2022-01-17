@@ -57,6 +57,7 @@
         <id property="paymentMethod" column="wo_payment_method"/>
         <id property="thirdPaymentStatus" column="wo_third_payment_status"/>
         <id property="destinationType" column="wo_destination_type"></id>
+        <id property="thirdResponsiblePerson" column="wo_third_responsible_person"></id>
         <collection property="fileList" ofType="com.xiliulou.afterserver.entity.File">
             <id property="id" column="f_id"/>
             <id property="type" column="f_type"/>
@@ -94,6 +95,7 @@
         wo.payment_method as wo_payment_method,
         wo.third_payment_status as wo_third_payment_status,
         wo.destination_type as wo_destination_type,
+        wo.third_responsible_person as wo_third_responsible_person,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
@@ -150,6 +152,9 @@
             <if test="query.workOrderReasonId != null">
                 and wo.work_order_reason_id = #{query.workOrderReasonId}
             </if>
+            <if test="query.thirdResponsiblePerson != null and query.thirdResponsiblePerson != ''">
+                and wo.third_responsible_person like concat('%', #{query.thirdResponsiblePerson}, '%')
+            </if>
         </where>
         ORDER BY wo.create_time DESC
     </select>
@@ -179,7 +184,9 @@
         wo.code as wo_code,
         wo.describeinfo as wo_describeinfo,
         wo.payment_method as wo_payment_method,
+        wo.destination_type as wo_destination_type,
         wo.third_payment_status as wo_third_payment_status,
+        wo.third_responsible_person as wo_third_responsible_person,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
@@ -229,8 +236,14 @@
             <if test="query.serverName != null and query.serverName != ''">
                 and wo.server_name like concat('%',#{query.serverName},'%')
             </if>
+            <if test="query.workOrderReasonId != null">
+                and wo.work_order_reason_id = #{query.workOrderReasonId}
+            </if>
+            <if test="query.thirdResponsiblePerson != null and query.thirdResponsiblePerson != ''">
+                and wo.third_responsible_person like concat('%', #{query.thirdResponsiblePerson}, '%')
+            </if>
         </where>
-        ORDER BY wo.process_time DESC
+        ORDER BY wo.create_time DESC
         <if test="query.offset != null and query.size != null ">
             LIMIT #{query.offset},#{query.size}
         </if>
@@ -474,6 +487,96 @@
         ORDER BY wo.create_time DESC
     </select>
 
-
+    <update id="updateOne">
+        update work_order
+        <set>
+            fee = #{fee},
+            <if test="type != null and type != ''">
+                type = #{type},
+            </if>
+            <if test="pointId != null">
+                point_id = #{pointId},
+            </if>
+            <if test="info != null and info != ''">
+                info = #{info},
+            </if>
+            <if test="thirdCompanyId != null">
+                third_company_id = #{thirdCompanyId},
+            </if>
+            <if test="thirdCompanyType != null">
+                third_company_type = #{thirdCompanyType},
+            </if>
+            <if test="thirdCompanyPay != null">
+                third_company_pay = #{thirdCompanyPay},
+            </if>
+            <if test="thirdReason != null and thirdReason != ''">
+                third_reason = #{thirdReason},
+            </if>
+            <if test="workOrderReasonId != null">
+                work_order_reason_id = #{workOrderReasonId},
+            </if>
+            <if test="serverId != null">
+                server_id = #{serverId},
+            </if>
+            <if test="processor != null and processor != ''">
+                processor = #{processor},
+            </if>
+            <if test="processTime != null">
+                process_time = #{processTime},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                order_no = #{orderNo},
+            </if>
+            <if test="createrId != null">
+                creater_id = #{createrId},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="thirdCompanyName != null and thirdCompanyName != ''">
+                third_company_name = #{thirdCompanyName},
+            </if>
+            <if test="serverName != null and serverName != ''">
+                server_name = #{serverName},
+            </if>
+            <if test="product != null and product != ''">
+                product = #{product},
+            </if>
+            <if test="code != null and code != ''">
+                code = #{code},
+            </if>
+            <if test="warehourseId != null">
+                warehourse_id = #{warehourseId},
+            </if>
+            <if test="reason != null and reason != ''">
+                reason = #{reason},
+            </if>
+            <if test="destinationType != null">
+                destination_type = #{destinationType},
+            </if>
+            <if test="paymentMethod != null">
+                payment_method = #{paymentMethod},
+            </if>
+            <if test="thirdPaymentStatus != null">
+                third_payment_status = #{thirdPaymentStatus},
+            </if>
+            <if test="transferSourcePointId != null">
+                transfer_source_point_id = #{transferSourcePointId},
+            </if>
+            <if test="transferDestinationPointId != null">
+                transfer_destination_point_id = #{transferDestinationPointId},
+            </if>
+            <if test="describeinfo != null">
+                describeinfo = #{describeinfo},
+            </if>
+            <if test="thirdResponsiblePerson != null">
+                third_responsible_person = #{thirdResponsiblePerson},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
 </mapper>
 

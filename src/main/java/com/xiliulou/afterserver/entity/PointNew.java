@@ -90,7 +90,9 @@ public class PointNew {
     private Long completionTime;//施工完成时间
     private Integer isEntry;//是否入账
     private Integer isAcceptance;//是否验收
-    private String orderSource;//工单来源
+    
+    //取餐柜 1、餐厅柜 2、换电柜 3、充电柜 4、寄存柜 5、生鲜柜 6
+    private Integer productSeries;//产品系列
     private Long orderTime;//工单时间
     private String operator;//运营商
     private String logisticsInfo;//物流信息

@@ -111,10 +111,10 @@ public class PointUpdateInfo {
     @ExcelProperty(index = 18)
     private String isAcceptance;
     /**
-     * 订单来源
+     * 产品系列
      */
     @ExcelProperty(index = 19)
-    private String orderSource;
+    private String productSeries;
     /**
      * 下单时间
      */

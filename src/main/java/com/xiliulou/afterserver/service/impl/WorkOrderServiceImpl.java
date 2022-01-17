@@ -1,16 +1,23 @@
 package com.xiliulou.afterserver.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.EasyExcelFactory;
 import com.alibaba.excel.ExcelWriter;
+import com.alibaba.excel.metadata.Sheet;
+import com.alibaba.excel.metadata.Table;
+import com.alibaba.excel.util.CollectionUtils;
 import com.alibaba.excel.write.metadata.WriteSheet;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.*;
@@ -25,6 +32,7 @@ import com.xiliulou.afterserver.web.query.SaveWorkOrderQuery;
 import com.xiliulou.afterserver.web.query.WorkOrderQuery;
 import com.xiliulou.afterserver.web.query.WorkerOrderUpdateStatusQuery;
 import com.xiliulou.afterserver.web.vo.*;
+import io.micrometer.core.instrument.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -170,6 +178,245 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             throw new CustomBusinessException("没有查询到工单!无法导出！");
         }
 
+        if(StringUtils.isBlank(workOrder.getType()) || "4".equals(workOrder.getType())){
+            exportExcelMoveMachine(workOrderVoList, response);
+        }else{
+            exportExcelNotMoveMachine(workOrderVoList, response);
+        }
+    }
+
+    private void exportExcelMoveMachine(List<WorkOrderVo> workOrderVoList, HttpServletResponse response){
+        //headerSet
+        Sheet sheet = new Sheet(1,0);
+        sheet.setSheetName("Sheet");
+        Table table = new Table(1);
+        // 动态添加 表头 headList --> 所有表头行集合
+        List<List<String>> headList = new ArrayList<List<String>>();
+
+        String[] header = {"工单类型", "点位", "sn码", "移机起点", "移机终点", "费用",
+                "结算方式", "第三方公司", "第三方费用", "第三方结算状态","第三方原因" ,"第三方责任对接人",
+                "工单原因", "创建人", "处理时间", "状态", "工单编号", "备注", "描述", "创建时间"};
+        for(String s : header){
+            List<String> headTitle = new ArrayList<String>();
+            headTitle.add(s);
+            headList.add(headTitle);
+        }
+
+        table.setHead(headList);
+
+        List<List<Object>> data = new ArrayList<>();
+        Integer codeMaxSize = 0;
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        for (WorkOrderVo o : workOrderVoList) {
+            List<Object> row = new ArrayList<>();
+
+            //typeName
+            if(Objects.nonNull(o.getType())){
+                WorkOrderType workOrderType = workOrderTypeService.getById(o.getType());
+                if (Objects.nonNull(workOrderType)){
+                    row.add(workOrderType.getType());
+                }else{
+                    row.add("");
+                }
+            }else{
+                row.add("");
+            }
+            //pointName
+            if(Objects.nonNull(o.getPointId())){
+                PointNew pointNew = pointNewService.getById(o.getPointId());
+                if (Objects.nonNull(pointNew)){
+                    row.add(pointNew.getName());
+                    row.add(pointNew.getSnNo());
+                }else{
+                    row.add("");
+                    row.add("");
+                }
+            }else{
+                row.add("");
+                row.add("");
+            }
+
+            //transferSourcePointId
+            if(Objects.nonNull(o.getTransferSourcePointId())){
+                PointNew pointNew = pointNewService.getById(o.getTransferSourcePointId());
+                if (Objects.nonNull(pointNew)){
+                    row.add(pointNew.getName());
+                }else{
+                    row.add("");
+                }
+            }else{
+                row.add("");
+            }
+
+            //transfer_destination_point_id
+            if("1".equals(o.getDestinationType())){
+                PointNew pointNew = pointNewService.getById(o.getTransferDestinationPointId());
+                if (Objects.nonNull(pointNew)){
+                    row.add(pointNew.getName());
+                }else{
+                    row.add("");
+                }
+            }else if("2".equals(o.getDestinationType())){
+                WareHouse warehouse = warehouseService.getById(o.getTransferDestinationPointId());
+                if (Objects.nonNull(warehouse)){
+                    row.add(warehouse.getWareHouses());
+                }else{
+                    row.add("");
+                }
+            }else{
+                row.add("");
+            }
+
+            row.add(o.getFee() == null? "" : o.getFee());
+
+            //PaymentMethod
+            row.add(getPaymentMethod(o.getPaymentMethod()));
+
+            if (Objects.nonNull(o.getThirdCompanyType())){
+                String name = "";
+                if (o.getThirdCompanyType() == 1){
+                    Customer byId = customerService.getById(o.getThirdCompanyId());
+                    if (Objects.nonNull(byId)){
+                        name = byId.getName();
+                    }
+                }
+                if (o.getThirdCompanyType() == 2){
+                    Supplier byId = supplierService.getById(o.getThirdCompanyId());
+                    if (Objects.nonNull(byId)){
+                        name = byId.getName();
+                    }
+                }
+                if (o.getThirdCompanyType() == 3){
+                    Server byId = serverService.getById(o.getThirdCompanyId());
+                    if (Objects.nonNull(byId)){
+                        name = byId.getName();
+                    }
+                }
+                row.add(name);
+            }else{
+                row.add("");
+            }
+
+            //third_company_pay
+            row.add(o.getThirdCompanyPay() == null ? "" : o.getThirdCompanyPay());
+
+            //thirdPaymentStatus
+            if(Objects.nonNull(o.getThirdPaymentStatus())){
+                if(o.getThirdPaymentStatus().equals(1)){
+                    row.add("无需结算");
+                }else if(o.getThirdPaymentStatus().equals(2)){
+                    row.add("未结算");
+                }else if(o.getThirdPaymentStatus().equals(3)){
+                    row.add("已结算");
+                }else {
+                    row.add("");
+                }
+            }else{
+                row.add("");
+            }
+            //第三方原因
+            row.add(o.getThirdReason() == null? "" : o.getThirdReason());
+
+            //"第三方责任对接人"
+            row.add(o.getThirdResponsiblePerson() == null? "" : o.getThirdResponsiblePerson());
+            //"工单原因",
+            //workOrderReasonName
+            if(Objects.nonNull(o.getWorkOrderReasonId())){
+                WorkOrderReason workOrderReason = workOrderReasonService.getById(o.getWorkOrderReasonId());
+                if (Objects.nonNull(workOrderReason)){
+                    row.add(workOrderReason.getName());
+                }else{
+                    row.add("");
+                }
+            }else{
+                row.add("");
+            }
+            //"创建人",
+            if(Objects.nonNull(o.getCreaterId())){
+                User user = userService.getUserById(o.getCreaterId());
+                if (Objects.nonNull(user)){
+                    row.add(user.getUserName());
+                }else{
+                    row.add("");
+                }
+            }else{
+                row.add("");
+            }
+            //"处理时间",
+            //processTime
+            if(Objects.nonNull(o.getProcessTime())){
+                row.add(simpleDateFormat.format(new Date(o.getProcessTime())));
+            }else{
+                row.add("");
+            }
+            //"状态",
+            //status  1;待处理2:已处理3:待分析4：已完结
+            if(Objects.nonNull(o.getStatus())){
+                if(o.getStatus().equals(1)){
+                    row.add("待处理");
+                } else if(o.getStatus().equals(2)){
+                    row.add("已处理");
+                }else if(o.getStatus().equals(3)){
+                    row.add("待分析");
+                }else if(o.getStatus().equals(4)){
+                    row.add("已完结");
+                }else if(o.getStatus().equals(5)){
+                    row.add("已暂停");
+                }else{
+                    row.add("");
+                }
+            }else{
+                row.add("");
+            }
+
+            //"工单编号",
+            row.add(o.getOrderNo() == null? "" : o.getOrderNo());
+            //"备注",
+            row.add(o.getInfo() == null? "" : o.getInfo());
+            //"描述", "
+            row.add(o.getDescribeinfo() == null? "" : o.getDescribeinfo());
+            //创建时间"
+            if(Objects.nonNull(o.getCreateTime())){
+                row.add(simpleDateFormat.format(new Date(o.getCreateTime())));
+            }else{
+                row.add("");
+            }
+
+            List<String> codes = JSON.parseArray(o.getCode(), String.class);
+            if(!CollectionUtils.isEmpty(codes)){
+                codeMaxSize = codeMaxSize > codes.size() ? codeMaxSize : codes.size();
+                for (String code : codes){
+                    row.add(code);
+                }
+            }
+
+            data.add(row);
+        }
+
+        for(int i= 1 ; i < codeMaxSize + 1; i++){
+            List<String> headTitle = new ArrayList<String>();
+            headTitle.add("产品编码" + i);
+            headList.add(headTitle);
+        }
+
+        String fileName = "工单列表.xlsx";
+        try {
+            ServletOutputStream outputStream = response.getOutputStream();
+            // 告诉浏览器用什么软件可以打开此文件
+            response.setHeader("content-Type", "application/vnd.ms-excel");
+            // 下载文件的默认名称
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
+            EasyExcelFactory.getWriter(outputStream).write1(data,sheet,table).finish();
+            //EasyExcel.write(outputStream, DeliverExportExcelVo.class).sheet("sheet").doWrite(deliverExcelVoList);
+            return;
+        } catch (IOException e) {
+            log.error("导出报表失败！", e);
+        }
+        throw new CustomBusinessException("导出报表失败！请联系客服！");
+    }
+
+    private void exportExcelNotMoveMachine(List<WorkOrderVo> workOrderVoList, HttpServletResponse response){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<WorkOrderListExcelVo> workOrderExcelVoList = new ArrayList<>(workOrderVoList.size());
         for (WorkOrderVo o : workOrderVoList) {
@@ -182,6 +429,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     workOrderExcelVo.setTypeName(workOrderType.getType());
                 }
             }
+            //thirdReason
+            workOrderExcelVo.setThirdReason(o.getThirdReason());
             //pointName
             if(Objects.nonNull(o.getPointId())){
                 PointNew pointNew = pointNewService.getById(o.getPointId());
@@ -265,6 +514,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 if(o.getThirdPaymentStatus().equals(3)){
                     workOrderExcelVo.setThirdPaymentStatus("已结算");
                 }
+            }
+
+            //createTime
+            if(Objects.nonNull(o.getCreateTime())){
+                workOrderExcelVo.setCreateTime(simpleDateFormat.format(new Date(o.getCreateTime())));
             }
 
             workOrderExcelVoList.add(workOrderExcelVo);
@@ -813,7 +1067,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrder.setServerName(server.getName());
             }
         }
-        this.baseMapper.updateById(workOrder);
+        this.baseMapper.updateOne(workOrder);
+        //this.baseMapper.updateById(workOrder);
         return R.ok();
     }
 
