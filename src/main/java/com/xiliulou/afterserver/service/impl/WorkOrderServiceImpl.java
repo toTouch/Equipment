@@ -491,6 +491,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             workOrderExcelVo.setThirdCompanyType(getThirdCompanyType(item.getThirdCompanyType()));
 
             setThirdCompanyNameAndServerName(item);
+            workOrderExcelVo.setThirdCompanyName(item.getThirdCompanyName());
+            workOrderExcelVo.setServerName(item.getServerName());
 
             WorkOrderType workOrderType = workOrderTypeService.getById(item.getType());
             if (Objects.nonNull(workOrderType)){
