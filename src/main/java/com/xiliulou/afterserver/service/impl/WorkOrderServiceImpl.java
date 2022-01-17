@@ -194,7 +194,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         List<List<String>> headList = new ArrayList<List<String>>();
 
         String[] header = {"工单类型", "点位", "sn码", "移机起点", "移机终点", "费用",
-                "结算方式", "第三方公司", "第三方费用", "第三方结算状态", "第三方责任对接人",
+                "结算方式", "第三方公司", "第三方费用", "第三方结算状态","第三方原因" ,"第三方责任对接人",
                 "工单原因", "创建人", "处理时间", "状态", "工单编号", "备注", "描述", "创建时间"};
         for(String s : header){
             List<String> headTitle = new ArrayList<String>();
@@ -315,6 +315,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }else{
                 row.add("");
             }
+            //第三方原因
+            row.add(o.getThirdReason() == null? "" : o.getThirdReason());
+
             //"第三方责任对接人"
             row.add(o.getThirdResponsiblePerson() == null? "" : o.getThirdResponsiblePerson());
             //"工单原因",
@@ -426,6 +429,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     workOrderExcelVo.setTypeName(workOrderType.getType());
                 }
             }
+            //thirdReason
+            workOrderExcelVo.setThirdReason(o.getThirdReason());
             //pointName
             if(Objects.nonNull(o.getPointId())){
                 PointNew pointNew = pointNewService.getById(o.getPointId());
