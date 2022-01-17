@@ -17,6 +17,7 @@ import java.util.List;
  * @mood
  */
 @RestController
+@RequestMapping("/admin/wechat")
 public class JsonUserPointProductController {
     @Autowired
     private PointNewService pointNewService;

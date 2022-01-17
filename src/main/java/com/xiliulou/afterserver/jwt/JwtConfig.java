@@ -16,5 +16,4 @@ public class JwtConfig {
     private long expire;
 
 
-
 }

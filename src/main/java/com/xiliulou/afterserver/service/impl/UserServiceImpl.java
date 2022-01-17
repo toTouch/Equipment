@@ -1,16 +1,20 @@
 package com.xiliulou.afterserver.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiliulou.afterserver.config.RolePermissionConfig;
 import com.xiliulou.afterserver.entity.Deliver;
 import com.xiliulou.afterserver.entity.User;
-import com.xiliulou.afterserver.jwt.JwtHelper;
+import com.xiliulou.afterserver.entity.UserRole;
 import com.xiliulou.afterserver.mapper.UserMapper;
+import com.xiliulou.afterserver.service.UserRoleService;
 import com.xiliulou.afterserver.service.UserService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
@@ -21,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -33,8 +38,13 @@ import java.util.Objects;
 @Service
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+   // @Autowired
+    //JwtHelper jwtHelper;
+
     @Autowired
-    JwtHelper jwtHelper;
+    RolePermissionConfig rolePermissionConfig;
+    @Autowired
+    UserRoleService userRoleService;
 
     @Override
     public Pair<Boolean, Object> register(User user) {
@@ -46,6 +56,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setCreateTime(System.currentTimeMillis());
         user.setPassWord(PasswordUtils.encode(user.getPassWord()));
         baseMapper.insert(user);
+
+        List<Long> userRoles = user.getRids();
+        if(!CollectionUtil.isEmpty(userRoles)){
+            userRoles.stream().forEach(item -> {
+                UserRole userRole = new UserRole();
+                userRole.setUid(user.getId());
+                userRole.setRid(item);
+                userRoleService.insert(userRole);
+            });
+        }
+
         return Pair.of(true, null);
     }
 
@@ -66,8 +87,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         userClaims.put("roleId", userDb.getRoleId());
 
 
-        JSONObject jsonToken = jwtHelper.generateToken(userClaims);
-        return Pair.of(true, jsonToken);
+        //JSONObject jsonToken = jwtHelper.generateToken(userClaims);
+        return Pair.of(true, null);
     }
 
     @Override
@@ -82,5 +103,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Page selectPage = baseMapper.selectPage(page,Wrappers.<User>lambdaQuery().like(Objects.nonNull(username),User::getUserName, username));
 
         return R.ok(selectPage);
+    }
+
+    @Override
+    public User findByUserName(String username) {
+        return baseMapper.selectOne(new QueryWrapper<User>().eq("user_name",username));
     }
 }

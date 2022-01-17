@@ -1,9 +1,12 @@
 package com.xiliulou.afterserver.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * @program: XILIULOU
@@ -22,5 +25,9 @@ public class User {
 
     public static final Integer AFTER_USER_ROLE = 1;
 
+    public static final Integer TYPE_USER_SUPER = 0;
 
+
+    @TableField(exist = false)
+    private List<Long> rids;
 }
