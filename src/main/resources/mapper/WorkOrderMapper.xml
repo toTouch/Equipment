@@ -243,7 +243,7 @@
                 and wo.third_responsible_person like concat('%', #{query.thirdResponsiblePerson}, '%')
             </if>
         </where>
-        ORDER BY wo.process_time DESC
+        ORDER BY wo.create_time DESC
         <if test="query.offset != null and query.size != null ">
             LIMIT #{query.offset},#{query.size}
         </if>
