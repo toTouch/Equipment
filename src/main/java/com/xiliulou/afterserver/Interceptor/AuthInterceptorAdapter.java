@@ -67,15 +67,15 @@ public class AuthInterceptorAdapter extends HandlerInterceptorAdapter {
         if (ObjectUtil.isEmpty(body)) {
             throw new CusTomBusinessAccessDeniedException("token异常!");
         }
-        log.info("hhh" + body.get("id").toString());
-        Long uid = Long.parseLong((String) body.get("id"));
+        log.info("hhh" + body);
+        Integer uid = (Integer)body.get("uid");
         User user = userService.getById(uid);
         // TODO: 2021/2/2 0002   ThreadLocal
 
         if (Objects.isNull(user)) {
             throw new CusTomBusinessAccessDeniedException("用户不存在!");
         }
-        request.setAttribute("uid", uid);
+        request.setAttribute("uid", Long.parseLong(uid + ""));
         return user;
     }
 

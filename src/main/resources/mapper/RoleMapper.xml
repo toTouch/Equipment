@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiliulou.afterserver.mapper.RoleMapper">
+
+  <!--添加角色-->
+ <insert id="addRole" keyProperty="id" useGeneratedKeys="true">
+     insert into t_role(name,code,create_time,update_time) values(#{name},#{code},#{createTime},#{updateTime})
+ </insert>
+    
+    <!--根据id查找一行数据-->
+    <select id="findRoleById" resultType="com.xiliulou.afterserver.entity.Role" parameterType="long">
+        select id,name,code,create_time,update_time from t_role where id =#{id}
+    </select>
+
+
+    <!--查找所有的角色-->
+    <select id="findRoleAll" resultType="com.xiliulou.afterserver.entity.Role">
+      select id,name,code,create_time,update_time from t_role order by create_time desc
+    </select>
+
+    <!--修改角色-->
+    <update id="update" parameterType="com.xiliulou.afterserver.entity.Role">
+        update t_role
+        <set>
+            <if test="name !=null and name !=''">
+                name = #{name},
+            </if>
+            <if test="code !=null and code !=''">
+                code = #{code},
+            </if>
+        </set>
+        where id =#{id}
+    </update>
+
+
+    <select id="queryByRoleIds" resultType="com.xiliulou.afterserver.entity.Role">
+        select
+        id, name, code, create_time, update_time
+        from t_role
+        where id in
+        <foreach collection="list" close=")" open="(" item="r" separator=",">
+            #{r}
+        </foreach>
+
+    </select>
+</mapper>

@@ -21,9 +21,9 @@ import java.util.Map;
 public class JwtHelper {
     private Long EXPIRATION_TIME;
     private String SECRET;
-    private final String TOKEN_PREFIX = "Bearer";
-    private final String HEADER_STRING = "Authorization";
-    
+    //private final String TOKEN_PREFIX = "Bearer";
+    private final String HEADER_STRING = "xll-sin-token";
+
 
     @Autowired
     JwtConfig jwtConfig;
@@ -33,29 +33,29 @@ public class JwtHelper {
         this.EXPIRATION_TIME = jwtConfig.getExpire();
         this.SECRET = jwtConfig.getSecret();
     }
-
-    public JSONObject generateToken(Map<String, Object> claims) {
-
-        Calendar c = Calendar.getInstance();
-        c.setTime(new Date());
-        c.add(Calendar.SECOND, EXPIRATION_TIME.intValue());
-        Date d = c.getTime();
-        String jwt = Jwts.builder()
-                .setClaims(claims)
-                .setExpiration(d)
-                .signWith(SignatureAlgorithm.HS512, SECRET)
-                .compact();
-        JSONObject json = new JSONObject();
-
-        json.put("token", TOKEN_PREFIX + " " + jwt);
-        json.put("token-type", TOKEN_PREFIX);
-        json.put("expire-time", new SimpleDateFormat("yyyy-MM-dd HH:ss:mm").format(d));
-        Long id = Long.parseLong((String) claims.get("id"));
-        json.put("uid", id);
-
-        return json;
-    }
-
+//
+//    public JSONObject generateToken(Map<String, Object> claims) {
+//
+//        Calendar c = Calendar.getInstance();
+//        c.setTime(new Date());
+//        c.add(Calendar.SECOND, EXPIRATION_TIME.intValue());
+//        Date d = c.getTime();
+//        String jwt = Jwts.builder()
+//                .setClaims(claims)
+//                .setExpiration(d)
+//                .signWith(SignatureAlgorithm.HS512, SECRET)
+//                .compact();
+//        JSONObject json = new JSONObject();
+//
+//        json.put("token", TOKEN_PREFIX + " " + jwt);
+//        json.put("token-type", TOKEN_PREFIX);
+//        json.put("expire-time", new SimpleDateFormat("yyyy-MM-dd HH:ss:mm").format(d));
+//        Long id = Long.parseLong((String) claims.get("id"));
+//        json.put("uid", id);
+//
+//        return json;
+//    }
+//
     public Map<String, Object> validateTokenAndGetClaims(HttpServletRequest request) {
         String token = request.getHeader(HEADER_STRING);
         if (token == null) {
@@ -63,7 +63,7 @@ public class JwtHelper {
         }
         Map<String, Object> body = Jwts.parser()
                 .setSigningKey(SECRET)
-                .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
+                .parseClaimsJws(token)
                 .getBody();
         return body;
     }

@@ -59,6 +59,8 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     private BatchService batchService;
     @Autowired
     private PointProductBindMapper pointProductBindMapper;
+    @Autowired
+    private ProductSerialNumberMapper productSerialNumberMapper;
     //@Autowired
     //private ProductNewMapper productNewMapper;
     //@Autowired

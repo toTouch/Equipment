@@ -122,7 +122,6 @@ public class DeliverListener extends AnalysisEventListener<DeliverInfo> {
                 deliver.setDeliverTime(System.currentTimeMillis());
             }
 
-
             if(Objects.nonNull(item.getPaymentMethod())){
                 if("月结".equals(item.getPaymentMethod()) || String.valueOf(Deliver.PAYMENT_METHOD_MONTHLY).equals(item.getPaymentMethod())){
                     deliver.setPaymentMethod(Deliver.PAYMENT_METHOD_MONTHLY);
@@ -131,6 +130,7 @@ public class DeliverListener extends AnalysisEventListener<DeliverInfo> {
                     deliver.setPaymentMethod(Deliver.PAYMENT_METHOD_NOW);
                 }
             }
+
 
             deliverList.add(deliver);
         });
