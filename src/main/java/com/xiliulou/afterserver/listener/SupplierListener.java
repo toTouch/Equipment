@@ -8,11 +8,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xiliulou.afterserver.entity.Supplier;
 import com.xiliulou.afterserver.export.SupplierInfo;
 import com.xiliulou.afterserver.service.SupplierService;
+import com.xiliulou.afterserver.util.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Hardy
@@ -36,6 +38,10 @@ public class SupplierListener extends AnalysisEventListener<SupplierInfo> {
     @Override
     public void invoke(SupplierInfo supplier, AnalysisContext analysisContext) {
         log.info("供应商表导入=====解析到一条数据:{}", JSON.toJSONString(supplier));
+        if(Objects.isNull(supplier.getArea())){
+            log.error("Insert Supplier Error! Area is null companyName={},mes={}", supplier.getCompanyName(), JSON.toJSON(supplier));
+            throw new RuntimeException("请填入城市信息");
+        }
         list.add(supplier);
         if (list.size() >= BATCH_COUNT) {
             saveData();
