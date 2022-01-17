@@ -102,6 +102,8 @@ public class AdminJsonWorkOrderController {
     public void exportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
         workOrder.setProcessTimeStart(workOrder.getCreateTimeStart());
         workOrder.setProcessTimeEnd(workOrder.getCreateTimeEnd());
+        workOrder.setCreateTimeStart(null);
+        workOrder.setCreateTimeEnd(null);
         workOrderService.exportExcel(workOrder, response);
     }
 //
@@ -124,8 +126,6 @@ public class AdminJsonWorkOrderController {
 
     @GetMapping("admin/workOrder/reconciliation/exportExcel")
     public void reconciliationExportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
-        workOrder.setProcessTimeStart(workOrder.getCreateTimeStart());
-        workOrder.setProcessTimeEnd(workOrder.getCreateTimeEnd());
         workOrderService.reconciliationExportExcel(workOrder, response);
     }
 

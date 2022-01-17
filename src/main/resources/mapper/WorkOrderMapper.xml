@@ -230,6 +230,9 @@
             <if test="query.processTimeStart != null and query.processTimeEnd != null">
                 and wo.process_time BETWEEN #{query.processTimeStart} and #{query.processTimeEnd}
             </if>
+            <if test="query.createTimeStart != null and query.createTimeEnd != null">
+                and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
+            </if>
             <if test="query.thirdCompanyName != null and query.thirdCompanyName != ''">
                 and wo.third_company_name  like concat('%',#{query.thirdCompanyName},'%')
             </if>
@@ -477,9 +480,9 @@
             <if test="query.thirdCompanyType != null">
                 and wo.third_company_type = #{query.thirdCompanyType}
             </if>
-            <!--<if test="query.createTimeStart != null and query.createTimeEnd != null">
+            <if test="query.createTimeStart != null and query.createTimeEnd != null">
                 and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
-            </if>-->
+            </if>
             <if test="query.processTimeStart != null and query.processTimeEnd != null">
                 and wo.process_time BETWEEN #{query.processTimeStart} and #{query.processTimeEnd}
             </if>
