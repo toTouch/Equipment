@@ -165,6 +165,27 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
                 }
             }
 
+            if(Objects.nonNull(item.getProductSeries())){
+                if("1".equals(item.getProductSeries()) || "取餐柜".equals(item.getProductSeries())){
+                    point.setProductSeries(1);
+                }
+                if("2".equals(item.getProductSeries()) || "餐厅柜".equals(item.getProductSeries())){
+                    point.setProductSeries(2);
+                }
+                if("3".equals(item.getProductSeries()) || "换电柜".equals(item.getProductSeries())){
+                    point.setProductSeries(3);
+                }
+                if("4".equals(item.getProductSeries()) || "充电柜".equals(item.getProductSeries())){
+                    point.setProductSeries(4);
+                }
+                if("5".equals(item.getProductSeries()) || "寄存柜".equals(item.getProductSeries())){
+                    point.setProductSeries(5);
+                }
+                if("6".equals(item.getProductSeries()) || "生鲜柜".equals(item.getProductSeries())){
+                    point.setProductSeries(6);
+                }
+            }
+
 
             if (item.getOrderTime()!= null){
                 long l = 0;

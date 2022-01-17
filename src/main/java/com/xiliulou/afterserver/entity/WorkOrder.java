@@ -32,6 +32,7 @@ public class WorkOrder implements Serializable {
      * 备注信息
      */
     private String info;
+    
     private BigDecimal fee;
     private Long thirdCompanyId;
     private Integer thirdCompanyType;
@@ -66,6 +67,11 @@ public class WorkOrder implements Serializable {
      * 第三方结算状态 无需结算 1，未结算 2，已结算 3
      */
     private Integer thirdPaymentStatus;
+
+    /**
+     * 第三方责任人
+     */
+    private String thirdResponsiblePerson;
 
     /**
      * 第三方结算状态 无需结算 1，未结算 2，已结算 3

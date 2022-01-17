@@ -54,6 +54,9 @@ public class AdminJsonWorkOrderController {
     @Autowired
     ServerService serverService;
 
+    @Autowired
+    SupplierService supplierService;
+
 
     @GetMapping("admin/workOrder/page")
     public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, WorkOrderQuery workOrder) {
@@ -154,7 +157,7 @@ public class AdminJsonWorkOrderController {
         ExcelReader excelReader = null;
         try {
             try {
-                excelReader = EasyExcel.read(file.getInputStream(), WorkOrderInfo.class, new WorkOrderLisener(pointNewService, customerService,  serverService,  workOrderService)).build();
+                excelReader = EasyExcel.read(file.getInputStream(), WorkOrderInfo.class, new WorkOrderLisener(pointNewService, customerService,  serverService,  workOrderService, supplierService)).build();
             } catch (IOException e) {
                 e.printStackTrace();
             }
