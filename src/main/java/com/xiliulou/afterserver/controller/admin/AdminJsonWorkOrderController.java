@@ -99,6 +99,8 @@ public class AdminJsonWorkOrderController {
     public void exportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
         workOrder.setProcessTimeStart(workOrder.getCreateTimeStart());
         workOrder.setProcessTimeEnd(workOrder.getCreateTimeEnd());
+        workOrder.setCreateTimeStart(null);
+        workOrder.setCreateTimeEnd(null);
         workOrderService.exportExcel(workOrder, response);
     }
 //
