@@ -332,6 +332,23 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         return statusStr;
     }
 
+    private String getThirdCompanyType(Integer thirdCompanyType){
+        String thirdCompanyTypeStr = "";
+        thirdCompanyType = thirdCompanyType == null ? -1 : thirdCompanyType;
+        switch (thirdCompanyType) {
+            case 1:
+                thirdCompanyTypeStr = "客户";
+                break;
+            case 2:
+                thirdCompanyTypeStr = "供应商";
+                break;
+            case 3:
+                thirdCompanyTypeStr = "服务商";
+                break;
+        }
+        return thirdCompanyTypeStr;
+    }
+
     @Override
     public R insertWorkOrder(WorkOrderQuery workOrder) {
         User user = userService.getUserById(workOrder.getCreaterId());
@@ -404,39 +421,43 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
             o.setThirdCompanyPay(o.getThirdCompanyPay());
 
-            if (o.getThirdCompanyType() != null && o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)){
-                Customer customer = customerService.getById(o.getThirdCompanyId());
-                if (Objects.nonNull(customer)){
-                    o.setThirdCompanyName(customer.getName());
-                }
-            }
-
-            if (o.getThirdCompanyType() != null && o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
-                Supplier supplier = supplierService.getById(o.getThirdCompanyId());
-                if(Objects.nonNull(supplier)){
-                    o.setThirdCompanyName(supplier.getName());
-                }
-            }
-
-            if (o.getThirdCompanyType() != null && o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SERVER)){
-                Server server = serverService.getById(o.getThirdCompanyId());
-                if(Objects.nonNull(server)){
-                    o.setThirdCompanyName(server.getName());
-                }
-            }
-
-            if (o.getServerId()!=null){
-                Server server = serverService.getById(o.getServerId());
-                if (Objects.nonNull(server)){
-                    o.setServerName(server.getName());
-                }
-            }
+            setThirdCompanyNameAndServerName(o);
         });
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("total",count);
         map.put("data",workOrderVoList);
         return R.ok(map);
+    }
+
+    private void setThirdCompanyNameAndServerName(WorkOrderVo o){
+        if (o.getThirdCompanyType() != null && o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)){
+            Customer customer = customerService.getById(o.getThirdCompanyId());
+            if (Objects.nonNull(customer)){
+                o.setThirdCompanyName(customer.getName());
+            }
+        }
+
+        if (o.getThirdCompanyType() != null && o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
+            Supplier supplier = supplierService.getById(o.getThirdCompanyId());
+            if(Objects.nonNull(supplier)){
+                o.setThirdCompanyName(supplier.getName());
+            }
+        }
+
+        if (o.getThirdCompanyType() != null && o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SERVER)){
+            Server server = serverService.getById(o.getThirdCompanyId());
+            if(Objects.nonNull(server)){
+                o.setThirdCompanyName(server.getName());
+            }
+        }
+
+        if (o.getServerId()!=null){
+            Server server = serverService.getById(o.getServerId());
+            if (Objects.nonNull(server)){
+                o.setServerName(server.getName());
+            }
+        }
     }
 
     @Override
@@ -448,10 +469,76 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     public List<WorkOrder> staffFuzzy(String accessToken) {
         return this.baseMapper.selectList(new QueryWrapper<WorkOrder>().like("info", accessToken));
     }
-
-
     @Override
     public void reconciliationExportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
+        if (workOrder.getCreateTimeStart() == null || workOrder.getCreateTimeEnd() == null){
+            throw new CustomBusinessException("请选择创建开始时间结束时间");
+        }
+
+        List<WorkOrderVo> workOrderVoList = baseMapper.orderList(workOrder);
+        log.info("workOrderVoList:{}", workOrderVoList);
+        if (ObjectUtil.isEmpty(workOrderVoList)) {
+            throw new CustomBusinessException("没有查询到工单!无法导出！");
+        }
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        List<WorkOrderExcelVo> customerExcelVoList = new ArrayList<>(workOrderVoList.size());
+
+        workOrderVoList.stream().forEach(item -> {
+            WorkOrderExcelVo workOrderExcelVo = new WorkOrderExcelVo();
+
+            workOrderExcelVo.setThirdCompanyType(getThirdCompanyType(item.getThirdCompanyType()));
+
+            setThirdCompanyNameAndServerName(item);
+
+            WorkOrderType workOrderType = workOrderTypeService.getById(item.getType());
+            if (Objects.nonNull(workOrderType)){
+                workOrderExcelVo.setWorkOrderType(workOrderType.getType());
+            }
+
+            PointNew point = pointNewService.getById(item.getPointId());
+            if (Objects.nonNull(point)){
+                workOrderExcelVo.setPointName(point.getName());
+            }
+
+            if (Objects.nonNull(item.getWorkOrderReasonId())){
+                WorkOrderReason workOrderReason = workOrderReasonService.getById(item.getWorkOrderReasonId());
+                if (Objects.nonNull(workOrderReason)){
+                    workOrderExcelVo.setWorkOrderReasonName(workOrderReason.getName());
+                }
+            }
+
+            workOrderExcelVo.setPaymentMethodName(getPaymentMethod(item.getPaymentMethod()));
+            workOrderExcelVo.setThirdPaymentStatus(getThirdPaymentStatus(item.getThirdPaymentStatus()));
+            workOrderExcelVo.setThirdCompanyPay(item.getThirdCompanyPay());
+            workOrderExcelVo.setRemarks(item.getInfo());
+            workOrderExcelVo.setDescribeinfo(item.getDescribeinfo());
+            workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(item.getCreateTime())));
+            if(!Objects.isNull(item.getProcessTime())){
+                workOrderExcelVo.setProcessTimeStr(simpleDateFormat.format(new Date(item.getProcessTime())));
+            }
+
+            customerExcelVoList.add(workOrderExcelVo);
+        });
+
+        String fileName = "工单结算.xls";
+        try {
+            ServletOutputStream outputStream = response.getOutputStream();
+            // 告诉浏览器用什么软件可以打开此文件
+            response.setHeader("content-Type", "application/vnd.ms-excel");
+            // 下载文件的默认名称
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
+            EasyExcel.write(outputStream, WorkOrderListExcelVo.class).sheet("sheet").doWrite(customerExcelVoList);
+            return;
+        } catch (IOException e) {
+            log.error("导出报表失败！", e);
+        }
+        throw new CustomBusinessException("导出报表失败！请联系客服！");
+    }
+
+    //@Override
+    /*public void reconciliationExportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
 
         if (workOrder.getCreateTimeStart() == null || workOrder.getCreateTimeEnd() == null){
             throw new CustomBusinessException("请选择创建开始时间结束时间");
@@ -651,9 +738,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xls");
             ServletOutputStream outputStream = response.getOutputStream();
             excelWriter = EasyExcel.write(outputStream).build();
-            /**
-             * 总的导表
-             */
+
+            //总的导表
+
             WriteSheet writeSheet1 = EasyExcel.writerSheet(0, "客户").head(WorkOrderExcelVo.class).build();
             excelWriter.write(customerExcelVoList, writeSheet1);
 
@@ -669,7 +756,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         } finally {
             excelWriter.finish();
         }
-    }
+    }*/
 
 
 
