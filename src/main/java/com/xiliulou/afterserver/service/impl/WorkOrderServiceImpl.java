@@ -483,7 +483,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        List<WorkOrderExcelVo> customerExcelVoList = new ArrayList<>(workOrderVoList.size());
+        List<WorkOrderExcelVo> excelVoList = new ArrayList<>(workOrderVoList.size());
 
         workOrderVoList.stream().forEach(item -> {
             WorkOrderExcelVo workOrderExcelVo = new WorkOrderExcelVo();
@@ -519,7 +519,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrderExcelVo.setProcessTimeStr(simpleDateFormat.format(new Date(item.getProcessTime())));
             }
 
-            customerExcelVoList.add(workOrderExcelVo);
+            excelVoList.add(workOrderExcelVo);
         });
 
         String fileName = "工单结算.xls";
@@ -529,7 +529,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             response.setHeader("content-Type", "application/vnd.ms-excel");
             // 下载文件的默认名称
             response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
-            EasyExcel.write(outputStream, WorkOrderListExcelVo.class).sheet("sheet").doWrite(customerExcelVoList);
+            EasyExcel.write(outputStream, WorkOrderExcelVo.class).sheet("sheet").doWrite(excelVoList);
             return;
         } catch (IOException e) {
             log.error("导出报表失败！", e);
