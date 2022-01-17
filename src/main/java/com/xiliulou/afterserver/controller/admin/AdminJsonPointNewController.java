@@ -257,7 +257,7 @@ public class AdminJsonPointNewController {
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
 
-        String[] header = {"柜机名称", "机柜状态", "安装类型", "详细地址",  "安装时间", "施工完成时间", "城市名称", "客户名称","入账","验收","订单来源","下单时间","运营商","物流信息","雨棚数量","物联网卡供应商","SN码", "物联网卡号"};
+        String[] header = {"柜机名称", "机柜状态", "安装类型", "详细地址",  "安装时间", "施工完成时间", "城市名称", "客户名称","入账","验收","产品系列","下单时间","运营商","物流信息","雨棚数量","物联网卡供应商","SN码", "物联网卡号"};
         List<Product> productAll = productService.list();
         Integer max = 0;
 
@@ -398,17 +398,17 @@ public class AdminJsonPointNewController {
 
             //产品系列
             String productSeriesName = "";
-            if("1".equals(item.getProductSeries())){
+            if("1".equals(String.valueOf(item.getProductSeries()))){
                 productSeriesName = "取餐柜";
-            }else if("2".equals(item.getProductSeries())){
+            }else if("2".equals(String.valueOf(item.getProductSeries()))){
                 productSeriesName = "餐厅柜";
-            }else if("3".equals(item.getProductSeries())){
+            }else if("3".equals(String.valueOf(item.getProductSeries()))){
                 productSeriesName = "换电柜";
-            }else if("4".equals(item.getProductSeries())){
+            }else if("4".equals(String.valueOf(item.getProductSeries()))){
                 productSeriesName = "充电柜";
-            }else if("5".equals(item.getProductSeries())){
+            }else if("5".equals(String.valueOf(item.getProductSeries()))){
                 productSeriesName = "寄存柜";
-            }else if("6".equals(item.getProductSeries())){
+            }else if("6".equals(String.valueOf(item.getProductSeries()))){
                 productSeriesName = "生鲜柜";
             }
 
