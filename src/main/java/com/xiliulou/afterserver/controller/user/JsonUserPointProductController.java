@@ -45,21 +45,22 @@ public class JsonUserPointProductController {
 
     @PostMapping("/user/file")
     public R adminPrductFile(@RequestBody File file){
-        /*QueryWrapper<File> wrapper = new QueryWrapper<>();
+
+        QueryWrapper<File> wrapper = new QueryWrapper<>();
         wrapper.eq("type", File.TYPE_POINTNEW);
+        wrapper.eq("file_type", file.getFileType());
         wrapper.eq("bind_id", file.getBindId());
-        Integer count = fileService.getBaseMapper().selectCount(wrapper);
-        if(count >= 20){
-            return R.fail("上传图片已达上限，请删除部分图片后继续上传！");
+
+        if(file.getFileType() % 100 == 0){
+            Integer count = fileService.getBaseMapper().selectCount(wrapper);
+            if(count >= 2){
+                return R.fail("该类其他图片已达上限，请删除图片后继续上传！");
+            }
         }
 
         if(!(file.getFileType() % 100 == 0)){
-            QueryWrapper<File> wrapper1 = new QueryWrapper<>();
-            wrapper1.eq("type", File.TYPE_POINTNEW);
-            wrapper1.eq("file_type", file.getFileType());
-            wrapper1.eq("bind_id", file.getBindId());
-            fileService.getBaseMapper().delete(wrapper1);
-        }*/
+            fileService.getBaseMapper().delete(wrapper);
+        }
 
 
         file.setCreateTime(System.currentTimeMillis());
