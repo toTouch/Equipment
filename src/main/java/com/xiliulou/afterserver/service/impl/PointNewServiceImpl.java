@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
@@ -16,6 +17,7 @@ import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.vo.PointNewInfoVo;
+import com.xiliulou.afterserver.web.query.PointAuditStatusQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -102,8 +104,8 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
      */
     @Override
     public List<PointNew> queryAllByLimit(int offset, int limit, String name,Integer cid,
-                                          Integer status, Long customerId,Long startTime,Long endTime,Long createUid,String snNo,Integer productSeries) {
-        return this.pointNewMapper.queryAllByLimit(offset, limit, name,cid,status,customerId,startTime,endTime,createUid,snNo, productSeries);
+                                          Integer status, Long customerId,Long startTime,Long endTime,Long createUid,String snNo,Integer productSeries, Integer auditStatus) {
+        return this.pointNewMapper.queryAllByLimit(offset, limit, name,cid,status,customerId,startTime,endTime,createUid,snNo, productSeries, auditStatus);
     }
 
     /**
@@ -146,6 +148,10 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
     @Override
     public R saveAdminPointNew(PointNew pointNew) {
+        R r = checkPropertes(pointNew);
+        if(Objects.nonNull(r)){
+            return r;
+        }
         if(Objects.nonNull(pointNew.getProductInfoList())) {
             String productInfo = JSON.toJSONString(pointNew.getProductInfoList());
             pointNew.setProductInfo(productInfo);
@@ -245,6 +251,10 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
     @Override
     public R putAdminPoint(PointNew pointNew) {
+        R r = checkPropertes(pointNew);
+        if(Objects.nonNull(r)){
+            return r;
+        }
         if(Objects.nonNull(pointNew.getProductInfoList())) {
             String productInfo = JSON.toJSONString(pointNew.getProductInfoList());
             pointNew.setProductInfo(productInfo);
@@ -334,13 +344,13 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
     @Override
     public Integer countPoint(String name, Integer cid, Integer status, Long customerId,
-                              Long startTime, Long endTime, Long createUid,String snNo, Integer productSeries) {
-        return this.pointNewMapper.countPoint(name,cid,status,customerId,startTime,endTime,createUid,snNo,productSeries);
+                              Long startTime, Long endTime, Long createUid,String snNo, Integer productSeries, Integer auditStatus) {
+        return this.pointNewMapper.countPoint(name,cid,status,customerId,startTime,endTime,createUid,snNo,productSeries,auditStatus);
     }
 
     @Override
-    public List<PointNew> queryAllByLimitExcel(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime, Long createUid,String snNo,Integer productSeries) {
-        return this.pointNewMapper.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid,snNo,productSeries);
+    public List<PointNew> queryAllByLimitExcel(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime, Long createUid,String snNo,Integer productSeries, Integer auditStatus) {
+        return this.pointNewMapper.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid,snNo,productSeries,auditStatus);
     }
 
     public R putAdminPointNewCreateUser(Long id, Long createUid){
@@ -360,6 +370,31 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         }
 
         return R.fail("修改失败");
+    }
+
+    public R checkPropertes(PointNew pointNew){
+        if(Objects.isNull(pointNew.getAuditStatus())){
+            return R.fail("请填写审核状态");
+        }
+        if(Objects.isNull(pointNew.getProductSeries())){
+            return R.fail("请填写产品系列");
+        }
+        if(Objects.isNull(pointNew.getCityId())){
+            return R.fail("请填写城市信息");
+        }
+        if(Objects.isNull(pointNew.getCustomerId())){
+            return R.fail("请填写客户信息");
+        }
+        if(StringUtils.isBlank(pointNew.getName())){
+            return R.fail("请填写点位名称");
+        }
+        if(Objects.isNull(pointNew.getStatus())){
+            return R.fail("请填写点位状态");
+        }
+        if(Objects.isNull(pointNew.getInstallType())){
+            return R.fail("请填写安装类型");
+        }
+        return null;
     }
 
     /*@Override
@@ -469,6 +504,19 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
                 pointProductBindMapper.insert(bind);
             });
         }
+        return R.ok();
+    }
+
+    @Override
+    public R updateAuditStatus(PointAuditStatusQuery pointAuditStatusQuery) {
+        if(Objects.isNull(pointAuditStatusQuery.getId()) || Objects.isNull(pointAuditStatusQuery.getAuditStatus())){
+            return R.fail("参数不合法");
+        }
+        PointNew pointNew = new PointNew();
+        pointNew.setId(pointAuditStatusQuery.getId());
+        pointNew.setAuditStatus(pointAuditStatusQuery.getAuditStatus());
+        pointNew.setAuditStatus(pointAuditStatusQuery.getAuditRemarks());
+        this.update(pointNew);
         return R.ok();
     }
 }
