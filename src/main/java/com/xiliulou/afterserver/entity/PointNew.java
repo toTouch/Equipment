@@ -98,6 +98,8 @@ public class PointNew {
     private String logisticsInfo;//物流信息
     private String productInfo;//柜子信息
     private String cameraInfo;//摄像头信息
+    private Integer auditStatus;//审核状态
+    private String auditRemarks;//审核备注
 
 
     public static final Integer DEL_NORMAL = 0;

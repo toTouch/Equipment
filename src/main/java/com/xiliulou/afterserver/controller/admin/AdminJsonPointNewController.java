@@ -26,6 +26,7 @@ import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.vo.PointExcelVo;
 import com.xiliulou.afterserver.web.query.CameraInfoQuery;
+import com.xiliulou.afterserver.web.query.PointAuditStatusQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
 import com.xiliulou.afterserver.web.query.ProductInfoQuery;
 import lombok.extern.slf4j.Slf4j;
@@ -71,6 +72,10 @@ public class AdminJsonPointNewController {
     private ProductNewMapper productNewMapper;
     @Autowired
     private SupplierService supplierService;
+    @Autowired
+    private  PointProductBindService  pointProductBindService;
+    @Autowired
+    private FileService fileService;
 
 
     @PostMapping("/admin/pointNew")
@@ -104,8 +109,9 @@ public class AdminJsonPointNewController {
                        @RequestParam(value = "endTime",required = false) Long endTime,
                        @RequestParam(value = "createUid",required = false) Long createUid,
                        @RequestParam(value = "snNo",required = false) String snNo,
-                       @RequestParam(value ="productSeries", required = false) Integer productSeries){
-        List<PointNew> pointNews = pointNewService.queryAllByLimit(offset, limit, name,cid,status,customerId,startTime,endTime,createUid,snNo, productSeries);
+                       @RequestParam(value ="productSeries", required = false) Integer productSeries,
+                       @RequestParam(value ="auditStatus", required = false) Integer auditStatus){
+        List<PointNew> pointNews = pointNewService.queryAllByLimit(offset, limit, name,cid,status,customerId,startTime,endTime,createUid,snNo, productSeries, auditStatus);
 
         if (Objects.nonNull(pointNews)){
             pointNews.forEach(item -> {
@@ -142,7 +148,7 @@ public class AdminJsonPointNewController {
         }
 
 
-        Integer count =  pointNewService.countPoint(name,cid,status,customerId,startTime,endTime,createUid,snNo,productSeries);
+        Integer count =  pointNewService.countPoint(name,cid,status,customerId,startTime,endTime,createUid,snNo,productSeries,auditStatus);
 
 
         HashMap<String, Object> map = new HashMap<>();
@@ -239,8 +245,9 @@ public class AdminJsonPointNewController {
                               @RequestParam(value = "createUid",required = false) Long createUid,
                               @RequestParam(value = "snNo",required = false)  String snNo,
                               @RequestParam(value ="productSeries", required = false) Integer productSeries,
-                              HttpServletResponse response){
-        List<PointNew> pointNews = pointNewService.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid,snNo,productSeries);
+                              @RequestParam(value ="auditStatus", required = false) Integer auditStatus,
+                                 HttpServletResponse response){
+        List<PointNew> pointNews = pointNewService.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid,snNo,productSeries, auditStatus);
 
 
         if (Objects.isNull(startTime) || Objects.isNull(endTime)){
@@ -257,7 +264,7 @@ public class AdminJsonPointNewController {
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
 
-        String[] header = {"柜机名称", "机柜状态", "安装类型", "详细地址",  "安装时间", "施工完成时间", "城市名称", "客户名称","入账","验收","产品系列","下单时间","运营商","物流信息","雨棚数量","物联网卡供应商","SN码", "物联网卡号"};
+        String[] header = {"审核状态", "产品系列", "城市名称", "客户名称", "柜机名称", "点位状态", "创建人", "创建时间", "安装类型", "雨棚数量", "是否录入资产编码", "详细地址",  "安装时间", "施工完成时间",  "入账","验收","下单时间","运营商","物流信息","物联网卡供应商","SN码", "物联网卡号"};
         List<Product> productAll = productService.list();
         Integer max = 0;
 
@@ -309,11 +316,60 @@ public class AdminJsonPointNewController {
         pointNews.forEach(item -> {
             //PointExcelVo pointExcelVo = new PointExcelVo();
             List<Object> list = new ArrayList<>();
+            //审核状态
+            if(Objects.equals(item.getAuditStatus(), 1)){
+                list.add("待审核");
+            }else if(Objects.equals(item.getAuditStatus(), 2)){
+                list.add("未通过");
+            }else if(Objects.equals(item.getAuditStatus(), 3)){
+                list.add("已通过");
+            }
+
+            //产品系列
+            String productSeriesName = "";
+            if("1".equals(String.valueOf(item.getProductSeries()))){
+                productSeriesName = "取餐柜";
+            }else if("2".equals(String.valueOf(item.getProductSeries()))){
+                productSeriesName = "餐厅柜";
+            }else if("3".equals(String.valueOf(item.getProductSeries()))){
+                productSeriesName = "换电柜";
+            }else if("4".equals(String.valueOf(item.getProductSeries()))){
+                productSeriesName = "充电柜";
+            }else if("5".equals(String.valueOf(item.getProductSeries()))){
+                productSeriesName = "寄存柜";
+            }else if("6".equals(String.valueOf(item.getProductSeries()))){
+                productSeriesName = "生鲜柜";
+            }
+            list.add(productSeriesName);
+
+            //城市名称
+            if (Objects.nonNull(item.getCityId())){
+                City byId = cityService.getById(item.getCityId());
+                if (Objects.nonNull(byId)){
+                    list.add(byId.getName());
+                }else{
+                    list.add("");
+                }
+            }else{
+                list.add("");
+            }
+
+            //客户名称
+            if (Objects.nonNull(item.getCustomerId())){
+                Customer byId = customerService.getById(item.getCustomerId());
+                if (Objects.nonNull(byId)){
+                    list.add(byId.getName());
+                }else{
+                    list.add("");
+                }
+            }else{
+                list.add("");
+            }
 
             //柜机名称
             list.add(item.getName() == null ? "" : item.getName());
 
-            //机柜状态
+            //点位状态
             // 状态 1,移机,2运营中,3:拆机,4:初始化，5：待安装
             if (Objects.isNull(item.getStatus())){
                 list.add("");
@@ -339,6 +395,25 @@ public class AdminJsonPointNewController {
                 list.add("已取消");
             }
 
+            //创建人
+            if(Objects.isNull(item.getCreateUid())){
+                User user = userService.getUserById(item.getCreateUid());
+                if(Objects.isNull(user)){
+                    list.add(user.getUserName());
+                }else{
+                    list.add("");
+                }
+            }else{
+                list.add("");
+            }
+
+            //创建时间
+            if (item.getCreateTime() != null) {
+                list.add(DateUtils.stampToDate(item.getCreateTime().toString()));
+            }else{
+                list.add("");
+            }
+
             // 安装类型 1:室外 2:半室外3：室内
             if (Objects.isNull(item.getInstallType())){
                 list.add("");
@@ -348,6 +423,17 @@ public class AdminJsonPointNewController {
                 list.add("半室外");
             }else if (Objects.equals(item.getInstallType(),3)){
                 list.add("室内");
+            }
+
+            //雨棚数量
+            list.add(item.getCanopyCount() == null ? "" : item.getCanopyCount());
+
+            //是否录入资产编码
+            List<PointProductBind> pointProductBinds = pointProductBindService.queryByPointNewId(item.getId());
+            if(CollectionUtil.isEmpty(pointProductBinds)){
+                list.add("否");
+            }else{
+                list.add("是");
             }
 
             //详细地址
@@ -367,52 +453,12 @@ public class AdminJsonPointNewController {
                 list.add("");
             }
 
-            //城市名称
-            if (Objects.nonNull(item.getCityId())){
-                City byId = cityService.getById(item.getCityId());
-                if (Objects.nonNull(byId)){
-                    list.add(byId.getName());
-                }else{
-                    list.add("");
-                }
-            }else{
-                list.add("");
-            }
-            //客户名称
-            if (Objects.nonNull(item.getCustomerId())){
-                Customer byId = customerService.getById(item.getCustomerId());
-                if (Objects.nonNull(byId)){
-                    list.add(byId.getName());
-                }else{
-                    list.add("");
-                }
-            }else{
-                list.add("");
-            }
 
             //入账
             list.add(item.getIsEntry() == null ? "" : (item.getIsEntry() == 0 ? "否" : "是"));
             //验收
             list.add(item.getIsAcceptance() == null ? "" : (item.getIsAcceptance() == 0 ? "否" : "是"));
 
-
-            //产品系列
-            String productSeriesName = "";
-            if("1".equals(String.valueOf(item.getProductSeries()))){
-                productSeriesName = "取餐柜";
-            }else if("2".equals(String.valueOf(item.getProductSeries()))){
-                productSeriesName = "餐厅柜";
-            }else if("3".equals(String.valueOf(item.getProductSeries()))){
-                productSeriesName = "换电柜";
-            }else if("4".equals(String.valueOf(item.getProductSeries()))){
-                productSeriesName = "充电柜";
-            }else if("5".equals(String.valueOf(item.getProductSeries()))){
-                productSeriesName = "寄存柜";
-            }else if("6".equals(String.valueOf(item.getProductSeries()))){
-                productSeriesName = "生鲜柜";
-            }
-
-            list.add(productSeriesName);
 
             //下单时间
             if (item.getOrderTime() != null) {
@@ -426,9 +472,6 @@ public class AdminJsonPointNewController {
 
             //物流信息
             list.add(item.getLogisticsInfo() == null ? "" : item.getOperator());
-
-            //雨棚数量
-            list.add(item.getCanopyCount() == null ? "" : item.getCanopyCount());
 
             //物联网卡供应商
             list.add(item.getCardSupplier() == null ? "" : item.getCardSupplier());
@@ -534,5 +577,10 @@ public class AdminJsonPointNewController {
     public R pointBindSerialNumber(@RequestBody PointQuery pointQuery) {
 
         return pointNewService.pointBindSerialNumber(pointQuery);
+    }
+
+    @PostMapping("admin/pointNew/update/auditStatus")
+    public R updateAuditStatus(@RequestBody PointAuditStatusQuery pointAuditStatusQuery) {
+        return pointNewService.updateAuditStatus(pointAuditStatusQuery);
     }
 }
