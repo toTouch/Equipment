@@ -1230,6 +1230,26 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     public List<AfterOrderVo> installWorkOrderList(Long pointId, Integer cityId,Long startTime,Long endTime) {
         return this.baseMapper.installWorkOrderList(pointId,cityId,startTime,endTime);
     }
+
+    @Override
+    public R putAdminPointNewCreateUser(Long id, Long createUid) {
+        if(Objects.isNull(id) || Objects.isNull(createUid)){
+            return R.fail("参数非法，请检查");
+        }
+
+        User user = userService.getUserById(createUid);
+        if(Objects.isNull(user)){
+            return R.fail("没有查询到该用户");
+        }
+
+        Integer len = baseMapper.putAdminPointNewCreateUser(id, createUid);
+
+        if(len != null && len > 0){
+            return R.ok();
+        }
+
+        return R.fail("修改失败");
+    }
     //    /**
 //     * 预览
 //     *

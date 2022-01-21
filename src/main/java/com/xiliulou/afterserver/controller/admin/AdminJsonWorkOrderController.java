@@ -185,4 +185,9 @@ public class AdminJsonWorkOrderController {
         excelReader.finish();
         return R.ok();
     }
+
+    @PutMapping("admin/workOrder/update/createUser")
+    public R putAdminPointNewCreateUser(@RequestParam("id") Long id, @RequestParam("createUid") Long createUid){
+        return workOrderService.putAdminPointNewCreateUser(id, createUid);
+    }
 }
