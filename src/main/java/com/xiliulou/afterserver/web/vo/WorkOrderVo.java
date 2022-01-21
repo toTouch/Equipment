@@ -67,5 +67,8 @@ public class WorkOrderVo {
     private String destinationType;
 
     //private String thirdPaymentStatusName;
+    //第三方责任对接人
     private String thirdResponsiblePerson;
+    //时效
+    private String prescription;
 }

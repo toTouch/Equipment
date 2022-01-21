@@ -162,6 +162,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         }
         pointNew.setDelFlag(PointNew.DEL_NORMAL);
         pointNew.setCreateTime(System.currentTimeMillis());
+        pointNew.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
         this.insert(pointNew);
         return R.ok();
     }
@@ -264,6 +265,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             pointNew.setCameraInfo(cameraInfo);
         }
         int update = this.pointNewMapper.update(pointNew);
+        pointNew.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
         if (update>0){
             return R.ok();
         }

@@ -7,9 +7,9 @@ import com.xiliulou.afterserver.util.R;
 
 public interface PointAuditRemarksService extends IService<PointAuditRemarks> {
 
-    R saveOne(String remarks);
+    R saveOne(String remarks, Integer type);
 
-    R getList();
+    R getList(Integer type);
 
     R deleteOne(Long id);
 

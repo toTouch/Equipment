@@ -119,4 +119,15 @@ public class PointNew {
     private List<ProductInfoQuery> productInfoList;
     @TableField(exist = false)
     private List<CameraInfoQuery> cameraInfoList;
+    @TableField(exist = false)
+    private Integer fileCount;
+    @TableField(exist = false)
+    private Integer isbindProduct;
+
+    public static final Integer UNBIND_PRODUCT = 0;
+    public static final Integer BIND_PRODUCT = 1;
+
+    public static final Integer AUDIT_STATUS_WAIT = 1;
+    public static final Integer AUDIT_STATUS_FAIL = 2;
+    public static final Integer AUDIT_STATUS_PASSED = 3;
 }

@@ -50,46 +50,65 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
         PointNew pointNew = pointService.getById(pointInfo.getId());
         if(Objects.isNull(pointNew)){
             log.error("PointNew Update Upload Error! Not Find Point! id={},数据={}", pointInfo.getId(), JSON.toJSONString(pointInfo));
-            throw new RuntimeException("Not Find Point");
+            throw new RuntimeException("点位id【" + pointInfo.getId() +"】未查询到点位，请确保id正确");
         }
+
+        if(Objects.isNull(pointInfo.getName())){
+            log.error("PointNew Update Upload Error! Name is entry! id={},数据={}", pointInfo.getId(), JSON.toJSONString(pointInfo));
+            throw new RuntimeException("点位id【"+ pointInfo.getName() + "】请添加正确产品系列");
+        }
+
+        if(getProductSeries(pointInfo.getProductSeries()) == null){
+            log.error("PointNew Update Upload Error! Not Find supplier! id={},数据={}", pointInfo.getId(), JSON.toJSONString(pointInfo));
+            throw new RuntimeException("点位【"+ pointInfo.getName() + "】请添加正确产品系列");
+        }
+
+        if(Objects.nonNull(pointInfo.getCity())){
+            City city = getCity(pointInfo.getCity());
+            if(Objects.isNull(city)){
+                log.error("PointNew Update Upload Error! Not Find city! id={},数据={}", pointInfo.getId(), JSON.toJSONString(pointInfo));
+                throw new RuntimeException("点位【"+pointInfo.getName() + "】未查询到城市信息");
+            }
+        }else{
+            log.error("PointNew Update Upload Error! city is entry! id={},数据={}", pointInfo.getId(), JSON.toJSONString(pointInfo));
+            throw new RuntimeException("点位【"+pointInfo.getName() + "】请添加城市信息");
+        }
+
 
         if(Objects.nonNull(pointInfo.getCustomer())){
             Customer customer = getCustomer(pointInfo.getCustomer());
             if(Objects.isNull(customer)){
                 log.error("PointNew Update Upload Error! Not Find customer! id={},数据={}", pointInfo.getId(), JSON.toJSONString(pointInfo));
-                throw new RuntimeException("Not Find customer");
+                throw new RuntimeException("点位【"+pointInfo.getName() + "】未查询到客户信息");
             }
+        }else{
+            log.error("PointNew Update Upload Error! customer is entry! id={},数据={}", pointInfo.getId(), JSON.toJSONString(pointInfo));
+            throw new RuntimeException("点位【"+pointInfo.getName() + "】请添加客户信息");
         }
 
         Integer status = getStatus(pointInfo.getStatus());
         if(status.equals(-1)){
             log.error("PointNew Update Upload Error! Not Find status! id={},数据={}", pointInfo.getId(), JSON.toJSONString(pointInfo));
-            throw new RuntimeException("Not Find status");
-        }
-
-        City city = getCity(pointInfo.getCity());
-        if(Objects.isNull(city)){
-            log.error("PointNew Update Upload Error! Not Find city! id={},数据={}", pointInfo.getId(), JSON.toJSONString(pointInfo));
-            throw new RuntimeException("Not Find city");
+            throw new RuntimeException("点位【"+pointInfo.getName() + "】请添加正确点位状态");
         }
 
         if(Objects.nonNull(pointInfo.getInstallType())){
             Integer installType = getInstallType(pointInfo.getInstallType());
             if(installType.equals(-1)){
                 log.error("PointNew Update Upload Error! Not Find installType! id={},数据={}", pointInfo.getId(), JSON.toJSONString(pointInfo));
-                throw new RuntimeException("Not Find installType");
+                throw new RuntimeException("点位【"+pointInfo.getName() + "】请添加正确安装类型");
             }
         }
 
-        if(Objects.isNull(pointInfo.getInstallTime())){
+        /*if(Objects.isNull(pointInfo.getInstallTime())){
             log.error("PointNew Update Upload Error!  CreateTime is required value! id={},数据={}", pointInfo.getId(), JSON.toJSONString(pointInfo));
             throw new RuntimeException("CreateTime is required value");
-        }
+        }*/
 
         Integer flagDel = getFlagDel(pointInfo.getDelFlag());
         if(flagDel.equals(-1)){
             log.error("PointNew Update Upload Error! Not Find flagDel! id={},数据={}", pointInfo.getId(), JSON.toJSONString(pointInfo));
-            throw new RuntimeException("Not Find flagDel");
+            throw new RuntimeException("点位【"+pointInfo.getName() + "】请添加正确删除信息");
         }
 
 
@@ -97,7 +116,7 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
             User user = getUser(pointInfo.getCreateUid());
             if(Objects.isNull(user)){
                 log.error("PointNew Update Upload Error! Not Find user! id={},数据={}", pointInfo.getId(), JSON.toJSONString(pointInfo));
-                throw new RuntimeException("Not Find user");
+                throw new RuntimeException("点位【"+pointInfo.getName() + "】未查询到创建人");
             }
         }
 
@@ -105,7 +124,7 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
             Integer isEntry = getIsEntry(pointInfo.getIsEntry());
             if(isEntry.equals(-1)){
                 log.error("PointNew Update Upload Error! Not Find isEntry! id={},数据={}", pointInfo.getId(), JSON.toJSONString(pointInfo));
-                throw new RuntimeException("Not Find isEntry");
+                throw new RuntimeException("点位【"+pointInfo.getName() + "】请添加正确入账信息");
             }
         }
 
@@ -113,7 +132,7 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
             Integer isAcceptance = getIsAcceptance(pointInfo.getIsAcceptance());
             if(isAcceptance.equals(-1)){
                 log.error("PointNew Update Upload Error! Not Find isAcceptance! id={},数据={}", pointInfo.getId(), JSON.toJSONString(pointInfo));
-                throw new RuntimeException("Not Find isAcceptance");
+                throw new RuntimeException("点位【"+pointInfo.getName() + "】请添加正确验收信息");
             }
         }
 
@@ -121,10 +140,9 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
             Supplier supplier = supplierService.getOne(new QueryWrapper<Supplier>().eq("name", pointInfo.getCardSupplier()));
             if(Objects.isNull(supplier)){
                 log.error("PointNew Update Upload Error! Not Find supplier! id={},数据={}", pointInfo.getId(), JSON.toJSONString(pointInfo));
-                throw new RuntimeException("Not Find supplier");
+                throw new RuntimeException("点位【"+pointInfo.getName() + "】物联网卡供应商不存在");
             }
         }
-
 
         list.add(pointInfo);
         if (list.size() >= BATCH_COUNT) {
@@ -219,7 +237,7 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
 
             point.setOperator(item.getOperator());
             point.setLogisticsInfo(item.getLogisticsInfo());
-
+            point.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
             pointList.add(point);
         });
 
@@ -236,6 +254,7 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
         long ts = date.getTime();
         return ts;
     }
+
 
     public Integer getProductSeries(String productSeries){
         if("1".equals(productSeries) || "取餐柜".equals(productSeries)){

@@ -14,13 +14,13 @@ public class JsonAdminPointAuditRemarksController {
     PointAuditRemarksService pointAuditRemarksService;
 
     @PostMapping("admin/point/auditRemarks")
-    public R saveOne(@RequestParam("remarks") String remarks){
-        return pointAuditRemarksService.saveOne(remarks);
+    public R saveOne(@RequestParam("remarks") String remarks, @RequestParam("type")Integer type){
+        return pointAuditRemarksService.saveOne(remarks, type);
     }
 
     @GetMapping("admin/point/auditRemarks")
-    public R getList(){
-        return pointAuditRemarksService.getList();
+    public R getList(@RequestParam("type")Integer type){
+        return pointAuditRemarksService.getList(type);
     }
 
     @Delete("admin/point/auditRemarks/{id}")
