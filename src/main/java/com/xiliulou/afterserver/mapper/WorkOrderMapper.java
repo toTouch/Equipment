@@ -9,6 +9,7 @@ import com.xiliulou.afterserver.web.vo.AfterCountVo;
 import com.xiliulou.afterserver.web.vo.AfterOrderVo;
 import com.xiliulou.afterserver.web.vo.WorkOrderVo;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -46,4 +47,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
     Integer countOrderList(@Param("query") WorkOrderQuery workOrder);
 
     Integer updateOne(WorkOrder workOrder);
+
+    @Update("update work_order set create_id = #{createUid} where id = #{id}")
+    Integer putAdminPointNewCreateUser(Long id, Long createUid);
 }

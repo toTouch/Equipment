@@ -68,4 +68,6 @@ public interface WorkOrderService extends IService<WorkOrder> {
     List<AfterOrderVo> installWorkOrderByPoint(Long pointId, Integer cityId, Long startTime,Long endTime);
 
     List<AfterOrderVo> installWorkOrderList(Long pointId, Integer cityId, Long startTime,Long endTime);
+
+    R putAdminPointNewCreateUser(Long id, Long createUid);
 }
