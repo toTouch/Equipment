@@ -29,14 +29,14 @@ public class PointAuditRemarksServiceImpl extends ServiceImpl<PointAuditRemarksM
     PointAuditRemarksMapper pointAuditRemarksMapper;
 
     @Override
-    public R saveOne(String remarks) {
+    public R saveOne(String remarks, Integer type) {
         Long uid = SecurityUtils.getUid();
         User user = userService.getUserById(uid);
         if(Objects.isNull(user)){
             return R.fail("查询不到用户");
         }
 
-        List<PointAuditRemarks> list = this.queryByUid(uid);
+        List<PointAuditRemarks> list = this.queryByUid(uid, type);
         if(!CollectionUtil.isEmpty(list) && list.size() >= 10){
             return R.fail("最多只编辑10条快捷输入");
         }
@@ -45,8 +45,13 @@ public class PointAuditRemarksServiceImpl extends ServiceImpl<PointAuditRemarksM
             return R.fail("请输入有效快捷输入语句");
         }
 
+        if(Objects.isNull(type)){
+            return R.fail("参数有误");
+        }
+
         PointAuditRemarks insert = new PointAuditRemarks();
         insert.setRemarks(remarks);
+        insert.setType(type);
         insert.setUid(uid);
         insert.setCreateTime(System.currentTimeMillis());
         insert.setUpdateTime(System.currentTimeMillis());
@@ -56,8 +61,8 @@ public class PointAuditRemarksServiceImpl extends ServiceImpl<PointAuditRemarksM
     }
 
     @Override
-    public R getList() {
-        return R.ok(queryByUid(SecurityUtils.getUid()));
+    public R getList(Integer type) {
+        return R.ok(queryByUid(SecurityUtils.getUid(), type));
     }
 
     @Override
@@ -84,9 +89,10 @@ public class PointAuditRemarksServiceImpl extends ServiceImpl<PointAuditRemarksM
         return R.ok();
     }
 
-    public List<PointAuditRemarks> queryByUid(Long uid){
+    public List<PointAuditRemarks> queryByUid(Long uid, Integer type){
         QueryWrapper<PointAuditRemarks> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("uid", uid);
+        queryWrapper.eq("type", type);
         queryWrapper.eq("del_flag", PointAuditRemarks.DEL_NORMAL);
         queryWrapper.orderByDesc("create_time");
 

@@ -6,6 +6,7 @@ import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.export.CustomerInfo;
 import com.xiliulou.afterserver.export.PointInfo;
@@ -51,11 +52,56 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
     @Override
     public void invoke(PointInfo pointInfo, AnalysisContext analysisContext) {
         log.info("点位导入=====解析到一条数据:{}", JSON.toJSONString(pointInfo));
+
         if(Objects.nonNull(pointInfo.getCardSupplier())){
             Supplier supplier = supplierService.getOne(new QueryWrapper<Supplier>().eq("name", pointInfo.getCardSupplier()));
             if(Objects.isNull(supplier)){
                 log.error("insert PointInfo error! Not Find supplier pointName={}",pointInfo.getName());
-                throw new RuntimeException("Not Find supplier");
+                throw new RuntimeException("未查询到物联网卡供应商");
+            }
+        }
+
+        if(Objects.isNull(pointInfo.getProductSeries())){
+            log.error("insert PointInfo error! product series is entry pointName={}",pointInfo.getName());
+            throw new RuntimeException("点位" + pointInfo.getName() + "请填写产品系列");
+        }
+
+        if(StringUtils.isBlank(pointInfo.getName())){
+            log.error("insert PointInfo error! Name is entry pointName={}",pointInfo.getName());
+            throw new RuntimeException("点位" + pointInfo.getName() + "请填写点位名称");
+        }
+
+        if(Objects.isNull(pointInfo.getStatus())){
+            log.error("insert PointInfo error! Status is entry pointName={}",pointInfo.getName());
+            throw new RuntimeException("点位" + pointInfo.getName() + "请填写点位状态");
+        }
+
+        if(Objects.isNull(pointInfo.getInstallType())){
+            log.error("insert PointInfo error! InstallType is entry pointName={}",pointInfo.getName());
+            throw new RuntimeException("点位" + pointInfo.getName() + "请填写安装类型");
+        }
+
+        if(StringUtils.isBlank(pointInfo.getCity())){
+            log.error("insert PointInfo error! City is entry pointName={}",pointInfo.getName());
+            throw new RuntimeException("点位" + pointInfo.getName() + "请填写城市信息");
+        }else{
+            LambdaQueryWrapper<City> like = new LambdaQueryWrapper<City>().like(City::getName, pointInfo.getCity());
+            City city = cityService.getOne(like);
+            if (Objects.isNull(city)){
+                log.error("insert PointInfo error! not fund City pointName={}",pointInfo.getName());
+                throw new RuntimeException("点位" + pointInfo.getName() + "没有查询到城市信息");
+            }
+        }
+
+        if(Objects.isNull(pointInfo.getCustomerId())){
+            log.error("insert PointInfo error! Customer is entry pointName={}",pointInfo.getName());
+            throw new RuntimeException("点位" + pointInfo.getName() + "请填写客户信息");
+        }else{
+            LambdaQueryWrapper<Customer> like = new LambdaQueryWrapper<Customer>().like(Customer::getName, pointInfo.getCustomerId());
+            Customer customer = customerService.getOne(like);
+            if (Objects.isNull(customer)) {
+                log.error("insert PointInfo error! not fund Customer pointName={}",pointInfo.getName());
+                throw new RuntimeException("点位" + pointInfo.getName() + "没有查询到客户信息");
             }
         }
         list.add(pointInfo);
@@ -84,7 +130,7 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
             BeanUtils.copyProperties(item, point);
             point.setCameraCount(item.getCameraCount());
             point.setCanopyCount(item.getCanopyCount());
-
+            point.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
             if (Objects.nonNull(item.getName())){
                 LambdaQueryWrapper<PointNew> wrapper = new LambdaQueryWrapper<PointNew>().eq(PointNew::getDelFlag, 0).eq(PointNew::getName, item.getName());
                 PointNew pointNew = pointService.getBaseMapper().selectOne(wrapper);
@@ -222,6 +268,5 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
         long ts = date.getTime();
         return ts;
     }
-
 
 }

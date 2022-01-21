@@ -359,6 +359,7 @@
                 order_time = #{pointNew.orderTime},
                 operator = #{pointNew.operator},
                 logistics_info = #{pointNew.logisticsInfo}
+                audit_status = #{auditStatus}
             </set>
             where id = #{pointNew.id};
         </foreach>

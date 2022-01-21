@@ -14,6 +14,7 @@ import com.alibaba.excel.read.metadata.ReadSheet;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.export.PointInfo;
 import com.xiliulou.afterserver.export.PointUpdateInfo;
@@ -85,6 +86,7 @@ public class AdminJsonPointNewController {
             return R.fail("用户为空");
         }
         pointNew.setCreateUid(uid);
+        pointNew.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
         return pointNewService.saveAdminPointNew(pointNew);
     }
 
@@ -143,6 +145,25 @@ public class AdminJsonPointNewController {
                 if(Objects.nonNull(item.getCameraInfo())) {
                     List<CameraInfoQuery> cameraInfo = JSON.parseArray(item.getCameraInfo(), CameraInfoQuery.class);
                     item.setCameraInfoList(cameraInfo);
+                }
+
+                //是否录入资产编码
+                List<PointProductBind> pointProductBinds = pointProductBindService.queryByPointNewId(item.getId());
+                if(CollectionUtil.isEmpty(pointProductBinds)){
+                    item.setIsbindProduct(PointNew.UNBIND_PRODUCT);
+                }else{
+                    item.setIsbindProduct(PointNew.BIND_PRODUCT);
+                }
+
+                //文件个数
+                BaseMapper<File> fileMapper = fileService.getBaseMapper();
+                LambdaQueryWrapper<File> fileLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                LambdaQueryWrapper<File> eq = fileLambdaQueryWrapper.eq(File::getBindId, item.getId());
+                List<File> files = fileMapper.selectList(eq);
+                if(CollectionUtil.isEmpty(files)){
+                    item.setFileCount(0);
+                } else {
+                    item.setFileCount(files.size());
                 }
             });
         }
@@ -264,7 +285,7 @@ public class AdminJsonPointNewController {
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
 
-        String[] header = {"审核状态", "产品系列", "城市名称", "客户名称", "柜机名称", "点位状态", "创建人", "创建时间", "安装类型", "雨棚数量", "是否录入资产编码", "详细地址",  "安装时间", "施工完成时间",  "入账","验收","下单时间","运营商","物流信息","物联网卡供应商","SN码", "物联网卡号"};
+        String[] header = {"审核状态", "产品系列", "城市名称", "客户名称", "柜机名称", "点位状态", "创建人", "创建时间", "安装类型", "雨棚数量", "是否录入资产编码", "照片数量", "SN码", "物联网卡号", "物联网卡供应商","详细地址", "安装时间", "施工完成时间",  "入账","验收","下单时间","运营商","物流信息" };
         List<Product> productAll = productService.list();
         Integer max = 0;
 
@@ -436,6 +457,25 @@ public class AdminJsonPointNewController {
                 list.add("是");
             }
 
+            //文件个数
+            BaseMapper<File> fileMapper = fileService.getBaseMapper();
+            LambdaQueryWrapper<File> fileLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            LambdaQueryWrapper<File> eq = fileLambdaQueryWrapper.eq(File::getBindId, item.getId());
+            List<File> files = fileMapper.selectList(eq);
+            if(CollectionUtil.isEmpty(files)){
+                list.add("0");
+            } else {
+                list.add(files.size());
+            }
+
+            //SN码
+            list.add(item.getSnNo() == null ? "" : item.getSnNo());
+
+            //物联网卡号
+            list.add(item.getCardNumber() == null ? "" : item.getCardNumber());
+            //物联网卡供应商
+            list.add(item.getCardSupplier() == null ? "" : item.getCardSupplier());
+
             //详细地址
             list.add(item.getAddress() == null ? "" : item.getAddress());
 
@@ -453,12 +493,10 @@ public class AdminJsonPointNewController {
                 list.add("");
             }
 
-
             //入账
             list.add(item.getIsEntry() == null ? "" : (item.getIsEntry() == 0 ? "否" : "是"));
             //验收
             list.add(item.getIsAcceptance() == null ? "" : (item.getIsAcceptance() == 0 ? "否" : "是"));
-
 
             //下单时间
             if (item.getOrderTime() != null) {
@@ -472,13 +510,6 @@ public class AdminJsonPointNewController {
 
             //物流信息
             list.add(item.getLogisticsInfo() == null ? "" : item.getOperator());
-
-            //物联网卡供应商
-            list.add(item.getCardSupplier() == null ? "" : item.getCardSupplier());
-            //SN码
-            list.add(item.getSnNo() == null ? "" : item.getSnNo());
-            //物联网卡号
-            list.add(item.getCardNumber() == null ? "" : item.getCardNumber());
 
             //产品个数
             if(productAll != null && !productAll.isEmpty()) {

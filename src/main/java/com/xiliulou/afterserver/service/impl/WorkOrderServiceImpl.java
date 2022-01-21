@@ -130,6 +130,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
             }
 
+            //item.setPrescription(item.getProcessTime())
+
             LambdaQueryWrapper<File> eq = new LambdaQueryWrapper<File>()
                     .eq(File::getType, File.TYPE_WORK_ORDER)
                     .eq(Objects.nonNull(workOrder.getWorkOrderType()),File::getFileType, workOrder.getWorkOrderType())
