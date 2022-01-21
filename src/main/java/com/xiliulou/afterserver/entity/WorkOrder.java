@@ -72,6 +72,8 @@ public class WorkOrder implements Serializable {
      * 第三方责任人
      */
     private String thirdResponsiblePerson;
+    private Integer auditStatus;
+    private String auditRemarks;
 
     /**
      * 第三方结算状态 无需结算 1，未结算 2，已结算 3

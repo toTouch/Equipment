@@ -96,6 +96,7 @@
         wo.third_payment_status as wo_third_payment_status,
         wo.destination_type as wo_destination_type,
         wo.third_responsible_person as wo_third_responsible_person,
+        wo.audit_status as wo_audit_status
         (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
