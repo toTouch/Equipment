@@ -49,5 +49,5 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
     Integer updateOne(WorkOrder workOrder);
 
     @Update("update work_order set create_id = #{createUid} where id = #{id}")
-    Integer putAdminPointNewCreateUser(Long id, Long createUid);
+    Integer putAdminPointNewCreateUser(@Param("id") Long id, @Param("createUid") Long createUid);
 }
