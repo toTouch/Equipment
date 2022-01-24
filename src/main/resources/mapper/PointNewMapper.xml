@@ -229,6 +229,8 @@
     <update id="update">
         update t_point_new
         <set>
+            camera_count = #{cameraCount},
+            canopy_count = #{canopyCount},
             <if test="name != null">
                 name = #{name},
             </if>
@@ -247,12 +249,7 @@
             <if test="address != null and address != ''">
                 address = #{address},
             </if>
-            <if test="cameraCount != null">
-                camera_count = #{cameraCount},
-            </if>
-            <if test="canopyCount != null">
-                canopy_count = #{canopyCount},
-            </if>
+
             <if test="snNo != null and snNo != ''">
                 sn_no = #{snNo},
             </if>
