@@ -344,6 +344,8 @@ public class AdminJsonPointNewController {
                 list.add("未通过");
             }else if(Objects.equals(item.getAuditStatus(), 3)){
                 list.add("已通过");
+            }else{
+                list.add("");
             }
 
             //产品系列
