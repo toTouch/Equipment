@@ -419,7 +419,7 @@ public class AdminJsonPointNewController {
             //创建人
             if(Objects.isNull(item.getCreateUid())){
                 User user = userService.getUserById(item.getCreateUid());
-                if(Objects.isNull(user)){
+                if(Objects.nonNull(user)){
                     list.add(user.getUserName());
                 }else{
                     list.add("");
