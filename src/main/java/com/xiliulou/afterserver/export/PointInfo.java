@@ -103,4 +103,9 @@ public class PointInfo {
      */
     @ExcelProperty(index = 17)
     private String logisticsInfo;
+    /**
+     * '备注'
+     */
+    @ExcelProperty(index = 18)
+    private String remarks;
 }

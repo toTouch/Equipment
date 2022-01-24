@@ -251,6 +251,7 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
             }
 
             point.setDelFlag(PointNew.DEL_NORMAL);
+            point.setRemarks(item.getRemarks());
 
             pointList.add(point);
         });
