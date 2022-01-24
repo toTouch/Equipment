@@ -391,7 +391,7 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
             }
 
             if(StringUtils.isBlank(workOrderInfo.getTransferSourcePoint())){
-                throw new RuntimeException("请填写起点11");
+                throw new RuntimeException("请填写起点");
             }else{
                 if(Objects.equals(sourceType, 1)){
                     QueryWrapper<PointNew> wrapper = new QueryWrapper<>();

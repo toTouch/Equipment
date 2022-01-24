@@ -29,7 +29,7 @@ public class WorkOrderInfo {
      * 起点
      */
     @ExcelProperty(index = 3)
-    private String TransferSourcePoint;
+    private String transferSourcePoint;
     /**
      * 终点类型
      */
