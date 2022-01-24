@@ -41,68 +41,75 @@ public class WorkOrderInfo {
     @ExcelProperty(index = 5)
     private String transferDestinationPoint;
     /**
-     * 費用
+     * 狀態
      */
     @ExcelProperty(index = 6)
-    private Double fee;
+    private String status;
     /**
-     * 结算方式
+     * 描述
      */
     @ExcelProperty(index = 7)
-    private String paymentMethod;
+    private String describeinfo;
+    /**
+     * 備註
+     */
+    @ExcelProperty(index = 8)
+    private String info;
+    /**
+     * 工單原因
+     */
+    @ExcelProperty(index = 9)
+    private Integer workOrderReasonId;
+    /**
+     * 第三方原因
+     */
+    @ExcelProperty(index = 10)
+    private String thirdReason;
     /**
      * 公司类别
      */
-    @ExcelProperty(index = 8)
+    @ExcelProperty(index = 11)
     private String thirdCompanyType ;
     /**
      * 第三方公司
      */
-    @ExcelProperty(index = 9)
+    @ExcelProperty(index = 12)
     private String thirdCompanyName;
     /**
      * 第三方承擔費用
      */
-    @ExcelProperty(index = 10)
+    @ExcelProperty(index = 13)
     private Double thirdCompanyPay;
     /**
-     * 第三方结算状态
-     */
-    @ExcelProperty(index = 11)
-    private String thirdPaymentStatus;
-    /**
-     * 第三方责任对接人
-     */
-    @ExcelProperty(index = 12)
-    private String thirdResponsiblePerson;
-    /**
-     * 工單原因
-     */
-    @ExcelProperty(index = 13)
-    private Integer workOrderReasonId;
-    /**
-     * 服務商
+     * 費用
      */
     @ExcelProperty(index = 14)
-    private String serverName;
+    private Double fee;
     /**
      * 處理時間
      */
     @ExcelProperty(index = 15)
     private String processTime;
     /**
-     * 狀態
+     * 服務商
      */
     @ExcelProperty(index = 16)
-    private String status;
+    private String serverName;
     /**
-     * 備註
+     * 结算方式
      */
     @ExcelProperty(index = 17)
-    private String info;
+    private String paymentMethod;
     /**
-     * 描述
+     * 第三方责任对接人
      */
     @ExcelProperty(index = 18)
-    private String describeinfo;
+    private String thirdResponsiblePerson;
+
+    /**
+     * 第三方结算状态
+     */
+    @ExcelProperty(index = 19)
+    private String thirdPaymentStatus;
+
 }
