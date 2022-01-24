@@ -335,7 +335,7 @@
                 <if test="pointNew.delFlag != null">
                     del_flag = #{pointNew.delFlag},
                 </if>
-                <if test="auditStatus != null">
+                <if test="pointNew.auditStatus != null">
                     audit_status = #{auditStatus},
                 </if>
                 audit_remarks = #{auditRemarks},
