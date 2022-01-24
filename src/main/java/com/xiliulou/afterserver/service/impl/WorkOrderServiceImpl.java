@@ -204,7 +204,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         String[] header = {"审核状态","工单类型", "点位", "移机起点", "移机终点",  "创建人",
                 "状态", "时效", "描述",  "备注",  "工单原因", "第三方原因" , "第三方公司",
                 "第三方费用", "费用", "图片数量","处理时间","创建时间","服务商", "结算方式",
-                "第三方责任对接人", "工单编号", "第三方结算状态", "sn码"};
+                "第三方责任对接人", "工单编号", "第三方结算状态", "sn码","审核备注"};
 
         for(String s : header){
             List<String> headTitle = new ArrayList<String>();
@@ -405,6 +405,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 row.add("");
             }
 
+            //审核备注
+            row.add(o.getAuditRemarks() == null? "" : o.getAuditRemarks());
+
             List<String> codes = JSON.parseArray(o.getCode(), String.class);
             if(!CollectionUtils.isEmpty(codes)){
                 codeMaxSize = codeMaxSize > codes.size() ? codeMaxSize : codes.size();
@@ -446,6 +449,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             BeanUtil.copyProperties(o, workOrderExcelVo);
             //审核
             workOrderExcelVo.setAuditStatus(getAuditStatus(o.getAuditStatus()));
+            workOrderExcelVo.setAuditRemarks(o.getAuditRemarks());
             //typeName
             if(Objects.nonNull(o.getType())){
                 WorkOrderType workOrderType = workOrderTypeService.getById(o.getType());
