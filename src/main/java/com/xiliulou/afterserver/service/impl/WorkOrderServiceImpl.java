@@ -133,7 +133,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
 
             if(Objects.isNull(item.getProcessTime())){
-                item.setPrescription(item.getProcessTime() - item.getCreateTime());
+                String prescription = DateUtils.getDatePoor(item.getProcessTime() , item.getCreateTime());
+                item.setPrescription(prescription);
             }
 
             LambdaQueryWrapper<File> eq = new LambdaQueryWrapper<File>()

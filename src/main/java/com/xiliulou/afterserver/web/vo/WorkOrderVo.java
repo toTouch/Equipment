@@ -72,7 +72,7 @@ public class WorkOrderVo {
     //第三方责任对接人
     private String thirdResponsiblePerson;
     //时效
-    private Long prescription;
+    private String prescription;
     private Integer auditStatus;
     private String auditRemarks;
     private Integer fileCount;
