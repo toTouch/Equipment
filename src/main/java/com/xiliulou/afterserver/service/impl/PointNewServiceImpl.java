@@ -514,11 +514,16 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         if(Objects.isNull(pointAuditStatusQuery.getId()) || Objects.isNull(pointAuditStatusQuery.getAuditStatus())){
             return R.fail("参数不合法");
         }
-        PointNew pointNew = new PointNew();
-        pointNew.setId(pointAuditStatusQuery.getId());
-        pointNew.setAuditStatus(pointAuditStatusQuery.getAuditStatus());
-        pointNew.setAuditStatus(pointAuditStatusQuery.getAuditRemarks());
-        this.update(pointNew);
+
+        PointNew pointNew = this.getById(pointAuditStatusQuery.getId());
+        if(Objects.isNull(pointNew)){
+            return R.fail("未查询到相关点位");
+        }
+        PointNew pointNewUpdate = new PointNew();
+        pointNewUpdate.setId(pointAuditStatusQuery.getId());
+        pointNewUpdate.setAuditStatus(pointAuditStatusQuery.getAuditStatus());
+        pointNewUpdate.setAuditStatus(pointAuditStatusQuery.getAuditRemarks());
+        this.update(pointNewUpdate);
         return R.ok();
     }
 }

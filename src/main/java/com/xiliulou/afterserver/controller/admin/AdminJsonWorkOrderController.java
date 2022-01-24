@@ -15,9 +15,7 @@ import com.xiliulou.afterserver.listener.PointListener;
 import com.xiliulou.afterserver.listener.WorkOrderLisener;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
-import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
-import com.xiliulou.afterserver.web.query.WorkOrderQuery;
-import com.xiliulou.afterserver.web.query.WorkerOrderUpdateStatusQuery;
+import com.xiliulou.afterserver.web.query.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -74,6 +72,7 @@ public class AdminJsonWorkOrderController {
         workOrder.setProcessor(uid.toString());
         workOrder.setCreaterId(uid);
         workOrder.setCreateTime(System.currentTimeMillis());
+        workOrder.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
         return workOrderService.saveWorkerOrder(workOrder);
     }
 
@@ -85,6 +84,11 @@ public class AdminJsonWorkOrderController {
 //        }
 //        query.setUid(uid);
         return workOrderService.updateWorkOrderStatus(query);
+    }
+
+    @PutMapping("admin/update/workorder/processTime/{id}")
+    public R updateWorkorderProcessTime(@PathVariable("id") Long id){
+        return workOrderService.updateWorkorderProcessTime(id);
     }
 
     @PutMapping("admin/workOrder")
@@ -184,5 +188,10 @@ public class AdminJsonWorkOrderController {
         excelReader.read(readSheet);
         excelReader.finish();
         return R.ok();
+    }
+
+    @PostMapping("admin/workOrder/update/auditStatus")
+    public R updateAuditStatus(@RequestBody WorkOrderAuditStatusQuery workOrderAuditStatusQuery) {
+        return workOrderService.updateAuditStatus(workOrderAuditStatusQuery);
     }
 }
