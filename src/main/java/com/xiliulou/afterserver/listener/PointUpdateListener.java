@@ -202,6 +202,8 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
                 point.setInstallTime(l);
             }
 
+            point.setLogisticsInfo(item.getLogisticsInfo());
+
             if (item.getCreateTime() != null){
                 long l = 0;
                 try {
