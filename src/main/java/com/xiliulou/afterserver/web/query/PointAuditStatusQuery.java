@@ -6,5 +6,5 @@ import lombok.Data;
 public class PointAuditStatusQuery {
     private Long id;
     private Integer auditStatus;
-    private Integer auditRemarks;
+    private String auditRemarks;
 }
