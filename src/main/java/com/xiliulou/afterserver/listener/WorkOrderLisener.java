@@ -50,13 +50,19 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
                             CustomerService customerService,
                             ServerService serverService,
                              WorkOrderService workOrderService,
-                            SupplierService supplierService){
+                            SupplierService supplierService,
+                            WorkOrderTypeService workOrderTypeService,
+                            UserService userService,
+                            WarehouseService warehouseService){
 
         this.pointNewService = pointNewService;
         this.customerService = customerService;
         this.serverService = serverService;
         this.workOrderService = workOrderService;
         this.supplierService = supplierService;
+        this.workOrderTypeService = workOrderTypeService;
+        this.userService = userService;
+        this.warehouseService = warehouseService;
     }
 
 
