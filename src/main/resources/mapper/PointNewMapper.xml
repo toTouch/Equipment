@@ -338,7 +338,7 @@
                 <if test="pointNew.auditStatus != null">
                     audit_status = #{pointNew.auditStatus},
                 </if>
-                audit_remarks = #{auditRemarks},
+                audit_remarks = #{pointNew.auditRemarks},
                 customer_id = #{pointNew.customerId},
                 install_type = #{pointNew.installType},
                 address = #{pointNew.address},
@@ -356,7 +356,6 @@
                 order_time = #{pointNew.orderTime},
                 operator = #{pointNew.operator},
                 logistics_info = #{pointNew.logisticsInfo}
-                audit_status = #{auditStatus}
             </set>
             where id = #{pointNew.id};
         </foreach>
