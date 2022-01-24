@@ -202,6 +202,16 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
                 point.setInstallTime(l);
             }
 
+            if (item.getCreateTime() != null){
+                long l = 0;
+                try {
+                    l = dateToStamp(item.getCreateTime());
+                } catch (ParseException e) {
+
+                }
+                point.setCreateTime(l);
+            }
+
             point.setDelFlag(getFlagDel(item.getDelFlag()));
 
 

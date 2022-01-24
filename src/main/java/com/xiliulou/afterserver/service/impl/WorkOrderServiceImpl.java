@@ -142,6 +142,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     .eq(File::getBindId, item.getId());
             List<File> fileList = fileService.getBaseMapper().selectList(eq);
             item.setFileList(fileList);
+            item.setFileCount(CollectionUtil.isEmpty(fileList) ? 0 : fileList.size());
         });
         page.setRecords(list);
         return page;

@@ -285,7 +285,7 @@ public class AdminJsonPointNewController {
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
 
-        String[] header = {"审核状态", "产品系列", "城市名称", "客户名称", "柜机名称", "点位状态", "创建人", "创建时间", "安装类型", "雨棚数量", "是否录入资产编码", "照片数量", "SN码", "物联网卡号", "物联网卡供应商","详细地址", "安装时间", "施工完成时间",  "入账","验收","下单时间","运营商","物流信息" };
+        String[] header = {"审核状态", "产品系列", "城市名称", "客户名称", "柜机名称", "点位状态", "创建人", "创建时间", "安装类型", "雨棚数量", "是否录入资产编码", "照片数量", "SN码", "物联网卡号", "物联网卡供应商","详细地址", "安装时间", "施工完成时间",  "入账","验收","下单时间","运营商","物流信息","审核备注" };
         List<Product> productAll = productService.list();
         Integer max = 0;
 
@@ -512,6 +512,9 @@ public class AdminJsonPointNewController {
 
             //物流信息
             list.add(item.getLogisticsInfo() == null ? "" : item.getOperator());
+
+            //审核备注
+            list.add(item.getAuditRemarks() == null ? "" : item.getAuditRemarks());
 
             //产品个数
             if(productAll != null && !productAll.isEmpty()) {
