@@ -122,10 +122,10 @@ public class PointNew {
     @TableField(exist = false)
     private Integer fileCount;
     @TableField(exist = false)
-    private Integer isbindProduct;
+    private String isbindProduct;
 
-    public static final Integer UNBIND_PRODUCT = 0;
-    public static final Integer BIND_PRODUCT = 1;
+    public static final String UNBIND_PRODUCT = "否";
+    public static final String BIND_PRODUCT = "是";
 
     public static final Integer AUDIT_STATUS_WAIT = 1;
     public static final Integer AUDIT_STATUS_FAIL = 2;
