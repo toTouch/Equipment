@@ -54,6 +54,12 @@ public class AdminJsonWorkOrderController {
 
     @Autowired
     SupplierService supplierService;
+    @Autowired
+    WorkOrderTypeService workOrderTypeService;
+    @Autowired
+    UserService userService;
+    @Autowired
+    WarehouseService warehouseService;
 
 
     @GetMapping("admin/workOrder/page")
@@ -156,7 +162,7 @@ public class AdminJsonWorkOrderController {
     public R update(MultipartFile file){
         ExcelReader excelReader = null;
         try {
-            excelReader = EasyExcel.read(file.getInputStream(), WorkOrderInfo.class, new WorkOrderLisener(pointNewService, customerService,  serverService,  workOrderService, supplierService)).build();
+            excelReader = EasyExcel.read(file.getInputStream(), WorkOrderInfo.class, new WorkOrderLisener(pointNewService, customerService,  serverService,  workOrderService, supplierService,workOrderTypeService,userService,warehouseService)).build();
         } catch (Exception e) {
             log.error("workOrder upload error!", e);
             if (e.getCause() instanceof ExcelDataConvertException) {
