@@ -57,7 +57,7 @@
         <id property="paymentMethod" column="wo_payment_method"/>
         <id property="thirdPaymentStatus" column="wo_third_payment_status"/>
         <id property="destinationType" column="wo_destination_type"></id>
-        <id property="sourceType" column="source_type"></id>
+        <id property="sourceType" column="wo_source_type"></id>
         <id property="thirdResponsiblePerson" column="wo_third_responsible_person"></id>
         <id property="auditStatus" column="wo_audit_status"/>
         <id property="auditRemarks" column="wo_audit_remarks"/>
