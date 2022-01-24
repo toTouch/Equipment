@@ -1278,7 +1278,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         WorkOrder workOrderUpdate = new WorkOrder();
         workOrderUpdate.setId(workOrderAuditStatusQuery.getId());
         workOrderUpdate.setAuditStatus(workOrderAuditStatusQuery.getAuditStatus());
-        workOrderUpdate.setAuditStatus(workOrderAuditStatusQuery.getAuditRemarks());
+        workOrderUpdate.setAuditRemarks(workOrderAuditStatusQuery.getAuditRemarks());
         this.updateById(workOrderUpdate);
         return R.ok();
     }

@@ -522,7 +522,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         PointNew pointNewUpdate = new PointNew();
         pointNewUpdate.setId(pointAuditStatusQuery.getId());
         pointNewUpdate.setAuditStatus(pointAuditStatusQuery.getAuditStatus());
-        pointNewUpdate.setAuditStatus(pointAuditStatusQuery.getAuditRemarks());
+        pointNewUpdate.setAuditRemarks(pointAuditStatusQuery.getAuditRemarks());
         this.update(pointNewUpdate);
         return R.ok();
     }
