@@ -57,6 +57,7 @@
         <id property="paymentMethod" column="wo_payment_method"/>
         <id property="thirdPaymentStatus" column="wo_third_payment_status"/>
         <id property="destinationType" column="wo_destination_type"></id>
+        <id property="sourceType" column="source_type"></id>
         <id property="thirdResponsiblePerson" column="wo_third_responsible_person"></id>
         <id property="auditStatus" column="wo_audit_status"/>
         <id property="auditRemarks" column="wo_audit_remarks"/>
@@ -100,6 +101,7 @@
         wo.third_responsible_person as wo_third_responsible_person,
         wo.audit_status as wo_audit_status,
         wo.audit_remarks as wo_audit_remarks,
+        wo.source_type as wo_source_type,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
