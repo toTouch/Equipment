@@ -357,7 +357,7 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
             throw new RuntimeException("请填写点位");
         }else{
             PointNew pointNew = pointNewService.getOne(new QueryWrapper<PointNew>().eq("name",workOrderInfo.getPointName()).eq("del_flag", PointNew.DEL_NORMAL));
-            if(Objects.nonNull(pointNew)){
+            if(Objects.isNull(pointNew)){
                 throw new RuntimeException("未查询到相关点位");
             }
 
