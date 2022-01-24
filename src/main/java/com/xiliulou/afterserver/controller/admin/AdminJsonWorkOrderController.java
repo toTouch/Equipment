@@ -156,13 +156,9 @@ public class AdminJsonWorkOrderController {
     public R update(MultipartFile file){
         ExcelReader excelReader = null;
         try {
-            try {
-                excelReader = EasyExcel.read(file.getInputStream(), WorkOrderInfo.class, new WorkOrderLisener(pointNewService, customerService,  serverService,  workOrderService, supplierService)).build();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (ExcelAnalysisException e) {
-            e.printStackTrace();
+            excelReader = EasyExcel.read(file.getInputStream(), WorkOrderInfo.class, new WorkOrderLisener(pointNewService, customerService,  serverService,  workOrderService, supplierService)).build();
+        } catch (Exception e) {
+            log.error("workOrder upload error!", e);
             if (e.getCause() instanceof ExcelDataConvertException) {
                 ExcelDataConvertException excelDataConvertException = (ExcelDataConvertException) e.getCause();
                 String cellMsg = "";
