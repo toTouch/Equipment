@@ -390,8 +390,8 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
                 throw new RuntimeException("请填写起点类型");
             }
 
-            if(Objects.isNull(workOrderInfo.getTransferSourcePoint())){
-                throw new RuntimeException("请填写起点");
+            if(StringUtils.isBlank(workOrderInfo.getTransferSourcePoint())){
+                throw new RuntimeException("请填写起点11");
             }else{
                 if(Objects.equals(sourceType, 1)){
                     QueryWrapper<PointNew> wrapper = new QueryWrapper<>();
@@ -417,7 +417,7 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
             if(Objects.isNull(destinationType)){
                 throw new RuntimeException("请填写终点类型");
             }
-            if(Objects.isNull(workOrderInfo.getTransferDestinationPoint())){
+            if(StringUtils.isBlank(workOrderInfo.getTransferDestinationPoint())){
                 throw new RuntimeException("请填写终点");
             }else{
                 if(Objects.equals(destinationType, 1)){
