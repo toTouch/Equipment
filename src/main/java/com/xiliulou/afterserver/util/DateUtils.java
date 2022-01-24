@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * @author Hardy
@@ -21,11 +22,15 @@ public class DateUtils {
      */
     public static String getDatePoor(Long endTime, Long startTime) {
 
+        if(Objects.isNull(endTime) || Objects.isNull(startTime) || endTime - startTime < 0){
+            return "0天0小时0分钟";
+        }
+
+        long diff = endTime - startTime;
+
         long nd = 1000 * 24 * 60 * 60;
         long nh = 1000 * 60 * 60;
         long nm = 1000 * 60;
-
-        long diff = endTime - startTime;
 
         long day = diff / nd;
 
@@ -33,13 +38,13 @@ public class DateUtils {
 
         long min = diff % nd % nh / nm;
 
-        if (day == 0 && hour == 0){
+        /*if (day == 0 && hour == 0){
             return min + "分钟";
         }
 
         if (day == 0){
             return hour + "小时" + min + "分钟";
-        }
+        }*/
 
         return day + "天" + hour + "小时" + min + "分钟";
     }

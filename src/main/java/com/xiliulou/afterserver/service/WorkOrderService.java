@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.WorkOrder;
 import com.xiliulou.afterserver.util.R;
-import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
-import com.xiliulou.afterserver.web.query.SaveWorkOrderQuery;
-import com.xiliulou.afterserver.web.query.WorkOrderQuery;
-import com.xiliulou.afterserver.web.query.WorkerOrderUpdateStatusQuery;
+import com.xiliulou.afterserver.web.query.*;
 import com.xiliulou.afterserver.web.vo.AfterCountListVo;
 import com.xiliulou.afterserver.web.vo.AfterCountVo;
 import com.xiliulou.afterserver.web.vo.AfterOrderVo;
@@ -68,4 +65,8 @@ public interface WorkOrderService extends IService<WorkOrder> {
     List<AfterOrderVo> installWorkOrderByPoint(Long pointId, Integer cityId, Long startTime,Long endTime);
 
     List<AfterOrderVo> installWorkOrderList(Long pointId, Integer cityId, Long startTime,Long endTime);
+
+    R updateWorkorderProcessTime(Long id);
+
+    R updateAuditStatus(WorkOrderAuditStatusQuery workOrderAuditStatusQuery);
 }

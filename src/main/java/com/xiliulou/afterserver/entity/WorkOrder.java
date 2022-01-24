@@ -56,9 +56,15 @@ public class WorkOrder implements Serializable {
     private Integer warehourseId;
     private String reason;
     /**
-     * 1点位 2仓库
+     * 终点  1点位 2仓库
      */
     private Integer destinationType;
+
+    /**
+     * 起点 1点位 2仓库
+     */
+    private Integer sourceType;
+
     /**
      * 结算方式 1--月结 2--现结
      */
@@ -129,6 +135,13 @@ public class WorkOrder implements Serializable {
     //7.派送安装
     public static final Integer TYPE_SEND_INSERT = 7;
 
+    public static final Integer AUDIT_STATUS_WAIT = 1;
+    public static final Integer AUDIT_STATUS_FAIL = 2;
+    public static final Integer AUDIT_STATUS_PASSED = 3;
+
+
+    public static final Integer DEL_NORMAL = 0;
+    public static final Integer DEL_DEL = 1;
 
     @TableField(exist = false)
     private String userName;
