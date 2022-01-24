@@ -235,6 +235,8 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
 
             }
 
+            workOrder.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
+
             workOrderList.add(workOrder);
         });
         workOrderService.saveBatch(workOrderList);
