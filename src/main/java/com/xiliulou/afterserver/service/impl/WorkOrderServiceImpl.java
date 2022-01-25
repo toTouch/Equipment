@@ -1182,6 +1182,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         workOrder.setCreaterId(oldWorkOrder.getCreaterId());
+        workOrder.setCreateTime(oldWorkOrder.getCreateTime());
 
         R r = checkProperties(workOrder);
         if(Objects.nonNull(r)){
