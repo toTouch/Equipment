@@ -132,7 +132,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
             }
 
-            if(Objects.isNull(item.getProcessTime())){
+            if(Objects.nonNull(item.getProcessTime())){
                 String prescription = DateUtils.getDatePoor(item.getProcessTime() , item.getCreateTime());
                 item.setPrescription(prescription);
             }
