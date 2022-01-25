@@ -69,4 +69,6 @@ public interface WorkOrderService extends IService<WorkOrder> {
     R updateWorkorderProcessTime(Long id);
 
     R updateAuditStatus(WorkOrderAuditStatusQuery workOrderAuditStatusQuery);
+
+    R putAdminPointNewCreateUser(Long id, Long createrId);
 }
