@@ -192,4 +192,9 @@ public class AdminJsonWorkOrderController {
     public R updateAuditStatus(@RequestBody WorkOrderAuditStatusQuery workOrderAuditStatusQuery) {
         return workOrderService.updateAuditStatus(workOrderAuditStatusQuery);
     }
+
+    @PutMapping("admin/workOrder/update/createUser")
+    public R putAdminPointNewCreateUser(@RequestParam("id") Long id, @RequestParam("createrId") Long createrId){
+        return workOrderService.putAdminPointNewCreateUser(id, createrId);
+    }
 }
