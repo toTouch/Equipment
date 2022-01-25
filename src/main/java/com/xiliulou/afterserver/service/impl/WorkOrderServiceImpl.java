@@ -1176,6 +1176,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     @Transactional(rollbackFor = Exception.class)
     public R updateWorkOrder(WorkOrderQuery workOrder) {
+        WorkOrder oldWorkOrder = this.getById(workOrder.getId());
+        if(Objects.isNull(oldWorkOrder)){
+            return R.fail("未查询到工单");
+        }
+
+        workOrder.setCreaterId(oldWorkOrder.getCreaterId());
+
         R r = checkProperties(workOrder);
         if(Objects.nonNull(r)){
             return r;
