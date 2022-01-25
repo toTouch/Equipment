@@ -512,32 +512,24 @@
         update work_order
         <set>
             fee = #{fee},
+            info = #{info},
+            work_order_reason_id = #{workOrderReasonId},
+            server_id = #{serverId},
+            server_name = #{serverName},
+            payment_method = #{paymentMethod},
+            third_company_id = #{thirdCompanyId},
+            third_company_type = #{thirdCompanyType},
+            third_company_pay = #{thirdCompanyPay},
+            third_reason = #{thirdReason},
+            third_company_name = #{thirdCompanyName},
+            third_payment_status = #{thirdPaymentStatus},
+            third_responsible_person = #{thirdResponsiblePerson},
+            describeinfo = #{describeinfo},
             <if test="type != null and type != ''">
                 type = #{type},
             </if>
             <if test="pointId != null">
                 point_id = #{pointId},
-            </if>
-            <if test="info != null and info != ''">
-                info = #{info},
-            </if>
-            <if test="thirdCompanyId != null">
-                third_company_id = #{thirdCompanyId},
-            </if>
-            <if test="thirdCompanyType != null">
-                third_company_type = #{thirdCompanyType},
-            </if>
-            <if test="thirdCompanyPay != null">
-                third_company_pay = #{thirdCompanyPay},
-            </if>
-            <if test="thirdReason != null and thirdReason != ''">
-                third_reason = #{thirdReason},
-            </if>
-            <if test="workOrderReasonId != null">
-                work_order_reason_id = #{workOrderReasonId},
-            </if>
-            <if test="serverId != null">
-                server_id = #{serverId},
             </if>
             <if test="processor != null and processor != ''">
                 processor = #{processor},
@@ -557,12 +549,7 @@
             <if test="createTime != null">
                 create_time = #{createTime},
             </if>
-            <if test="thirdCompanyName != null and thirdCompanyName != ''">
-                third_company_name = #{thirdCompanyName},
-            </if>
-            <if test="serverName != null and serverName != ''">
-                server_name = #{serverName},
-            </if>
+
             <if test="product != null and product != ''">
                 product = #{product},
             </if>
@@ -581,23 +568,11 @@
             <if test="sourceType != null">
                 source_type = #{sourceType},
             </if>
-            <if test="paymentMethod != null">
-                payment_method = #{paymentMethod},
-            </if>
-            <if test="thirdPaymentStatus != null">
-                third_payment_status = #{thirdPaymentStatus},
-            </if>
             <if test="transferSourcePointId != null">
                 transfer_source_point_id = #{transferSourcePointId},
             </if>
             <if test="transferDestinationPointId != null">
                 transfer_destination_point_id = #{transferDestinationPointId},
-            </if>
-            <if test="describeinfo != null">
-                describeinfo = #{describeinfo},
-            </if>
-            <if test="thirdResponsiblePerson != null">
-                third_responsible_person = #{thirdResponsiblePerson},
             </if>
         </set>
         where id = #{id}
