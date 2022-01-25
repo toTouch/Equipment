@@ -231,6 +231,19 @@
         <set>
             camera_count = #{cameraCount},
             canopy_count = #{canopyCount},
+            sn_no = #{snNo},
+            card_number = #{cardNumber},
+            card_supplier = #{cardSupplier},
+            completion_time = #{completionTime},
+            install_time = #{installTime},
+            is_entry = #{isEntry},
+            is_acceptance = #{isAcceptance},
+            order_time = #{orderTime},
+            operator = #{operator},
+            audit_remarks = #{auditRemarks},
+            address = #{address},
+            remarks = #{remarks},
+            logistics_info = #{logisticsInfo},
             <if test="name != null">
                 name = #{name},
             </if>
@@ -246,54 +259,18 @@
             <if test="installType != null">
                 install_type = #{installType},
             </if>
-            <if test="address != null and address != ''">
-                address = #{address},
-            </if>
-
-            <if test="snNo != null and snNo != ''">
-                sn_no = #{snNo},
-            </if>
-            <if test="cardNumber != null and cardNumber != ''">
-                card_number = #{cardNumber},
-            </if>
-            <if test="remarks != null ">
-                remarks = #{remarks},
-            </if>
             <if test="createUid != null">
                 create_uid = #{createUid},
             </if>
             <if test="createTime != null">
                 create_time = #{createTime},
             </if>
-            <if test="installTime != null">
-                install_time = #{installTime},
-            </if>
             <if test="delFlag != null">
                 del_flag = #{delFlag},
             </if>
-            <if test="cardSupplier != null and cardSupplier != ''">
-                card_supplier = #{cardSupplier},
-            </if>
-            <if test="completionTime != null">
-                completion_time = #{completionTime},
-            </if>
-            <if test="isEntry != null and isEntry != ''">
-                is_entry = #{isEntry},
-            </if>
-            <if test="isAcceptance != null and isAcceptance != ''">
-                is_acceptance = #{isAcceptance},
-            </if>
+
             <if test="productSeries != null">
                 product_series = #{productSeries},
-            </if>
-            <if test="orderTime != null">
-                order_time = #{orderTime},
-            </if>
-            <if test="operator != null and operator != ''">
-                operator = #{operator},
-            </if>
-            <if test="logisticsInfo != null and logisticsInfo != ''">
-                logistics_info = #{logisticsInfo},
             </if>
             <if test="productInfo != null and productInfo != ''">
                 product_info = #{productInfo},
@@ -303,9 +280,6 @@
             </if>
             <if test="auditStatus != null">
                 audit_status = #{auditStatus},
-            </if>
-            <if test="auditRemarks != null and auditRemarks != ''">
-                audit_remarks = #{auditRemarks},
             </if>
         </set>
         where id = #{id}
