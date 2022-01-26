@@ -146,7 +146,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             item.setFileList(fileList);
             item.setFileCount(CollectionUtil.isEmpty(fileList) ? 0 : fileList.size());
 
-            item.setParentWorkOrderReason(this.getParentWorkOrderReason(item.get));
+            item.setParentWorkOrderReason(this.getParentWorkOrderReason(item.getWorkOrderReasonId()));
         });
         page.setRecords(list);
         return page;
