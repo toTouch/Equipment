@@ -80,7 +80,7 @@ public class WorkOrderListExcelVo {
     @ExcelProperty("sn码")
     private String snNo;
 
-    @ExcelProperty("审核备注")
+    @ExcelProperty("审核内容")
     private String auditRemarks;
 
 }

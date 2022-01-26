@@ -207,7 +207,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         String[] header = {"审核状态","工单类型", "点位", "移机起点", "移机终点",  "创建人",
                 "状态", "时效", "描述",  "备注",  "工单原因", "第三方原因" , "第三方公司",
                 "第三方费用", "费用", "图片数量","处理时间","创建时间","服务商", "结算方式",
-                "第三方责任对接人", "工单编号", "第三方结算状态", "sn码","审核备注"};
+                "第三方责任对接人", "工单编号", "第三方结算状态", "sn码","审核内容"};
 
         for(String s : header){
             List<String> headTitle = new ArrayList<String>();
