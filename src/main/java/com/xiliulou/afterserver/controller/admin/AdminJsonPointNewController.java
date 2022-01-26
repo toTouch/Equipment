@@ -151,8 +151,10 @@ public class AdminJsonPointNewController {
                 List<PointProductBind> pointProductBinds = pointProductBindService.queryByPointNewId(item.getId());
                 if(CollectionUtil.isEmpty(pointProductBinds)){
                     item.setIsbindProduct(PointNew.UNBIND_PRODUCT);
+                    item.setBindProductCount(0);
                 }else{
                     item.setIsbindProduct(PointNew.BIND_PRODUCT);
+                    item.setBindProductCount(pointProductBinds.size());
                 }
 
                 //文件个数
