@@ -123,6 +123,8 @@ public class PointNew {
     private Integer fileCount;
     @TableField(exist = false)
     private String isbindProduct;
+    @TableField(exist = false)
+    private Integer bindProductCount;
 
     public static final String UNBIND_PRODUCT = "否";
     public static final String BIND_PRODUCT = "是";
