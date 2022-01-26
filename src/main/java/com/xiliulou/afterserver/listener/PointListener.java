@@ -174,7 +174,7 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
                     point.setStatus(1);
                 }else if (Objects.equals(item.getStatus(),"2") || "运营中".equals(item.getStatus())){
                     point.setStatus(2);
-                }else if (Objects.equals(item.getStatus(),"3") || "拆机".equals(item.getStatus())){
+                }else if (Objects.equals(item.getStatus(),"3") || "已拆机".equals(item.getStatus())){
                     point.setStatus(3);
                 }else if (Objects.equals(item.getStatus(),"4") || "初始化".equals(item.getStatus())){
                     point.setStatus(4);

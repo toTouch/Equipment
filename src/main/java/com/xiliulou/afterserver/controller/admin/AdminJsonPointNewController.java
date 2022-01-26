@@ -403,7 +403,7 @@ public class AdminJsonPointNewController {
             }else if (Objects.equals(item.getStatus(),2)){
                 list.add("运营中");
             }else if (Objects.equals(item.getStatus(),3)){
-                list.add("拆机");
+                list.add("已拆机");
             }else if (Objects.equals(item.getStatus(),4)){
                 list.add("初始化");
             }else if (Objects.equals(item.getStatus(),5)){
