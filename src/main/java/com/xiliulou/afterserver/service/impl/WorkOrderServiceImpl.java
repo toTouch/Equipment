@@ -146,7 +146,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             item.setFileList(fileList);
             item.setFileCount(CollectionUtil.isEmpty(fileList) ? 0 : fileList.size());
 
-            item.setParentWorkOrderReason(this.getParentWorkOrderReason(item.getWorkOrderReasonId()));
+            item.setParentWorkOrderReason(this.getParentWorkOrderReason(item.get));
         });
         page.setRecords(list);
         return page;
@@ -1438,14 +1438,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         while ( i < 10){
             WorkOrderReason workOrderReason = workOrderReasonService.getById(workOrderReasonId);
             if(Objects.nonNull(workOrderReason)){
-                if(workOrderReason.getParentId().equals(-1L)){
+                if(Objects.equals(workOrderReason.getParentId(), -1L)){
                     return workOrderReason.getName();
                 }
             }else{
-                return null;
+                return "1";
             }
             ++i;
         }
-        return null;
+        return "2";
     }
 }
