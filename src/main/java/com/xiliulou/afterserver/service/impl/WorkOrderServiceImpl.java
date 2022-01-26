@@ -1433,20 +1433,21 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         return null;
     }
 
-    private String getParentWorkOrderReason(Long workOrderReasonId){
+    private String getParentWorkOrderReason(Long id){
         Integer i = 0;
+        Long workOrderReasonId = id;
         while ( i < 10){
             WorkOrderReason workOrderReason = workOrderReasonService.getById(workOrderReasonId);
             if(Objects.nonNull(workOrderReason)){
-                log.error("getParentWorkOrderReason1  id="+workOrderReason.getParentId());
-                if(Objects.equals(String.valueOf(workOrderReason.getParentId()), "-1")){
+                workOrderReasonId = workOrderReason.getParentId();
+                if(Objects.equals(workOrderReason.getParentId(), -1L)){
                     return workOrderReason.getName();
                 }
             }else{
-                return "1";
+                return null;
             }
             ++i;
         }
-        return "2";
+        return null;
     }
 }
