@@ -1438,7 +1438,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         while ( i < 10){
             WorkOrderReason workOrderReason = workOrderReasonService.getById(workOrderReasonId);
             if(Objects.nonNull(workOrderReason)){
-                if(Objects.equals(workOrderReason.getParentId(), -1L)){
+                log.error("getParentWorkOrderReason1  id="+workOrderReason.getParentId());
+                if(Objects.equals(String.valueOf(workOrderReason.getParentId()), "-1")){
                     return workOrderReason.getName();
                 }
             }else{
