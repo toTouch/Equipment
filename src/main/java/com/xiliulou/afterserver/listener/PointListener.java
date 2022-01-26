@@ -169,6 +169,30 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
                 point.setInstallTime(System.currentTimeMillis());
             }
 
+            if(item.getStatus() != null){
+                if (Objects.equals(item.getStatus(),"1") || "移机".equals(item.getStatus())){
+                    point.setStatus(1);
+                }else if (Objects.equals(item.getStatus(),"2") || "运营中".equals(item.getStatus())){
+                    point.setStatus(2);
+                }else if (Objects.equals(item.getStatus(),"3") || "拆机".equals(item.getStatus())){
+                    point.setStatus(3);
+                }else if (Objects.equals(item.getStatus(),"4") || "初始化".equals(item.getStatus())){
+                    point.setStatus(4);
+                }else if (Objects.equals(item.getStatus(),"5") || "待安装".equals(item.getStatus())){
+                    point.setStatus(5);
+                }else if (Objects.equals(item.getStatus(),"6") || "运输中".equals(item.getStatus())){
+                    point.setStatus(6);
+                }else if (Objects.equals(item.getStatus(),"7") || "安装中".equals(item.getStatus())){
+                    point.setStatus(7);
+                }else if (Objects.equals(item.getStatus(),"8") || "安装完成".equals(item.getStatus())){
+                    point.setStatus(8);
+                }else if (Objects.equals(item.getStatus(),"9") || "已暂停".equals(item.getStatus())){
+                    point.setStatus(9);
+                }else if (Objects.equals(item.getStatus(),"10") || "已取消".equals(item.getStatus())){
+                    point.setStatus(10);
+                }
+            }
+
             if (item.getCompletionTime() != null){
                 long l = 0;
                 try {
