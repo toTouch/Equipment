@@ -135,6 +135,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if(Objects.nonNull(item.getProcessTime())){
                 String prescription = DateUtils.getDatePoor(item.getProcessTime() , item.getCreateTime());
                 item.setPrescription(prescription);
+                item.setPrescriptionMillis(item.getProcessTime() - item.getCreateTime());
             }
 
             LambdaQueryWrapper<File> eq = new LambdaQueryWrapper<File>()
@@ -144,6 +145,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             List<File> fileList = fileService.getBaseMapper().selectList(eq);
             item.setFileList(fileList);
             item.setFileCount(CollectionUtil.isEmpty(fileList) ? 0 : fileList.size());
+
+            item.setParentWorkOrderReason(this.getParentWorkOrderReason(item.getWorkOrderReasonId()));
         });
         page.setRecords(list);
         return page;
@@ -1428,5 +1431,18 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
         }
         return null;
+    }
+
+    private String getParentWorkOrderReason(Long workOrderReasonId){
+        WorkOrderReason workOrderReason = workOrderReasonService.getById(workOrderReasonId);
+        if(Objects.nonNull(workOrderReason)){
+            if(workOrderReason.getParentId().equals(-1L)){
+                return workOrderReason.getName();
+            }else{
+                return getParentWorkOrderReason(workOrderReason.getId());
+            }
+        }else{
+            return null;
+        }
     }
 }
