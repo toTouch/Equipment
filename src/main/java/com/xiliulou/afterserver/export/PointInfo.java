@@ -36,7 +36,7 @@ public class PointInfo {
      * 点位状态
      */
     @ExcelProperty(index = 4)
-    private Integer status;
+    private String status;
     /**
      * 安装类型 1:室外 2:半室外3：室内
      */
