@@ -125,6 +125,8 @@ public class PointNew {
     private String isbindProduct;
     @TableField(exist = false)
     private Integer bindProductCount;
+    @TableField(exist = false)
+    private String cardSupplierName;
 
     public static final String UNBIND_PRODUCT = "否";
     public static final String BIND_PRODUCT = "是";
