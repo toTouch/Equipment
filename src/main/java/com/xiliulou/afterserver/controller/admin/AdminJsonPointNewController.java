@@ -148,12 +148,6 @@ public class AdminJsonPointNewController {
                     item.setCameraInfoList(cameraInfo);
                 }
 
-                if(Objects.nonNull(item.getCardSupplier())){
-                    Supplier supplier = supplierService.getById(item.getCardSupplier());
-                    if(Objects.nonNull(supplier)){
-                        item.setCardSupplierName(supplier.getName());
-                    }
-                }
 
                 //是否录入资产编码
                 List<PointProductBind> pointProductBinds = pointProductBindService.queryByPointNewId(item.getId());
