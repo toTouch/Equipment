@@ -66,6 +66,16 @@ public class WorkOrderVo {
 
     private String destinationType;
 
+    private String sourceType;
+
     //private String thirdPaymentStatusName;
+    //第三方责任对接人
     private String thirdResponsiblePerson;
+    //时效
+    private String prescription;
+    private Integer auditStatus;
+    private String auditRemarks;
+    private Integer fileCount;
+    private Long prescriptionMillis;
+    private String parentWorkOrderReason;
 }

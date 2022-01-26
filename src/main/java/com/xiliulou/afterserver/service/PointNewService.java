@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.PointNew;
 import com.xiliulou.afterserver.mapper.PointNewMapper;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.PointAuditStatusQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public interface PointNewService extends IService<PointNew> {
      * @return 对象列表
      */
     List<PointNew> queryAllByLimit(int offset, int limit, String name, Integer cid, Integer status,
-                                   Long customerId, Long startTime, Long endTime, Long createUid, String snNo, Integer productSeries);
+                                   Long customerId, Long startTime, Long endTime, Long createUid, String snNo, Integer productSeries, Integer auditStatus);
 
     /**
      * 新增数据
@@ -77,15 +78,17 @@ public interface PointNewService extends IService<PointNew> {
     R pointInfo(Long pid);
 
     Integer countPoint(String name, Integer cid, Integer status,
-                       Long customerId, Long startTime, Long endTime, Long createUid, String snNo, Integer productSeries);
+                       Long customerId, Long startTime, Long endTime, Long createUid, String snNo, Integer productSeries, Integer auditStatus);
 
-    List<PointNew> queryAllByLimitExcel(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime, Long createUid, String snNo,Integer productSeries);
+    List<PointNew> queryAllByLimitExcel(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime, Long createUid, String snNo,Integer productSeries, Integer auditStatus);
 
     R putAdminPointNewCreateUser(Long id, Long createUid);
 
     void updateMany(List<PointNew> pointNew);
 
     R pointBindSerialNumber(PointQuery pointQuery);
+
+    R updateAuditStatus(PointAuditStatusQuery pointAuditStatusQuery);
 
     //R saveCache(Long pointId, Long modelId, String no, Long batch);
 

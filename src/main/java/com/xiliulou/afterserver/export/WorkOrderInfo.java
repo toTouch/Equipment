@@ -14,75 +14,102 @@ public class WorkOrderInfo {
      * 工单类型
      */
     @ExcelProperty(index = 0)
-    private Integer type;
+    private String type;
     /**
      * 點位
      */
     @ExcelProperty(index = 1)
     private String pointName;
     /**
-     * 費用
+     * 起点类型
      */
     @ExcelProperty(index = 2)
-    private Double fee;
+    private String sourceType;
     /**
-     * 结算方式
+     * 起点
      */
     @ExcelProperty(index = 3)
-    private String paymentMethod;
+    private String transferSourcePoint;
     /**
-     * 公司类别
+     * 终点类型
      */
     @ExcelProperty(index = 4)
-    private String thirdCompanyType ;
+    private String destinationType;
     /**
-     * 第三方公司
+     * 终点
      */
     @ExcelProperty(index = 5)
-    private String thirdCompanyName;
+    private String transferDestinationPoint;
     /**
-     * 第三方承擔費用
+     * 狀態
      */
     @ExcelProperty(index = 6)
-    private Double thirdCompanyPay;
+    private String status;
     /**
-     * 第三方结算状态
+     * 描述
      */
     @ExcelProperty(index = 7)
-    private String thirdPaymentStatus;
+    private String describeinfo;
     /**
-     * 第三方责任对接人
+     * 備註
      */
     @ExcelProperty(index = 8)
-    private String thirdResponsiblePerson;
+    private String info;
     /**
      * 工單原因
      */
     @ExcelProperty(index = 9)
     private Integer workOrderReasonId;
     /**
-     * 服務商
+     * 第三方原因
      */
     @ExcelProperty(index = 10)
-    private String serverName;
+    private String thirdReason;
+    /**
+     * 公司类别
+     */
+    @ExcelProperty(index = 11)
+    private String thirdCompanyType ;
+    /**
+     * 第三方公司
+     */
+    @ExcelProperty(index = 12)
+    private String thirdCompanyName;
+    /**
+     * 第三方承擔費用
+     */
+    @ExcelProperty(index = 13)
+    private Double thirdCompanyPay;
+    /**
+     * 費用
+     */
+    @ExcelProperty(index = 14)
+    private Double fee;
     /**
      * 處理時間
      */
-    @ExcelProperty(index = 11)
+    @ExcelProperty(index = 15)
     private String processTime;
     /**
-     * 狀態
+     * 服務商
      */
-    @ExcelProperty(index = 12)
-    private Integer status;
+    @ExcelProperty(index = 16)
+    private String serverName;
     /**
-     * 備註
+     * 结算方式
      */
-    @ExcelProperty(index = 13)
-    private String info;
+    @ExcelProperty(index = 17)
+    private String paymentMethod;
     /**
-     * 描述
+     * 第三方责任对接人
      */
-    @ExcelProperty(index = 14)
-    private String describeinfo;
+    @ExcelProperty(index = 18)
+    private String thirdResponsiblePerson;
+
+    /**
+     * 第三方结算状态
+     */
+    @ExcelProperty(index = 19)
+    private String thirdPaymentStatus;
+
 }

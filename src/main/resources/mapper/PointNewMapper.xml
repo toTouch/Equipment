@@ -28,13 +28,16 @@
         <result property="productInfo" column="product_info" jdbcType="VARCHAR"/>
         <result property="cameraInfo" column="camera_info" jdbcType="VARCHAR"/>
         <result property="installTime" column="install_time" jdbcType="INTEGER"/>
+        <result property="auditStatus" column="audit_status" jdbcType="INTEGER"/>
+        <result property="auditRemarks" column="audit_remarks" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!--查询单个-->
     <select id="queryById" resultMap="PointNewMap">
         select
           id, name,customer_id, status, city_id, install_type, address, camera_count, canopy_count, sn_no, card_number,
-           remarks,create_uid,create_time, del_flag
+           remarks,create_uid,create_time, del_flag, card_supplier, completion_time, is_entry, is_acceptance, product_series,
+        order_time, operator, logistics_info, product_info, camera_info, install_time, audit_status, audit_remarks
         from t_point_new
         where id = #{id}
     </select>
@@ -44,7 +47,7 @@
         select
         id, name , customer_id, status, city_id, install_type, address, camera_count, canopy_count, sn_no, card_number,
         remarks,create_uid,create_time, del_flag, card_supplier, completion_time, is_entry, is_acceptance, product_series,
-        order_time, operator, logistics_info, product_info, camera_info, install_time
+        order_time, operator, logistics_info, product_info, camera_info, install_time, audit_status, audit_remarks
         from t_point_new
         <where>
         and del_flag = 0
@@ -75,6 +78,9 @@
             </if>
             <if test="productSeries != null">
                 and product_series = #{productSeries}
+            </if>
+            <if test="auditStatus != null">
+                and audit_status = #{auditStatus}
             </if>
         </where>
         order by create_time desc
@@ -161,6 +167,9 @@
             <if test="productSeries != null">
                 and product_series = #{productSeries}
             </if>
+            <if test="auditStatus != null">
+                and audit_status = #{auditStatus}
+            </if>
         </where>
     </select>
 
@@ -168,7 +177,7 @@
         select
         id, name , customer_id, status, city_id, install_type, address, camera_count, canopy_count, sn_no, card_number,
         remarks,create_uid,create_time, del_flag,card_supplier, completion_time, is_entry, is_acceptance, product_series,
-        order_time, operator, logistics_info, product_info, camera_info
+        order_time, operator, logistics_info, product_info, camera_info, install_time, audit_status, audit_remarks
         from t_point_new
         <where>
             and del_flag = 0
@@ -200,6 +209,9 @@
             <if test="productSeries != null">
                 and product_series = #{productSeries}
             </if>
+            <if test="auditStatus != null">
+                and audit_status = #{auditStatus}
+            </if>
         </where>
         order by create_time desc
     </select>
@@ -207,16 +219,31 @@
     <!--新增所有列-->
     <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
         insert into t_point_new(name,customer_id, status, city_id, install_type, address, camera_count, canopy_count,
-         sn_no, card_number, remarks,create_uid,create_time, del_flag, card_supplier, completion_time, is_entry, is_acceptance, product_series, order_time, operator, logistics_info, product_info, camera_info, install_time)
+         sn_no, card_number, remarks,create_uid,create_time, del_flag, card_supplier, completion_time, is_entry, is_acceptance, product_series, order_time, operator, logistics_info, product_info, camera_info, install_time, audit_status, audit_remarks)
         values (#{name},#{customerId}, #{status}, #{cityId}, #{installType}, #{address}, #{cameraCount}, #{canopyCount},
          #{snNo}, #{cardNumber},#{remarks},#{createUid},#{createTime}, #{delFlag}, #{cardSupplier}, #{completionTime},
-         #{isEntry}, #{isAcceptance},#{productSeries},#{orderTime},#{operator}, #{logisticsInfo},#{productInfo},#{cameraInfo},#{installTime})
+         #{isEntry}, #{isAcceptance},#{productSeries},#{orderTime},#{operator}, #{logisticsInfo},#{productInfo},#{cameraInfo},#{installTime},#{auditStatus},#{auditRemarks})
     </insert>
 
     <!--通过主键修改数据-->
     <update id="update">
         update t_point_new
         <set>
+            camera_count = #{cameraCount},
+            canopy_count = #{canopyCount},
+            sn_no = #{snNo},
+            card_number = #{cardNumber},
+            card_supplier = #{cardSupplier},
+            completion_time = #{completionTime},
+            install_time = #{installTime},
+            is_entry = #{isEntry},
+            is_acceptance = #{isAcceptance},
+            order_time = #{orderTime},
+            operator = #{operator},
+            audit_remarks = #{auditRemarks},
+            address = #{address},
+            remarks = #{remarks},
+            logistics_info = #{logisticsInfo},
             <if test="name != null">
                 name = #{name},
             </if>
@@ -232,65 +259,27 @@
             <if test="installType != null">
                 install_type = #{installType},
             </if>
-            <if test="address != null and address != ''">
-                address = #{address},
-            </if>
-            <if test="cameraCount != null">
-                camera_count = #{cameraCount},
-            </if>
-            <if test="canopyCount != null">
-                canopy_count = #{canopyCount},
-            </if>
-            <if test="snNo != null and snNo != ''">
-                sn_no = #{snNo},
-            </if>
-            <if test="cardNumber != null and cardNumber != ''">
-                card_number = #{cardNumber},
-            </if>
-            <if test="remarks != null ">
-                remarks = #{remarks},
-            </if>
             <if test="createUid != null">
                 create_uid = #{createUid},
             </if>
             <if test="createTime != null">
                 create_time = #{createTime},
             </if>
-            <if test="installTime != null">
-                install_time = #{installTime},
-            </if>
             <if test="delFlag != null">
                 del_flag = #{delFlag},
             </if>
-            <if test="cardSupplier != null and cardSupplier != ''">
-                card_supplier = #{cardSupplier},
-            </if>
-            <if test="completionTime != null">
-                completion_time = #{completionTime},
-            </if>
-            <if test="isEntry != null and isEntry != ''">
-                is_entry = #{isEntry},
-            </if>
-            <if test="isAcceptance != null and isAcceptance != ''">
-                is_acceptance = #{isAcceptance},
-            </if>
+
             <if test="productSeries != null">
                 product_series = #{productSeries},
-            </if>
-            <if test="orderTime != null">
-                order_time = #{orderTime},
-            </if>
-            <if test="operator != null and operator != ''">
-                operator = #{operator},
-            </if>
-            <if test="logisticsInfo != null and logisticsInfo != ''">
-                logistics_info = #{logisticsInfo},
             </if>
             <if test="productInfo != null and productInfo != ''">
                 product_info = #{productInfo},
             </if>
             <if test="cameraInfo != null and cameraInfo != ''">
                 camera_info = #{cameraInfo},
+            </if>
+            <if test="auditStatus != null">
+                audit_status = #{auditStatus},
             </if>
         </set>
         where id = #{id}
@@ -320,6 +309,10 @@
                 <if test="pointNew.delFlag != null">
                     del_flag = #{pointNew.delFlag},
                 </if>
+                <if test="pointNew.auditStatus != null">
+                    audit_status = #{pointNew.auditStatus},
+                </if>
+                audit_remarks = #{pointNew.auditRemarks},
                 customer_id = #{pointNew.customerId},
                 install_type = #{pointNew.installType},
                 address = #{pointNew.address},

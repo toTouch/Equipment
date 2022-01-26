@@ -15,9 +15,7 @@ import com.xiliulou.afterserver.listener.PointListener;
 import com.xiliulou.afterserver.listener.WorkOrderLisener;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
-import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
-import com.xiliulou.afterserver.web.query.WorkOrderQuery;
-import com.xiliulou.afterserver.web.query.WorkerOrderUpdateStatusQuery;
+import com.xiliulou.afterserver.web.query.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -56,6 +54,12 @@ public class AdminJsonWorkOrderController {
 
     @Autowired
     SupplierService supplierService;
+    @Autowired
+    WorkOrderTypeService workOrderTypeService;
+    @Autowired
+    UserService userService;
+    @Autowired
+    WarehouseService warehouseService;
 
 
     @GetMapping("admin/workOrder/page")
@@ -74,6 +78,7 @@ public class AdminJsonWorkOrderController {
         workOrder.setProcessor(uid.toString());
         workOrder.setCreaterId(uid);
         workOrder.setCreateTime(System.currentTimeMillis());
+        workOrder.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
         return workOrderService.saveWorkerOrder(workOrder);
     }
 
@@ -85,6 +90,11 @@ public class AdminJsonWorkOrderController {
 //        }
 //        query.setUid(uid);
         return workOrderService.updateWorkOrderStatus(query);
+    }
+
+    @PutMapping("admin/update/workorder/processTime/{id}")
+    public R updateWorkorderProcessTime(@PathVariable("id") Long id){
+        return workOrderService.updateWorkorderProcessTime(id);
     }
 
     @PutMapping("admin/workOrder")
@@ -100,10 +110,6 @@ public class AdminJsonWorkOrderController {
 
     @GetMapping("admin/workOrder/exportExcel")
     public void exportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
-        workOrder.setProcessTimeStart(workOrder.getCreateTimeStart());
-        workOrder.setProcessTimeEnd(workOrder.getCreateTimeEnd());
-        workOrder.setCreateTimeStart(null);
-        workOrder.setCreateTimeEnd(null);
         workOrderService.exportExcel(workOrder, response);
     }
 //
@@ -156,13 +162,9 @@ public class AdminJsonWorkOrderController {
     public R update(MultipartFile file){
         ExcelReader excelReader = null;
         try {
-            try {
-                excelReader = EasyExcel.read(file.getInputStream(), WorkOrderInfo.class, new WorkOrderLisener(pointNewService, customerService,  serverService,  workOrderService, supplierService)).build();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (ExcelAnalysisException e) {
-            e.printStackTrace();
+            excelReader = EasyExcel.read(file.getInputStream(), WorkOrderInfo.class, new WorkOrderLisener(pointNewService, customerService,  serverService,  workOrderService, supplierService,workOrderTypeService,userService,warehouseService)).build();
+        } catch (Exception e) {
+            log.error("workOrder upload error!", e);
             if (e.getCause() instanceof ExcelDataConvertException) {
                 ExcelDataConvertException excelDataConvertException = (ExcelDataConvertException) e.getCause();
                 String cellMsg = "";
@@ -184,6 +186,11 @@ public class AdminJsonWorkOrderController {
         excelReader.read(readSheet);
         excelReader.finish();
         return R.ok();
+    }
+
+    @PostMapping("admin/workOrder/update/auditStatus")
+    public R updateAuditStatus(@RequestBody WorkOrderAuditStatusQuery workOrderAuditStatusQuery) {
+        return workOrderService.updateAuditStatus(workOrderAuditStatusQuery);
     }
 
     @PutMapping("admin/workOrder/update/createUser")

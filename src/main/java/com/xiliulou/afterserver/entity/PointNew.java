@@ -98,6 +98,8 @@ public class PointNew {
     private String logisticsInfo;//物流信息
     private String productInfo;//柜子信息
     private String cameraInfo;//摄像头信息
+    private Integer auditStatus;//审核状态
+    private String auditRemarks;//审核备注
 
 
     public static final Integer DEL_NORMAL = 0;
@@ -117,4 +119,17 @@ public class PointNew {
     private List<ProductInfoQuery> productInfoList;
     @TableField(exist = false)
     private List<CameraInfoQuery> cameraInfoList;
+    @TableField(exist = false)
+    private Integer fileCount;
+    @TableField(exist = false)
+    private String isbindProduct;
+    @TableField(exist = false)
+    private Integer bindProductCount;
+
+    public static final String UNBIND_PRODUCT = "否";
+    public static final String BIND_PRODUCT = "是";
+
+    public static final Integer AUDIT_STATUS_WAIT = 1;
+    public static final Integer AUDIT_STATUS_FAIL = 2;
+    public static final Integer AUDIT_STATUS_PASSED = 3;
 }

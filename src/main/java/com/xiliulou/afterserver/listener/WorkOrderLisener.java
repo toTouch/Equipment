@@ -5,10 +5,15 @@ import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.export.DeliverInfo;
 import com.xiliulou.afterserver.export.WorkOrderInfo;
 import com.xiliulou.afterserver.service.*;
+import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
+import com.xiliulou.afterserver.web.query.WorkOrderQuery;
+import com.xiliulou.core.json.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 
@@ -37,27 +42,34 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
     private ServerService serverService;
     private WorkOrderService workOrderService;
     private SupplierService supplierService;
+    private WorkOrderTypeService workOrderTypeService;
+    private UserService userService;
+    private WarehouseService warehouseService;
 
     public WorkOrderLisener(PointNewService pointNewService,
                             CustomerService customerService,
                             ServerService serverService,
                              WorkOrderService workOrderService,
-                            SupplierService supplierService){
+                            SupplierService supplierService,
+                            WorkOrderTypeService workOrderTypeService,
+                            UserService userService,
+                            WarehouseService warehouseService){
 
         this.pointNewService = pointNewService;
         this.customerService = customerService;
         this.serverService = serverService;
         this.workOrderService = workOrderService;
         this.supplierService = supplierService;
+        this.workOrderTypeService = workOrderTypeService;
+        this.userService = userService;
+        this.warehouseService = warehouseService;
     }
 
 
     @Override
     public void invoke(WorkOrderInfo workOrderInfo, AnalysisContext analysisContext) {
         log.info("工单导入=====解析到一条数据:{}", JSON.toJSONString(workOrderInfo));
-        if(Objects.isNull(workOrderInfo.getStatus())){
-            throw new RuntimeException("status is required the current value is empty!");
-        }
+        checkProperties(workOrderInfo);
         list.add(workOrderInfo);
         if (list.size() >= BATCH_COUNT) {
             saveData();
@@ -133,7 +145,7 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
 
             workOrder.setOrderNo(RandomUtil.randomString(10));
 
-            workOrder.setCreaterId(8L);
+            workOrder.setCreaterId(SecurityUtils.getUid());
 
 
             if(Objects.nonNull(item.getDescribeinfo())){
@@ -162,9 +174,9 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
             }
 
             workOrder.setCreateTime(System.currentTimeMillis());
-
+            Integer type = getWorkOrderType(item.getType());
             if(Objects.nonNull(item.getType())){
-                workOrder.setType(item.getType() + "");
+                workOrder.setType(type + "");
             }
 
             if(Objects.nonNull(item.getThirdCompanyPay())){
@@ -176,13 +188,55 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
             }
 
             if(Objects.nonNull(item.getStatus())){
-                workOrder.setStatus(item.getStatus());
+                workOrder.setStatus(this.getStatus(item.getStatus()));
             }
 
             if(Objects.nonNull(item.getInfo())){
                 workOrder.setInfo(item.getInfo());
             }
 
+
+
+            if(Objects.equals(type, WorkOrder.TYPE_MOBLIE)){
+                Integer sourceType = getSourceType(item.getSourceType());
+                workOrder.setSourceType(sourceType);
+                if(Objects.equals(sourceType, 1)){
+                    QueryWrapper<PointNew> wrapper = new QueryWrapper<>();
+                    wrapper.eq("name", item.getTransferSourcePoint());
+                    wrapper.eq("del_flag", WorkOrder.DEL_NORMAL);
+                    PointNew p = pointNewService.getOne(wrapper);
+                    workOrder.setTransferSourcePointId(p.getId());
+                }
+
+                if(Objects.equals(sourceType, 2)){
+                    QueryWrapper<WareHouse> wrapper = new QueryWrapper<>();
+                    wrapper.eq("ware_houses", item.getTransferSourcePoint());
+                    WareHouse wareHouse = warehouseService.getOne(wrapper);
+                    workOrder.setTransferSourcePointId(new Long(wareHouse.getId()));
+                }
+
+
+                Integer destinationType = getDestinationType(item.getDestinationType());
+
+                if(Objects.equals(destinationType, 1)){
+                    QueryWrapper<PointNew> wrapper = new QueryWrapper<>();
+                    wrapper.eq("name", item.getTransferDestinationPoint());
+                    wrapper.eq("del_flag", WorkOrder.DEL_NORMAL);
+                    PointNew p = pointNewService.getOne(wrapper);
+                    workOrder.setTransferDestinationPointId(p.getId());
+                }
+
+                if(Objects.equals(destinationType, 2)){
+                    QueryWrapper<WareHouse> wrapper = new QueryWrapper<>();
+                    wrapper.eq("ware_houses", item.getTransferDestinationPoint());
+                    WareHouse wareHouse = warehouseService.getOne(wrapper);
+                    workOrder.setTransferDestinationPointId(new Long(wareHouse.getId()));
+                }
+
+            }
+
+            workOrder.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
+            workOrder.setThirdReason(item.getThirdReason());
             workOrderList.add(workOrder);
         });
         workOrderService.saveBatch(workOrderList);
@@ -223,5 +277,169 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
             thirdCompanyTypeNum = 3;
         }
         return thirdCompanyTypeNum;
+    }
+
+    private Integer getStatus(String status) {
+        if("1".equals(status) || "待处理".equals(status)){
+            return 1;
+        }
+        if("2".equals(status) || "已处理".equals(status)){
+            return 2;
+        }
+        if("3".equals(status) || "待分析".equals(status)){
+            return 3;
+        }
+        if("4".equals(status) || "已完结".equals(status)){
+            return 4;
+        }
+        if("5".equals(status) || "已暂停".equals(status)){
+            return 5;
+        }
+        return null;
+    }
+
+    private Integer getWorkOrderType(String type){
+        if("1".equals(type) || "安装".equals(type)){
+            return 1;
+        }
+        if("2".equals(type) || "派送".equals(type)){
+            return 2;
+        }
+        if("3".equals(type) || "施工".equals(type)){
+            return 3;
+        }
+        if("4".equals(type) || "移机".equals(type)){
+            return 4;
+        }
+        if("5".equals(type) || "维护".equals(type)){
+            return 5;
+        }
+        if("6".equals(type) || "归仓".equals(type)){
+            return 6;
+        }
+        if("7".equals(type) || "派送安装".equals(type)){
+            return 7;
+        }
+        return null;
+    }
+
+    private Integer getSourceType(String sourceType){
+        if("1".equals(sourceType) || "点位".equals(sourceType)){
+            return 1;
+        }
+        if("2".equals(sourceType) || "仓库".equals(sourceType)){
+            return 2;
+        }
+        return null;
+    }
+
+    private Integer getDestinationType(String destinationType){
+        if("1".equals(destinationType) || "点位".equals(destinationType)){
+            return 1;
+        }
+        if("2".equals(destinationType) || "仓库".equals(destinationType)){
+            return 2;
+        }
+        return null;
+    }
+
+
+    private void checkProperties(WorkOrderInfo workOrderInfo){
+        Integer type = getWorkOrderType(workOrderInfo.getType());
+        if(Objects.isNull(type)){
+            throw new RuntimeException("请填写工单类型!");
+        }else{
+            WorkOrderType workOrderType = workOrderTypeService.getById(type);
+            if (Objects.isNull(workOrderType)){
+                throw new RuntimeException("请填写正确的工单类型");
+            }
+        }
+
+        if(Objects.isNull(workOrderInfo.getPointName())){
+            throw new RuntimeException("请填写点位");
+        }else{
+            PointNew pointNew = pointNewService.getOne(new QueryWrapper<PointNew>().eq("name",workOrderInfo.getPointName()).eq("del_flag", PointNew.DEL_NORMAL));
+            if(Objects.isNull(pointNew)){
+                throw new RuntimeException("未查询到相关点位");
+            }
+
+        }
+
+        Long uid = SecurityUtils.getUid();
+        if(Objects.isNull(uid)){
+            throw new RuntimeException("创建人为空");
+        }else{
+            User user = userService.getUserById(uid);
+            if (Objects.isNull(user)) {
+                throw new RuntimeException("未查询到相关创建人");
+            }
+        }
+
+        Integer status = this.getStatus(workOrderInfo.getStatus());
+        if(Objects.isNull(status)){
+            throw new RuntimeException("请填写工单状态");
+        }
+
+        if(Objects.isNull(workOrderInfo.getProcessTime())){
+            throw new RuntimeException("请填写处理时间");
+        }
+
+        if(Objects.equals(type, WorkOrder.TYPE_MOBLIE)){
+            Integer sourceType = getSourceType(workOrderInfo.getSourceType());
+            if(Objects.isNull(sourceType)){
+                throw new RuntimeException("请填写起点类型");
+            }
+
+            if(StringUtils.isBlank(workOrderInfo.getTransferSourcePoint())){
+                throw new RuntimeException("请填写起点");
+            }else{
+                if(Objects.equals(sourceType, 1)){
+                    QueryWrapper<PointNew> wrapper = new QueryWrapper<>();
+                    wrapper.eq("name", workOrderInfo.getTransferSourcePoint());
+                    wrapper.eq("del_flag", WorkOrder.DEL_NORMAL);
+                    PointNew pointNew = pointNewService.getOne(wrapper);
+                    if(Objects.isNull(pointNew)){
+                        throw new RuntimeException("未查询到相关起点【"+ workOrderInfo.getTransferSourcePoint() +"】");
+                    }
+                }
+
+                if(Objects.equals(sourceType, 2)){
+                    QueryWrapper<WareHouse> wrapper = new QueryWrapper<>();
+                    wrapper.eq("ware_houses", workOrderInfo.getTransferSourcePoint());
+                    WareHouse wareHouse = warehouseService.getOne(wrapper);
+                    if(Objects.isNull(wareHouse)){
+                        throw new RuntimeException("未查询到相关起点【"+ workOrderInfo.getTransferSourcePoint() +"】");
+                    }
+                }
+            }
+
+            Integer destinationType = getDestinationType(workOrderInfo.getDestinationType());
+            if(Objects.isNull(destinationType)){
+                throw new RuntimeException("请填写终点类型");
+            }
+            if(StringUtils.isBlank(workOrderInfo.getTransferDestinationPoint())){
+                throw new RuntimeException("请填写终点");
+            }else{
+                if(Objects.equals(destinationType, 1)){
+                    QueryWrapper<PointNew> wrapper = new QueryWrapper<>();
+                    wrapper.eq("name", workOrderInfo.getTransferDestinationPoint());
+                    wrapper.eq("del_flag", WorkOrder.DEL_NORMAL);
+                    PointNew pointNew = pointNewService.getOne(wrapper);
+                    if(Objects.isNull(pointNew)){
+                        throw new RuntimeException("未查询到相关起点【"+ workOrderInfo.getTransferDestinationPoint() +"】");
+                    }
+                }
+
+                if(Objects.equals(destinationType, 2)){
+                    QueryWrapper<WareHouse> wrapper = new QueryWrapper<>();
+                    wrapper.eq("ware_houses", workOrderInfo.getTransferDestinationPoint());
+                    WareHouse wareHouse = warehouseService.getOne(wrapper);
+                    if(Objects.isNull(wareHouse)){
+                        throw new RuntimeException("未查询到相关起点【"+ workOrderInfo.getTransferDestinationPoint() +"】");
+                    }
+                }
+            }
+        }
+        return;
     }
 }
