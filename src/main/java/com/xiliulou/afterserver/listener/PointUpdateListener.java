@@ -377,7 +377,7 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
             statusInt = 1;
         } else if("2".equals(status) || "运营中".equals(status)){
             statusInt = 2;
-        }else if("3".equals(status) || "拆机".equals(status)){
+        }else if("3".equals(status) || "已拆机".equals(status)){
             statusInt = 3;
         }else if("4".equals(status) || "初始化".equals(status)){
             statusInt = 4;
