@@ -25,6 +25,7 @@ import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.R;
+
 import com.xiliulou.afterserver.vo.PointExcelVo;
 import com.xiliulou.afterserver.web.query.CameraInfoQuery;
 import com.xiliulou.afterserver.web.query.PointAuditStatusQuery;
@@ -145,6 +146,13 @@ public class AdminJsonPointNewController {
                 if(Objects.nonNull(item.getCameraInfo())) {
                     List<CameraInfoQuery> cameraInfo = JSON.parseArray(item.getCameraInfo(), CameraInfoQuery.class);
                     item.setCameraInfoList(cameraInfo);
+                }
+
+                if(Objects.nonNull(item.getCardSupplier())){
+                    Supplier supplier = supplierService.getById(item.getCardSupplier());
+                    if(Objects.nonNull(supplier)){
+                        item.setCardSupplierName(supplier.getName());
+                    }
                 }
 
                 //是否录入资产编码
