@@ -98,13 +98,9 @@ public class AdminJsonDeliverController {
 
         ExcelReader excelReader = null;
         try {
-            try {
-                excelReader = EasyExcel.read(file.getInputStream(), DeliverInfo.class,new DeliverListener(deliverService,customerService,supplierService,request)).build();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (ExcelAnalysisException e) {
-            e.printStackTrace();
+            excelReader = EasyExcel.read(file.getInputStream(), DeliverInfo.class,new DeliverListener(deliverService,customerService,supplierService,request)).build();
+        } catch (Exception e) {
+            log.error("insert deliver error", e);
             if (e.getCause() instanceof ExcelDataConvertException) {
                 ExcelDataConvertException excelDataConvertException = (ExcelDataConvertException) e.getCause();
                 String cellMsg = "";

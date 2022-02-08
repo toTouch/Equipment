@@ -12,4 +12,6 @@ public interface SupplierService extends IService<Supplier> {
 
 
     IPage getPage(Long offset, Long size, Supplier supplier);
+
+    Supplier querySupplierName(String supplierName);
 }

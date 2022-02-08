@@ -62,4 +62,6 @@ public interface BatchService {
     Boolean deleteById(Long id);
 
     Long count(String batchNo);
+
+    Batch queryByName(String batch);
 }
