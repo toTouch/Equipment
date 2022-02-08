@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.Objects;
 
 @Service
@@ -49,7 +50,11 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
             return R.fail("请传入有效时间");
         }
 
-        iotCard.setExpirationTime(iotCard.getTermOfAlidity() + iotCard.getActivationTime());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(iotCard.getActivationTime());
+        calendar.add(Calendar.YEAR, iotCard.getTermOfAlidity().intValue());
+        iotCard.setExpirationTime(calendar.getTimeInMillis());
+
         iotCard.setCreateTime(System.currentTimeMillis());
         iotCard.setUpdateTime(System.currentTimeMillis());
         iotCard.setDelFlag(IotCard.DEL_NORMAL);
@@ -82,7 +87,11 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
             return R.fail("请传入有效时间");
         }
 
-        iotCard.setExpirationTime(iotCard.getTermOfAlidity() + iotCard.getActivationTime());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(iotCard.getActivationTime());
+        calendar.add(Calendar.YEAR, iotCard.getTermOfAlidity().intValue());
+        iotCard.setExpirationTime(calendar.getTimeInMillis());
+
         iotCard.setUpdateTime(System.currentTimeMillis());
         iotCard.setDelFlag(IotCard.DEL_NORMAL);
 

@@ -8,6 +8,8 @@
 
     <select id="getPage" resultMap="getPageMap">
         select id,batch_id, supplier_id, operator, activation_time, packages, term_of_alidity, expiration_time, create_time, update_time, del_flag
+        from t_iot_card
+
     </select>
     
     <insert id="saveOne" keyProperty="id" useGeneratedKeys="true">

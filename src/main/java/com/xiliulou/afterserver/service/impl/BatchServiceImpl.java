@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xiliulou.afterserver.entity.Batch;
 import com.xiliulou.afterserver.mapper.BatchMapper;
 import com.xiliulou.afterserver.service.BatchService;
@@ -103,5 +104,10 @@ public class BatchServiceImpl implements BatchService {
     @Override
     public Long count(String batchNo) {
         return this.batchMapper.count(batchNo);
+    }
+
+    @Override
+    public Batch queryByName(String batchName) {
+        return batchMapper.selectOne(new QueryWrapper<Batch>().eq("name", batchName));
     }
 }
