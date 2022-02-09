@@ -503,6 +503,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
                 PointProductBind bind = new PointProductBind();
                 bind.setPointId(pointQuery.getId());
                 bind.setProductId(k);
+                bind.setPointType(PointProductBind.TYPE_POINT);
                 pointProductBindMapper.insert(bind);
             });
         }

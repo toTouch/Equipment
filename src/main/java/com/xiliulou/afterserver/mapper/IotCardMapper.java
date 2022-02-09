@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiliulou.afterserver.entity.InventoryFlowBill;
 import com.xiliulou.afterserver.entity.IotCard;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 
 public interface IotCardMapper extends BaseMapper<IotCard> {
 
@@ -12,5 +14,8 @@ public interface IotCardMapper extends BaseMapper<IotCard> {
 
     Integer updateOne(IotCard iotCard);
 
-    IPage<IotCard> getPage(Page page, IotCard iotCard);
+    IPage<IotCard> getPage(Page page, @Param("iotCard")IotCard iotCard);
+
+    @Update("update t_iot_card set expiration_flag = 1 where expiration_time < #{curTime}")
+    void expirationHandle(@Param("curTime") Long curTime);
 }
