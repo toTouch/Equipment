@@ -78,8 +78,8 @@ public class ProductNewServiceImpl implements ProductNewService {
      * @return 对象列表
      */
     @Override
-    public List<ProductNew> queryAllByLimit(int offset, int limit,String no,Long modelId,Long startTime,Long endTime, Long pointId) {
-        return this.productNewMapper.queryAllByLimit(offset, limit,no,modelId,startTime,endTime, pointId);
+    public List<ProductNew> queryAllByLimit(int offset, int limit,String no,Long modelId,Long startTime,Long endTime, Long pointId, Integer pointType) {
+        return this.productNewMapper.queryAllByLimit(offset, limit,no,modelId,startTime,endTime, pointId, pointType);
     }
 
     /**
@@ -332,17 +332,7 @@ public class ProductNewServiceImpl implements ProductNewService {
 
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public R bindPoint(Long productId, Long pointId) {
-        /*PointProductBind pointProductBind = pointProductBindMapper
-                .selectOne(new QueryWrapper<PointProductBind>().eq("product_id", productId));
-
-        if(ObjectUtils.isNotNull(pointProductBind)){
-            PointNew pointNew = pointNewMapper.selectById(pointProductBind.getPointId());
-            if(ObjectUtils.isNotNull(pointNew)){
-                return R.fail("您选择的产品已绑定到【" + pointNew.getName() + "】点位,请解绑！");
-            }
-        }*/
-
+    public R bindPoint(Long productId, Long pointId, Integer pointType) {
         PointProductBind pointProductBind = pointProductBindMapper
                     .selectOne(new QueryWrapper<PointProductBind>()
                         .eq("product_id", productId));
@@ -351,9 +341,14 @@ public class ProductNewServiceImpl implements ProductNewService {
             pointProductBindMapper.deleteById(pointProductBind.getId());
         }
 
+        if(Objects.isNull(pointType)){
+            return R.fail("请输入位置类型");
+        }
+
         PointProductBind bind = new PointProductBind();
         bind.setPointId(pointId);
         bind.setProductId(productId);
+        bind.setPointType(pointType);
         pointProductBindMapper.insert(bind);
 
         return R.ok();

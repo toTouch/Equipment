@@ -84,6 +84,14 @@ public class ProductNew {
      * 删除状态 0正常 1 删除
      */
     private Integer delFlag;
+    /**
+     * 外观
+     */
+    private Integer surface;
+    /**
+     * 颜色
+     */
+    private Integer color;
 
     public static final Integer DEL_NORMAL = 0;
     public static final Integer DEL_DEL = 1;
@@ -94,6 +102,10 @@ public class ProductNew {
     private String type;
     private String code;
     private String remarks;
+    private Integer testResult;
+    private String testFile;
+    private Long iotCardId;
+    private Long cameraId;
 
 //    //左区间
 //    @TableField(exist = false)
@@ -117,4 +129,6 @@ public class ProductNew {
     private String pointName;
     @TableField(exist = false)
     private String supplierName;
+   // @TableField(exist = false)
+   // private String supplierName;
 }

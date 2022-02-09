@@ -36,7 +36,8 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
                                      @Param("modelId") Long modelId,
                                      @Param("startTime") Long startTime,
                                      @Param("endTime") Long endTime,
-                                     @Param("pointId") Long pointId);
+                                     @Param("pointId") Long pointId,
+                                     @Param("pointType") Integer pointType);
 
 
     /**

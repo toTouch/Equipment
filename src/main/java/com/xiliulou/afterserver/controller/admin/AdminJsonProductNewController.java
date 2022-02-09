@@ -32,6 +32,8 @@ public class AdminJsonProductNewController {
     private PointNewService pointNewService;
     @Autowired
     private SupplierService supplierService;
+    @Autowired
+    private WarehouseService warehouseService;
 
     @PostMapping("/admin/productNew")
     public R saveAdminPointNew(@RequestBody ProductNew productNew){
@@ -54,18 +56,28 @@ public class AdminJsonProductNewController {
                        @RequestParam(value = "no",required = false) String no,
                        @RequestParam(value = "modelId",required = false) Long modelId,
                        @RequestParam(value = "pointId",required = false) Long pointId,
+                       @RequestParam(value = "pointType",required = false) Integer pointType,
                        @RequestParam(value = "startTime",required = false) Long startTime,
                        @RequestParam(value = "endTime",required = false) Long endTime){
-        List<ProductNew> productNews = productNewService.queryAllByLimit(offset,limit,no,modelId,startTime,endTime,pointId);
+        List<ProductNew> productNews = productNewService.queryAllByLimit(offset,limit,no,modelId,startTime,endTime,pointId, pointType);
 
         productNews.forEach(item -> {
 
             PointProductBind pointProductBind = pointProductBindService.queryByProductId(item.getId());
             if(Objects.nonNull(pointProductBind)){
-                PointNew pointNew = pointNewService.getById(pointProductBind.getPointId());
-                if(Objects.nonNull(pointNew)){
-                    item.setPointId(pointNew.getId().intValue());
-                    item.setPointName(pointNew.getName());
+                if(Objects.equals(pointProductBind.getPointType(), PointProductBind.TYPE_POINT)){
+                    PointNew pointNew = pointNewService.getById(pointProductBind.getPointId());
+                    if(Objects.nonNull(pointNew)){
+                        item.setPointId(pointNew.getId().intValue());
+                        item.setPointName(pointNew.getName());
+                    }
+                }
+                if(Objects.equals(pointProductBind.getPointType(), PointProductBind.TYPE_WAREHOUSE)){
+                    WareHouse wareHouse = warehouseService.getById(pointProductBind.getPointId());
+                    if(Objects.nonNull(wareHouse)){
+                        item.setPointId(wareHouse.getId());
+                        item.setPointName(wareHouse.getWareHouses());
+                    }
                 }
             }
 
@@ -128,7 +140,8 @@ public class AdminJsonProductNewController {
     }
 
     @PostMapping("/admin/bindPoint")
-    public R bindPoint(Long productId, Long pointId){
-        return productNewService.bindPoint(productId, pointId);
+    public R bindPoint(Long productId, Long pointId, Integer pointType){
+        return productNewService.bindPoint(productId, pointId, pointType);
     }
+
 }

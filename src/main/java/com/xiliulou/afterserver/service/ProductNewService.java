@@ -36,7 +36,7 @@ public interface ProductNewService {
      * @param limit  查询条数
      * @return 对象列表
      */
-    List<ProductNew> queryAllByLimit(int offset, int limit,String no,Long modelId,Long startTime,Long endTime, Long pointId);
+    List<ProductNew> queryAllByLimit(int offset, int limit,String no,Long modelId,Long startTime,Long endTime, Long pointId, Integer pointType);
 
     /**
      * 新增数据
@@ -82,5 +82,5 @@ public interface ProductNewService {
 
     R queryLikeProductByNo(String no);
 
-    R bindPoint(Long productId, Long pointId);
+    R bindPoint(Long productId, Long pointId, Integer pointType);
 }
