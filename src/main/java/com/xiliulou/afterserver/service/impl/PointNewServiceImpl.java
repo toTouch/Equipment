@@ -399,6 +399,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         return this.pointNewMapper.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid,snNo,productSeries,auditStatus);
     }
 
+    @Override
     public R putAdminPointNewCreateUser(Long id, Long createUid){
         if(Objects.isNull(id) || Objects.isNull(createUid)){
             return R.fail("参数非法，请检查");
