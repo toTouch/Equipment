@@ -80,6 +80,10 @@ public class WorkOrder implements Serializable {
     private String thirdResponsiblePerson;
     private Integer auditStatus;
     private String auditRemarks;
+    /**
+     * 产品信息
+     */
+    private String productInfo;
 
 
     /**
@@ -129,7 +133,7 @@ public class WorkOrder implements Serializable {
     public static final Integer TYPE_CONTACT = 3;
     //4.移机
     public static final Integer TYPE_MOBLIE = 4;
-    //5.售后
+    //5.维护
     public static final Integer TYPE_AFTER = 5;
     //6.归仓
     public static final Integer TYPE_BELONG_WAREHOUSE = 6;

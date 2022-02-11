@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.web.vo;
 
 import com.xiliulou.afterserver.entity.File;
+import com.xiliulou.afterserver.web.query.ProductInfoQuery;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -78,4 +79,6 @@ public class WorkOrderVo {
     private Integer fileCount;
     private Long prescriptionMillis;
     private String parentWorkOrderReason;
+    private String productInfo;
+    private List<ProductInfoQuery> productInfoList;
 }
