@@ -169,9 +169,9 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             Iterator<CameraInfoQuery> iterator = pointNew.getCameraInfoList().iterator();
             while(iterator.hasNext()){
                 CameraInfoQuery cameraInfoQuery = iterator.next();
-                if(Objects.isNull(cameraInfoQuery.getCameraSupplier())
-                        && Objects.isNull(cameraInfoQuery.getCameraSn())
-                        && Objects.isNull(cameraInfoQuery.getCameraNumber())){
+                if(StringUtils.isBlank(cameraInfoQuery.getCameraSupplier())
+                        && StringUtils.isBlank(cameraInfoQuery.getCameraSn())
+                        && StringUtils.isBlank(cameraInfoQuery.getCameraNumber())){
                     iterator.remove();
                 }
             }
@@ -289,9 +289,9 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             Iterator<CameraInfoQuery> iterator = pointNew.getCameraInfoList().iterator();
             while(iterator.hasNext()){
                 CameraInfoQuery cameraInfoQuery = iterator.next();
-                if(Objects.isNull(cameraInfoQuery.getCameraSupplier())
-                        && Objects.isNull(cameraInfoQuery.getCameraSn())
-                        && Objects.isNull(cameraInfoQuery.getCameraNumber())){
+                if(StringUtils.isBlank(cameraInfoQuery.getCameraSupplier())
+                        && StringUtils.isBlank(cameraInfoQuery.getCameraSn())
+                        && StringUtils.isBlank(cameraInfoQuery.getCameraNumber())){
                     iterator.remove();
                 }
             }
