@@ -1430,13 +1430,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         if(!Objects.equals(workOrder.getType(), String.valueOf(WorkOrder.TYPE_AFTER))){
             if(Objects.nonNull(workOrder.getProductInfoList())) {
-                Integer ProductInfoListSize = workOrder.getProductInfoList().size();
-                for(int i = 0; i< ProductInfoListSize; i++){
-                    ProductInfoQuery productInfoQuery = workOrder.getProductInfoList().get(i);
-                    if(Objects.nonNull(productInfoQuery)){
-                        if(Objects.isNull(productInfoQuery.getProductId()) || Objects.isNull(productInfoQuery.getNumber())){
-                            workOrder.getProductInfoList().remove(i);
-                        }
+                Iterator<ProductInfoQuery> iterator = workOrder.getProductInfoList().iterator();
+                while (iterator.hasNext()){
+                    ProductInfoQuery productInfoQuery = iterator.next();
+                    if(Objects.isNull(productInfoQuery.getProductId()) || Objects.isNull(productInfoQuery.getNumber())){
+                        iterator.remove();
                     }
                 }
                 String productInfo = JSON.toJSONString(workOrder.getProductInfoList());
@@ -1525,15 +1523,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrder.setServerName(server.getName());
             }
         }
+
         if(!Objects.equals(workOrder.getType(), String.valueOf(WorkOrder.TYPE_AFTER))){
             if(Objects.nonNull(workOrder.getProductInfoList())) {
-                Integer ProductInfoListSize = workOrder.getProductInfoList().size();
-                for(int i = 0; i< ProductInfoListSize; i++){
-                    ProductInfoQuery productInfoQuery = workOrder.getProductInfoList().get(i);
-                    if(Objects.nonNull(productInfoQuery)){
-                        if(Objects.isNull(productInfoQuery.getProductId()) || Objects.isNull(productInfoQuery.getNumber())){
-                            workOrder.getProductInfoList().remove(i);
-                        }
+                Iterator<ProductInfoQuery> iterator = workOrder.getProductInfoList().iterator();
+                while (iterator.hasNext()){
+                    ProductInfoQuery productInfoQuery = iterator.next();
+                    if(Objects.isNull(productInfoQuery.getProductId()) || Objects.isNull(productInfoQuery.getNumber())){
+                        iterator.remove();
                     }
                 }
                 String productInfo = JSON.toJSONString(workOrder.getProductInfoList());
