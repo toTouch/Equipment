@@ -166,6 +166,15 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             pointNew.setProductInfo(productInfo);
         }
         if(Objects.nonNull(pointNew.getCameraInfoList())) {
+            Iterator<CameraInfoQuery> iterator = pointNew.getCameraInfoList().iterator();
+            while(iterator.hasNext()){
+                CameraInfoQuery cameraInfoQuery = iterator.next();
+                if(Objects.isNull(cameraInfoQuery.getCameraSupplier())
+                        && Objects.isNull(cameraInfoQuery.getCameraSn())
+                        && Objects.isNull(cameraInfoQuery.getCameraNumber())){
+                    iterator.remove();
+                }
+            }
             String cameraInfo = JSON.toJSONString(pointNew.getCameraInfoList());
             pointNew.setCameraInfo(cameraInfo);
         }
@@ -277,6 +286,15 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             pointNew.setProductInfo(productInfo);
         }
         if(Objects.nonNull(pointNew.getCameraInfoList())) {
+            Iterator<CameraInfoQuery> iterator = pointNew.getCameraInfoList().iterator();
+            while(iterator.hasNext()){
+                CameraInfoQuery cameraInfoQuery = iterator.next();
+                if(Objects.isNull(cameraInfoQuery.getCameraSupplier())
+                        && Objects.isNull(cameraInfoQuery.getCameraSn())
+                        && Objects.isNull(cameraInfoQuery.getCameraNumber())){
+                    iterator.remove();
+                }
+            }
             String cameraInfo = JSON.toJSONString(pointNew.getCameraInfoList());
             pointNew.setCameraInfo(cameraInfo);
         }
