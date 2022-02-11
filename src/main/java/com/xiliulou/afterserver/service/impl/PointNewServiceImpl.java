@@ -17,8 +17,10 @@ import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.vo.PointNewInfoVo;
+import com.xiliulou.afterserver.web.query.CameraInfoQuery;
 import com.xiliulou.afterserver.web.query.PointAuditStatusQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
+import com.xiliulou.afterserver.web.query.ProductInfoQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -153,10 +155,31 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             return r;
         }
         if(Objects.nonNull(pointNew.getProductInfoList())) {
+            Integer ProductInfoListSize = pointNew.getProductInfoList().size();
+            for(int i = 0; i< ProductInfoListSize; i++){
+                ProductInfoQuery productInfoQuery = pointNew.getProductInfoList().get(i);
+                if(Objects.nonNull(productInfoQuery)){
+                    if(Objects.isNull(productInfoQuery.getProductId()) || Objects.isNull(productInfoQuery.getNumber())){
+                        pointNew.getProductInfoList().remove(i);
+                    }
+                }
+            }
             String productInfo = JSON.toJSONString(pointNew.getProductInfoList());
             pointNew.setProductInfo(productInfo);
         }
         if(Objects.nonNull(pointNew.getCameraInfoList())) {
+            Integer cameraInfoListSize = pointNew.getCameraInfoList().size();
+            for(int i = 0; i< cameraInfoListSize; i++){
+                CameraInfoQuery cameraInfoQuery = pointNew.getCameraInfoList().get(i);
+                if(Objects.nonNull(cameraInfoQuery)){
+                    if(Objects.isNull(cameraInfoQuery.getCameraNumber())
+                            && Objects.isNull(cameraInfoQuery.getCameraSn())
+                            && Objects.isNull(cameraInfoQuery.getCameraSupplier())){
+
+                        pointNew.getCameraInfoList().remove(i);
+                    }
+                }
+            }
             String cameraInfo = JSON.toJSONString(pointNew.getCameraInfoList());
             pointNew.setCameraInfo(cameraInfo);
         }
@@ -257,10 +280,31 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             return r;
         }
         if(Objects.nonNull(pointNew.getProductInfoList())) {
+            Integer ProductInfoListSize = pointNew.getProductInfoList().size();
+            for(int i = 0; i< ProductInfoListSize; i++){
+                ProductInfoQuery productInfoQuery = pointNew.getProductInfoList().get(i);
+                if(Objects.nonNull(productInfoQuery)){
+                    if(Objects.isNull(productInfoQuery.getProductId()) || Objects.isNull(productInfoQuery.getNumber())){
+                        pointNew.getProductInfoList().remove(i);
+                    }
+                }
+            }
             String productInfo = JSON.toJSONString(pointNew.getProductInfoList());
             pointNew.setProductInfo(productInfo);
         }
         if(Objects.nonNull(pointNew.getCameraInfoList())) {
+            Integer cameraInfoListSize = pointNew.getCameraInfoList().size();
+            for(int i = 0; i< cameraInfoListSize; i++){
+                CameraInfoQuery cameraInfoQuery = pointNew.getCameraInfoList().get(i);
+                if(Objects.nonNull(cameraInfoQuery)){
+                    if(Objects.isNull(cameraInfoQuery.getCameraNumber())
+                            && Objects.isNull(cameraInfoQuery.getCameraSn())
+                            && Objects.isNull(cameraInfoQuery.getCameraSupplier())){
+
+                        pointNew.getCameraInfoList().remove(i);
+                    }
+                }
+            }
             String cameraInfo = JSON.toJSONString(pointNew.getCameraInfoList());
             pointNew.setCameraInfo(cameraInfo);
         }
