@@ -574,6 +574,9 @@
             <if test="transferDestinationPointId != null">
                 transfer_destination_point_id = #{transferDestinationPointId},
             </if>
+            <if test="productInfo != null and productInfo != ''">
+                product_info = #{productInfo},
+            </if>
         </set>
         where id = #{id}
     </update>

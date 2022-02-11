@@ -35,5 +35,8 @@ public class WorkOrderQuery extends WorkOrder {
 
     private String startAddr;
     private String count;
-
+    /**
+     * 柜子信息list
+     */
+    private List<ProductInfoQuery> productInfoList;
 }
