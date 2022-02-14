@@ -191,13 +191,9 @@ public class AdminJsonPointNewController {
 
         ExcelReader excelReader = null;
         try {
-            try {
-                excelReader = EasyExcel.read(file.getInputStream(), PointInfo.class,new PointListener(pointNewService,customerService,cityService,request,supplierService)).build();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (ExcelAnalysisException e) {
-            e.printStackTrace();
+            excelReader = EasyExcel.read(file.getInputStream(), PointInfo.class,new PointListener(pointNewService,customerService,cityService,request,supplierService)).build();
+        } catch (Exception e) {
+            log.error("inprot pointNew ");
             if (e.getCause() instanceof ExcelDataConvertException) {
                 ExcelDataConvertException excelDataConvertException = (ExcelDataConvertException) e.getCause();
                 String cellMsg = "";

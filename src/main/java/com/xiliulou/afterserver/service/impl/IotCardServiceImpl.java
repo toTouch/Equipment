@@ -183,7 +183,7 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
               iot.setOperator(getOperatorName(item.getOperator()));
 
               if(Objects.isNull(item.getBatchId())){
-                Batch batch = batchService.queryByIdFromDB(item.getBatchId())
+                Batch batch = batchService.queryByIdFromDB(item.getBatchId());
                 if(Objects.nonNull(batch)){
                     iot.setOperator(batch.getBatchNo());
                 }
@@ -202,7 +202,7 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
             iotCardExportExcelVoList.add(iot);
         });
 
-        String fileName = "点位.xlsx";
+        String fileName = "物联网卡.xlsx";
         try {
             ServletOutputStream outputStream = response.getOutputStream();
             // 告诉浏览器用什么软件可以打开此文件
