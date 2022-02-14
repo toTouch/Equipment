@@ -16,6 +16,7 @@ import com.xiliulou.afterserver.service.BatchService;
 import com.xiliulou.afterserver.service.IotCardService;
 import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.DeliverQuery;
 import com.xiliulou.afterserver.web.query.InventoryFlowBillQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
 
 @RestController
@@ -90,5 +92,10 @@ public class AdminJsonIotCardController extends BaseController {
         excelReader.read(readSheet);
         excelReader.finish();
         return R.ok();
+    }
+
+    @GetMapping("admin/iotCard/exportExcel")
+    public void exportExcel(IotCard iotCard, HttpServletResponse response) {
+        iotCardService.exportExcel(iotCard, response);
     }
 }

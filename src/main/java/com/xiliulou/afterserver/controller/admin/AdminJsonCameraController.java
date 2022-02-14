@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
 
 /**
@@ -90,5 +91,10 @@ public class AdminJsonCameraController extends BaseController {
         excelReader.read(readSheet);
         excelReader.finish();
         return R.ok();
+    }
+
+    @GetMapping("admin/iotCard/exportExcel")
+    public void exportExcel(CameraQuery cameraQuery, HttpServletResponse response) {
+        cameraService.exportExcel(cameraQuery, response);
     }
 }

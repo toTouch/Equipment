@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.Camera;
+import com.xiliulou.afterserver.entity.Supplier;
 import com.xiliulou.afterserver.mapper.CameraMapper;
 import com.xiliulou.afterserver.service.CameraService;
+import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.CameraQuery;
@@ -14,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
 
 /**
@@ -26,7 +29,8 @@ import java.util.Objects;
 public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> implements CameraService {
     @Autowired
     CameraMapper cameraMapper;
-
+    @Autowired
+    SupplierService supplierService;
 
     @Override
     public R saveOne(CameraQuery cameraQuery) {
@@ -37,8 +41,13 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
             return R.fail("请填写摄像头序列号");
         }
 
-        if(Objects.isNull(camera.getManufactor())){
+        if(Objects.isNull(camera.getSupplierId())){
             return R.fail("请填写摄像头厂商");
+        }
+
+        Supplier supplier = supplierService.getById(camera.getSupplierId());
+        if(Objects.isNull(supplier)){
+            return R.fail("未查到相关摄像头厂商");
         }
 
         if(Objects.isNull(camera.getCameraCard())){
@@ -72,8 +81,13 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
             return R.fail("请填写摄像头序列号");
         }
 
-        if(Objects.isNull(camera.getManufactor())){
+        if(Objects.isNull(camera.getSupplierId())){
             return R.fail("请填写摄像头厂商");
+        }
+
+        Supplier supplier = supplierService.getById(camera.getSupplierId());
+        if(Objects.isNull(supplier)){
+            return R.fail("未查到相关摄像头厂商");
         }
 
         if(Objects.isNull(camera.getCameraCard())){
@@ -97,7 +111,7 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
 
         LambdaQueryWrapper<Camera> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(Objects.nonNull(cameraQuery.getSerialNum()), Camera::getSerialNum, cameraQuery.getSerialNum())
-                .like(Objects.nonNull(cameraQuery.getManufactor()), Camera::getManufactor, cameraQuery.getManufactor())
+                //.like(Objects.nonNull(cameraQuery.getManufactor()), Camera::getManufactor, cameraQuery.getManufactor())
                 .like(Objects.nonNull(cameraQuery.getCameraCard()), Camera::getCameraCard, cameraQuery.getCameraCard())
                 .between(Objects.nonNull(cameraQuery.getCreateTimeStart()) && Objects.nonNull(cameraQuery.getCreateTimeEnd()), Camera::getCreateTime, cameraQuery.getCreateTimeStart(), cameraQuery.getCreateTimeEnd())
                 .eq(Camera::getDelFlag, Camera.DEL_NORMAL)
@@ -107,5 +121,8 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
         return baseMapper.selectPage(page, queryWrapper);
     }
 
+    @Override
+    public void exportExcel(CameraQuery cameraQuery, HttpServletResponse response) {
 
+    }
 }

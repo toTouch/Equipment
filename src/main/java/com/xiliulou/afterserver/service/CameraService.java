@@ -7,6 +7,8 @@ import com.xiliulou.afterserver.entity.City;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.CameraQuery;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @author Hardy
  * @date 2022/2/8 16:34
@@ -21,4 +23,6 @@ public interface CameraService extends IService<Camera> {
     R deleteOne(Long id);
 
     Page getPage(Long offset, Long size, CameraQuery cameraQuery);
+
+    void exportExcel(CameraQuery cameraQuery, HttpServletResponse response);
 }

@@ -32,6 +32,10 @@ public class IotCard {
     public static final Integer DEL_NORMAL = 0;
     public static final Integer DEL_DEL = 1;
 
+    public static final Integer TERM_OF_ALIDITY_UNIT = 6; //有效期最小单位（6个月）
+
+
+
     @TableField(exist = false)
     private Long activationTimeStart;
     @TableField(exist = false)
