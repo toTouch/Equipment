@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.IotCard;
 import com.xiliulou.afterserver.util.R;
 
+import javax.servlet.http.HttpServletResponse;
+
 public interface IotCardService extends IService<IotCard> {
 
     R saveOne(IotCard iotCard);
@@ -13,4 +15,6 @@ public interface IotCardService extends IService<IotCard> {
     R deleteOne(Long id);
 
     R getPage(Long offset, Long size, IotCard iotCard);
+
+    void exportExcel(IotCard iotCard, HttpServletResponse response);
 }
