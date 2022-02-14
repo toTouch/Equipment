@@ -57,9 +57,13 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
             return R.fail("请传入有效时间");
         }
 
+        if(iotCard.getTermOfAlidity() % 6 != 0){
+            return R.fail("有效时间必须是六的倍数");
+        }
+
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(iotCard.getActivationTime());
-        calendar.add(Calendar.YEAR, iotCard.getTermOfAlidity().intValue());
+        calendar.add(Calendar.MONTH, iotCard.getTermOfAlidity().intValue());
         iotCard.setExpirationTime(calendar.getTimeInMillis());
 
         iotCard.setCreateTime(System.currentTimeMillis());
@@ -106,6 +110,10 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
 
         if(Objects.isNull(iotCard.getTermOfAlidity())){
             return R.fail("请传入有效时间");
+        }
+
+        if(iotCard.getTermOfAlidity() % 6 != 0){
+            return R.fail("有效时间必须是六的倍数");
         }
 
         Calendar calendar = Calendar.getInstance();
