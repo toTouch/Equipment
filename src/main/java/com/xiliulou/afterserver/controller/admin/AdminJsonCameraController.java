@@ -10,11 +10,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiliulou.afterserver.controller.BaseController;
 import com.xiliulou.afterserver.entity.Camera;
 import com.xiliulou.afterserver.entity.IotCard;
+import com.xiliulou.afterserver.entity.Supplier;
 import com.xiliulou.afterserver.export.CameraInfo;
 import com.xiliulou.afterserver.export.IotCardInfo;
 import com.xiliulou.afterserver.listener.CameraListener;
 import com.xiliulou.afterserver.listener.IotCardListener;
 import com.xiliulou.afterserver.service.CameraService;
+import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.CameraQuery;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +38,8 @@ import java.util.Objects;
 public class AdminJsonCameraController extends BaseController {
     @Autowired
     CameraService cameraService;
+    @Autowired
+    SupplierService supplierService;
 
     @PostMapping("admin/camera")
     public R saveOne(@RequestBody CameraQuery cameraQuery){
@@ -67,7 +71,7 @@ public class AdminJsonCameraController extends BaseController {
     public R upload(MultipartFile file, HttpServletRequest request){
         ExcelReader excelReader = null;
         try {
-            excelReader = EasyExcel.read(file.getInputStream(), CameraInfo.class,new CameraListener(cameraService, request)).build();
+            excelReader = EasyExcel.read(file.getInputStream(), CameraInfo.class,new CameraListener(cameraService, request,supplierService)).build();
         } catch (Exception e) {
             log.error("insert iotCard error", e);
             if (e.getCause() instanceof ExcelDataConvertException) {

@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class Camera {
     private Long id;
     private String serialNum;
-    private String supplierId;
+    private Long supplierId;
     private String cameraCard;
     private Long createTime;
     private Long updateTime;

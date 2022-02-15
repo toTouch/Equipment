@@ -3,12 +3,15 @@ package com.xiliulou.afterserver.listener;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xiliulou.afterserver.entity.Camera;
 import com.xiliulou.afterserver.entity.IotCard;
+import com.xiliulou.afterserver.entity.Supplier;
 import com.xiliulou.afterserver.export.CameraInfo;
 import com.xiliulou.afterserver.export.DeliverInfo;
 import com.xiliulou.afterserver.export.IotCardInfo;
 import com.xiliulou.afterserver.service.CameraService;
+import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.util.R;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,9 +32,11 @@ public class CameraListener extends AnalysisEventListener<CameraInfo> {
 
     HttpServletRequest request;
     CameraService cameraService;
+    SupplierService supplierService;
 
-    public CameraListener(CameraService cameraService, HttpServletRequest request){
+    public CameraListener(CameraService cameraService, HttpServletRequest request, SupplierService supplierService){
         this.cameraService = cameraService;
+        this.supplierService = supplierService;
         this.request = request;
     }
 
@@ -43,8 +48,13 @@ public class CameraListener extends AnalysisEventListener<CameraInfo> {
             throw new RuntimeException("请填写摄像头序列号");
         }
 
-        if(Objects.isNull(cameraInfo.getManufactor())){
+        if(Objects.isNull(cameraInfo.getSupplier())){
             throw new RuntimeException("请填写摄像头厂商");
+        }
+
+        Supplier supplier = supplierService.getBaseMapper().selectOne(new QueryWrapper<Supplier>().eq("name", cameraInfo.getSupplier()));
+        if(Objects.isNull(supplier)){
+            throw new RuntimeException("未查询到相关摄像头厂商");
         }
 
         if(Objects.isNull(cameraInfo.getCameraCard())){
@@ -71,7 +81,8 @@ public class CameraListener extends AnalysisEventListener<CameraInfo> {
         list.stream().forEach(item ->{
             Camera camera = new Camera();
             camera.setSerialNum(item.getSerialNum());
-            camera.setManufactor(item.getManufactor());
+            Supplier supplier = supplierService.getBaseMapper().selectOne(new QueryWrapper<Supplier>().eq("name", item.getSupplier()));
+            camera.setSupplierId(supplier.getId());
             camera.setCameraCard(item.getCameraCard());
             camera.setCreateTime(System.currentTimeMillis());
             camera.setUpdateTime(System.currentTimeMillis());
