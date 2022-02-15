@@ -7,6 +7,13 @@
         <result property="batchNo" column="batch_no" jdbcType="VARCHAR"/>
         <result property="remarks" column="remarks" jdbcType="VARCHAR"/>
         <result property="createTime" column="create_time" jdbcType="INTEGER"/>
+        <result property="type" column="tyep" jdbcType="INTEGER"/>
+        <result property="modelId" column="model_id"/>
+        <result property="productType" column="product_type"/>
+        <result property="productNum" column="product_num"/>
+        <result property="supplierId" column="supplier_id"/>
+        <result property="represent" column="represent"/>
+        <result property="updateTime" column="update_time"/>
     </resultMap>
 
     <!--查询单个-->
@@ -20,11 +27,17 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="BatchMap">
         select
-          id, batch_no, remarks, create_time
+          id, batch_no, remarks, create_time, type, model_id, product_type, product_num, supplier_id, represent, update_time
         from t_batch
         <where>
             <if test="batchNo != null and batchNo != '' ">
                 and batch_no like concat('%',#{batchNo},'%')
+            </if>
+            <if test="modelId != null">
+                and model_id = #{modelId}
+            </if>
+            <if test="supplierId != null">
+                and supplier_id = #{supplierId}
             </if>
         </where>
         order by create_time desc
@@ -51,11 +64,18 @@
             </if>
         </where>
     </select>
+
     <select id="count" resultType="java.lang.Long">
         select count(1) from t_batch
         <where>
             <if test="batchNo != null and batchNo != '' ">
-                and batch_no = #{batchNo}
+                and batch_no like concat('%',#{batchNo},'%')
+            </if>
+            <if test="modelId != null">
+                and model_id = #{modelId}
+            </if>
+            <if test="supplierId != null">
+                and supplier_id = #{supplierId}
             </if>
         </where>
     </select>
@@ -70,14 +90,14 @@
     <update id="update">
         update t_batch
         <set>
-            <if test="batchNo != null and batchNo != ''">
-                batch_no = #{batchNo},
+            <if test="type != null">
+                type = #{type},
             </if>
             <if test="remarks != null and remarks != ''">
                 remarks = #{remarks},
             </if>
-            <if test="createTime != null">
-                create_time = #{createTime},
+            <if test="represent != null and represent != ''">
+                represent = #{represent},
             </if>
         </set>
         where id = #{id}

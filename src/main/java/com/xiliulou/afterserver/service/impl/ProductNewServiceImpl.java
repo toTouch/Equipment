@@ -353,4 +353,12 @@ public class ProductNewServiceImpl implements ProductNewService {
 
         return R.ok();
     }
+
+    @Override
+    public List<ProductNew> queryByBatch(Long id) {
+        QueryWrapper<ProductNew> wrapper = new QueryWrapper<>();
+        wrapper.eq("batch_id", id);
+        List<ProductNew> productNewList = productNewMapper.selectList(wrapper);
+        return productNewList;
+    }
 }

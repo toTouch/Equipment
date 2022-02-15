@@ -1,10 +1,12 @@
 package com.xiliulou.afterserver.controller.admin;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.xiliulou.afterserver.entity.Batch;
-import com.xiliulou.afterserver.entity.ProductFile;
+import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
+import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.service.BatchService;
+import com.xiliulou.afterserver.service.ProductService;
+import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.util.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +33,12 @@ public class AdminJsonBatchController {
     private BatchService batchService;
     @Autowired
     private ProductFileMapper productFileMapper;
+    @Autowired
+    SupplierService supplierService;
+    @Autowired
+    ProductNewMapper productNewMapper;
+    @Autowired
+    ProductService productService;
 
 
     /**
@@ -48,17 +56,8 @@ public class AdminJsonBatchController {
      * 保存
      */
     @PostMapping("/admin/batch")
-    @Transactional(rollbackFor = Exception.class)
     public R saveBatch(@RequestBody Batch batch){
-        Batch insert = this.batchService.insert(batch);
-
-        ProductFile productFile = new ProductFile();
-        productFile.setProductId(insert.getId());
-        productFile.setFileStr(batch.getFileStr());
-        productFile.setProductFileName(batch.getProductFileName());
-        productFileMapper.insert(productFile);
-
-        return R.ok();
+        return batchService.saveBatch(batch);
     }
 
     /**
@@ -89,6 +88,16 @@ public class AdminJsonBatchController {
             batches.forEach(item -> {
                 List<ProductFile> productFiles = productFileMapper.selectList(new LambdaQueryWrapper<ProductFile>().eq(ProductFile::getProductId, item.getId()));
                 item.setProductFileList(productFiles);
+
+                Product product = productService.getById(item.getModelId());
+                if(Objects.nonNull(product)){
+                    item.setModelName(product.getName());
+                }
+
+                Supplier supplier = supplierService.getById(item.getSupplierId());
+                if(Objects.nonNull(supplier)){
+                    item.setSupplierName(supplier.getName());
+                }
             });
         }
 
@@ -104,6 +113,6 @@ public class AdminJsonBatchController {
 
     @DeleteMapping("/admin/batch/{id}")
     public R delOne(@PathVariable("id") Long id){
-        return R.ok(batchService.deleteById(id));
+        return batchService.delOne(id);
     }
 }
