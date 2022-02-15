@@ -43,7 +43,7 @@ public class ImportTemplateServiceImpl extends ServiceImpl<ImportTemplateMapper,
         if(Objects.isNull(importTemplateOld)){
             ImportTemplate importTemplate = new ImportTemplate();
             importTemplate.setFileName(importTemplateQuery.getFileName());
-            importTemplate.setType(importTemplate.getType());
+            importTemplate.setType(importTemplateQuery.getType());
             importTemplate.setCreateTime(System.currentTimeMillis());
             importTemplate.setUpdateTime(System.currentTimeMillis());
             len = importTemplateMapper.insert(importTemplate);
