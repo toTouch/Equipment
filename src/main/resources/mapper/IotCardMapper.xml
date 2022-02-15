@@ -11,7 +11,7 @@
         <result column="activation_time" property="activationTime"></result>
         <result column="packages" property="packages"></result>
         <result column="term_of_alidity" property="termOfAlidity"></result>
-        <result column="expirationTime" property="expirationTime"></result>
+        <result column="expiration_time" property="expirationTime"></result>
         <result column="create_time" property="createTime"></result>
         <result column="update_time" property="updateTime"></result>
         <result column="del_flag" property="delFlag"></result>
