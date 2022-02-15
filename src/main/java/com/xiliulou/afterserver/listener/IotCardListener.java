@@ -75,8 +75,8 @@ public class IotCardListener extends AnalysisEventListener<IotCardInfo> {
         if(Objects.isNull(iotCardInfo.getTermOfAlidity())){
             throw new RuntimeException("请传入有效时间");
         }
-        if(iotCardInfo.getTermOfAlidity() % IotCard.TERM_OF_ALIDITY_UNIT == 0){
-            throw new RuntimeException("效时间必须为六的倍数");
+        if(iotCardInfo.getTermOfAlidity() % IotCard.TERM_OF_ALIDITY_UNIT != 0){
+            throw new RuntimeException("有效时间必须为六的倍数");
         }
         list.add(iotCardInfo);
         if (list.size() >= BATCH_COUNT) {
