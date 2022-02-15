@@ -97,7 +97,7 @@ public class AdminJsonCameraController extends BaseController {
         return R.ok();
     }
 
-    @GetMapping("admin/iotCard/exportExcel")
+    @GetMapping("admin/camera/exportExcel")
     public void exportExcel(CameraQuery cameraQuery, HttpServletResponse response) {
         cameraService.exportExcel(cameraQuery, response);
     }
