@@ -68,6 +68,10 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
             return R.fail("有效时间必须是六的倍数");
         }
 
+        if(Objects.isNull(iotCard.getExpirationTime())){
+            return R.fail("请传入过期时间");
+        }
+
         iotCard.setCreateTime(System.currentTimeMillis());
         iotCard.setUpdateTime(System.currentTimeMillis());
         iotCard.setDelFlag(IotCard.DEL_NORMAL);
@@ -118,6 +122,10 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
             return R.fail("有效时间必须是六的倍数");
         }
 
+        if(Objects.isNull(iotCard.getExpirationTime())){
+            return R.fail("请传入过期时间");
+        }
+
         iotCard.setUpdateTime(System.currentTimeMillis());
         iotCard.setDelFlag(IotCard.DEL_NORMAL);
 
@@ -142,7 +150,20 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
         expirationHandle();
         Page page = PageUtil.getPage(offset, size);
         IPage iPage = iotCardMapper.getPage(page, iotCard);
+        List<IotCard> list = iPage.getRecords();
+        if(CollectionUtils.isEmpty(list)){
+            list.stream().forEach(item -> {
+                Batch batch = batchService.queryByIdFromDB(item.getBatchId());
+                if(Objects.nonNull(batch)){
+                    item.setBatchName(batch.getBatchNo());
+                }
 
+                Supplier supplier = supplierService.getById(item.getSupplierId());
+                if(Objects.nonNull(supplier)){
+                    item.setSupplierName(supplier.getName());
+                }
+            });
+        }
         Map result = new HashMap(2);
         result.put("data", iPage.getRecords());
         result.put("total", iPage.getTotal());
