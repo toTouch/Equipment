@@ -48,8 +48,4 @@ public class IotCard {
     private Long createTimeStart;
     @TableField(exist = false)
     private Long createTimeEnd;
-    @TableField(exist = false)
-    private String batchName;
-    @TableField(exist = false)
-    private String supplierName;
 }
