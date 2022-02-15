@@ -154,7 +154,7 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
         IPage iPage = iotCardMapper.getPage(page, iotCard);
         List<IotCard> list = iPage.getRecords();
         List<IotCardVo> data = new ArrayList<>();
-        if(CollectionUtils.isEmpty(list)){
+        if(!CollectionUtils.isEmpty(list)){
             list.stream().forEach(item -> {
                 IotCardVo iotCardVo = new IotCardVo();
                 BeanUtils.copyProperties(item, iotCardVo);
