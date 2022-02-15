@@ -16,8 +16,10 @@ import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.vo.IotCardExportExcelVo;
+import com.xiliulou.afterserver.web.vo.IotCardVo;
 import com.xiliulou.afterserver.web.vo.PointExcelVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -151,21 +153,27 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
         Page page = PageUtil.getPage(offset, size);
         IPage iPage = iotCardMapper.getPage(page, iotCard);
         List<IotCard> list = iPage.getRecords();
+        List<IotCardVo> data = new ArrayList<>();
         if(CollectionUtils.isEmpty(list)){
             list.stream().forEach(item -> {
+                IotCardVo iotCardVo = new IotCardVo();
+                BeanUtils.copyProperties(item, iotCardVo);
+
                 Batch batch = batchService.queryByIdFromDB(item.getBatchId());
                 if(Objects.nonNull(batch)){
-                    item.setBatchName(batch.getBatchNo());
+                    iotCardVo.setBatchName(batch.getBatchNo());
                 }
 
                 Supplier supplier = supplierService.getById(item.getSupplierId());
                 if(Objects.nonNull(supplier)){
-                    item.setSupplierName(supplier.getName());
+                    iotCardVo.setSupplierName(supplier.getName());
                 }
+
+                data.add(iotCardVo);
             });
         }
         Map result = new HashMap(2);
-        result.put("data", iPage.getRecords());
+        result.put("data", data);
         result.put("total", iPage.getTotal());
         return R.ok(result);
     }
