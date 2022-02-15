@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.service;
 
 import com.xiliulou.afterserver.entity.Batch;
+import com.xiliulou.afterserver.util.R;
 
 import java.util.List;
 
@@ -64,4 +65,8 @@ public interface BatchService {
     Long count(String batchNo);
 
     Batch queryByName(String batch);
+
+    R saveBatch(Batch batch);
+
+    R delOne(Long id);
 }

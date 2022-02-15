@@ -35,7 +35,7 @@ public class AdminJsonProductNewController {
     @Autowired
     private WarehouseService warehouseService;
 
-    @PostMapping("/admin/productNew")
+    //@PostMapping("/admin/productNew")
     public R saveAdminPointNew(@RequestBody ProductNew productNew){
         return productNewService.saveAdminProductNew(productNew);
     }

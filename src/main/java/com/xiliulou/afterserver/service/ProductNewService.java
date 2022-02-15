@@ -83,4 +83,6 @@ public interface ProductNewService {
     R queryLikeProductByNo(String no);
 
     R bindPoint(Long productId, Long pointId, Integer pointType);
+
+    List<ProductNew> queryByBatch(Long id);
 }
