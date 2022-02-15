@@ -26,10 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author Hardy
@@ -118,7 +115,7 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
     }
 
     @Override
-    public Page getPage(Long offset, Long size, CameraQuery cameraQuery) {
+    public R getPage(Long offset, Long size, CameraQuery cameraQuery) {
         Page page = PageUtil.getPage(offset, size);
 
         LambdaQueryWrapper<Camera> queryWrapper = new LambdaQueryWrapper<>();
@@ -129,8 +126,12 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
                 .eq(Camera::getDelFlag, Camera.DEL_NORMAL)
                 .orderByDesc(Camera::getCreateTime);
 
+        page = baseMapper.selectPage(page, queryWrapper);
 
-        return baseMapper.selectPage(page, queryWrapper);
+        Map<String, Object> result = new HashMap<>();
+        result.put("data", page.getRecords());
+        result.put("total", page.getTotal());
+        return R.ok(result);
     }
 
     @Override

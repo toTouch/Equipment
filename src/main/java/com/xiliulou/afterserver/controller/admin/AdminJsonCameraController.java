@@ -63,7 +63,7 @@ public class AdminJsonCameraController extends BaseController {
     }
 
     @GetMapping("admin/camera/list")
-    public Page getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, CameraQuery cameraQuery) {
+    public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, CameraQuery cameraQuery) {
         return cameraService.getPage(offset, size, cameraQuery);
     }
 

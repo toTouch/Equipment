@@ -22,7 +22,7 @@ public interface CameraService extends IService<Camera> {
 
     R deleteOne(Long id);
 
-    Page getPage(Long offset, Long size, CameraQuery cameraQuery);
+    R getPage(Long offset, Long size, CameraQuery cameraQuery);
 
     void exportExcel(CameraQuery cameraQuery, HttpServletResponse response);
 }
