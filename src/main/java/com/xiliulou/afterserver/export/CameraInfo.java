@@ -13,7 +13,7 @@ public class CameraInfo {
     @ExcelProperty(index = 0)
     private String serialNum;
     @ExcelProperty(index = 1)
-    private String manufactor;
+    private String supplier;
     @ExcelProperty(index = 2)
     private String cameraCard;
 }
