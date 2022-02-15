@@ -11,7 +11,9 @@ import com.xiliulou.afterserver.util.MinioUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.ImportTemplateQuery;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
@@ -23,6 +25,8 @@ import java.util.Objects;
  * @date 2022/2/14 16:46
  * @mood
  */
+@Service
+@Slf4j
 public class ImportTemplateServiceImpl extends ServiceImpl<ImportTemplateMapper, ImportTemplate> implements ImportTemplateService {
     @Autowired
     ImportTemplateMapper importTemplateMapper;
