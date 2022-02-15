@@ -114,7 +114,7 @@
                 batch_id = #{batchId},
             </if>
             <if test="supplierId != null">
-                batch_id = #{supplierId},
+                supplier_id = #{supplierId},
             </if>
             <if test="operator != null">
                 operator = #{operator},
