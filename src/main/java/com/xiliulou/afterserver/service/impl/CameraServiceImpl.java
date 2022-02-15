@@ -116,7 +116,7 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
 
     @Override
     public R getPage(Long offset, Long size, CameraQuery cameraQuery) {
-        Page page = PageUtil.getPage(offset, size);
+        Page<Camera> page = PageUtil.getPage(offset, size);
 
         LambdaQueryWrapper<Camera> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(Objects.nonNull(cameraQuery.getSerialNum()), Camera::getSerialNum, cameraQuery.getSerialNum())
@@ -127,6 +127,15 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
                 .orderByDesc(Camera::getCreateTime);
 
         page = baseMapper.selectPage(page, queryWrapper);
+
+        if(CollectionUtils.isNotEmpty(page.getRecords())){
+            page.getRecords().stream().forEach(item -> {
+                Supplier supplier = supplierService.getById(item.getSupplierId());
+                if(Objects.nonNull(supplier)){
+                    item.setSupplierName(supplier.getName());
+                }
+            });
+        }
 
         Map<String, Object> result = new HashMap<>();
         result.put("data", page.getRecords());
