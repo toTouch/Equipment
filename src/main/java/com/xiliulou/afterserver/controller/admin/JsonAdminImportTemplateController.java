@@ -8,6 +8,7 @@ import com.xiliulou.afterserver.web.query.ImportTemplateQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -20,7 +21,7 @@ public class JsonAdminImportTemplateController extends BaseController {
     ImportTemplateService importTemplateService;
 
     @PostMapping("admin/importTemplate/upload")
-    public R upload(ImportTemplateQuery importTemplateQuery){
+    public R upload(@RequestBody ImportTemplateQuery importTemplateQuery){
         return importTemplateService.upload(importTemplateQuery);
     }
 
