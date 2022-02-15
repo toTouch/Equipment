@@ -5,11 +5,9 @@ import com.xiliulou.afterserver.entity.ImportTemplate;
 import com.xiliulou.afterserver.service.ImportTemplateService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ImportTemplateQuery;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -18,6 +16,8 @@ import javax.servlet.http.HttpServletResponse;
  * @date 2022/2/14 16:48
  * @mood
  */
+@RestController
+@Slf4j
 public class JsonAdminImportTemplateController extends BaseController {
     @Autowired
     ImportTemplateService importTemplateService;
