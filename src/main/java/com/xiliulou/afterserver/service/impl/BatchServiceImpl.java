@@ -108,6 +108,6 @@ public class BatchServiceImpl implements BatchService {
 
     @Override
     public Batch queryByName(String batchName) {
-        return batchMapper.selectOne(new QueryWrapper<Batch>().eq("name", batchName));
+        return batchMapper.selectOne(new QueryWrapper<Batch>().eq("batch_no", batchName));
     }
 }
