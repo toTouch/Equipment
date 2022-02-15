@@ -11,7 +11,7 @@ import lombok.Data;
 public class CameraQuery {
     private Long id;
     private String serialNum;
-    private String supplierId;
+    private Long supplierId;
     private String cameraCard;
     private Long createTime;
     private Long updateTime;
