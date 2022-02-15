@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,4 +28,7 @@ public class Camera {
 
     public static final Integer DEL_NORMAL = 0;
     public static final Integer DEL_DEL = 1;
+
+    @TableField(exist = false)
+    private String supplierName;
 }
