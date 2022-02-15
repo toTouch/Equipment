@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @author Hardy
  * @date 2022/2/14 16:48
@@ -26,7 +28,7 @@ public class JsonAdminImportTemplateController extends BaseController {
     }
 
     @GetMapping("admin/importTemplate/info")
-    public R info(@RequestParam("type") String type){
-        return importTemplateService.infoByType(type);
+    public R info(@RequestParam("type") String type, HttpServletResponse response){
+         return importTemplateService.infoByType(type, response);
     }
 }
