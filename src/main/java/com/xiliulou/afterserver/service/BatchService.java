@@ -36,7 +36,7 @@ public interface BatchService {
      * @param limit  查询条数
      * @return 对象列表
      */
-    List<Batch> queryAllByLimit(String batchNo,int offset, int limit);
+    List<Batch> queryAllByLimit(String batchNo,int offset, int limit, Long modelId, Long supplierId);
 
     /**
      * 新增数据

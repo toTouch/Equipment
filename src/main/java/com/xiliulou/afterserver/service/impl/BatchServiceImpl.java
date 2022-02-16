@@ -76,8 +76,8 @@ public class BatchServiceImpl implements BatchService {
      * @return 对象列表
      */
     @Override
-    public List<Batch> queryAllByLimit(String batchNo,int offset, int limit) {
-        return this.batchMapper.queryAllByLimit(batchNo,offset, limit);
+    public List<Batch> queryAllByLimit(String batchNo,int offset, int limit, Long modelId, Long supplierId) {
+        return this.batchMapper.queryAllByLimit(batchNo,offset, limit,modelId , supplierId);
     }
 
     /**
@@ -150,6 +150,11 @@ public class BatchServiceImpl implements BatchService {
         if(Objects.isNull(supplier.getCode())){
             return R.fail("供应商编码为空,请重新选择");
         }
+
+        if(Objects.isNull(batch.getType())){
+            return R.fail("请输入批次类型");
+        }
+
         batch.setCreateTime(System.currentTimeMillis());
         batch.setUpdateTime(System.currentTimeMillis());
         Batch insert = this.insert(batch);
