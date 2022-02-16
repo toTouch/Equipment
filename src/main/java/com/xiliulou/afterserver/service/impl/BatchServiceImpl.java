@@ -172,6 +172,7 @@ public class BatchServiceImpl implements BatchService {
         productNew.setStatus(0);
         productNew.setType(batch.getProductType());
         productNew.setSupplierId(batch.getSupplierId());
+        productNew.setProductCount(batch.getProductNum());
 
         StringBuilder codeStr = new StringBuilder();
         codeStr.append(product.getCode()).append("-");
