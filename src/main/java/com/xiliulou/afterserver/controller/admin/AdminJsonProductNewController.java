@@ -154,4 +154,5 @@ public class AdminJsonProductNewController {
         return productNewService.bindPoint(productId, pointId, pointType);
     }
 
+
 }

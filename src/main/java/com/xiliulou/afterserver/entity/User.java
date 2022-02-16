@@ -23,9 +23,10 @@ public class User {
     private Integer roleId;
     private Long createTime;
     private Integer userType;
+    private Long supplierId;
 
     public static final Integer AFTER_USER_ROLE = 1;
-    public static final Integer TYPE_USER_SUPER = 0;
+    //public static final Integer TYPE_USER_SUPER = 0;
 
     public static final Integer TYPE_SUPPER_ADMIN = 1;
     public static final Integer TYPE_AFTER_SALE = 2;
