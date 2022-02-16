@@ -53,10 +53,6 @@ public class Batch {
      */
     private Long supplierId;
     /**
-     * 描述
-     */
-    private String represent;
-    /**
      * 更新时间
      */
     private Long updateTime;
