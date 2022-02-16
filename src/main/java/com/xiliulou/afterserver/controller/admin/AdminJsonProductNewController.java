@@ -154,5 +154,8 @@ public class AdminJsonProductNewController {
         return productNewService.bindPoint(productId, pointId, pointType);
     }
 
-
+    @PostMapping("/admin/check/compression")
+    public R checkCompression(){
+        return null;
+    }
 }
