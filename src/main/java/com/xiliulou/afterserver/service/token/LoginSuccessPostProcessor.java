@@ -14,6 +14,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * @author Hardy
@@ -33,7 +34,7 @@ public class LoginSuccessPostProcessor implements AuthenticationSuccessPostProce
         String ip = getIP(request);
         loginInfo.setIp(ip);
         loginInfo.setUid(user.getUid());
-        loginInfo.setType(type);
+        loginInfo.setType(Objects.isNull(type) ? 0 : type);
         loginInfo.setLoginTime(System.currentTimeMillis());
         loginInfoService.insert(loginInfo);
     }
