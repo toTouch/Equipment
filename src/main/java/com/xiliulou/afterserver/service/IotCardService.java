@@ -17,4 +17,6 @@ public interface IotCardService extends IService<IotCard> {
     R getPage(Long offset, Long size, IotCard iotCard);
 
     void exportExcel(IotCard iotCard, HttpServletResponse response);
+
+    IotCard queryBySn(String iotCard);
 }

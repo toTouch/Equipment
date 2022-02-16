@@ -12,6 +12,7 @@ import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DataUtil;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.CompressionQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +47,8 @@ public class ProductNewServiceImpl implements ProductNewService {
     private PointNewMapper pointNewMapper;
     @Autowired
     private SupplierService supplierService;
+    @Autowired
+    private IotCardService iotCardService;
 
     /**
      * 通过ID查询单条数据从DB
@@ -360,5 +363,27 @@ public class ProductNewServiceImpl implements ProductNewService {
         wrapper.eq("batch_id", id);
         List<ProductNew> productNewList = productNewMapper.selectList(wrapper);
         return productNewList;
+    }
+
+    @Override
+    public R checkCompression(CompressionQuery compression) {
+        List<String> notFindNos = new ArrayList<>();
+
+        if(Objects.isNull(compression.getNo())){
+            return R.fail(null, null, "请填写主柜资产编码");
+        }
+
+        ProductNew mainProduct = this.queryByNo(compression.getNo());
+        if(Objects.isNull(mainProduct)){
+            return R.fail(null, null, "主柜资产编码不存在，请核对");
+        }
+
+        IotCard iotCard = iotCardService.queryBySn(compression.getIotCard());
+
+        return null;
+    }
+
+    private ProductNew queryByNo(String no){
+        return this.productNewMapper.selectOne(new QueryWrapper<ProductNew>().eq("no", no));
     }
 }

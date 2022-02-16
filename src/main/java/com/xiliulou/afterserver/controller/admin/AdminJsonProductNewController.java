@@ -4,6 +4,7 @@ import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.PointProductBindMapper;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.CompressionQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -155,7 +156,7 @@ public class AdminJsonProductNewController {
     }
 
     @PostMapping("/admin/check/compression")
-    public R checkCompression(){
-        return null;
+    public R checkCompression(@RequestBody CompressionQuery compression){
+        return productNewService.checkCompression(compression);
     }
 }
