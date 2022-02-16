@@ -70,6 +70,7 @@ public class AdminJsonProductNewController {
                     if(Objects.nonNull(pointNew)){
                         item.setPointId(pointNew.getId().intValue());
                         item.setPointName(pointNew.getName());
+                        item.setPointType(PointProductBind.TYPE_POINT);
                     }
                 }
                 if(Objects.equals(pointProductBind.getPointType(), PointProductBind.TYPE_WAREHOUSE)){
@@ -77,6 +78,15 @@ public class AdminJsonProductNewController {
                     if(Objects.nonNull(wareHouse)){
                         item.setPointId(wareHouse.getId());
                         item.setPointName(wareHouse.getWareHouses());
+                        item.setPointType(PointProductBind.TYPE_WAREHOUSE);
+                    }
+                }
+                if(Objects.equals(pointProductBind.getPointType(), PointProductBind.TYPE_SUPPLIER)){
+                    Supplier supplier = supplierService.getById(pointProductBind.getPointId());
+                    if(Objects.nonNull(supplier)){
+                        item.setPointId(supplier.getId().intValue());
+                        item.setPointName(supplier.getName());
+                        item.setPointType(PointProductBind.TYPE_SUPPLIER);
                     }
                 }
             }
