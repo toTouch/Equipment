@@ -34,7 +34,7 @@ public class LoginSuccessPostProcessor implements AuthenticationSuccessPostProce
         String ip = getIP(request);
         loginInfo.setIp(ip);
         loginInfo.setUid(user.getUid());
-        loginInfo.setType(Objects.isNull(type) ? 0 : type);
+        loginInfo.setType(type);
         loginInfo.setLoginTime(System.currentTimeMillis());
         loginInfoService.insert(loginInfo);
     }
