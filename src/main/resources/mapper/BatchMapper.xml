@@ -12,7 +12,6 @@
         <result property="productType" column="product_type"/>
         <result property="productNum" column="product_num"/>
         <result property="supplierId" column="supplier_id"/>
-        <result property="represent" column="represent"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
@@ -27,7 +26,7 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="BatchMap">
         select
-          id, batch_no, remarks, create_time, type, model_id, product_type, product_num, supplier_id, represent, update_time
+          id, batch_no, remarks, create_time, type, model_id, product_type, product_num, supplier_id, update_time
         from t_batch
         <where>
             <if test="batchNo != null and batchNo != '' ">
@@ -82,8 +81,8 @@
 
     <!--新增所有列-->
     <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
-        insert into t_batch(batch_no, remarks, create_time)
-        values (#{batchNo}, #{remarks}, #{createTime})
+        insert into t_batch(batch_no, remarks, create_time,type,model_id, product_type, product_num, supplier_id, update_time)
+        values (#{batchNo}, #{remarks}, #{createTime}, #{type}, #{modelId}, #{productType}, #{productNum}, #{supplierId}, #{updateTime})
     </insert>
 
     <!--通过主键修改数据-->
@@ -95,9 +94,6 @@
             </if>
             <if test="remarks != null and remarks != ''">
                 remarks = #{remarks},
-            </if>
-            <if test="represent != null and represent != ''">
-                represent = #{represent},
             </if>
         </set>
         where id = #{id}
