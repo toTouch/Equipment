@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -46,6 +47,10 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
 
         if(Objects.isNull(iotCard.getSn())){
             return  R.fail("物联网卡号不能为空");
+        }
+        IotCard iotCardOld = this.queryBySn(iotCard.getSn());
+        if(Objects.nonNull(iotCardOld)){
+
         }
 
         Batch batch = batchService.queryByIdFromDB(iotCard.getBatchId());
@@ -234,6 +239,11 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
             log.error("导出报表失败！", e);
         }
         throw new CustomBusinessException("导出报表失败！请联系客服！");
+    }
+
+    @Override
+    public IotCard queryBySn(String iotCard) {
+        return iotCardMapper.selectOne(new QueryWrapper<IotCard>().eq("sn", iotCard));
     }
 
     private void expirationHandle(){

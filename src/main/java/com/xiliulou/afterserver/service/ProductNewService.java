@@ -2,6 +2,7 @@ package com.xiliulou.afterserver.service;
 
 import com.xiliulou.afterserver.entity.ProductNew;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.CompressionQuery;
 
 import java.util.List;
 
@@ -85,4 +86,6 @@ public interface ProductNewService {
     R bindPoint(Long productId, Long pointId, Integer pointType);
 
     List<ProductNew> queryByBatch(Long id);
+
+    R checkCompression(CompressionQuery compression);
 }
