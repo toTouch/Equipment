@@ -65,5 +65,5 @@ public interface BatchMapper extends BaseMapper<Batch> {
      */
     int deleteById(Long id);
 
-    Long count(@Param("batchNo") String batchNo);
+    Long count(@Param("batchNo") String batchNo, @Param("modelId")Long modelId, @Param("supplierId")Long supplierId);
 }
