@@ -44,8 +44,8 @@
 
     <!--新增所有列-->
     <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
-        insert into t_point_product_bind(product_id, point_id)
-        values (#{productId}, #{pointId})
+        insert into t_point_product_bind(product_id, point_id, point_type)
+        values (#{productId}, #{pointId}, #{pointType})
     </insert>
 
     <!--通过主键修改数据-->
