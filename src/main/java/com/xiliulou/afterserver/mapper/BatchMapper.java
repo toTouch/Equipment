@@ -30,7 +30,7 @@ public interface BatchMapper extends BaseMapper<Batch> {
      * @param limit  查询条数
      * @return 对象列表
      */
-    List<Batch> queryAllByLimit(@Param("batchNo") String batchNo, @Param("offset") int offset, @Param("limit") int limit);
+    List<Batch> queryAllByLimit(@Param("batchNo") String batchNo, @Param("offset") int offset, @Param("limit") int limit, @Param("modelId") Long modelId,  @Param("supplierId") Long supplierId);
 
 
     /**

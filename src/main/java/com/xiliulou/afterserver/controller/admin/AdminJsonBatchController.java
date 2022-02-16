@@ -65,6 +65,9 @@ public class AdminJsonBatchController {
      */
     @PutMapping("/admin/batch")
     public R updateBatch(@RequestBody Batch batch){
+        if(Objects.isNull(batch.getType())){
+            return R.fail("请输入批次类型");
+        }
         this.batchService.update(batch);
 
         ProductFile productFile = new ProductFile();
@@ -80,10 +83,12 @@ public class AdminJsonBatchController {
      */
     @GetMapping("/admin/batch/list")
     public R selectOne(@RequestParam(value = "batchNo",required = false) String batchNo,
+                       @RequestParam(value = "modelId",required = false)Long modelId,
+                       @RequestParam(value = "supplierId",required = false)Long supplierId,
                        @RequestParam(value = "offset") int offset,
                        @RequestParam(value = "limit") int limit) {
 
-        List<Batch> batches = this.batchService.queryAllByLimit(batchNo, offset, limit);
+        List<Batch> batches = this.batchService.queryAllByLimit(batchNo, offset, limit, modelId, supplierId);
         if (Objects.nonNull(batches)){
             batches.forEach(item -> {
                 List<ProductFile> productFiles = productFileMapper.selectList(new LambdaQueryWrapper<ProductFile>().eq(ProductFile::getProductId, item.getId()));
