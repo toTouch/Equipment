@@ -39,4 +39,5 @@ public class PointProductBind {
 
     public static final Integer TYPE_POINT = 1;
     public static final Integer TYPE_WAREHOUSE = 2;
+    public static final Integer TYPE_SUPPLIER = 3;
 }

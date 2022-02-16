@@ -129,6 +129,8 @@ public class ProductNew {
     private String pointName;
     @TableField(exist = false)
     private String supplierName;
+    @TableField(exist = false)
+    private Integer pointType;
    // @TableField(exist = false)
    // private String supplierName;
 }

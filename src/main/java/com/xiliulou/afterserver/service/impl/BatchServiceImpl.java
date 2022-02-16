@@ -7,10 +7,7 @@ import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.BatchMapper;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
-import com.xiliulou.afterserver.service.BatchService;
-import com.xiliulou.afterserver.service.ProductNewService;
-import com.xiliulou.afterserver.service.ProductService;
-import com.xiliulou.afterserver.service.SupplierService;
+import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,6 +41,8 @@ public class BatchServiceImpl implements BatchService {
     private ProductFileMapper productFileMapper;
     @Autowired
     private ProductNewMapper productNewMapper;
+    @Autowired
+    private PointProductBindService pointProductBindService;
 
     /**
      * 通过ID查询单条数据从DB
@@ -203,6 +202,12 @@ public class BatchServiceImpl implements BatchService {
             productNew.setCreateTime(System.currentTimeMillis());
             productNew.setDelFlag(ProductNew.DEL_NORMAL);
             productNewMapper.insertOne(productNew);
+
+            PointProductBind bind = new PointProductBind();
+            bind.setPointId(batch.getSupplierId());
+            bind.setProductId(productNew.getId());
+            bind.setPointType(PointProductBind.TYPE_SUPPLIER);
+            pointProductBindService.insert(bind);
         }
 
 
