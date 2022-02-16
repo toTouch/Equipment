@@ -107,7 +107,7 @@ public class AdminJsonBatchController {
         }
 
 
-        Long count = this.batchService.count(batchNo);
+        Long count = this.batchService.count(batchNo, modelId, supplierId);
 
         HashMap<String, Object> stringObjectHashMap = new HashMap<>(2);
         stringObjectHashMap.put("data",batches);

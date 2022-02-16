@@ -118,8 +118,8 @@ public class BatchServiceImpl implements BatchService {
     }
 
     @Override
-    public Long count(String batchNo) {
-        return this.batchMapper.count(batchNo);
+    public Long count(String batchNo, Long modelId, Long supplierId) {
+        return this.batchMapper.count(batchNo, modelId, supplierId);
     }
 
     @Override
