@@ -241,4 +241,28 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
                 .eq("serial_num", serialNum)
                 .eq("del_flag", Camera.DEL_NORMAL));
     }
+
+    @Override
+    public List<Camera> likeCameraBySerialNum(String serialNum) {
+        return this.getBaseMapper().selectList(new LambdaQueryWrapper<Camera>()
+                .like(StringUtils.isNotBlank(serialNum), Camera::getSerialNum, serialNum)
+                .eq(Camera::getDelFlag, Camera.DEL_NORMAL));
+    }
+
+    @Override
+    public R likeSerialNumPull(String serialNum) {
+        List<Camera> list = likeCameraBySerialNum(serialNum);
+        List<Map> result = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(list)){
+            list.forEach(item -> {
+                Map<String, Object> vo = new HashMap<>();
+                vo.put("id", item.getId());
+                vo.put("serialNum", item.getSerialNum());
+
+                result.add(vo);
+            });
+        }
+
+        return R.ok(result);
+    }
 }
