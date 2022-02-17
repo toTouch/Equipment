@@ -69,4 +69,6 @@ public interface BatchService {
     R saveBatch(Batch batch);
 
     R delOne(Long id);
+
+    R queryByfactory();
 }

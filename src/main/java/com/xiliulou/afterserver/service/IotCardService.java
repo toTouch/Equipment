@@ -19,4 +19,6 @@ public interface IotCardService extends IService<IotCard> {
     void exportExcel(IotCard iotCard, HttpServletResponse response);
 
     IotCard queryBySn(String iotCard);
+
+    R snLike(String sn);
 }

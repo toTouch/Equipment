@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.Camera;
+import com.xiliulou.afterserver.entity.IotCard;
 import com.xiliulou.afterserver.entity.Supplier;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.CameraMapper;
@@ -40,6 +41,8 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
     CameraMapper cameraMapper;
     @Autowired
     SupplierService supplierService;
+    @Autowired
+    IotCardServiceImpl iotCardService;
 
     @Override
     public R saveOne(CameraQuery cameraQuery) {
@@ -59,9 +62,6 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
             return R.fail("未查到相关摄像头厂商");
         }
 
-        if(Objects.isNull(camera.getCameraCard())){
-            return R.fail("请填写摄像头物联网卡号");
-        }
 
         camera.setId(null);
         camera.setCreateTime(System.currentTimeMillis());
@@ -99,9 +99,6 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
             return R.fail("未查到相关摄像头厂商");
         }
 
-        if(Objects.isNull(camera.getCameraCard())){
-            return R.fail("请填写摄像头物联网卡号");
-        }
 
         camera.setUpdateTime(System.currentTimeMillis());
         this.updateById(camera);
@@ -121,7 +118,6 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
         LambdaQueryWrapper<Camera> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(Objects.nonNull(cameraQuery.getSerialNum()), Camera::getSerialNum, cameraQuery.getSerialNum())
                 .like(Objects.nonNull(cameraQuery.getSupplierId()), Camera::getSupplierId, cameraQuery.getSupplierId())
-                .like(Objects.nonNull(cameraQuery.getCameraCard()), Camera::getCameraCard, cameraQuery.getCameraCard())
                 .between(Objects.nonNull(cameraQuery.getCreateTimeStart()) && Objects.nonNull(cameraQuery.getCreateTimeEnd()), Camera::getCreateTime, cameraQuery.getCreateTimeStart(), cameraQuery.getCreateTimeEnd())
                 .eq(Camera::getDelFlag, Camera.DEL_NORMAL)
                 .orderByDesc(Camera::getCreateTime);
@@ -133,6 +129,11 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
                 Supplier supplier = supplierService.getById(item.getSupplierId());
                 if(Objects.nonNull(supplier)){
                     item.setSupplierName(supplier.getName());
+                }
+
+                IotCard iotCard = iotCardService.getById(item.getIotCardId());
+                if(Objects.nonNull(iotCard)){
+                    item.setIotCardNo(iotCard.getSn());
                 }
             });
         }
@@ -148,7 +149,6 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
         LambdaQueryWrapper<Camera> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(Objects.nonNull(cameraQuery.getSerialNum()), Camera::getSerialNum, cameraQuery.getSerialNum())
                 .like(Objects.nonNull(cameraQuery.getSupplierId()), Camera::getSupplierId, cameraQuery.getSupplierId())
-                .like(Objects.nonNull(cameraQuery.getCameraCard()), Camera::getCameraCard, cameraQuery.getCameraCard())
                 .between(Objects.nonNull(cameraQuery.getCreateTimeStart()) && Objects.nonNull(cameraQuery.getCreateTimeEnd()), Camera::getCreateTime, cameraQuery.getCreateTimeStart(), cameraQuery.getCreateTimeEnd())
                 .eq(Camera::getDelFlag, Camera.DEL_NORMAL)
                 .orderByDesc(Camera::getCreateTime);
@@ -165,8 +165,12 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
             CameraExportExcelVo cameraVo = new CameraExportExcelVo();
 
             cameraVo.setSerialNum(item.getSerialNum());
-            cameraVo.setCameraCard(item.getCameraCard());
             cameraVo.setCreateTime(simpleDateFormat.format(new Date(item.getCreateTime())));
+
+            IotCard iotCard = iotCardService.getById(item.getIotCardId());
+            if(Objects.nonNull(iotCard)){
+                cameraVo.setCameraCard(iotCard.getSn());
+            }
 
             Supplier supplier = supplierService.getById(item.getSupplierId());
             if(Objects.nonNull(supplier)){

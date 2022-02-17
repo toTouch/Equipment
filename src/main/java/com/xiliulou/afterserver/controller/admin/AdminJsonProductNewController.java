@@ -4,6 +4,7 @@ import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.PointProductBindMapper;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.CompressionQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -158,5 +159,28 @@ public class AdminJsonProductNewController {
     @PostMapping("/admin/check/compression")
     public R checkCompression(@RequestBody CompressionQuery compression){
         return productNewService.checkCompression(compression);
+    }
+
+    @PostMapping("/admin/success/compression")
+    public R successCompression(@RequestBody CompressionQuery compression){
+        return productNewService.successCompression(compression);
+    }
+
+    @GetMapping("/admin/productNew/findIotCard")
+    public R findIotCard(@RequestParam("no") String no){
+        return productNewService.findIotCard(no);
+    }
+
+    @GetMapping("/admin/productNew/factory")
+    public R queryByBatchAndSupplier(@RequestParam("batchId") Long batchId){
+        if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)){
+            return R.fail("登陆用户非工厂类型");
+        }
+        return productNewService.queryByBatchAndSupplier(batchId);
+    }
+
+    @GetMapping("/admin/productNew/info")
+    public R queryProductNewInfoById(@RequestParam("id")Long id){
+        return productNewService.queryProductNewInfoById(id);
     }
 }
