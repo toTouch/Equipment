@@ -203,26 +203,35 @@ public class ProductNewServiceImpl implements ProductNewService {
     public R putAdminProductNew(ProductNewQuery query) {
         ProductNew productNewOld = this.productNewMapper.queryById(query.getId());
         if(Objects.isNull(productNewOld)){
-            return R.fail(null, null, "未查询到相关柜机信息");
+            return R.fail("未查询到相关柜机信息");
         }
 
-        Camera camera =  cameraService.queryBySerialNum(query.getSerialNum());
-        if(Objects.isNull(camera)){
-            return R.fail(null, null, "未查询摄像头序列号");
-        }
+        if(Objects.nonNull(query.getCameraCardId())){
+            Camera camera =  cameraService.getById(query.getCameraCardId());
+            if(Objects.isNull(camera)){
+                return R.fail("未查询摄像头序列号");
+            }
 
-        ProductNew productNew = productNewMapper.selectOne(new QueryWrapper<ProductNew>()
-                .eq("camera_id", camera.getId())
-                .eq("del_flag", ProductNew.DEL_NORMAL));
+            ProductNew productNew = productNewMapper.selectOne(new QueryWrapper<ProductNew>()
+                    .eq("camera_id", camera.getId())
+                    .eq("del_flag", ProductNew.DEL_NORMAL));
 
-        if(Objects.nonNull(productNew)){
-            return R.fail(null, null, "序列号已绑定到其他产品");
+            if(Objects.nonNull(productNew)){
+                return R.fail("序列号已绑定到其他产品");
+            }
         }
 
         if(Objects.nonNull(query.getIotCardId())){
             boolean checkResult = iotCardService.checkBind(query.getIotCardId());
             if(!checkResult){
                 return R.fail("柜机物联网卡号已被绑定");
+            }
+        }
+
+        if(Objects.nonNull(query.getCameraCardId())){
+            boolean checkResult = iotCardService.checkBind(query.getCameraCardId());
+            if(!checkResult){
+                return R.fail("摄像头序列号已被绑定");
             }
         }
 

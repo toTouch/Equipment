@@ -39,10 +39,6 @@ public class ProductNewQuery {
      */
     private Long iotCardId;
     /**
-     * 摄像头序列号
-     */
-    private String serialNum;
-    /**
      * 摄像头物联网卡id
      */
     private Long cameraCardId;

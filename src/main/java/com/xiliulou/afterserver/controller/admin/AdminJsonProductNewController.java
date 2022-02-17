@@ -38,6 +38,10 @@ public class AdminJsonProductNewController {
     private SupplierService supplierService;
     @Autowired
     private WarehouseService warehouseService;
+    @Autowired
+    private IotCardService iotCardService;
+    @Autowired
+    private CameraService cameraService;
 
     //@PostMapping("/admin/productNew")
     public R saveAdminPointNew(@RequestBody ProductNew productNew){
@@ -114,6 +118,16 @@ public class AdminJsonProductNewController {
                 if(Objects.nonNull(supplier)){
                     item.setSupplierName(supplier.getName());
                 }
+            }
+
+            if(Objects.nonNull(item.getIotCardId())){
+                IotCard iotCard = iotCardService.getById(item.getIotCardId());
+                item.setIotCardName(iotCard.getSn());
+            }
+
+            if(Objects.nonNull(item.getCameraId())){
+                Camera camera = cameraService.getById(item.getCameraId());
+                item.setCameraSerialNum(camera.getSerialNum());
             }
         });
 
