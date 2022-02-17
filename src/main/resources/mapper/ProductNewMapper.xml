@@ -49,11 +49,11 @@
             <if test="endTime != null">
                 and p.create_time &lt;= #{endTime}
             </if>
-            <if test="pointId != null and pointType == 1">
-                and b.point_id = #{pointId}
+            <if test="pointType != null">
+                and b.point_type = #{pointType}
             </if>
-            <if test="pointId != null and pointType == 2">
-                and point_id = #{pointId}  and point_type = #{pointType}
+            <if test="pointId != null">
+                and b.point_id = #{pointId}
             </if>
         </where>
         order by create_time desc

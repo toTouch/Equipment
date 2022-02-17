@@ -5,6 +5,7 @@ import com.xiliulou.afterserver.entity.IotCard;
 import com.xiliulou.afterserver.util.R;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 public interface IotCardService extends IService<IotCard> {
 
@@ -21,4 +22,6 @@ public interface IotCardService extends IService<IotCard> {
     IotCard queryBySn(String iotCard);
 
     R snLike(String sn);
+
+    boolean checkBind(Long id);
 }
