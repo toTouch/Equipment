@@ -3,9 +3,11 @@ package com.xiliulou.afterserver.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.*;
@@ -249,7 +251,7 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
 
     @Override
     public R snLike(String sn) {
-        List<IotCard> list = iotCardMapper.selectList(new QueryWrapper<IotCard>().like("sn", sn).eq("del_flag", IotCard.DEL_NORMAL));
+        List<IotCard> list = iotCardMapper.selectList(new LambdaQueryWrapper<IotCard>().like(StringUtils.isBlank(sn), IotCard::getSn, sn).eq(IotCard::getDelFlag, IotCard.DEL_NORMAL));
         List<Map> result = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(list)){
             list.forEach(item -> {
