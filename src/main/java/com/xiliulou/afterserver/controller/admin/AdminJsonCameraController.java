@@ -108,4 +108,9 @@ public class AdminJsonCameraController extends BaseController {
     public void exportExcel(CameraQuery cameraQuery, HttpServletResponse response) {
         cameraService.exportExcel(cameraQuery, response);
     }
+
+    @GetMapping("admin/camera/likeSerialNum/pull")
+    public R likeCameraBySerialNum(@RequestParam(value = "serialNum",required = false) String serialNum){
+        return cameraService.likeSerialNumPull(serialNum);
+    }
 }

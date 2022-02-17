@@ -8,6 +8,7 @@ import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.CameraQuery;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * @author Hardy
@@ -27,4 +28,8 @@ public interface CameraService extends IService<Camera> {
     void exportExcel(CameraQuery cameraQuery, HttpServletResponse response);
 
     Camera queryBySerialNum(String serialNum);
+
+    List<Camera> likeCameraBySerialNum(String serialNum);
+
+    R likeSerialNumPull(String serialNum);
 }
