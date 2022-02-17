@@ -13,7 +13,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.IotCardMapper;
+import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.service.BatchService;
+import com.xiliulou.afterserver.service.CameraService;
 import com.xiliulou.afterserver.service.IotCardService;
 import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.util.PageUtil;
@@ -43,6 +45,10 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
     BatchService batchService;
     @Autowired
     SupplierService supplierService;
+    @Autowired
+    CameraService cameraService;
+    @Autowired
+    ProductNewMapper productNewMapper;
 
     @Override
     public R saveOne(IotCard iotCard) {
@@ -263,6 +269,26 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
             });
         }
         return R.ok(result);
+    }
+
+    @Override
+    public boolean checkBind(Long id){
+        Map<String, Object> map = new HashMap<>(2);
+        List<Camera> cameraList = cameraService.getBaseMapper().selectList(new QueryWrapper<Camera>()
+                .eq("iot_card_id", id).eq("del_flag", Camera.DEL_NORMAL));
+        if(CollectionUtils.isNotEmpty(cameraList)){
+            return false;
+        }
+
+        List<ProductNew> productNewList = productNewMapper.selectList(new QueryWrapper<ProductNew>()
+                .eq("iot_card_id", id)
+                .eq("type", "M")
+                .eq("del_flag", ProductNew.DEL_NORMAL));
+
+        if(CollectionUtils.isNotEmpty(productNewList)){
+            return false;
+        }
+        return true;
     }
 
     private void expirationHandle(){

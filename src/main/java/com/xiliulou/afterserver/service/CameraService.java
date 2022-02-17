@@ -25,4 +25,6 @@ public interface CameraService extends IService<Camera> {
     R getPage(Long offset, Long size, CameraQuery cameraQuery);
 
     void exportExcel(CameraQuery cameraQuery, HttpServletResponse response);
+
+    Camera queryBySerialNum(String serialNum);
 }

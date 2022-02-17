@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.xiliulou.afterserver.entity.ProductNew;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.CompressionQuery;
+import com.xiliulou.afterserver.web.query.ProductNewDetailsQuery;
+import com.xiliulou.afterserver.web.query.ProductNewQuery;
 
 import java.util.List;
 
@@ -66,7 +68,7 @@ public interface ProductNewService {
 
     R saveAdminProductNew(ProductNew productNew);
 
-    R putAdminProductNew(ProductNew productNew);
+    R putAdminProductNew(ProductNewQuery query);
 
     R delAdminProductNew(Long id);
 
@@ -99,4 +101,6 @@ public interface ProductNewService {
     R queryProductNewInfoById(Long id);
 
     BaseMapper<ProductNew> getBaseMapper();
+
+    R updateProductNew(ProductNewDetailsQuery productNewDetailsQuery);
 }

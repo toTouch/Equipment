@@ -1,27 +1,27 @@
-package com.xiliulou.afterserver.web.vo;
+package com.xiliulou.afterserver.web.query;
 
 import lombok.Data;
 
 /**
  * @author Hardy
- * @date 2022/2/17 9:10
+ * @date 2022/2/17 14:53
  * @mood
  */
 @Data
-public class ProductNewDetailsVo {
+public class ProductNewQuery {
     private Long id;
     /**
-     * 产品编号
+     * 质保开始时间
      */
-    private String no;
+    private Long expirationStartTime;
     /**
-     * 产品批次ID
+     * 保质期年份
      */
-    private Long batchId;
+    private Integer years;
     /**
-     * 批次号
+     * 质保结束时间
      */
-    private String batchNo;
+    private Long expirationEndTime;
     /**
      * 状态
      */
@@ -39,23 +39,15 @@ public class ProductNewDetailsVo {
      */
     private Long iotCardId;
     /**
-     * 摄像头id
-     */
-    private Long cameraId;
-    /**
-     * 物联网卡卡号
-     */
-    private String iotCardNo;
-    /**
      * 摄像头序列号
      */
     private String serialNum;
     /**
-     * 摄像头物联网卡号
-     */
-    private String cameraCard;
-    /**
      * 摄像头物联网卡id
      */
     private Long cameraCardId;
+    /**
+     * 备注
+     */
+    private String remarks;
 }

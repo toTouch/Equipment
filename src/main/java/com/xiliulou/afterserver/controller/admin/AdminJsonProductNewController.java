@@ -6,6 +6,8 @@ import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.CompressionQuery;
+import com.xiliulou.afterserver.web.query.ProductNewDetailsQuery;
+import com.xiliulou.afterserver.web.query.ProductNewQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -43,8 +45,8 @@ public class AdminJsonProductNewController {
     }
 
     @PutMapping("/admin/productNew")
-    public R putAdminPointNew(@RequestBody ProductNew productNew){
-        return productNewService.putAdminProductNew(productNew);
+    public R putAdminPointNew(@RequestBody ProductNewQuery query){
+        return productNewService.putAdminProductNew(query);
     }
 
     @DeleteMapping("/admin/productNew/{id}")
@@ -166,11 +168,21 @@ public class AdminJsonProductNewController {
         return productNewService.successCompression(compression);
     }
 
+    /**
+     * 根据资产编码拉取物联网卡信息
+     * @param no
+     * @return
+     */
     @GetMapping("/admin/productNew/findIotCard")
     public R findIotCard(@RequestParam("no") String no){
         return productNewService.findIotCard(no);
     }
 
+    /**
+     *手持终端 获取柜机列表
+     * @param batchId
+     * @return
+     */
     @GetMapping("/admin/productNew/factory")
     public R queryByBatchAndSupplier(@RequestParam("batchId") Long batchId){
         if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)){
@@ -179,8 +191,18 @@ public class AdminJsonProductNewController {
         return productNewService.queryByBatchAndSupplier(batchId);
     }
 
+    /**
+     * 手持终端获取 柜机详情
+     * @param id
+     * @return
+     */
     @GetMapping("/admin/productNew/info")
     public R queryProductNewInfoById(@RequestParam("id")Long id){
         return productNewService.queryProductNewInfoById(id);
+    }
+
+    @PutMapping("/admin/productNew/update")
+    public R updateProductNew(@RequestBody ProductNewDetailsQuery productNewDetailsQuery){
+        return productNewService.updateProductNew(productNewDetailsQuery);
     }
 }

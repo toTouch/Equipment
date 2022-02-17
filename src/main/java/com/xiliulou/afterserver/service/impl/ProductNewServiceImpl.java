@@ -16,7 +16,10 @@ import com.xiliulou.afterserver.util.DataUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.CompressionQuery;
+import com.xiliulou.afterserver.web.query.ProductNewDetailsQuery;
+import com.xiliulou.afterserver.web.query.ProductNewQuery;
 import com.xiliulou.afterserver.web.vo.BatchProductNewVo;
+import com.xiliulou.afterserver.web.vo.ProductNewDetailsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,6 +58,8 @@ public class ProductNewServiceImpl implements ProductNewService {
     private IotCardService iotCardService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CameraService cameraService;
 
     /**
      * 通过ID查询单条数据从DB
@@ -195,8 +200,46 @@ public class ProductNewServiceImpl implements ProductNewService {
 
 
     @Override
-    public R putAdminProductNew(ProductNew productNew) {
-        Integer update = this.update(productNew);
+    public R putAdminProductNew(ProductNewQuery query) {
+        ProductNew productNewOld = this.productNewMapper.queryById(query.getId());
+        if(Objects.isNull(productNewOld)){
+            return R.fail(null, null, "未查询到相关柜机信息");
+        }
+
+        Camera camera =  cameraService.queryBySerialNum(query.getSerialNum());
+        if(Objects.isNull(camera)){
+            return R.fail(null, null, "未查询摄像头序列号");
+        }
+
+        ProductNew productNew = productNewMapper.selectOne(new QueryWrapper<ProductNew>()
+                .eq("camera_id", camera.getId())
+                .eq("del_flag", ProductNew.DEL_NORMAL));
+
+        if(Objects.nonNull(productNew)){
+            return R.fail(null, null, "序列号已绑定到其他产品");
+        }
+
+        if(Objects.nonNull(query.getIotCardId())){
+            boolean checkResult = iotCardService.checkBind(query.getIotCardId());
+            if(!checkResult){
+                return R.fail("柜机物联网卡号已被绑定");
+            }
+        }
+
+        ProductNew updateProductNew = new ProductNew();
+        updateProductNew.setId(query.getId());
+        updateProductNew.setExpirationStartTime(query.getExpirationStartTime());
+        updateProductNew.setYears(query.getYears());
+        updateProductNew.setExpirationEndTime(query.getExpirationEndTime());
+        updateProductNew.setStatus(query.getStatus());
+        //TODO 2022年2月17日15:57:20 这里状态改成已收货 位置要发生改变 利用发货日志表查询
+        updateProductNew.setIotCardId(query.getIotCardId());
+        updateProductNew.setCameraId(query.getCameraCardId());
+        updateProductNew.setColor(query.getColor());
+        updateProductNew.setSurface(query.getSurface());
+        updateProductNew.setRemarks(query.getRemarks());
+
+        Integer update = this.update(updateProductNew);
         if (update > 0){
             return R.ok();
         }
@@ -512,15 +555,102 @@ public class ProductNewServiceImpl implements ProductNewService {
     @Override
     public R queryProductNewInfoById(Long id) {
         ProductNew productNew = this.productNewMapper.queryById(id);
+        ProductNewDetailsVo vo = new ProductNewDetailsVo();
 
+        if(Objects.isNull(productNew)){
+            vo.setId(productNew.getId());
+            Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
+            if(Objects.nonNull(batch)){
+                vo.setBatchId(productNew.getBatchId());
+                vo.setBatchNo(batch.getBatchNo());
+            }
+            vo.setNo(productNew.getNo());
+            vo.setStatus(productNew.getStatus());
+            if(Objects.nonNull(productNew.getCameraId())){
+                Camera camera = cameraService.getById(productNew.getCameraId());
+                if(Objects.nonNull(camera)){
+                    vo.setCameraId(camera.getId());
+                    vo.setCameraCard(camera.getSerialNum());
 
-        return null;
+                    IotCard iotCard = iotCardService.getById(camera.getIotCardId());
+                    if(Objects.nonNull(iotCard)){
+                        vo.setCameraCardId(iotCard.getId());
+                        vo.setCameraCard(iotCard.getSn());
+                    }
+                }
+            }
+
+            IotCard iotCard = iotCardService.getById(productNew.getIotCardId());
+            if(Objects.nonNull(iotCard)){
+                vo.setIotCardId(iotCard.getId());
+                vo.setIotCardNo(iotCard.getSn());
+            }
+
+            vo.setColor(productNew.getColor());
+            vo.setSurface(productNew.getSurface());
+        }
+
+        return R.ok(vo);
     }
 
     @Override
     public BaseMapper<ProductNew> getBaseMapper() {
         return this.productNewMapper;
     }
+
+    @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    public R updateProductNew(ProductNewDetailsQuery query) {
+        ProductNew productNewOld = this.productNewMapper.queryById(query.getId());
+        if(Objects.isNull(productNewOld)){
+            return R.fail(null, null, "未查询到相关柜机信息");
+        }
+
+        Camera camera =  cameraService.queryBySerialNum(query.getSerialNum());
+        if(Objects.isNull(camera)){
+            return R.fail(null, null, "未查询摄像头序列号");
+        }
+
+        ProductNew productNew = productNewMapper.selectOne(new QueryWrapper<ProductNew>()
+                .eq("camera_id", camera.getId())
+                .eq("del_flag", ProductNew.DEL_NORMAL));
+
+        if(Objects.nonNull(productNew)){
+            return R.fail(null, null, "序列号已绑定到其他产品");
+        }
+
+        if(Objects.nonNull(query.getIotCardId())){
+            boolean checkResult = iotCardService.checkBind(query.getIotCardId());
+            if(!checkResult){
+                return R.fail("柜机物联网卡号已被绑定");
+            }
+        }
+
+        if(Objects.nonNull(query.getCameraCardId())){
+            boolean checkResult = iotCardService.checkBind(query.getCameraCardId());
+            if(!checkResult){
+                return R.fail("摄像头物联网卡号已被绑定");
+            }
+        }
+
+        ProductNew updateProductNew = new ProductNew();
+        updateProductNew.setId(query.getId());
+        updateProductNew.setStatus(query.getStatus());
+        updateProductNew.setCameraId(camera.getId());
+        updateProductNew.setIotCardId(query.getIotCardId());
+        updateProductNew.setColor(query.getColor());
+        updateProductNew.setSurface(query.getSurface());
+        this.productNewMapper.updateById(updateProductNew);
+
+        Camera updateCamera = new Camera();
+        updateCamera.setId(camera.getId());
+        updateCamera.setIotCardId(query.getCameraCardId());
+        cameraService.updateById(updateCamera);
+
+        return R.ok();
+    }
+
+
 
     private ProductNew queryByNo(String no){
         return this.productNewMapper.selectOne(new QueryWrapper<ProductNew>().eq("no", no));

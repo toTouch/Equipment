@@ -234,4 +234,11 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
         }
         throw new CustomBusinessException("导出报表失败！请联系客服！");
     }
+
+    @Override
+    public Camera queryBySerialNum(String serialNum) {
+        return this.getBaseMapper().selectOne(new QueryWrapper<Camera>()
+                .eq("serial_num", serialNum)
+                .eq("del_flag", Camera.DEL_NORMAL));
+    }
 }
