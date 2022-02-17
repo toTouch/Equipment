@@ -2,15 +2,19 @@ package com.xiliulou.afterserver.service.impl;
 
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.Camera;
 import com.xiliulou.afterserver.entity.IotCard;
+import com.xiliulou.afterserver.entity.ProductNew;
 import com.xiliulou.afterserver.entity.Supplier;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.CameraMapper;
 import com.xiliulou.afterserver.service.CameraService;
+import com.xiliulou.afterserver.service.ProductNewService;
 import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
@@ -43,6 +47,8 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
     SupplierService supplierService;
     @Autowired
     IotCardServiceImpl iotCardService;
+    @Autowired
+    ProductNewService productNewService;
 
     @Override
     public R saveOne(CameraQuery cameraQuery) {
@@ -60,6 +66,23 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
         Supplier supplier = supplierService.getById(camera.getSupplierId());
         if(Objects.isNull(supplier)){
             return R.fail("未查到相关摄像头厂商");
+        }
+
+        if(Objects.nonNull(cameraQuery.getIotCardId())){
+            List<Camera> cameraList = baseMapper.selectList(new QueryWrapper<Camera>()
+                    .eq("iot_card_id", cameraQuery.getIotCardId()).eq("del_flag", Camera.DEL_NORMAL));
+            if(CollectionUtils.isNotEmpty(cameraList)){
+                return R.fail("物联网卡号已被其他摄像头绑定");
+            }
+
+            List<ProductNew> productNewList = productNewService.getBaseMapper().selectList(new QueryWrapper<ProductNew>()
+                    .eq("iot_card_id", cameraQuery.getIotCardId())
+                    .eq("type", "M")
+                    .eq("del_flag", ProductNew.DEL_NORMAL));
+
+            if(CollectionUtils.isNotEmpty(productNewList)){
+                return R.fail("物联网卡号已被其他柜机绑定");
+            }
         }
 
 
@@ -97,6 +120,23 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
         Supplier supplier = supplierService.getById(camera.getSupplierId());
         if(Objects.isNull(supplier)){
             return R.fail("未查到相关摄像头厂商");
+        }
+
+        if(Objects.nonNull(cameraQuery.getIotCardId())){
+            List<Camera> cameraList = baseMapper.selectList(new QueryWrapper<Camera>()
+                    .eq("iot_card_id", cameraQuery.getIotCardId()).eq("del_flag", Camera.DEL_NORMAL));
+            if(CollectionUtils.isNotEmpty(cameraList)){
+                return R.fail("物联网卡号已被其他摄像头绑定");
+            }
+
+            List<ProductNew> productNewList = productNewService.getBaseMapper().selectList(new QueryWrapper<ProductNew>()
+                    .eq("iot_card_id", cameraQuery.getIotCardId())
+                    .eq("type", "M")
+                    .eq("del_flag", ProductNew.DEL_NORMAL));
+
+            if(CollectionUtils.isNotEmpty(productNewList)){
+                return R.fail("物联网卡号已被其他柜机绑定");
+            }
         }
 
 

@@ -12,7 +12,7 @@ public class CameraQuery {
     private Long id;
     private String serialNum;
     private Long supplierId;
-    private String iotCardId;
+    private Long iotCardId;
     private Long createTime;
     private Long updateTime;
     private Integer delFlag;
