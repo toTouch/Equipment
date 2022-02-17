@@ -98,4 +98,9 @@ public class AdminJsonIotCardController extends BaseController {
     public void exportExcel(IotCard iotCard, HttpServletResponse response) {
         iotCardService.exportExcel(iotCard, response);
     }
+
+    @GetMapping("/admin/iotCard/snLike")
+    public R snLike(@RequestParam("sn") String sn) {
+        return iotCardService.snLike(sn);
+    }
 }

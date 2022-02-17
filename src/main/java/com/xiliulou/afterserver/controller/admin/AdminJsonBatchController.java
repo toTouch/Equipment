@@ -8,6 +8,7 @@ import com.xiliulou.afterserver.service.BatchService;
 import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -121,5 +122,14 @@ public class AdminJsonBatchController {
     @DeleteMapping("/admin/batch/{id}")
     public R delOne(@PathVariable("id") Long id){
         return batchService.delOne(id);
+    }
+
+    @GetMapping("/admin/batch/factory")
+    public R queryByfactory(){
+        if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)){
+            return R.fail("登陆用户非工厂类型");
+        }
+
+        return batchService.queryByfactory();
     }
 }

@@ -25,7 +25,7 @@ public class ProductNew {
 
     private Long id;
     /**
-     * 产品编号（纯数字）
+     * 产品编号
      */
     private String no;
     /**
@@ -61,7 +61,11 @@ public class ProductNew {
      *         {
      *           value: 5,
      *           label: '已报废'
-     *         }
+     *         },
+     *         {
+     *           value: 6,
+     *           label: '已测试'
+     *         }
      */
     private Integer status;
     /**
@@ -106,6 +110,9 @@ public class ProductNew {
     private String testFile;
     private Long iotCardId;
     private Long cameraId;
+
+    public static final String TYPE_M = "M";
+    public static final String TYPE_V = "V";
 
 //    //左区间
 //    @TableField(exist = false)

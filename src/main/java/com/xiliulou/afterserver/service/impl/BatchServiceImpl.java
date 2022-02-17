@@ -3,18 +3,22 @@ package com.xiliulou.afterserver.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.BatchMapper;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
+import com.xiliulou.afterserver.web.vo.OrderBatchVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,6 +47,8 @@ public class BatchServiceImpl implements BatchService {
     private ProductNewMapper productNewMapper;
     @Autowired
     private PointProductBindService pointProductBindService;
+    @Autowired
+    private UserService userService;
 
     /**
      * 通过ID查询单条数据从DB
@@ -223,5 +229,40 @@ public class BatchServiceImpl implements BatchService {
 
         this.deleteById(id);
         return R.ok();
+    }
+
+    @Override
+    public R queryByfactory() {
+        Long uid = SecurityUtils.getUid();
+        if(Objects.isNull(uid)){
+            return R.fail("未查询到相关用户");
+        }
+
+        User user = userService.getUserById(uid);
+        if(Objects.isNull(user)){
+            return R.fail("未查询到相关用户");
+        }
+
+        List<Batch> batchList = batchMapper.selectList(
+                new QueryWrapper<Batch>().eq("supplier_id", user.getSupplierId()));
+
+        List<OrderBatchVo> result = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(batchList)){
+            batchList.stream().forEach(item -> {
+                OrderBatchVo orderBatchVo = new OrderBatchVo();
+                orderBatchVo.setId(item.getId());
+                orderBatchVo.setBatchNo(item.getBatchNo());
+                orderBatchVo.setProductNum(item.getProductNum());
+                orderBatchVo.setRemarks(StringUtils.isBlank(item.getRemarks()) ? "暂无" : item.getRemarks());
+
+                Product product = productService.getById(item.getModelId());
+                if(Objects.nonNull(product)){
+                    orderBatchVo.setModelName(product.getName());
+                }
+                result.add(orderBatchVo);
+            });
+        }
+
+        return R.ok(result);
     }
 }

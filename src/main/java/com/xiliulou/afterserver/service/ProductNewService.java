@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.xiliulou.afterserver.entity.ProductNew;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.CompressionQuery;
@@ -88,4 +89,14 @@ public interface ProductNewService {
     List<ProductNew> queryByBatch(Long id);
 
     R checkCompression(CompressionQuery compression);
+
+    R successCompression(CompressionQuery compression);
+
+    R findIotCard(String no);
+
+    R queryByBatchAndSupplier(Long batchId);
+
+    R queryProductNewInfoById(Long id);
+
+    BaseMapper<ProductNew> getBaseMapper();
 }

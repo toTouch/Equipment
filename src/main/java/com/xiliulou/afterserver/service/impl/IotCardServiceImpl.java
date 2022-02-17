@@ -48,9 +48,10 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
         if(Objects.isNull(iotCard.getSn())){
             return  R.fail("物联网卡号不能为空");
         }
+
         IotCard iotCardOld = this.queryBySn(iotCard.getSn());
         if(Objects.nonNull(iotCardOld)){
-
+            return R.fail("已添加该物联网卡号");
         }
 
         Batch batch = batchService.queryByIdFromDB(iotCard.getBatchId());
@@ -246,9 +247,26 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
         return iotCardMapper.selectOne(new QueryWrapper<IotCard>().eq("sn", iotCard));
     }
 
+    @Override
+    public R snLike(String sn) {
+        List<IotCard> list = iotCardMapper.selectList(new QueryWrapper<IotCard>().like("sn", sn).eq("del_flag", IotCard.DEL_NORMAL));
+        List<Map> result = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(list)){
+            list.forEach(item -> {
+                Map<String, Object> vo = new HashMap<>(2);
+                vo.put("id",item.getId());
+                vo.put("sn", item.getSn());
+
+                result.add(vo);
+            });
+        }
+        return R.ok(result);
+    }
+
     private void expirationHandle(){
         iotCardMapper.expirationHandle(System.currentTimeMillis());
     }
+
     private String getOperatorName(Integer operator){
         String operatorName = "";
         if(Objects.equals(IotCard.OPERATOR_MOVE, operator)){

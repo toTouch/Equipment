@@ -21,7 +21,7 @@ public class Camera {
     private Long id;
     private String serialNum;
     private Long supplierId;
-    private String cameraCard;
+    private Long iotCardId;
     private Long createTime;
     private Long updateTime;
     private Integer delFlag;
@@ -31,4 +31,6 @@ public class Camera {
 
     @TableField(exist = false)
     private String supplierName;
+    @TableField(exist = false)
+    private String iotCardNo;
 }

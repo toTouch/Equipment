@@ -3,6 +3,8 @@ package com.xiliulou.afterserver.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.xiliulou.afterserver.entity.*;
@@ -12,7 +14,9 @@ import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DataUtil;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.CompressionQuery;
+import com.xiliulou.afterserver.web.vo.BatchProductNewVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +53,8 @@ public class ProductNewServiceImpl implements ProductNewService {
     private SupplierService supplierService;
     @Autowired
     private IotCardService iotCardService;
+    @Autowired
+    private UserService userService;
 
     /**
      * 通过ID查询单条数据从DB
@@ -367,7 +373,7 @@ public class ProductNewServiceImpl implements ProductNewService {
 
     @Override
     public R checkCompression(CompressionQuery compression) {
-        List<String> notFindNos = new ArrayList<>();
+        List<String> errorNos = new ArrayList<>();
 
         if(Objects.isNull(compression.getNo())){
             return R.fail(null, null, "请填写主柜资产编码");
@@ -378,12 +384,159 @@ public class ProductNewServiceImpl implements ProductNewService {
             return R.fail(null, null, "主柜资产编码不存在，请核对");
         }
 
+        if(!Objects.equals(mainProduct.getType(), ProductNew.TYPE_M)){
+            return R.fail(null, null, "主柜资产编码不是主柜类型，请核对");
+        }
+
+        if(Objects.isNull(compression.getIotCard())){
+            return R.fail(null, null, "请填写主柜物联网卡");
+        }
+
         IotCard iotCard = iotCardService.queryBySn(compression.getIotCard());
+        if(Objects.isNull(iotCard)){
+            return R.fail(null, null, "物联网卡号不存在，请核对");
+        }
+
+        if(Objects.equals(iotCard.getBatchId(), mainProduct.getBatchId())){
+            return R.fail(null, null, "主柜批次与物联网卡批次不一致，请核对");
+        }
+
+        if(CollectionUtils.isNotEmpty(compression.getNoList())){
+            for(String no : compression.getNoList()){
+                ProductNew viceProduct = this.queryByNo(no);
+                if(Objects.isNull(viceProduct)){
+                    errorNos.add(no);
+                }
+            }
+
+            if(CollectionUtils.isNotEmpty(errorNos)){
+                return R.fail(errorNos, null, "副柜资产编码不存在，请核对");
+            }
+
+            errorNos.clear();
+            for(String no : compression.getNoList()){
+                if(!Objects.equals(mainProduct.getType(), ProductNew.TYPE_V)){
+                    errorNos.add(no);
+                }
+            }
+
+            if(CollectionUtils.isNotEmpty(errorNos)){
+                return R.fail(errorNos, null, "副柜资产编码不是副柜类型，请核对");
+            }
+        }
+
+        return R.ok();
+    }
+
+
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    public R successCompression(CompressionQuery compression) {
+        if(StringUtils.isBlank(compression.getCompressionFile())){
+            return R.fail(null, null, "测试文件为空");
+        }
+
+        IotCard iotCard = iotCardService.queryBySn(compression.getIotCard());
+        if(Objects.isNull(iotCard)){
+            return R.fail(null, null, "未查询到物联网卡信息");
+        }
+
+        ProductNew product = new ProductNew();
+        product.setNo(compression.getNo());
+        product.setTestFile(compression.getCompressionFile());
+        product.setTestResult(1);
+        product.setStatus(6);
+        product.setIotCardId(iotCard.getId());
+        productNewMapper.updateByNo(product);
+
+        if(CollectionUtils.isNotEmpty(compression.getNoList())){
+            for(String no : compression.getNoList()){
+                product.setNo(no);
+                productNewMapper.updateByNo(product);
+            }
+        }
+
+        return R.ok();
+    }
+
+    @Override
+    public R findIotCard(String no) {
+        ProductNew productNew = this.productNewMapper.selectOne(new QueryWrapper<ProductNew>().eq("no", no));
+        if(Objects.isNull(productNew)){
+            return R.fail(null, null, "未查询到柜机信息，请检查资产编码是否正确");
+        }
+
+        if(Objects.equals(productNew.getType(), ProductNew.TYPE_M)){
+            return R.fail(null, null, "资产编码不是主柜类型，请检查");
+        }
+
+        if(Objects.isNull(productNew.getIotCardId())){
+            return R.fail(null, null, "柜机未录入物联网卡号");
+        }
+        Map<String, Object> result = new HashMap<>();
+        result.put("data", productNew.getIotCardId());
+        return  R.ok(result);
+    }
+
+    @Override
+    public R queryByBatchAndSupplier(Long batchId) {
+        Long uid = SecurityUtils.getUid();
+        if(Objects.isNull(uid)){
+            return R.fail("未查询到相关用户");
+        }
+
+        User user = userService.getUserById(uid);
+        if(Objects.isNull(user)){
+            return R.fail("未查询到相关用户");
+        }
+        List<ProductNew> list = productNewMapper.selectList(
+                new QueryWrapper<ProductNew>().eq("batch_id", batchId)
+                        .eq("supplier_id", user.getSupplierId())
+                        .eq("del_flag", ProductNew.DEL_NORMAL));
+
+        List<BatchProductNewVo> result = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(list)){
+            list.stream().forEach(item -> {
+                BatchProductNewVo batchProductNewVo = new BatchProductNewVo();
+                batchProductNewVo.setId(item.getId());
+                batchProductNewVo.setNo(item.getNo());
+                batchProductNewVo.setStatus(this.getStatusName(item.getStatus()));
+
+                result.add(batchProductNewVo);
+            });
+        }
+        return R.ok(result);
+    }
+
+    @Override
+    public R queryProductNewInfoById(Long id) {
+        ProductNew productNew = this.productNewMapper.queryById(id);
+
 
         return null;
     }
 
+    @Override
+    public BaseMapper<ProductNew> getBaseMapper() {
+        return this.productNewMapper;
+    }
+
     private ProductNew queryByNo(String no){
         return this.productNewMapper.selectOne(new QueryWrapper<ProductNew>().eq("no", no));
+    }
+
+    private String getStatusName(Integer status){
+        String statusName = "";
+        switch (status){
+            case 0: statusName = "生产中"; break;
+            case 1: statusName = "运输中"; break;
+            case 2: statusName = "已收货"; break;
+            case 3: statusName = "使用中"; break;
+            case 4: statusName = "拆机柜"; break;
+            case 5: statusName = "已报废"; break;
+            case 6: statusName = "已测试"; break;
+        }
+        return statusName;
     }
 }
