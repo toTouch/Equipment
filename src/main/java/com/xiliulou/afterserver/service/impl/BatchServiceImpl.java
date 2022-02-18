@@ -243,6 +243,11 @@ public class BatchServiceImpl implements BatchService {
             return R.fail("未查询到相关用户");
         }
 
+        Supplier supplier = supplierService.getById(user.getSupplierId());
+        if(Objects.isNull(supplier)){
+            return R.fail("用户未绑定工厂，请联系管理员");
+        }
+
         List<Batch> batchList = batchMapper.selectList(
                 new QueryWrapper<Batch>().eq("supplier_id", user.getSupplierId()));
 

@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -26,9 +27,12 @@ import com.xiliulou.afterserver.mapper.WareHouseProductDetailsMapper;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.DeliverQuery;
 import com.xiliulou.afterserver.web.vo.DeliverExcelVo;
 import com.xiliulou.afterserver.web.vo.DeliverExportExcelVo;
+import com.xiliulou.afterserver.web.vo.OrderDeliverContentVo;
+import com.xiliulou.afterserver.web.vo.OrderDeliverVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -166,38 +170,6 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             }
 
             records.setPaymentMethodName(getpaymentMethodName(records.getPaymentMethod()));
-
-            //起点type
-            List<PointNew> pointNew = pointNewService.list(
-                      new LambdaQueryWrapper<PointNew>()
-                    .eq( PointNew::getName , records.getCity()));
-
-            if(!CollectionUtil.isEmpty(pointNew)){
-                records.setCityType(Deliver.CITY_TYPE_POINT);
-            }else{
-                List<WareHouse> warehouse = warehouseService.list(
-                        new LambdaQueryWrapper<WareHouse>()
-                                .eq(WareHouse::getWareHouses , records.getCity()));
-                if(!CollectionUtil.isEmpty(warehouse)){
-                    records.setCityType(Deliver.CITY_TYPE_WAREHOUSE);
-                }
-            }
-
-            //终点type
-            List<PointNew> pointNew1 = pointNewService.list(
-                    new LambdaQueryWrapper<PointNew>()
-                            .eq(PointNew::getName , records.getDestination()));
-
-            if(!CollectionUtil.isEmpty(pointNew1)){
-                records.setDestinationType(Deliver.DESTINATION_TYPE_POINT);
-            }else{
-                List<WareHouse> warehouse = warehouseService.list(
-                        new LambdaQueryWrapper<WareHouse>()
-                                .eq(WareHouse::getWareHouses , records.getDestination()));
-                if(!CollectionUtil.isEmpty(warehouse)){
-                    records.setDestinationType(Deliver.DESTINATION_TYPE_WAREHOUSE);
-                }
-            }
         });
 
         return selectPage.setRecords(list);
@@ -379,6 +351,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     @Override
     @Transactional(rollbackFor = Exception.class)
     public R updateStatusFromBatch(List<Long> ids, Integer status) {
+        //TODO 2022年2月18日09:44:02 工厂要不要直接改产品位置？
         int row = this.baseMapper.updateStatusFromBatch(ids,status);
         if(row == 0){
             return R.fail("未修改数据");
@@ -391,6 +364,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     public R insert(Deliver deliver,  Long wareHouseIdStart, Long wareHouseIdEnd) {
         R r = saveWareHouseDetails(deliver, wareHouseIdStart, wareHouseIdEnd);
         if(r == null){
+            deliver.setNo(RandomUtil.randomString(10));
             deliver.setCreateTime(System.currentTimeMillis());
             r = R.ok(this.save(deliver));
         }
@@ -441,6 +415,59 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         }
         return r;
     }
+
+    @Override
+    public R queryListByFactory() {
+        Long uid = SecurityUtils.getUid();
+        if(Objects.isNull(uid)){
+            return R.fail("未查询到相关用户");
+        }
+
+        User user = userService.getUserById(uid);
+        if(Objects.isNull(user)){
+            return R.fail("未查询到相关用户");
+        }
+
+        Supplier supplier = supplierService.getById(user.getSupplierId());
+        if(Objects.isNull(supplier)){
+            return R.fail("用户未绑定工厂，请联系管理员");
+        }
+
+        List<Deliver> list = baseMapper.selectList(new QueryWrapper<Deliver>()
+                .eq("city_type", Deliver.CITY_TYPE_FACTORY)
+                .eq("city", supplier.getName())
+                .eq("state", 1));
+
+        List<OrderDeliverVo> result = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(list)){
+            list.stream().forEach(item -> {
+                OrderDeliverVo orderDeliverVo = new OrderDeliverVo();
+                orderDeliverVo.setNo(item.getNo());
+                orderDeliverVo.setRemark(item.getRemark());
+
+                ArrayList<Integer> productIds = JSON.parseObject(item.getProduct(), ArrayList.class);
+                ArrayList<String> quantityIds = JSON.parseObject(item.getQuantity(), ArrayList.class);
+                ArrayList<OrderDeliverContentVo> orderDeliverContentVos = new ArrayList<>();
+
+                if(productIds.size() == quantityIds.size()){
+                    for(int i = 0; i < productIds.size(); i++){
+                        Product product = productService.getById(productIds.get(i));
+                        if(Objects.nonNull(product)){
+                            OrderDeliverContentVo orderDeliverContentVo = new OrderDeliverContentVo();
+                            orderDeliverContentVo.setModelName(product.getName());
+                            orderDeliverContentVo.setNum(quantityIds.get(i));
+                        }
+                    }
+                }
+
+                orderDeliverVo.setContent(orderDeliverContentVos);
+                result.add(orderDeliverVo);
+            });
+        }
+
+        return R.ok(result);
+    }
+
 
     private R saveWareHouseDetails(Deliver deliver,  Long wareHouseIdStart, Long wareHouseIdEnd){
         if( (wareHouseIdStart != null || wareHouseIdEnd != null)

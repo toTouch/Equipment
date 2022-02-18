@@ -103,4 +103,6 @@ public interface ProductNewService {
     BaseMapper<ProductNew> getBaseMapper();
 
     R updateProductNew(ProductNewDetailsQuery productNewDetailsQuery);
+
+    R checkProperty(String no);
 }

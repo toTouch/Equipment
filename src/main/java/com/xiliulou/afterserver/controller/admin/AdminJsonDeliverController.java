@@ -9,6 +9,7 @@ import com.alibaba.excel.metadata.CellData;
 import com.alibaba.excel.read.metadata.ReadSheet;
 import com.alibaba.fastjson.JSON;
 import com.xiliulou.afterserver.entity.Deliver;
+import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.export.DeliverInfo;
 import com.xiliulou.afterserver.export.PointInfo;
 import com.xiliulou.afterserver.listener.DeliverListener;
@@ -17,6 +18,7 @@ import com.xiliulou.afterserver.service.CustomerService;
 import com.xiliulou.afterserver.service.DeliverService;
 import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.DeliverQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,5 +124,13 @@ public class AdminJsonDeliverController {
         excelReader.read(readSheet);
         excelReader.finish();
         return R.ok();
+    }
+
+    @GetMapping("admin/deliver/list/factory")
+    public R queryListByFactory(){
+        if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)){
+            return R.fail("登陆用户非工厂类型");
+        }
+        return deliverService.queryListByFactory();
     }
 }
