@@ -219,4 +219,9 @@ public class AdminJsonProductNewController {
     public R updateProductNew(@RequestBody ProductNewDetailsQuery productNewDetailsQuery){
         return productNewService.updateProductNew(productNewDetailsQuery);
     }
+
+    @PostMapping("admin/productNew/check/property")
+    public R checkProperty(@RequestParam("no") String no){
+        return productNewService.checkProperty(no);
+    }
 }

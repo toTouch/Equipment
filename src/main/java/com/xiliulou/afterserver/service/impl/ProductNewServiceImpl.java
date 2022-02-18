@@ -221,7 +221,7 @@ public class ProductNewServiceImpl implements ProductNewService {
             }
         }
 
-        if(Objects.nonNull(query.getIotCardId())){
+        /*if(Objects.nonNull(query.getIotCardId())){
             boolean checkResult = iotCardService.checkBind(query.getIotCardId());
             if(!checkResult){
                 return R.fail("柜机物联网卡号已被绑定");
@@ -233,7 +233,7 @@ public class ProductNewServiceImpl implements ProductNewService {
             if(!checkResult){
                 return R.fail("摄像头序列号已被绑定");
             }
-        }
+        }*/
 
         ProductNew updateProductNew = new ProductNew();
         updateProductNew.setId(query.getId());
@@ -449,10 +449,10 @@ public class ProductNewServiceImpl implements ProductNewService {
             return R.fail(null, null, "物联网卡号不存在，请核对");
         }
 
-        boolean checkResult = iotCardService.checkBind(iotCard.getId());
+        /*boolean checkResult = iotCardService.checkBind(iotCard.getId());
         if(!checkResult){
             return R.fail(null , null, "柜机物联网卡号已被绑定");
-        }
+        }*/
 
         if(Objects.equals(mainProduct.getIotCardId(), iotCard.getId())){
             return R.fail(null, null,"主柜绑定物联网卡号与上报物联网卡号不一致，请修改");
@@ -551,6 +551,12 @@ public class ProductNewServiceImpl implements ProductNewService {
         if(Objects.isNull(user)){
             return R.fail("未查询到相关用户");
         }
+
+        Supplier supplier = supplierService.getById(user.getSupplierId());
+        if(Objects.isNull(supplier)){
+            return R.fail("用户未绑定工厂，请联系管理员");
+        }
+
         List<ProductNew> list = productNewMapper.selectList(
                 new QueryWrapper<ProductNew>().eq("batch_id", batchId)
                         .eq("supplier_id", user.getSupplierId())
@@ -640,7 +646,7 @@ public class ProductNewServiceImpl implements ProductNewService {
             }
         }
 
-        if(Objects.nonNull(query.getIotCardId())){
+        /*if(Objects.nonNull(query.getIotCardId())){
             boolean checkResult = iotCardService.checkBind(query.getIotCardId());
             if(!checkResult){
                 return R.fail("柜机物联网卡号已被绑定");
@@ -652,7 +658,7 @@ public class ProductNewServiceImpl implements ProductNewService {
             if(!checkResult){
                 return R.fail("摄像头物联网卡号已被绑定");
             }
-        }
+        }*/
 
         ProductNew updateProductNew = new ProductNew();
         updateProductNew.setId(query.getId());
@@ -673,9 +679,63 @@ public class ProductNewServiceImpl implements ProductNewService {
         return R.ok();
     }
 
+    @Override
+    public R checkProperty(String no) {
+        ProductNew productNew = this.queryByNo(no);
+        if(Objects.isNull(productNew)){
+            return R.fail(null,null,"主柜资产编码不存在，请核对");
+        }
+
+        if(!Objects.equals(productNew.getStatus(), 6) && Objects.equals(productNew.getTestResult(), 1)){
+            return R.fail(null,null,"柜机非已测试状态，请录入已测试柜机");
+        }
+
+        if(Objects.isNull(productNew.getIotCardId())){
+            return R.fail(null,null,"物联卡号未绑定，请录入");
+        }
+
+        IotCard iotCard = iotCardService.getById(productNew.getIotCardId());
+        if(Objects.isNull(iotCard)){
+            return R.fail(null,null,"未查询到物联网卡信息，请核对");
+        }
+
+        if(Objects.isNull(productNew.getCameraId())){
+            return R.fail(null,null,"摄像头序列号未绑定，请录入");
+        }
+
+        Camera camera = cameraService.getById(productNew.getCameraId());
+        if(Objects.isNull(camera)){
+            return R.fail(null,null,"未查询到摄像序列号，请核对");
+        }
+
+        if(Objects.isNull(camera.getIotCardId())){
+            return R.fail(null,null,"摄像头物联网卡号未绑定，请录入");
+        }
+
+        IotCard cameraCard = iotCardService.getById(camera.getIotCardId());
+        if(Objects.isNull(cameraCard)){
+            return R.fail(null,null,"未查询到摄像头物联网卡信息，请核对");
+        }
+
+        if(Objects.isNull(productNew.getColor())){
+            return R.fail(null,null,"柜机颜色未填写，请录入");
+        }
+
+        if(Objects.isNull(productNew.getColor())){
+            return R.fail(null,null,"柜机颜色未填写，请录入");
+        }
+
+        if(Objects.isNull(productNew.getSurface())){
+            return R.fail(null,null,"柜机外观未填写，请录入");
+        }
+        return null;
+    }
 
 
     private ProductNew queryByNo(String no){
+        if(Objects.isNull(no)){
+            return null;
+        }
         return this.productNewMapper.selectOne(new QueryWrapper<ProductNew>().eq("no", no));
     }
 
