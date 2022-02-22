@@ -1,22 +1,18 @@
 package com.xiliulou.afterserver.controller.admin;
 
-import com.aliyun.oss.OSSClient;
-import com.aliyun.oss.model.GeneratePresignedUrlRequest;
-import com.xiliulou.afterserver.config.OssConfig;
 import com.xiliulou.afterserver.entity.*;
-import com.xiliulou.afterserver.mapper.PointProductBindMapper;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.CompressionQuery;
 import com.xiliulou.afterserver.web.query.ProductNewDetailsQuery;
 import com.xiliulou.afterserver.web.query.ProductNewQuery;
+import com.xiliulou.storage.config.StorageConfig;
 import com.xiliulou.storage.service.impl.AliyunOssService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URL;
 import java.util.*;
 
 /**
@@ -48,7 +44,7 @@ public class AdminJsonProductNewController {
     @Autowired
     private AliyunOssService aliyunOssService;
     @Autowired
-    private OssConfig ossConfig;
+    private StorageConfig StorageConfig;
 
     //@PostMapping("/admin/productNew")
     public R saveAdminPointNew(@RequestBody ProductNew productNew){
@@ -249,7 +245,7 @@ public class AdminJsonProductNewController {
     public R getTestFile(@RequestParam("fileName") String fileName){
         String url = null;
         try{
-            url = aliyunOssService.getOssFileUrl(ossConfig.getBucket(), fileName, 120 * 1000);
+            url = aliyunOssService.getOssFileUrl(StorageConfig.getBucketName(), fileName, 120 * 1000);
         }catch(Exception e){
             log.error("oss error!", e);
         }

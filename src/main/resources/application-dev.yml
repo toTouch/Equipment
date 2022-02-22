@@ -79,3 +79,13 @@ userrole:
 
 oss:
   bucket: xiliulou-strawberry
+
+storage:
+  ossEndpoint: oss-cn-beijing.aliyuncs.com
+  accessKeyId: LTAI5tC4goxYbeX99GMYaHY4
+  accessKeySecret: XQ8zD6nrHoJIiy6iodn843ZUlB9xS5
+  bucketName: xiliulou-strawberry
+  #urlPrefix: wm-xiliulou-test
+  #dir: after/
+  ### oss:0 minio:1
+  isUseOSS: 0
