@@ -77,9 +77,6 @@ userrole:
   unShow: [1,2,3,4]
   userRole: [2]
 
-oss:
-  bucket: xiliulou-strawberry
-
 storage:
   ossEndpoint: oss-cn-beijing.aliyuncs.com
   accessKeyId: LTAI5tC4goxYbeX99GMYaHY4

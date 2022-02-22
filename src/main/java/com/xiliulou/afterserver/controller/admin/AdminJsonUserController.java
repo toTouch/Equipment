@@ -99,4 +99,9 @@ public class AdminJsonUserController extends BaseController {
 
         return returnPairResult(roleService.bindUserRole(uid, roleIds));
     }
+
+    @GetMapping("admin/user/supplier")
+    public R getSupplierName(){
+        return null;
+    }
 }
