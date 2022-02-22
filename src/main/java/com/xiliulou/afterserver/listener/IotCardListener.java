@@ -147,11 +147,11 @@ public class IotCardListener extends AnalysisEventListener<IotCardInfo> {
 
 
     private Integer getOperator(String operator){
-        if("1".equals(operator) || "中国移动".equals(operator)){
+        if("1".equals(operator) || "移动".equals(operator)){
             return  1;
-        }else if("2".equals(operator) || "中国电信".equals(operator)){
+        }else if("2".equals(operator) || "电信".equals(operator)){
             return  2;
-        }else if("3".equals(operator) || "中国联通".equals(operator)){
+        }else if("3".equals(operator) || "联通".equals(operator)){
             return  3;
         }
         return null;

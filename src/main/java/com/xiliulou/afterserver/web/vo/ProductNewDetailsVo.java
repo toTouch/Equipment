@@ -27,6 +27,10 @@ public class ProductNewDetailsVo {
      */
     private Integer status;
     /**
+     * 状态
+     */
+    private String statusName;
+    /**
      * 外观
      */
     private Integer surface;

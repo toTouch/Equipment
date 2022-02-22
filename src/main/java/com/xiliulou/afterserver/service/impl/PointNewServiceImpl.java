@@ -160,11 +160,20 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             String cameraInfo = JSON.toJSONString(pointNew.getCameraInfoList());
             pointNew.setCameraInfo(cameraInfo);
         }
+        PointNew pointNewOld = queryByName(pointNew.getName());
+        if(Objects.nonNull(pointNewOld)){
+            return R.fail("该点位已存在");
+        }
         pointNew.setDelFlag(PointNew.DEL_NORMAL);
         pointNew.setCreateTime(System.currentTimeMillis());
         pointNew.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
         this.insert(pointNew);
         return R.ok();
+    }
+
+    public PointNew queryByName(String name){
+        if(StringUtils.isBlank(name)) return null;
+        return this.getBaseMapper().selectOne(new QueryWrapper<PointNew>().eq("name", name).eq("del_flag", 0));
     }
 
     @Override
@@ -263,6 +272,10 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         if(Objects.nonNull(pointNew.getCameraInfoList())) {
             String cameraInfo = JSON.toJSONString(pointNew.getCameraInfoList());
             pointNew.setCameraInfo(cameraInfo);
+        }
+        PointNew pointNewOld = queryByName(pointNew.getName());
+        if(Objects.nonNull(pointNewOld) && !Objects.equals(pointNew.getId(), pointNewOld.getId())){
+            return R.fail("该点位已存在");
         }
         int update = this.pointNewMapper.update(pointNew);
         pointNew.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);

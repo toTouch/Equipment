@@ -10,10 +10,10 @@ import lombok.Data;
 @Data
 public class ProductNewDetailsQuery {
     private Long id;
-    /**
-     * 状态
-     */
-    private Integer status;
+    ///**
+    // * 状态
+    // */
+    //private Integer status;
     /**
      * 外观
      */

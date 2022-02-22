@@ -12,6 +12,7 @@
         <result property="years" column="years" jdbcType="INTEGER"/>
         <result property="expirationEndTime" column="expiration_end_time" jdbcType="INTEGER"/>
         <result property="createTime" column="create_time" jdbcType="INTEGER"/>
+        <result property="updateTime" column="update_time" jdbcType="INTEGER"/>
         <result property="delFlag" column="del_flag" jdbcType="INTEGER"/>
         <result property="remarks" column="remarks" jdbcType="VARCHAR"/>
         <result property="iotCardId" column="iot_card_id" jdbcType="INTEGER"/>
@@ -23,7 +24,7 @@
     <!--查询单个-->
     <select id="queryById" resultMap="ProductNewMap">
         select
-          id, no, model_id, batch_id, status, expiration_start_time,years, expiration_end_time, create_time, del_flag, cache
+          id, no, model_id, batch_id, status, expiration_start_time,years, expiration_end_time, create_time,update_time del_flag, cache
         from t_product_new
         where id = #{id}
     </select>
@@ -31,7 +32,7 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="ProductNewMap">
         select
-          p.id, p.no, p.model_id, p.batch_id, p.status, p.expiration_start_time, p.years, p.expiration_end_time, p.create_time, p.del_flag, p.serial_num, p.type, p.supplier_id,p.remarks,p.iot_card_id,p.camera_id,p.surface,p.color
+          p.id, p.no, p.model_id, p.batch_id, p.status, p.expiration_start_time, p.years, p.expiration_end_time, p.create_time,p.update_time, p.del_flag, p.serial_num, p.type, p.supplier_id,p.remarks,p.iot_card_id,p.camera_id,p.surface,p.color
         from t_product_new p left join t_point_product_bind b
         on p.id = b.product_id
         <where>
@@ -123,8 +124,8 @@
 
     <!--新增所有列-->
     <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
-        insert into t_product_new(no, model_id, batch_id, status, expiration_start_time, years, expiration_end_time, create_time, del_flag, cache, serial_num, supplier_id, type, code)
-        values (#{no}, #{modelId}, #{batchId}, #{status}, #{expirationStartTime},#{years},#{expirationEndTime}, #{createTime}, #{delFlag}, #{cache},#{serialNum}, #{supplierId}, #{type}, #{code})
+        insert into t_product_new(no, model_id, batch_id, status, expiration_start_time, years, expiration_end_time, create_time, update_time, del_flag, cache, serial_num, supplier_id, type, code)
+        values (#{no}, #{modelId}, #{batchId}, #{status}, #{expirationStartTime},#{years},#{expirationEndTime}, #{createTime}, #{updateTime}, #{delFlag}, #{cache},#{serialNum}, #{supplierId}, #{type}, #{code})
     </insert>
 
     <!--通过主键修改数据-->
@@ -154,6 +155,9 @@
             </if>
             <if test="createTime != null">
                 create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
             </if>
             <if test="delFlag != null">
                 del_flag = #{delFlag},

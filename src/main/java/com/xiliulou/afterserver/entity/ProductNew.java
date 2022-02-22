@@ -44,7 +44,7 @@ public class ProductNew {
      *         },
      *         {
      *           value: 1,
-     *           label: '运输中'
+     *           label: '已发货'
      *         },
      *         {
      *           value: 2,
@@ -84,6 +84,10 @@ public class ProductNew {
      * 创建时间
      */
     private Long createTime;
+    /**
+     * 更新时间
+     */
+    private Long updateTime;
     /**
      * 删除状态 0正常 1 删除
      */

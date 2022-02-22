@@ -157,7 +157,7 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
 
         LambdaQueryWrapper<Camera> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(Objects.nonNull(cameraQuery.getSerialNum()), Camera::getSerialNum, cameraQuery.getSerialNum())
-                .like(Objects.nonNull(cameraQuery.getSupplierId()), Camera::getSupplierId, cameraQuery.getSupplierId())
+                .eq(Objects.nonNull(cameraQuery.getSupplierId()), Camera::getSupplierId, cameraQuery.getSupplierId())
                 .between(Objects.nonNull(cameraQuery.getCreateTimeStart()) && Objects.nonNull(cameraQuery.getCreateTimeEnd()), Camera::getCreateTime, cameraQuery.getCreateTimeStart(), cameraQuery.getCreateTimeEnd())
                 .eq(Camera::getDelFlag, Camera.DEL_NORMAL)
                 .orderByDesc(Camera::getCreateTime);
@@ -188,7 +188,7 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
     public void exportExcel(CameraQuery cameraQuery, HttpServletResponse response) {
         LambdaQueryWrapper<Camera> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(Objects.nonNull(cameraQuery.getSerialNum()), Camera::getSerialNum, cameraQuery.getSerialNum())
-                .like(Objects.nonNull(cameraQuery.getSupplierId()), Camera::getSupplierId, cameraQuery.getSupplierId())
+                .eq(Objects.nonNull(cameraQuery.getSupplierId()), Camera::getSupplierId, cameraQuery.getSupplierId())
                 .between(Objects.nonNull(cameraQuery.getCreateTimeStart()) && Objects.nonNull(cameraQuery.getCreateTimeEnd()), Camera::getCreateTime, cameraQuery.getCreateTimeStart(), cameraQuery.getCreateTimeEnd())
                 .eq(Camera::getDelFlag, Camera.DEL_NORMAL)
                 .orderByDesc(Camera::getCreateTime);

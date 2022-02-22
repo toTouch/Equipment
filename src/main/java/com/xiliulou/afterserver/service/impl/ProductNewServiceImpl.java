@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -19,7 +20,9 @@ import com.xiliulou.afterserver.web.query.CompressionQuery;
 import com.xiliulou.afterserver.web.query.ProductNewDetailsQuery;
 import com.xiliulou.afterserver.web.query.ProductNewQuery;
 import com.xiliulou.afterserver.web.vo.BatchProductNewVo;
+import com.xiliulou.afterserver.web.vo.DeliverProductNewInfoVo;
 import com.xiliulou.afterserver.web.vo.ProductNewDetailsVo;
+import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +30,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import lombok.extern.slf4j.Slf4j;
@@ -60,7 +64,12 @@ public class ProductNewServiceImpl implements ProductNewService {
     private UserService userService;
     @Autowired
     private CameraService cameraService;
-
+    @Autowired
+    private DeliverLogService deliverLogService;
+    @Autowired
+    private DeliverService deliverService;
+    @Autowired
+    private WarehouseService warehouseService;
     /**
      * 通过ID查询单条数据从DB
      *
@@ -221,19 +230,6 @@ public class ProductNewServiceImpl implements ProductNewService {
             }
         }
 
-        /*if(Objects.nonNull(query.getIotCardId())){
-            boolean checkResult = iotCardService.checkBind(query.getIotCardId());
-            if(!checkResult){
-                return R.fail("柜机物联网卡号已被绑定");
-            }
-        }
-
-        if(Objects.nonNull(query.getCameraCardId())){
-            boolean checkResult = iotCardService.checkBind(query.getCameraCardId());
-            if(!checkResult){
-                return R.fail("摄像头序列号已被绑定");
-            }
-        }*/
 
         ProductNew updateProductNew = new ProductNew();
         updateProductNew.setId(query.getId());
@@ -241,7 +237,39 @@ public class ProductNewServiceImpl implements ProductNewService {
         updateProductNew.setYears(query.getYears());
         updateProductNew.setExpirationEndTime(query.getExpirationEndTime());
         updateProductNew.setStatus(query.getStatus());
-        //TODO 2022年2月17日15:57:20 这里状态改成已收货 位置要发生改变 利用发货日志表查询
+        updateProductNew.setUpdateTime(System.currentTimeMillis());
+        //这里状态改成已收货 位置要发生改变 利用发货日志表查询
+        if(Objects.equals(3, query.getStatus())){
+            DeliverLog deliverLog = deliverLogService.getBaseMapper().selectOne(
+                    new QueryWrapper<DeliverLog>().eq("product_id", query.getId()));
+
+            if(Objects.nonNull(deliverLog)){
+                Deliver deliver = deliverService.getById(deliverLog.getId());
+                if(Objects.nonNull(deliver)){
+                    Integer destinationType = deliver.getDestinationType();
+                    if(Objects.equals(destinationType, 1)){
+                        PointNew pointNew = pointNewMapper.selectOne(
+                                new QueryWrapper<PointNew>().eq("name", deliver.getDestination()));
+                        if(Objects.nonNull(pointNew)){
+                            this.bindPoint(query.getId(), pointNew.getId(), 1);
+                        }
+                    }
+                    if(Objects.equals(destinationType, 2)){
+                        WareHouse wareHouse = warehouseService.getBaseMapper().selectOne(
+                                new QueryWrapper<WareHouse>().eq("ware_houses", deliver.getDestination()));
+                        if(Objects.nonNull(wareHouse)){
+                            this.bindPoint(query.getId(), new Long(wareHouse.getId()), 2);
+                        }
+                    }
+                    if(Objects.equals(destinationType, 3)){
+                        Supplier supplier = supplierService.querySupplierName(deliver.getDestination());
+                        if(Objects.nonNull(supplier)){
+                            this.bindPoint(query.getId(), supplier.getId(), 3);
+                        }
+                    }
+                }
+            }
+        }
         updateProductNew.setIotCardId(query.getIotCardId());
         updateProductNew.setCameraId(query.getCameraCardId());
         updateProductNew.setColor(query.getColor());
@@ -394,6 +422,13 @@ public class ProductNewServiceImpl implements ProductNewService {
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public R bindPoint(Long productId, Long pointId, Integer pointType) {
+        ProductNew productNew = this.queryByIdFromDB(productId);
+        if(Objects.isNull(productNew)){
+            return R.fail("未查询到相关柜机");
+        }
+        productNew.setUpdateTime(System.currentTimeMillis());
+        this.update(productNew);
+
         PointProductBind pointProductBind = pointProductBindMapper
                     .selectOne(new QueryWrapper<PointProductBind>()
                         .eq("product_id", productId));
@@ -427,18 +462,7 @@ public class ProductNewServiceImpl implements ProductNewService {
     public R checkCompression(CompressionQuery compression) {
         List<String> errorNos = new ArrayList<>();
 
-        if(Objects.isNull(compression.getNo())){
-            return R.fail(null, null, "请填写主柜资产编码");
-        }
-
-        ProductNew mainProduct = this.queryByNo(compression.getNo());
-        if(Objects.isNull(mainProduct)){
-            return R.fail(null, null, "主柜资产编码不存在，请核对");
-        }
-
-        if(!Objects.equals(mainProduct.getType(), ProductNew.TYPE_M)){
-            return R.fail(null, null, "主柜资产编码不是主柜类型，请核对");
-        }
+        String mainProductNo = "";
 
         if(Objects.isNull(compression.getIotCard())){
             return R.fail(null, null, "未上报主柜物联网卡号");
@@ -446,47 +470,45 @@ public class ProductNewServiceImpl implements ProductNewService {
 
         IotCard iotCard = iotCardService.queryBySn(compression.getIotCard());
         if(Objects.isNull(iotCard)){
-            return R.fail(null, null, "物联网卡号不存在，请核对");
+            return R.fail(null, null, "物联网卡号【"+compression.getIotCard()+"】不存在，请核对");
         }
 
-        /*boolean checkResult = iotCardService.checkBind(iotCard.getId());
-        if(!checkResult){
-            return R.fail(null , null, "柜机物联网卡号已被绑定");
-        }*/
-
-        if(Objects.equals(mainProduct.getIotCardId(), iotCard.getId())){
-            return R.fail(null, null,"主柜绑定物联网卡号与上报物联网卡号不一致，请修改");
-        }
-
-        if(Objects.equals(iotCard.getBatchId(), mainProduct.getBatchId())){
-            return R.fail(null, null, "主柜批次与物联网卡批次不一致，请核对");
-        }
+        ArrayList<ProductNew> mainProducts = new ArrayList(1);
 
         if(CollectionUtils.isNotEmpty(compression.getNoList())){
             for(String no : compression.getNoList()){
-                ProductNew viceProduct = this.queryByNo(no);
-                if(Objects.isNull(viceProduct)){
+                ProductNew product = this.queryByNo(no);
+                if(Objects.isNull(product)){
                     errorNos.add(no);
+                } else {
+                    if(Objects.equals(product.getType(), ProductNew.TYPE_M)){
+                        mainProducts.add(product);
+                    }
                 }
             }
 
             if(CollectionUtils.isNotEmpty(errorNos)){
-                return R.fail(errorNos, null, "副柜资产编码不存在，请核对");
+                return R.fail(errorNos, null, "资产编码不存在，请核对");
             }
 
-            errorNos.clear();
-            for(String no : compression.getNoList()){
-                if(!Objects.equals(mainProduct.getType(), ProductNew.TYPE_V)){
-                    errorNos.add(no);
-                }
+            if(!(mainProducts.size() == 1) || Objects.isNull(mainProducts.get(0))){
+                return R.fail(mainProducts, null, "主柜不存在或存在多个，请核对");
             }
 
-            if(CollectionUtils.isNotEmpty(errorNos)){
-                return R.fail(errorNos, null, "副柜资产编码不是副柜类型，请核对");
+            ProductNew mainProduct = mainProducts.get(0);
+            mainProductNo = mainProduct.getNo();
+
+            if(Objects.equals(mainProduct.getIotCardId(), iotCard.getId())){
+                return R.fail(null, null,"主柜绑定物联网卡号与上报物联网卡号不一致，请修改");
             }
+
+            if(Objects.equals(iotCard.getBatchId(), mainProduct.getBatchId())){
+                return R.fail(null, null, "主柜批次与物联网卡批次不一致，请核对");
+            }
+
         }
 
-        return R.ok();
+        return R.ok(mainProductNo);
     }
 
 
@@ -503,18 +525,33 @@ public class ProductNewServiceImpl implements ProductNewService {
             return R.fail(null, null, "未查询到物联网卡信息");
         }
 
-        ProductNew product = new ProductNew();
-        product.setNo(compression.getNo());
-        product.setTestFile(compression.getCompressionFile());
-        product.setTestResult(1);
-        product.setStatus(6);
-        product.setIotCardId(iotCard.getId());
-        productNewMapper.updateByNo(product);
+        ArrayList<ProductNew> mainProducts = new ArrayList(1);
+        if(CollectionUtils.isNotEmpty(compression.getNoList())){
+            for(String no : compression.getNoList()){
+                ProductNew product = this.queryByNo(no);
+                if(Objects.equals(product.getType(), ProductNew.TYPE_M)){
+                    mainProducts.add(product);
+                }
+
+            }
+        }
+
+        if(!(mainProducts.size() == 1) || Objects.isNull(mainProducts.get(0))){
+            return R.fail(mainProducts, null, "主柜不存在或存在多个，请核对");
+        }
 
         if(CollectionUtils.isNotEmpty(compression.getNoList())){
             for(String no : compression.getNoList()){
-                product.setNo(no);
-                productNewMapper.updateByNo(product);
+                ProductNew productOld = this.queryByNo(no);
+                if(Objects.nonNull(productOld)){
+                    ProductNew product = new ProductNew();
+                    product.setNo(no);
+                    product.setTestFile(compression.getCompressionFile());
+                    product.setTestResult(1);
+                    product.setStatus(6);
+                    product.setIotCardId(iotCard.getId());
+                    productNewMapper.updateByNo(product);
+                }
             }
         }
 
@@ -577,8 +614,8 @@ public class ProductNewServiceImpl implements ProductNewService {
     }
 
     @Override
-    public R queryProductNewInfoById(Long id) {
-        ProductNew productNew = this.productNewMapper.queryById(id);
+    public R queryProductNewInfoById(String no) {
+        ProductNew productNew = this.queryByNo(no);
         ProductNewDetailsVo vo = new ProductNewDetailsVo();
 
         if(Objects.isNull(productNew)){
@@ -590,6 +627,8 @@ public class ProductNewServiceImpl implements ProductNewService {
             }
             vo.setNo(productNew.getNo());
             vo.setStatus(productNew.getStatus());
+            vo.setStatusName(this.getStatusName(productNew.getStatus()));
+
             if(Objects.nonNull(productNew.getCameraId())){
                 Camera camera = cameraService.getById(productNew.getCameraId());
                 if(Objects.nonNull(camera)){
@@ -646,23 +685,9 @@ public class ProductNewServiceImpl implements ProductNewService {
             }
         }
 
-        /*if(Objects.nonNull(query.getIotCardId())){
-            boolean checkResult = iotCardService.checkBind(query.getIotCardId());
-            if(!checkResult){
-                return R.fail("柜机物联网卡号已被绑定");
-            }
-        }
-
-        if(Objects.nonNull(query.getCameraCardId())){
-            boolean checkResult = iotCardService.checkBind(query.getCameraCardId());
-            if(!checkResult){
-                return R.fail("摄像头物联网卡号已被绑定");
-            }
-        }*/
 
         ProductNew updateProductNew = new ProductNew();
         updateProductNew.setId(query.getId());
-        updateProductNew.setStatus(query.getStatus());
         updateProductNew.setCameraId(camera.getId());
         updateProductNew.setIotCardId(query.getIotCardId());
         updateProductNew.setColor(query.getColor());
@@ -683,7 +708,7 @@ public class ProductNewServiceImpl implements ProductNewService {
     public R checkProperty(String no) {
         ProductNew productNew = this.queryByNo(no);
         if(Objects.isNull(productNew)){
-            return R.fail(null,null,"主柜资产编码不存在，请核对");
+            return R.fail(null,null,"柜机资产编码不存在，请核对");
         }
 
         if(!Objects.equals(productNew.getStatus(), 6) && Objects.equals(productNew.getTestResult(), 1)){
@@ -697,6 +722,20 @@ public class ProductNewServiceImpl implements ProductNewService {
         IotCard iotCard = iotCardService.getById(productNew.getIotCardId());
         if(Objects.isNull(iotCard)){
             return R.fail(null,null,"未查询到物联网卡信息，请核对");
+        }
+
+        Batch productBatch = batchService.queryByIdFromDB(productNew.getBatchId());
+        if(Objects.isNull(productBatch)){
+            return R.fail(null,null,"未查询到柜机批次，请联系管理员");
+        }
+
+        Batch iotBatch = batchService.queryByIdFromDB(iotCard.getBatchId());
+        if(Objects.isNull(iotBatch)){
+            return R.fail(null,null,"未查询到物联网卡批次，请录入");
+        }
+
+        if(Objects.equals(productNew.getType(), ProductNew.TYPE_M) && !Objects.equals(iotCard.getBatchId(), productNew.getBatchId())){
+            return R.fail(null,null,"柜机批次与物联网卡批次不一致，请核对");
         }
 
         if(Objects.isNull(productNew.getCameraId())){
@@ -728,7 +767,23 @@ public class ProductNewServiceImpl implements ProductNewService {
         if(Objects.isNull(productNew.getSurface())){
             return R.fail(null,null,"柜机外观未填写，请录入");
         }
-        return null;
+
+        Product product = productService.getById(productNew.getModelId());
+        if(Objects.isNull(product)){
+            return R.fail(null,null,"未查询到柜机类型，请联系管理员");
+        }
+
+        SimpleDateFormat sim = new SimpleDateFormat("hh:mm");
+
+        DeliverProductNewInfoVo vo = new DeliverProductNewInfoVo();
+        vo.setId(productNew.getId());
+        vo.setBatchId(productNew.getBatchId());
+        vo.setBatchNo(productBatch.getBatchNo());
+        vo.setModelName(product.getName());
+        vo.setNo(productNew.getNo());
+        vo.setStatusName(getStatusName(productNew.getStatus()));
+        vo.setInsertTime(sim.format(new Date()));
+        return R.fail(vo);
     }
 
 

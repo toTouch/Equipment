@@ -11,7 +11,6 @@ import java.util.List;
  */
 @Data
 public class CompressionQuery {
-    private String no;
     private String iotCard;
     private String compressionFile;
     private List<String> noList;

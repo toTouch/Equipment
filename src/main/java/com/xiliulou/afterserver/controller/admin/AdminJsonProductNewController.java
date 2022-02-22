@@ -1,5 +1,8 @@
 package com.xiliulou.afterserver.controller.admin;
 
+import com.aliyun.oss.OSSClient;
+import com.aliyun.oss.model.GeneratePresignedUrlRequest;
+import com.xiliulou.afterserver.config.OssConfig;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.PointProductBindMapper;
 import com.xiliulou.afterserver.service.*;
@@ -8,13 +11,13 @@ import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.CompressionQuery;
 import com.xiliulou.afterserver.web.query.ProductNewDetailsQuery;
 import com.xiliulou.afterserver.web.query.ProductNewQuery;
+import com.xiliulou.storage.service.impl.AliyunOssService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.net.URL;
+import java.util.*;
 
 /**
  * @author Hardy
@@ -42,6 +45,10 @@ public class AdminJsonProductNewController {
     private IotCardService iotCardService;
     @Autowired
     private CameraService cameraService;
+    @Autowired
+    private AliyunOssService aliyunOssService;
+    @Autowired
+    private OssConfig ossConfig;
 
     //@PostMapping("/admin/productNew")
     public R saveAdminPointNew(@RequestBody ProductNew productNew){
@@ -207,14 +214,19 @@ public class AdminJsonProductNewController {
 
     /**
      * 手持终端获取 柜机详情
-     * @param id
+     * @param no
      * @return
      */
     @GetMapping("/admin/productNew/info")
-    public R queryProductNewInfoById(@RequestParam("id")Long id){
-        return productNewService.queryProductNewInfoById(id);
+    public R queryProductNewInfoById(@RequestParam("no")String no){
+        return productNewService.queryProductNewInfoById(no);
     }
 
+    /**
+     * 手持终端 更新产品信息
+     * @param productNewDetailsQuery
+     * @return
+     */
     @PutMapping("/admin/productNew/update")
     public R updateProductNew(@RequestBody ProductNewDetailsQuery productNewDetailsQuery){
         return productNewService.updateProductNew(productNewDetailsQuery);
@@ -223,5 +235,23 @@ public class AdminJsonProductNewController {
     @PostMapping("admin/productNew/check/property")
     public R checkProperty(@RequestParam("no") String no){
         return productNewService.checkProperty(no);
+    }
+
+    @GetMapping("admin/productNew/testFile")
+    public R getTestFile(@RequestParam("fileName") String fileName){
+        String url = null;
+        try{
+            url = aliyunOssService.getOssFileUrl(ossConfig.getBucket(), fileName, 120 * 1000);
+        }catch(Exception e){
+            log.error("oss error!", e);
+        }
+
+        if(Objects.isNull(url)){
+            return R.fail("oss error");
+        }
+
+        Map<String, String> result = new HashMap<>(1);
+        result.put("url", url);
+        return R.ok(result);
     }
 }
