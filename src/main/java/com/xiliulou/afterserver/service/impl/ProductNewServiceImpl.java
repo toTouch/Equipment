@@ -626,7 +626,7 @@ public class ProductNewServiceImpl implements ProductNewService {
         ProductNew productNew = this.queryByNo(no);
         ProductNewDetailsVo vo = new ProductNewDetailsVo();
 
-        if(Objects.isNull(productNew)){
+        if(!Objects.isNull(productNew)){
             vo.setId(productNew.getId());
             Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
             if(Objects.nonNull(batch)){
