@@ -28,11 +28,10 @@ import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
+import com.xiliulou.afterserver.web.query.DeliverFactoryProductQuery;
+import com.xiliulou.afterserver.web.query.DeliverFactoryQuery;
 import com.xiliulou.afterserver.web.query.DeliverQuery;
-import com.xiliulou.afterserver.web.vo.DeliverExcelVo;
-import com.xiliulou.afterserver.web.vo.DeliverExportExcelVo;
-import com.xiliulou.afterserver.web.vo.OrderDeliverContentVo;
-import com.xiliulou.afterserver.web.vo.OrderDeliverVo;
+import com.xiliulou.afterserver.web.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -78,7 +77,12 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     private InventoryFlowBillService inventoryFlowBillService;
     @Autowired
     private PointNewService pointNewService;
-
+    @Autowired
+    private ProductNewService productNewService;
+    @Autowired
+    private DeliverLogService deliverLogService;
+    @Autowired
+    private BatchService batchService;
 
     @Override
     public IPage getPage(Long offset, Long size, DeliverQuery deliver) {
@@ -90,6 +94,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                         .eq(Objects.nonNull(deliver.getCreateUid()), Deliver::getCreateUid, deliver.getCreateUid())
                         .like(Objects.nonNull(deliver.getExpressNo()), Deliver::getExpressNo, deliver.getExpressNo())
                         .like(Objects.nonNull(deliver.getExpressCompany()), Deliver::getExpressCompany, deliver.getExpressCompany())
+                        .like(Objects.nonNull(deliver.getNo()), Deliver::getNo, deliver.getNo())
                         .orderByDesc(Deliver::getCreateTime)
                         .ge(Objects.nonNull(deliver.getCreateTimeStart()), Deliver::getDeliverTime, deliver.getCreateTimeStart())
                         .le(Objects.nonNull(deliver.getCreateTimeEnd()), Deliver::getDeliverTime, deliver.getCreateTimeEnd())
@@ -170,6 +175,43 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             }
 
             records.setPaymentMethodName(getpaymentMethodName(records.getPaymentMethod()));
+
+            List<DeliverLog> deliverLogs = deliverLogService.getByDeliverId(deliver.getId());
+            Map<String, List<DeliverInfoVo>> result = new HashMap<>();
+
+            if(CollectionUtils.isNotEmpty(deliverLogs)){
+                deliverLogs.stream().forEach(item -> {
+                    ProductNew productNew = productNewService.queryByIdFromDB(item.getProductId());
+                    if(Objects.isNull(productNew)){
+                        return;
+                    }
+
+                    Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
+                    if(Objects.isNull(batch)){
+                        return;
+                    }
+
+                    Product product = productService.getById(productNew.getModelId());
+                    if(Objects.isNull(product)){
+                        return;
+                    }
+
+                    DeliverInfoVo deliverInfoVo = new DeliverInfoVo();
+                    deliverInfoVo.setId(item.getId());
+                    deliverInfoVo.setModelName(product.getName());
+                    deliverInfoVo.setProductNo(productNew.getNo());
+
+                    if(!result.containsKey(batch.getBatchNo())){
+                        List<DeliverInfoVo> deliverInfoVos = new ArrayList<>();
+                        result.put(batch.getBatchNo(), deliverInfoVos);
+                    }
+
+                    List<DeliverInfoVo> deliverInfoVos = result.get(batch.getBatchNo());
+                    deliverInfoVos.add(deliverInfoVo);
+                });
+
+                records.setDeliverInfoVoMap(result);
+            }
         });
 
         return selectPage.setRecords(list);
@@ -456,6 +498,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                             OrderDeliverContentVo orderDeliverContentVo = new OrderDeliverContentVo();
                             orderDeliverContentVo.setModelName(product.getName());
                             orderDeliverContentVo.setNum(quantityIds.get(i));
+                            orderDeliverContentVos.add(orderDeliverContentVo);
                         }
                     }
                 }
@@ -466,6 +509,182 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         }
 
         return R.ok(result);
+    }
+
+    @Override
+    public R factoryDeliver(DeliverFactoryQuery deliverFactoryQuery) {
+        Deliver deliver = this.queryByNo(deliverFactoryQuery.getSn());
+        if(Objects.isNull(deliver)){
+            return R.fail(null, null,"未查询到相关发货编号");
+        }
+
+        if(CollectionUtils.isEmpty(deliverFactoryQuery.getProductContent())){
+            return R.fail(null, null,"请传入发货信息");
+        }
+
+        ArrayList<Integer> productIds = JSON.parseObject(deliver.getProduct(), ArrayList.class);
+        ArrayList<String> quantityIds = JSON.parseObject(deliver.getQuantity(), ArrayList.class);
+        Map<Long, Integer> deliverInfo = new HashMap<>();
+
+        if(productIds.size() == quantityIds.size()){
+            for(int i = 0; i < productIds.size(); i++){
+                deliverInfo.put(new Long(productIds.get(i)), Integer.parseInt(quantityIds.get(i)));
+            }
+        }
+
+        Map<Long,Integer> insertInfo = new HashMap<>();
+        QueryWrapper<ProductNew> queryWrapper = new QueryWrapper<ProductNew>();
+        for(DeliverFactoryProductQuery productQuery : deliverFactoryQuery.getProductContent()){
+            queryWrapper.clear();
+            ProductNew productNew = productNewService.getBaseMapper()
+                    .selectOne(queryWrapper.eq("no", productQuery.getNo()).eq("del_flag", ProductNew.DEL_NORMAL));
+
+            if(Objects.isNull(productNew)){
+                return R.fail(null, null, "资产编码【"+productQuery.getNo()+"】未查询到");
+            }
+            //统计上传柜机类型个数
+            insertInfo.put(productNew.getModelId(), insertInfo.containsKey(productNew.getModelId()) ? (insertInfo.get(productNew.getModelId()) + 1) :1);
+        }
+
+        if(!insertInfo.equals(deliverInfo)){
+            return R.fail(null, null, "发货内容与录入内容不一致，请检查");
+        }
+
+        Deliver updateDeliver = new Deliver();
+        updateDeliver.setId(deliver.getId());
+        updateDeliver.setState(2);
+        this.updateById(updateDeliver);
+
+        for(DeliverFactoryProductQuery productQuery : deliverFactoryQuery.getProductContent()){
+            queryWrapper.clear();
+            ProductNew productNew = productNewService.getBaseMapper()
+                    .selectOne(queryWrapper.eq("no", productQuery.getNo()).eq("del_flag", ProductNew.DEL_NORMAL));
+
+            productNew.setStatus(1);
+            productNewService.update(productNew);
+
+            DeliverLog deliverLog = new DeliverLog();
+            deliverLog.setDeliverId(deliver.getId());
+            deliverLog.setProductId(productNew.getId());
+            deliverLog.setInsertTime(productQuery.getInsetTime());
+            deliverLog.setCreateTime(System.currentTimeMillis());
+            deliverLog.setUpdateTime(System.currentTimeMillis());
+            deliverLogService.save(deliverLog);
+        }
+        return R.ok();
+    }
+
+
+    @Override
+    public R queryIssueListByFactory() {
+        Long uid = SecurityUtils.getUid();
+        if(Objects.isNull(uid)){
+            return R.fail("未查询到相关用户");
+        }
+
+        User user = userService.getUserById(uid);
+        if(Objects.isNull(user)){
+            return R.fail("未查询到相关用户");
+        }
+
+        Supplier supplier = supplierService.getById(user.getSupplierId());
+        if(Objects.isNull(supplier)){
+            return R.fail("用户未绑定工厂，请联系管理员");
+        }
+
+        List<Deliver> list = baseMapper.selectList(new QueryWrapper<Deliver>()
+                .eq("city_type", Deliver.CITY_TYPE_FACTORY)
+                .eq("city", supplier.getName())
+                .eq("state", 2));
+
+        List<OrderDeliverVo> result = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(list)){
+            list.stream().forEach(item -> {
+                OrderDeliverVo orderDeliverVo = new OrderDeliverVo();
+                orderDeliverVo.setNo(item.getNo());
+                orderDeliverVo.setRemark(item.getRemark());
+
+                ArrayList<Integer> productIds = JSON.parseObject(item.getProduct(), ArrayList.class);
+                ArrayList<String> quantityIds = JSON.parseObject(item.getQuantity(), ArrayList.class);
+                ArrayList<OrderDeliverContentVo> orderDeliverContentVos = new ArrayList<>();
+
+                if(productIds.size() == quantityIds.size()){
+                    for(int i = 0; i < productIds.size(); i++){
+                        Product product = productService.getById(productIds.get(i));
+                        if(Objects.nonNull(product)){
+                            OrderDeliverContentVo orderDeliverContentVo = new OrderDeliverContentVo();
+                            orderDeliverContentVo.setModelName(product.getName());
+                            orderDeliverContentVo.setNum(quantityIds.get(i));
+                            orderDeliverContentVos.add(orderDeliverContentVo);
+                        }
+                    }
+                }
+
+                orderDeliverVo.setContent(orderDeliverContentVos);
+                result.add(orderDeliverVo);
+            });
+        }
+
+        return R.ok(result);
+    }
+
+    @Override
+    public R queryIssueInfo(String no) {
+        Deliver deliver = this.getBaseMapper().selectOne(new QueryWrapper<Deliver>().eq("no", no));
+
+        List<DeliverLog> deliverLogs = deliverLogService.getByDeliverId(deliver.getId());
+        Map<String, List<DeliverProductNewInfoVo>> classification = new HashMap<>();
+        List<List<DeliverProductNewInfoVo>> result = new ArrayList<>();
+
+        if(CollectionUtils.isNotEmpty(deliverLogs)){
+            deliverLogs.stream().forEach(item -> {
+                DeliverProductNewInfoVo vo = new DeliverProductNewInfoVo();
+
+                ProductNew productNew = productNewService.queryByIdFromDB(item.getProductId());
+                if(Objects.isNull(productNew)){
+                    return;
+                }
+
+                Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
+                if(Objects.isNull(batch)){
+                    return;
+                }
+
+                Product product = productService.getById(productNew.getModelId());
+                if(Objects.isNull(product)){
+                    return;
+                }
+
+                vo.setId(item.getId());
+                vo.setInsertTime(item.getInsertTime());
+                vo.setStatusName(getProductStatusName(productNew.getStatus()));
+                vo.setNo(productNew.getNo());
+                vo.setModelName(product.getName());
+                vo.setBatchNo(batch.getBatchNo());
+                vo.setBatchId(batch.getId());
+
+                if(!classification.containsKey(batch.getBatchNo())){
+                    List<DeliverProductNewInfoVo> deliverProductNewInfos = new ArrayList<>();
+                    classification.put(batch.getBatchNo(), deliverProductNewInfos);
+                }
+
+                List<DeliverProductNewInfoVo> deliverProductNewInfos = classification.get(batch.getBatchNo());
+                deliverProductNewInfos.add(vo);
+
+            });
+
+            for(List<DeliverProductNewInfoVo> item : classification.values()){
+                result.add(item);
+            }
+        }
+
+
+        return R.ok(result);
+    }
+
+    private Deliver queryByNo(String no){
+        if(StringUtils.isBlank(no)) return null;
+        return this.baseMapper.selectOne(new QueryWrapper<Deliver>().eq("no", no));
     }
 
 
@@ -577,6 +796,20 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                 break;
         }
         return methodStr;
+    }
+
+    private String getProductStatusName(Integer status){
+        String statusName = "";
+        switch (status){
+            case 0: statusName = "生产中"; break;
+            case 1: statusName = "运输中"; break;
+            case 2: statusName = "已收货"; break;
+            case 3: statusName = "使用中"; break;
+            case 4: statusName = "拆机柜"; break;
+            case 5: statusName = "已报废"; break;
+            case 6: statusName = "已测试"; break;
+        }
+        return statusName;
     }
 
     private String getExpressNo(Integer status) {

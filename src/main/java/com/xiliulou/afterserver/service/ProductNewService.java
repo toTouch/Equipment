@@ -98,7 +98,7 @@ public interface ProductNewService {
 
     R queryByBatchAndSupplier(Long batchId);
 
-    R queryProductNewInfoById(Long id);
+    R queryProductNewInfoById(String no);
 
     BaseMapper<ProductNew> getBaseMapper();
 

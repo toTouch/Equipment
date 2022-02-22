@@ -50,6 +50,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.xiliulou</groupId>
+            <artifactId>xiliulou-common-iot-storege</artifactId>
+            <version>${xiliulou.version}</version>
+        </dependency>
+
+
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>

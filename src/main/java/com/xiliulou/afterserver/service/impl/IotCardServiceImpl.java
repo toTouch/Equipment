@@ -166,8 +166,10 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
         expirationHandle();
         Page page = PageUtil.getPage(offset, size);
         IPage iPage = iotCardMapper.getPage(page, iotCard);
+
         List<IotCard> list = iPage.getRecords();
         List<IotCardVo> data = new ArrayList<>();
+
         if(!CollectionUtils.isEmpty(list)){
             list.stream().forEach(item -> {
                 IotCardVo iotCardVo = new IotCardVo();
@@ -186,6 +188,7 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
                 data.add(iotCardVo);
             });
         }
+
         Map result = new HashMap(2);
         result.put("data", data);
         result.put("total", iPage.getTotal());
@@ -298,15 +301,15 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
     private String getOperatorName(Integer operator){
         String operatorName = "";
         if(Objects.equals(IotCard.OPERATOR_MOVE, operator)){
-            operatorName = "中国移动";
+            operatorName = "移动";
         }
 
         if(Objects.equals(IotCard.OPERATOR_TELECOM, operator)){
-            operatorName = "中国电信";
+            operatorName = "电信";
         }
 
         if(Objects.equals(IotCard.OPERATOR_UNICOM, operator)){
-            operatorName = "中国联通";
+            operatorName = "联通";
         }
 
         return operatorName;

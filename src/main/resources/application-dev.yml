@@ -76,3 +76,6 @@ minio:
 userrole:
   unShow: [1,2,3,4]
   userRole: [2]
+
+oss:
+  bucket: xiliulou-strawberry

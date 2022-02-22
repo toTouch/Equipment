@@ -19,6 +19,7 @@ import com.xiliulou.afterserver.service.DeliverService;
 import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
+import com.xiliulou.afterserver.web.query.DeliverFactoryQuery;
 import com.xiliulou.afterserver.web.query.DeliverQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,5 +133,23 @@ public class AdminJsonDeliverController {
             return R.fail("登陆用户非工厂类型");
         }
         return deliverService.queryListByFactory();
+    }
+
+    @PostMapping("admin/deliver/factory")
+    public R factoryDeliver(@RequestBody DeliverFactoryQuery deliverFactoryQuery){
+        return deliverService.factoryDeliver(deliverFactoryQuery);
+    }
+
+    @GetMapping("admin/deliver/issue/list/factory")
+    public R queryIssueListByFactory(){
+        if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)){
+            return R.fail("登陆用户非工厂类型");
+        }
+        return deliverService.queryIssueListByFactory();
+    }
+
+    @GetMapping("admin/deliver/issue/info")
+    public R queryIssueInfo(@RequestParam("no") String no){
+        return deliverService.queryIssueInfo(no);
     }
 }

@@ -69,6 +69,11 @@ public class AdminJsonBatchController {
         if(Objects.isNull(batch.getType())){
             return R.fail("请输入批次类型");
         }
+        Batch batchOld = batchService.queryByName(batch.getBatchNo());
+        if(Objects.nonNull(batchOld) && !Objects.equals(batchOld.getId(), batch.getId())){
+            return R.fail("批次号已存在");
+        }
+
         this.batchService.update(batch);
 
         if(Objects.nonNull(batch.getFileId())){

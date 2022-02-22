@@ -135,6 +135,10 @@ public class BatchServiceImpl implements BatchService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public R saveBatch(Batch batch) {
+        Batch batchOld = queryByName(batch.getBatchNo());
+        if(Objects.nonNull(batchOld)){
+            return R.fail("批次号已存在");
+        }
         Product product = productService.getBaseMapper().selectById(batch.getModelId());
         if (Objects.isNull(product)) {
             return R.fail("产品型号有误，请检查");
@@ -206,6 +210,7 @@ public class BatchServiceImpl implements BatchService {
             productNew.setSerialNum(serialNumStr);
             productNew.setNo(sb.toString());
             productNew.setCreateTime(System.currentTimeMillis());
+            productNew.setUpdateTime(System.currentTimeMillis());
             productNew.setDelFlag(ProductNew.DEL_NORMAL);
             productNewMapper.insertOne(productNew);
 
