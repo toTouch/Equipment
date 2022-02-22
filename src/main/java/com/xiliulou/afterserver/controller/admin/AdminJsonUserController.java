@@ -101,11 +101,4 @@ public class AdminJsonUserController extends BaseController {
         return returnPairResult(roleService.bindUserRole(uid, roleIds));
     }
 
-    @GetMapping("admin/user/supplier")
-    public R getSupplierName(){
-        if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)){
-            return R.fail("登陆用户非工厂类型");
-        }
-        return userService.getSupplierName();
-    }
 }
