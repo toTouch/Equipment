@@ -205,11 +205,19 @@ public class AdminJsonProductNewController {
      * @return
      */
     @GetMapping("/admin/productNew/factory")
-    public R queryByBatchAndSupplier(@RequestParam("batchId") Long batchId){
+    public R queryByBatchAndSupplier(@RequestParam("batchId") Long batchId,
+                                     @RequestParam(value = "offset", required = false) Long offset,
+                                     @RequestParam(value = "size", required = false) Long size){
         if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)){
             return R.fail("登陆用户非工厂类型");
         }
-        return productNewService.queryByBatchAndSupplier(batchId);
+        if(Objects.isNull(offset)){
+            offset = 0L;
+        }
+        if(Objects.isNull(size)){
+            size = 50L;
+        }
+        return productNewService.queryByBatchAndSupplier(batchId, offset, size);
     }
 
     /**

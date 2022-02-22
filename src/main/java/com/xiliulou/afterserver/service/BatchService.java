@@ -70,5 +70,5 @@ public interface BatchService {
 
     R delOne(Long id);
 
-    R queryByfactory();
+    R queryByfactory(Long offset, Long size);
 }

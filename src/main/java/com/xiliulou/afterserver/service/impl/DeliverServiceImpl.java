@@ -459,7 +459,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     }
 
     @Override
-    public R queryListByFactory() {
+    public R queryListByFactory(Long offset, Long size) {
         Long uid = SecurityUtils.getUid();
         if(Objects.isNull(uid)){
             return R.fail("未查询到相关用户");
@@ -475,10 +475,13 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             return R.fail("用户未绑定工厂，请联系管理员");
         }
 
-        List<Deliver> list = baseMapper.selectList(new QueryWrapper<Deliver>()
+        Page page = PageUtil.getPage(offset, size);
+        page = baseMapper.selectPage(page, new QueryWrapper<Deliver>()
                 .eq("city_type", Deliver.CITY_TYPE_FACTORY)
                 .eq("city", supplier.getName())
                 .eq("state", 1));
+
+        List<Deliver> list = page.getRecords();
 
         List<OrderDeliverVo> result = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(list)){
@@ -683,7 +686,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     }
 
     private Deliver queryByNo(String no){
-        if(StringUtils.isBlank(no)) return null;
+        if(StringUtils.isBlank(no)) {return null;}
         return this.baseMapper.selectOne(new QueryWrapper<Deliver>().eq("no", no));
     }
 
