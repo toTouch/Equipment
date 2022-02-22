@@ -28,7 +28,7 @@
         <mybatis-plus-boot-starter.version>3.3.2</mybatis-plus-boot-starter.version>
         <minio-version>7.0.2</minio-version>
         <fastjson-version>1.2.13</fastjson-version>
-        <xiliulou.version>2.0.1</xiliulou.version>
+        <xiliulou.version>2.0.2</xiliulou.version>
     </properties>
 
 
