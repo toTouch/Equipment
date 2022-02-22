@@ -23,7 +23,7 @@ public interface DeliverService extends IService<Deliver> {
 
     R updateDeliver(Deliver deliver,  Long wareHouseIdStart, Long wareHouseIdEnd);
 
-    R queryListByFactory();
+    R queryListByFactory(Long offset, Long size);
 
     R factoryDeliver(DeliverFactoryQuery deliverFactoryQuery);
 

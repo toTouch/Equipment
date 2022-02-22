@@ -8,12 +8,14 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.PointNewMapper;
 import com.xiliulou.afterserver.mapper.PointProductBindMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DataUtil;
+import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.CompressionQuery;
@@ -578,7 +580,7 @@ public class ProductNewServiceImpl implements ProductNewService {
     }
 
     @Override
-    public R queryByBatchAndSupplier(Long batchId) {
+    public R queryByBatchAndSupplier(Long batchId, Long offset, Long size) {
         Long uid = SecurityUtils.getUid();
         if(Objects.isNull(uid)){
             return R.fail("未查询到相关用户");
@@ -594,12 +596,14 @@ public class ProductNewServiceImpl implements ProductNewService {
             return R.fail("用户未绑定工厂，请联系管理员");
         }
 
-        List<ProductNew> list = productNewMapper.selectList(
-                new QueryWrapper<ProductNew>().eq("batch_id", batchId)
-                        .eq("supplier_id", user.getSupplierId())
-                        .eq("del_flag", ProductNew.DEL_NORMAL));
+        Page page = PageUtil.getPage(offset, size);
+        page = productNewMapper.selectPage(page, new QueryWrapper<ProductNew>().eq("batch_id", batchId)
+                .eq("supplier_id", user.getSupplierId())
+                .eq("del_flag", ProductNew.DEL_NORMAL));
 
-        List<BatchProductNewVo> result = new ArrayList<>();
+        List<ProductNew> list = page.getRecords();
+
+        List<BatchProductNewVo> data = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(list)){
             list.stream().forEach(item -> {
                 BatchProductNewVo batchProductNewVo = new BatchProductNewVo();
@@ -607,9 +611,13 @@ public class ProductNewServiceImpl implements ProductNewService {
                 batchProductNewVo.setNo(item.getNo());
                 batchProductNewVo.setStatus(this.getStatusName(item.getStatus()));
 
-                result.add(batchProductNewVo);
+                data.add(batchProductNewVo);
             });
         }
+
+        Map result = new HashMap(2);
+        result.put("data", data);
+        result.put("total",  page.getTotal());
         return R.ok(result);
     }
 

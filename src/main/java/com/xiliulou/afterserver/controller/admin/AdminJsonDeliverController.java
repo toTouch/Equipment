@@ -128,11 +128,21 @@ public class AdminJsonDeliverController {
     }
 
     @GetMapping("admin/deliver/list/factory")
-    public R queryListByFactory(){
+    public R queryListByFactory(@RequestParam(value = "offset",required = false)Long offset,
+                                @RequestParam(value = "size", required = false)Long size){
+
         if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)){
             return R.fail("登陆用户非工厂类型");
         }
-        return deliverService.queryListByFactory();
+
+        if(Objects.isNull(offset)){
+            offset = 0L;
+        }
+
+        if(Objects.isNull(size)){
+            size = 50L;
+        }
+        return deliverService.queryListByFactory(offset, size);
     }
 
     @PostMapping("admin/deliver/factory")

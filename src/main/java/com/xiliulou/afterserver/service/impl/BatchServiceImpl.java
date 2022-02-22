@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.BatchMapper;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.service.*;
+import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.vo.OrderBatchVo;
@@ -18,9 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -237,7 +237,7 @@ public class BatchServiceImpl implements BatchService {
     }
 
     @Override
-    public R queryByfactory() {
+    public R queryByfactory(Long offset, Long size) {
         Long uid = SecurityUtils.getUid();
         if(Objects.isNull(uid)){
             return R.fail("未查询到相关用户");
@@ -252,11 +252,12 @@ public class BatchServiceImpl implements BatchService {
         if(Objects.isNull(supplier)){
             return R.fail("用户未绑定工厂，请联系管理员");
         }
+        Page page = PageUtil.getPage(offset, size);
+        page = batchMapper.selectPage(page, new QueryWrapper<Batch>().eq("supplier_id", user.getSupplierId()));
 
-        List<Batch> batchList = batchMapper.selectList(
-                new QueryWrapper<Batch>().eq("supplier_id", user.getSupplierId()));
+        List<Batch> batchList = page.getRecords();
 
-        List<OrderBatchVo> result = new ArrayList<>();
+        List<OrderBatchVo> data = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(batchList)){
             batchList.stream().forEach(item -> {
                 OrderBatchVo orderBatchVo = new OrderBatchVo();
@@ -269,10 +270,13 @@ public class BatchServiceImpl implements BatchService {
                 if(Objects.nonNull(product)){
                     orderBatchVo.setModelName(product.getName());
                 }
-                result.add(orderBatchVo);
+                data.add(orderBatchVo);
             });
         }
 
+        Map result = new HashMap(2);
+        result.put("data", data);
+        result.put("total", page.getTotal());
         return R.ok(result);
     }
 }

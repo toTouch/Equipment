@@ -96,7 +96,7 @@ public interface ProductNewService {
 
     R findIotCard(String no);
 
-    R queryByBatchAndSupplier(Long batchId);
+    R queryByBatchAndSupplier(Long batchId,Long offset, Long size);
 
     R queryProductNewInfoById(String no);
 
