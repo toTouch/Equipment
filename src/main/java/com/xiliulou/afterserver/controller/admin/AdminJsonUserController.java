@@ -8,6 +8,7 @@ import com.xiliulou.afterserver.service.RoleService;
 import com.xiliulou.afterserver.service.UserService;
 import com.xiliulou.afterserver.util.MinioUtil;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.util.password.PasswordUtils;
 import com.xiliulou.core.json.JsonUtil;
 import com.xiliulou.core.utils.DataUtil;
@@ -102,6 +103,9 @@ public class AdminJsonUserController extends BaseController {
 
     @GetMapping("admin/user/supplier")
     public R getSupplierName(){
-        return null;
+        if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)){
+            return R.fail("登陆用户非工厂类型");
+        }
+        return userService.getSupplierName();
     }
 }

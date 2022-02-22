@@ -21,6 +21,7 @@ import com.xiliulou.afterserver.service.UserRoleService;
 import com.xiliulou.afterserver.service.UserService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.util.password.PasswordUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -68,8 +69,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             if(Objects.isNull(supplier)){
                 return Pair.of(false, "未查询到工厂，请检查");
             }
+            user.setSupplierName(supplier.getName());
         }
         user.setRoleId(User.AFTER_USER_ROLE);
+        user.setPicture("1.npg");
         user.setCreateTime(System.currentTimeMillis());
         user.setPassWord(PasswordUtils.encode(user.getPassWord()));
         baseMapper.insert(user);
