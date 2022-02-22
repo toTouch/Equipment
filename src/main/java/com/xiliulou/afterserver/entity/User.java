@@ -24,6 +24,8 @@ public class User {
     private Long createTime;
     private Integer userType;
     private Long supplierId;
+    private String supplierName;
+    private String picture;
 
     public static final Integer AFTER_USER_ROLE = 1;
     //public static final Integer TYPE_USER_SUPER = 0;

@@ -32,6 +32,6 @@ public class UserDetailServiceImpl implements UserDetailsService {
         }
         Collection<? extends GrantedAuthority> authorities=authorizationService.acquireAllAuthorities(user.getId(), user.getUserType());
 
-        return new SecurityUser(user.getUserName(),null,user.getId(),user.getUserType() ,user.getPassWord(),false,authorities);
+        return new SecurityUser(user.getUserName(),null,user.getId(),user.getUserType() ,user.getPassWord(),user.getSupplierId(),user.getSupplierName(),user.getPicture(), false,authorities);
     }
 }
