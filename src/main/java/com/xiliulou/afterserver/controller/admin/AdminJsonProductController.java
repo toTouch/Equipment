@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @program: XILIULOU
@@ -45,6 +46,10 @@ public class AdminJsonProductController {
     @PostMapping("admin/product")
     @Transactional(rollbackFor = Exception.class)
     public R insert(@RequestBody Product product) {
+        Product productOld = productService.getByName(product.getName());
+        if(Objects.nonNull(productOld)){
+            return R.fail("类型【"+product.getName()+"】已存在");
+        }
         product.setCreateTime(System.currentTimeMillis());
         productService.save(product);
         return R.ok();
@@ -52,6 +57,10 @@ public class AdminJsonProductController {
 
     @PutMapping("admin/product")
     public R update(@RequestBody Product product) {
+        Product productOld = productService.getByName(product.getName());
+        if(Objects.nonNull(productOld) && !Objects.equals(productOld.getId(), product.getId())){
+            return R.fail("类型【"+product.getName()+"】已存在");
+        }
         return R.ok(productService.updateById(product));
     }
 
