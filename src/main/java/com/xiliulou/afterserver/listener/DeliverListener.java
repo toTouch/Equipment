@@ -139,7 +139,7 @@ public class DeliverListener extends AnalysisEventListener<DeliverInfo> {
                 }
             }
 
-            deliver.setNo(RandomUtil.randomString(10)+"I");
+            deliver.setNo("i"+RandomUtil.randomString(10));
             deliverList.add(deliver);
         });
 
