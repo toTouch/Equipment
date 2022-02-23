@@ -408,7 +408,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     public R insert(Deliver deliver,  Long wareHouseIdStart, Long wareHouseIdEnd) {
         R r = saveWareHouseDetails(deliver, wareHouseIdStart, wareHouseIdEnd);
         if(r == null){
-            deliver.setNo(RandomUtil.randomString(10)+"P");
+            deliver.setNo("p"+RandomUtil.randomString(10));
             deliver.setCreateTime(System.currentTimeMillis());
             r = R.ok(this.save(deliver));
         }
