@@ -238,7 +238,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
 
-        String[] header = {"客户", "客户电话", "起点", "终点", "物流状态", "第三方公司", "第三方承担费用（元）", "运费", "结算方式", "发货时间", "快递公司", "快递单号", "创建人", "备注"};
+        String[] header = {"发货编号","客户", "客户电话", "起点", "终点", "物流状态", "第三方公司", "第三方承担费用（元）", "运费", "结算方式", "发货时间", "快递公司", "快递单号", "创建人", "备注"};
         for(String s : header){
             List<String> headTitle = new ArrayList<String>();
             headTitle.add(s);
@@ -260,6 +260,8 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
 
             List<Object> row = new ArrayList<>();
 
+            //no
+            row.add(d.getNo() == null ? "" : d.getNo());
             //customerName
             if(ObjectUtil.isNotNull(d.getCustomerId())){
                 Customer customer = customerService.getById(d.getCustomerId());
@@ -406,7 +408,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     public R insert(Deliver deliver,  Long wareHouseIdStart, Long wareHouseIdEnd) {
         R r = saveWareHouseDetails(deliver, wareHouseIdStart, wareHouseIdEnd);
         if(r == null){
-            deliver.setNo(RandomUtil.randomString(10));
+            deliver.setNo(RandomUtil.randomString(10)+"P");
             deliver.setCreateTime(System.currentTimeMillis());
             r = R.ok(this.save(deliver));
         }
