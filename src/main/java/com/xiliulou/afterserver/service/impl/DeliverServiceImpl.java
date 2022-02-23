@@ -515,6 +515,45 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     }
 
     @Override
+    public R queryContentByFactory(String no) {
+        Long uid = SecurityUtils.getUid();
+        if(Objects.isNull(uid)){
+            return R.fail("未查询到相关用户");
+        }
+
+        User user = userService.getUserById(uid);
+        if(Objects.isNull(user)){
+            return R.fail("未查询到相关用户");
+        }
+
+        Supplier supplier = supplierService.getById(user.getSupplierId());
+        if(Objects.isNull(supplier)){
+            return R.fail("用户未绑定工厂，请联系管理员");
+        }
+
+        Deliver deliver = this.queryByNo(no);
+        ArrayList<OrderDeliverContentVo> orderDeliverContentVos = new ArrayList<>();
+
+        if(Objects.nonNull(deliver)){
+            ArrayList<Integer> productIds = JSON.parseObject(deliver.getProduct(), ArrayList.class);
+            ArrayList<String> quantityIds = JSON.parseObject(deliver.getQuantity(), ArrayList.class);
+
+            if(productIds.size() == quantityIds.size()){
+                for(int i = 0; i < productIds.size(); i++){
+                    Product product = productService.getById(productIds.get(i));
+                    if(Objects.nonNull(product)){
+                        OrderDeliverContentVo orderDeliverContentVo = new OrderDeliverContentVo();
+                        orderDeliverContentVo.setModelName(product.getName());
+                        orderDeliverContentVo.setNum(quantityIds.get(i));
+                        orderDeliverContentVos.add(orderDeliverContentVo);
+                    }
+                }
+            }
+        }
+        return R.ok(orderDeliverContentVos);
+    }
+
+    @Override
     public R factoryDeliver(DeliverFactoryQuery deliverFactoryQuery) {
         Deliver deliver = this.queryByNo(deliverFactoryQuery.getSn());
         if(Objects.isNull(deliver)){
@@ -684,6 +723,8 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
 
         return R.ok(result);
     }
+
+
 
     private Deliver queryByNo(String no){
         if(StringUtils.isBlank(no)) {return null;}
