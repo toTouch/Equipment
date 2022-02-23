@@ -4,6 +4,7 @@ import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.export.DeliverInfo;
 import com.xiliulou.afterserver.export.PointInfo;
@@ -34,18 +35,23 @@ public class DeliverListener extends AnalysisEventListener<DeliverInfo> {
     private DeliverService deliverService;
     private CustomerService customerService;
     private SupplierService supplierService;
+    private PointNewService pointNewService;
+    private WarehouseService warehouseService;
     private HttpServletRequest request;
 
-    public DeliverListener(DeliverService deliverService, CustomerService customerService, SupplierService supplierService,HttpServletRequest request) {
+    public DeliverListener(DeliverService deliverService, CustomerService customerService, SupplierService supplierService, PointNewService pointNewService, WarehouseService warehouseService,HttpServletRequest request) {
         this.deliverService = deliverService;
         this.supplierService = supplierService;
         this.customerService = customerService;
+        this.pointNewService = pointNewService;
+        this.warehouseService = warehouseService;
         this.request = request;
     }
 
     @Override
     public void invoke(DeliverInfo deliverInfo, AnalysisContext analysisContext) {
         log.info("发货导入=====解析到一条数据:{}", JSON.toJSONString(deliverInfo));
+        checkProperties(deliverInfo);
         list.add(deliverInfo);
         if (list.size() >= BATCH_COUNT) {
             saveData();
@@ -69,8 +75,9 @@ public class DeliverListener extends AnalysisEventListener<DeliverInfo> {
         List<Deliver> deliverList = new ArrayList<>();
         this.list.forEach(item -> {
             Deliver deliver = new Deliver();
-
+            deliver.setCityType(this.getPointType(item.getStartPointType()));
             deliver.setCity(item.getStartPoint());
+            deliver.setDestinationType(this.getPointType(item.getEndPointType()));
             deliver.setDestination(item.getEndPoint());
             deliver.setRemark(item.getRemarks());
             deliver.setDeliverCost(item.getCost());
@@ -82,7 +89,7 @@ public class DeliverListener extends AnalysisEventListener<DeliverInfo> {
             deliver.setCreateTime(System.currentTimeMillis());
             deliver.setExpressCompany(item.getExpressName());
             deliver.setExpressNo(item.getExpressNo());
-            deliver.setState(item.getStatus());
+            deliver.setState(this.getStatus(item.getStatus()));
             deliver.setProduct(item.getProduct());
             deliver.setQuantity(item.getQuantity());
             deliver.setCreateUid((Long) request.getAttribute("uid"));
@@ -149,5 +156,89 @@ public class DeliverListener extends AnalysisEventListener<DeliverInfo> {
         return ts;
     }
 
+    private  Integer getPointType(String type){
+        Integer pointType = null;
+        if("1".equals(type) || "点位".equals(type)){
+            pointType = 1;
+        }else if("2".equals(type) || "仓库".equals(type)){
+            pointType = 2;
+        }else if("3".equals(type) || "工厂".equals(type)){
+            pointType = 3;
+        }
+        return pointType;
+    }
 
+    private  String getPointTypeName(Integer type){
+        String pointType = "";
+        switch (type){
+            case 1: pointType = "点位"; break;
+            case 2: pointType = "仓库"; break;
+            case 3: pointType = "工厂"; break;
+        }
+        return pointType;
+    }
+
+    private Integer getStatus(String status){
+        Integer statusName = null;
+        if("1".equals(status) || "未发货".equals(status)){
+            statusName = 1;
+        }else if("2".equals(status) || "已发货".equals(status)){
+            statusName = 2;
+        }else if("3".equals(status) || "已到达".equals(status)){
+            statusName = 3;
+        }
+        return statusName;
+    }
+
+    private void checkProperties(DeliverInfo deliverInfo){
+        if(Objects.isNull(deliverInfo.getStartPointType())){
+            throw new RuntimeException("起点类型不可为空，请检查");
+        }
+
+        Integer startPointType = this.getPointType(deliverInfo.getStartPointType());
+        if(Objects.isNull(startPointType)){
+            throw new RuntimeException("请输入有效的起点类型，错误数据【"+deliverInfo.getStartPointType()+"】");
+        }
+
+        Object startPoint = this.queryPoint(startPointType, deliverInfo.getStartPoint());
+        if(Objects.isNull(startPoint)){
+            throw new RuntimeException(getPointTypeName(startPointType)+"列表中没有起点"+deliverInfo.getStartPoint());
+        }
+
+        Integer endPointType = this.getPointType(deliverInfo.getEndPointType());
+        if(Objects.isNull(endPointType)){
+            throw new RuntimeException("请输入有效的终点类型，错误数据【"+deliverInfo.getEndPointType()+"】");
+        }
+
+        Object endPoint = this.queryPoint(endPointType, deliverInfo.getEndPoint());
+        if(Objects.isNull(endPoint)){
+            throw new RuntimeException(getPointTypeName(startPointType)+"列表中没有终点"+deliverInfo.getStartPoint());
+        }
+
+        if(Objects.isNull(getStatus(deliverInfo.getStatus()))){
+            throw new RuntimeException("请填写正确物流状态，错误数据【"+deliverInfo.getStatus()+"】");
+        }
+    }
+
+    private Object queryPoint(Integer pointType, String pointName){
+        Object point = null;
+        if(Objects.equals(pointType, 1)){
+            QueryWrapper<PointNew> wrapper = new QueryWrapper<>();
+            wrapper.eq("name", pointName).eq("del_flag", PointNew.DEL_NORMAL);
+            point = pointNewService.getBaseMapper().selectOne(wrapper);
+        }
+
+        if(Objects.equals(pointType, 2)){
+            QueryWrapper<WareHouse> wrapper = new QueryWrapper<>();
+            wrapper.eq("ware_houses", pointName);
+            point = warehouseService.getBaseMapper().selectOne(wrapper);
+        }
+
+        if(Objects.equals(pointType, 3)){
+            QueryWrapper<Supplier> wrapper = new QueryWrapper<>();
+            wrapper.eq("name", pointName);
+            point = supplierService.getBaseMapper().selectOne(wrapper);
+        }
+        return point;
+    }
 }

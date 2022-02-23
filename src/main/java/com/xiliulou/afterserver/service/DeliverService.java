@@ -30,4 +30,6 @@ public interface DeliverService extends IService<Deliver> {
     R queryIssueListByFactory();
 
     R queryIssueInfo(String sn);
+
+    R queryContentByFactory(String no);
 }
