@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.listener;
 
+import cn.hutool.core.util.RandomUtil;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.fastjson.JSON;
@@ -138,7 +139,7 @@ public class DeliverListener extends AnalysisEventListener<DeliverInfo> {
                 }
             }
 
-
+            deliver.setNo(RandomUtil.randomString(10)+"I");
             deliverList.add(deliver);
         });
 
@@ -212,7 +213,7 @@ public class DeliverListener extends AnalysisEventListener<DeliverInfo> {
 
         Object endPoint = this.queryPoint(endPointType, deliverInfo.getEndPoint());
         if(Objects.isNull(endPoint)){
-            throw new RuntimeException(getPointTypeName(startPointType)+"列表中没有终点"+deliverInfo.getStartPoint());
+            throw new RuntimeException(getPointTypeName(endPointType)+"列表中没有终点"+deliverInfo.getStartPoint());
         }
 
         if(Objects.isNull(getStatus(deliverInfo.getStatus()))){
