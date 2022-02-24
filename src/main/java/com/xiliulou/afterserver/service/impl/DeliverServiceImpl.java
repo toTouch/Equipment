@@ -513,7 +513,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             });
         }
 
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>(2);
         result.put("data", data);
         result.put("total", page.getTotal());
         return R.ok(result);
