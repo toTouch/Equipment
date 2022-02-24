@@ -748,10 +748,10 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                 }
             }
 
-            if(wareHouseIdStart != null && ObjectUtils.isNull(warehouseService.getById(wareHouseIdStart))){
+            if(wareHouseIdStart != null && Objects.equals(deliver.getCityType(), 2) && ObjectUtils.isNull(warehouseService.getById(wareHouseIdStart))){
                 return R.fail("未查询到起点仓库");
             }
-            if(wareHouseIdEnd != null && ObjectUtils.isNull(warehouseService.getById(wareHouseIdEnd))){
+            if(wareHouseIdEnd != null && Objects.equals(deliver.getCityType(), 2) && ObjectUtils.isNull(warehouseService.getById(wareHouseIdEnd))){
                 return R.fail("未查询到终点仓库");
             }
             //product  型号
