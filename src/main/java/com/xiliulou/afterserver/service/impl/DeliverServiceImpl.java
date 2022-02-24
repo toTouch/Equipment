@@ -760,7 +760,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             ArrayList<String> quantityIds = JSON.parseObject(deliver.getQuantity(), ArrayList.class);
             if(productIds.size() == quantityIds.size()){
                 for(int i = 0; i < productIds.size(); i++){
-                    if(wareHouseIdStart != null){
+                    if(wareHouseIdStart != null && Objects.equals(deliver.getCityType(), 2)){
                         WareHouseProductDetails wareHouseProductDetails = wareHouseProductDetailsMapper.selectOne(
                                 new QueryWrapper<WareHouseProductDetails>()
                                         .eq("ware_house_id", wareHouseIdStart)
@@ -795,7 +795,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                         }
                     }
 
-                    if(wareHouseIdEnd != null){
+                    if(wareHouseIdEnd != null && Objects.equals(deliver.getCityType(), 2)){
                         WareHouseProductDetails wareHouseProductDetails = wareHouseProductDetailsMapper.selectOne(
                                 new QueryWrapper<WareHouseProductDetails>()
                                         .eq("ware_house_id", wareHouseIdEnd)
