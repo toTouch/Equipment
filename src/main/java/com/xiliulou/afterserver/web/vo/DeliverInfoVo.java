@@ -9,7 +9,7 @@ import lombok.Data;
  */
 @Data
 public class DeliverInfoVo {
-    private Long id;
+    //private Long id;
     private String productNo;
     private String modelName;
 }
