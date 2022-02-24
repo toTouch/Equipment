@@ -157,7 +157,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                 records.setProduct(JSONUtil.toJsonStr(new ArrayList<>()));
             }
 
-            if(ObjectUtils.isNotNull(records.getProduct())
+            /*if(ObjectUtils.isNotNull(records.getProduct())
                     && !"[]".equals(records.getProduct())
                     && ObjectUtils.isNotNull(records.getQuantity())
                     && !"[null]".equals(records.getQuantity())){
@@ -172,7 +172,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                     }
                 }
                 records.setDetails(map);
-            }
+            }*/
 
             records.setPaymentMethodName(getpaymentMethodName(records.getPaymentMethod()));
 
@@ -197,7 +197,6 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                     }
 
                     DeliverInfoVo deliverInfoVo = new DeliverInfoVo();
-                    deliverInfoVo.setId(item.getId());
                     deliverInfoVo.setModelName(product.getName());
                     deliverInfoVo.setProductNo(productNew.getNo());
 
