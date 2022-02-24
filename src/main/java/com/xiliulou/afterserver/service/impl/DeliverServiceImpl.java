@@ -485,7 +485,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
 
         List<Deliver> list = page.getRecords();
 
-        List<OrderDeliverVo> result = new ArrayList<>();
+        List<OrderDeliverVo> data = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(list)){
             list.stream().forEach(item -> {
                 OrderDeliverVo orderDeliverVo = new OrderDeliverVo();
@@ -509,10 +509,13 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                 }
 
                 orderDeliverVo.setContent(orderDeliverContentVos);
-                result.add(orderDeliverVo);
+                data.add(orderDeliverVo);
             });
         }
 
+        Map<String, Object> result = new HashMap<>();
+        result.put("data", data);
+        result.put("total", page.getTotal());
         return R.ok(result);
     }
 
