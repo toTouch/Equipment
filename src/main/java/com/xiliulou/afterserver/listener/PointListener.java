@@ -85,7 +85,7 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
             log.error("insert PointInfo error! City is entry pointName={}",pointInfo.getName());
             throw new RuntimeException("点位" + pointInfo.getName() + "请填写城市信息");
         }else{
-            LambdaQueryWrapper<City> like = new LambdaQueryWrapper<City>().like(City::getName, pointInfo.getCity());
+            LambdaQueryWrapper<City> like = new LambdaQueryWrapper<City>().eq(City::getName, pointInfo.getCity());
             City city = cityService.getOne(like);
             if (Objects.isNull(city)){
                 log.error("insert PointInfo error! not fund City pointName={}",pointInfo.getName());
@@ -97,7 +97,7 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
             log.error("insert PointInfo error! Customer is entry pointName={}",pointInfo.getName());
             throw new RuntimeException("点位" + pointInfo.getName() + "请填写客户信息");
         }else{
-            LambdaQueryWrapper<Customer> like = new LambdaQueryWrapper<Customer>().like(Customer::getName, pointInfo.getCustomerId());
+            LambdaQueryWrapper<Customer> like = new LambdaQueryWrapper<Customer>().eq(Customer::getName, pointInfo.getCustomerId());
             Customer customer = customerService.getOne(like);
             if (Objects.isNull(customer)) {
                 log.error("insert PointInfo error! not fund Customer pointName={}",pointInfo.getName());
