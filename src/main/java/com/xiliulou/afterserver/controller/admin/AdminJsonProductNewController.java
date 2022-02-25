@@ -195,52 +195,12 @@ public class AdminJsonProductNewController {
         return productNewService.findIotCard(no);
     }
 
-    /**
-     *手持终端 获取柜机列表
-     * @param batchId
-     * @return
-     */
-    @GetMapping("/admin/productNew/factory")
-    public R queryByBatchAndSupplier(@RequestParam("batchId") Long batchId,
-                                     @RequestParam(value = "offset", required = false) Long offset,
-                                     @RequestParam(value = "size", required = false) Long size){
-        if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)){
-            return R.fail("登陆用户非工厂类型");
-        }
-        if(Objects.isNull(offset)){
-            offset = 0L;
-        }
-        if(Objects.isNull(size)){
-            size = 50L;
-        }
-        return productNewService.queryByBatchAndSupplier(batchId, offset, size);
-    }
 
     /**
-     * 手持终端获取 柜机详情
-     * @param no
+     * 下载柜机测试文件
+     * @param fileName
      * @return
      */
-    @GetMapping("/admin/productNew/info")
-    public R queryProductNewInfoById(@RequestParam("no")String no){
-        return productNewService.queryProductNewInfoById(no);
-    }
-
-    /**
-     * 手持终端 更新产品信息
-     * @param productNewDetailsQuery
-     * @return
-     */
-    @PutMapping("/admin/productNew/update")
-    public R updateProductNew(@RequestBody ProductNewDetailsQuery productNewDetailsQuery){
-        return productNewService.updateProductNew(productNewDetailsQuery);
-    }
-
-    @PostMapping("admin/productNew/check/property")
-    public R checkProperty(@RequestParam("no") String no){
-        return productNewService.checkProperty(no);
-    }
-
     @GetMapping("admin/productNew/testFile")
     public R getTestFile(@RequestParam("fileName") String fileName){
         String url = null;
