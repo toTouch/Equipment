@@ -2,6 +2,7 @@ package com.xiliulou.afterserver.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RandomUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -18,6 +19,7 @@ import com.xiliulou.afterserver.util.DataUtil;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
+import com.xiliulou.afterserver.web.query.ApiRequestQuery;
 import com.xiliulou.afterserver.web.query.CompressionQuery;
 import com.xiliulou.afterserver.web.query.ProductNewDetailsQuery;
 import com.xiliulou.afterserver.web.query.ProductNewQuery;
@@ -461,7 +463,15 @@ public class ProductNewServiceImpl implements ProductNewService {
     }
 
     @Override
-    public R checkCompression(CompressionQuery compression) {
+    public R checkCompression(ApiRequestQuery apiRequestQuery) {
+        CompressionQuery compression = null;
+        try{
+            compression = JSON.parseObject(apiRequestQuery.getData(), CompressionQuery.class);
+        }catch (Exception e){
+            log.error("COMPRESSION PROPERTY CAST ERROR! check error", e);
+            return R.fail(null, null, "参数解析错误");
+        }
+
         List<String> errorNos = new ArrayList<>();
 
         String mainProductNo = "";
@@ -517,7 +527,15 @@ public class ProductNewServiceImpl implements ProductNewService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public R successCompression(CompressionQuery compression) {
+    public R successCompression(ApiRequestQuery apiRequestQuery) {
+        CompressionQuery compression = null;
+        try{
+            compression = JSON.parseObject(apiRequestQuery.getData(), CompressionQuery.class);
+        }catch (Exception e){
+            log.error("COMPRESSION PROPERTY CAST ERROR! success error", e);
+            return R.fail(null, null, "参数解析错误");
+        }
+
         if(StringUtils.isBlank(compression.getCompressionFile())){
             return R.fail(null, null, "测试文件为空");
         }

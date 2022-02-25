@@ -175,15 +175,6 @@ public class AdminJsonProductNewController {
         return productNewService.bindPoint(productId, pointId, pointType);
     }
 
-    @PostMapping("/admin/check/compression")
-    public R checkCompression(@RequestBody CompressionQuery compression){
-        return productNewService.checkCompression(compression);
-    }
-
-    @PostMapping("/admin/success/compression")
-    public R successCompression(@RequestBody CompressionQuery compression){
-        return productNewService.successCompression(compression);
-    }
 
     /**
      * 根据资产编码拉取物联网卡信息
