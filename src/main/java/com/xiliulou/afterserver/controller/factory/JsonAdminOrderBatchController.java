@@ -53,7 +53,7 @@ public class JsonAdminOrderBatchController {
      * @param batchId
      * @return
      */
-    @GetMapping("/productNew/")
+    @GetMapping("/productNew")
     public R queryByBatchAndSupplier(@RequestParam("batchId") Long batchId,
                                      @RequestParam(value = "offset", required = false) Long offset,
                                      @RequestParam(value = "size", required = false) Long size){
