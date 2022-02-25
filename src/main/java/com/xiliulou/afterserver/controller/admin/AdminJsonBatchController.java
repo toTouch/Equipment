@@ -129,21 +129,4 @@ public class AdminJsonBatchController {
         return batchService.delOne(id);
     }
 
-    @GetMapping("/admin/batch/factory")
-    public R queryByfactory(@RequestParam(value = "offset", required = false) Long offset,
-                            @RequestParam(value = "limit", required = false) Long size){
-        if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)){
-            return R.fail("登陆用户非工厂类型");
-        }
-
-        if(Objects.isNull(offset)){
-            offset = 0L;
-        }
-
-        if(Objects.isNull(size)){
-            size = 50L;
-        }
-
-        return batchService.queryByfactory(offset, size);
-    }
 }

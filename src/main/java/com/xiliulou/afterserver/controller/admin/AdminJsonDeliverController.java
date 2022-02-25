@@ -130,49 +130,4 @@ public class AdminJsonDeliverController {
         return R.ok();
     }
 
-    @GetMapping("admin/deliver/list/factory")
-    public R queryListByFactory(@RequestParam(value = "offset",required = false)Long offset,
-                                @RequestParam(value = "size", required = false)Long size){
-
-        if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)){
-            return R.fail("登陆用户非工厂类型");
-        }
-
-        if(Objects.isNull(offset)){
-            offset = 0L;
-        }
-
-        if(Objects.isNull(size)){
-            size = 50L;
-        }
-        return deliverService.queryListByFactory(offset, size);
-    }
-
-    @GetMapping("admin/deliver/content/factory")
-    public R queryContentByFactory(@RequestParam("no")String no){
-
-        if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)){
-            return R.fail("登陆用户非工厂类型");
-        }
-
-        return deliverService.queryContentByFactory(no);
-    }
-
-    @PostMapping("admin/deliver/factory")
-    public R factoryDeliver(@RequestBody DeliverFactoryQuery deliverFactoryQuery){
-        return deliverService.factoryDeliver(deliverFactoryQuery);
-    }
-
-    @GetMapping("admin/deliver/issue/list/factory")
-    public R queryIssueListByFactory(){
-        if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)){
-            return R.fail("登陆用户非工厂类型");
-        }
-        return deliverService.queryIssueListByFactory();
-    }
-
-    @GetMapping("admin/deliver/issue/info")
-    public R queryIssueInfo(@RequestParam("no") String no){
-        return deliverService.queryIssueInfo(no);
-    }
 }
