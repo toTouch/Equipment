@@ -140,7 +140,7 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
             }
 
             if (item.getCustomerId() != null) {
-                LambdaQueryWrapper<Customer> like = new LambdaQueryWrapper<Customer>().like(Customer::getName, item.getCustomerId());
+                LambdaQueryWrapper<Customer> like = new LambdaQueryWrapper<Customer>().eq(Customer::getName, item.getCustomerId());
                 Customer customer = customerService.getOne(like);
                 if (Objects.nonNull(customer)) {
                     point.setCustomerId(customer.getId());
@@ -148,7 +148,7 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
             }
 
             if (item.getCity()!=null){
-                LambdaQueryWrapper<City> like = new LambdaQueryWrapper<City>().like(City::getName, item.getCity());
+                LambdaQueryWrapper<City> like = new LambdaQueryWrapper<City>().eq(City::getName, item.getCity());
                 City city = cityService.getOne(like);
                 if (Objects.nonNull(city)){
                     point.setCityId(city.getId());
