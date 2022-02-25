@@ -48,7 +48,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Override
     public R delete(Long id, Long falg) {
         QueryWrapper<PointNew> wrapper = new QueryWrapper<>();
-        wrapper.eq("customer_id", id);
+        wrapper.eq("customer_id", id).eq("del_flag", PointNew.DEL_NORMAL);
         List<PointNew> list = pointNewMapper.selectList(wrapper);
         boolean boo = false;
 
