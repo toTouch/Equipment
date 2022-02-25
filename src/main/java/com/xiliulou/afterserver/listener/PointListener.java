@@ -12,6 +12,7 @@ import com.xiliulou.afterserver.export.CustomerInfo;
 import com.xiliulou.afterserver.export.PointInfo;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpRequest;
@@ -269,7 +270,7 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
                 point.setOrderTime(System.currentTimeMillis());
             }
 
-            Long uid = (Long) request.getAttribute("uid");
+            Long uid = SecurityUtils.getUid();
             if (Objects.nonNull(uid)){
                 point.setCreateUid(uid);
             }

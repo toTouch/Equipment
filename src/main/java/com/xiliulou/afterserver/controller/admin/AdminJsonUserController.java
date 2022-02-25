@@ -47,7 +47,7 @@ public class AdminJsonUserController extends BaseController {
 
     @GetMapping("admin/user/page")
     public R page(@RequestParam("offset") Long offset, @RequestParam("size") Long size, @RequestParam(value = "username",required = false) String username, HttpServletRequest request) {
-        Long uid = (Long) request.getAttribute("uid");
+        Long uid = SecurityUtils.getUid();
         if (uid > 3){
             return R.fail("没有权限");
         }
@@ -62,7 +62,7 @@ public class AdminJsonUserController extends BaseController {
     }
    @PutMapping("/admin/user")
     public R updateUser(@RequestBody User user,HttpServletRequest request){
-       Long uid = (Long) request.getAttribute("uid");
+       Long uid = SecurityUtils.getUid();
        if (uid > 3){
            return R.fail("没有权限");
        }

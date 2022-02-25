@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @mood
  */
 @RestController
-@RequestMapping("/outer/compression")
+@RequestMapping("/app/compression")
 public class JsonAdminCompressionController {
 
     @Autowired

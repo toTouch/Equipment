@@ -26,6 +26,7 @@ import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.R;
 
+import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.vo.PointExcelVo;
 import com.xiliulou.afterserver.web.query.CameraInfoQuery;
 import com.xiliulou.afterserver.web.query.PointAuditStatusQuery;
@@ -82,7 +83,7 @@ public class AdminJsonPointNewController {
 
     @PostMapping("/admin/pointNew")
     public R saveAdminPointNew(@RequestBody PointNew pointNew, HttpServletRequest request){
-        Long uid = (Long) request.getAttribute("uid");
+        Long uid = SecurityUtils.getUid();
         if (Objects.isNull(uid)){
             return R.fail("用户为空");
         }
