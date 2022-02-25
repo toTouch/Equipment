@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.service;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.xiliulou.afterserver.entity.ProductNew;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.ApiRequestQuery;
 import com.xiliulou.afterserver.web.query.CompressionQuery;
 import com.xiliulou.afterserver.web.query.ProductNewDetailsQuery;
 import com.xiliulou.afterserver.web.query.ProductNewQuery;
@@ -90,9 +91,9 @@ public interface ProductNewService {
 
     List<ProductNew> queryByBatch(Long id);
 
-    R checkCompression(CompressionQuery compression);
+    R checkCompression(ApiRequestQuery apiRequestQuery);
 
-    R successCompression(CompressionQuery compression);
+    R successCompression(ApiRequestQuery apiRequestQuery);
 
     R findIotCard(String no);
 
