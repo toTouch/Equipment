@@ -719,7 +719,7 @@ public class ProductNewServiceImpl implements ProductNewService {
             return R.fail(null,null,"柜机资产编码不存在，请核对");
         }
 
-        if(!Objects.equals(productNew.getStatus(), 6) && Objects.equals(productNew.getTestResult(), 1)){
+        if(!Objects.equals(productNew.getStatus(), 6) && !Objects.equals(productNew.getTestResult(), 1)){
             return R.fail(null,null,"柜机非已测试状态，请录入已测试柜机");
         }
 
