@@ -61,7 +61,7 @@ public class AdminJsonDeliverController {
 
     @PostMapping("admin/deliver")
     public R insert(@RequestBody  Deliver deliver, HttpServletRequest request) {
-        Long uid = (Long) request.getAttribute("uid");
+        Long uid = SecurityUtils.getUid();
         if (Objects.isNull(uid)){
             return R.fail("用户为空");
         }

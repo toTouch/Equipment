@@ -15,6 +15,7 @@ import com.xiliulou.afterserver.listener.PointListener;
 import com.xiliulou.afterserver.listener.WorkOrderLisener;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +72,7 @@ public class AdminJsonWorkOrderController {
     @PostMapping("admin/workOrder")
     public R insert(@Validated @RequestBody WorkOrderQuery workOrder,HttpServletRequest request) {
 
-        Long uid = (Long) request.getAttribute("uid");
+        Long uid = SecurityUtils.getUid();
         if (Objects.isNull(uid)){
             return R.fail("请传入uid");
         }

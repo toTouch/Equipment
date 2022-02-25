@@ -10,6 +10,7 @@ import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.export.DeliverInfo;
 import com.xiliulou.afterserver.export.PointInfo;
 import com.xiliulou.afterserver.service.*;
+import com.xiliulou.afterserver.util.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 
@@ -93,7 +94,7 @@ public class DeliverListener extends AnalysisEventListener<DeliverInfo> {
             deliver.setState(this.getStatus(item.getStatus()));
             deliver.setProduct(item.getProduct());
             deliver.setQuantity(item.getQuantity());
-            deliver.setCreateUid((Long) request.getAttribute("uid"));
+            deliver.setCreateUid(SecurityUtils.getUid());
 
             if (Objects.nonNull(item.getThirdCompanyId()) && Objects.nonNull(item.getThirdCompanyType())){
                 Long id = null;

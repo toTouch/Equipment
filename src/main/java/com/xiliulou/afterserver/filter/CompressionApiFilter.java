@@ -16,10 +16,10 @@ import org.springframework.stereotype.Component;
 @Component()
 @Order(101)
 public class CompressionApiFilter extends ApiFilter {
-    static final String CUPBOARD_URL = "/outer/compression/**";
+    static final String AFTER_COMPRESSION_URL = "/app/compression/**";
 
     public CompressionApiFilter() {
-        super(new AntPathRequestMatcher(CUPBOARD_URL, Request.HttpMethod.POST.name()));
+        super(new AntPathRequestMatcher(AFTER_COMPRESSION_URL, Request.HttpMethod.POST.name()));
     }
 
     @Override
