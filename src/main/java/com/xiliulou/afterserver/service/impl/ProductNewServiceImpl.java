@@ -508,7 +508,7 @@ public class ProductNewServiceImpl implements ProductNewService {
             }
 
             ProductNew mainProduct = mainProducts.get(0);
-
+            mainProductNo = mainProduct.getNo();
             if(Objects.equals(mainProduct.getIotCardId(), iotCard.getId())){
                 return R.fail(null, null,"主柜绑定物联网卡号与上报物联网卡号不一致，请修改");
             }
@@ -519,7 +519,7 @@ public class ProductNewServiceImpl implements ProductNewService {
 
         }
 
-        return R.ok(mainProducts);
+        return R.ok(Arrays.asList(mainProductNo));
     }
 
 
