@@ -1,10 +1,7 @@
 package com.xiliulou.afterserver.controller.factory;
 
 import com.xiliulou.afterserver.entity.User;
-import com.xiliulou.afterserver.service.BatchService;
-import com.xiliulou.afterserver.service.IotCardService;
-import com.xiliulou.afterserver.service.ProductNewService;
-import com.xiliulou.afterserver.service.ProductService;
+import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.ProductNewDetailsQuery;
@@ -31,6 +28,8 @@ public class JsonAdminOrderBatchController {
     private ProductNewService productNewService;
     @Autowired
     private IotCardService iotCardService;
+    @Autowired
+    private CameraService cameraService;
 
 
     @GetMapping("/batch/list")
@@ -93,7 +92,7 @@ public class JsonAdminOrderBatchController {
     }
 
     @GetMapping("/iotCard/snLike")
-    public R snLike(@RequestParam("sn") String sn,
+    public R iotCardSnLike(@RequestParam("sn") String sn,
                     @RequestParam(value = "offset", required = false) Long offset,
                     @RequestParam(value = "size", required = false) Long size) {
         if(Objects.isNull(offset)){
@@ -104,5 +103,21 @@ public class JsonAdminOrderBatchController {
             size = 10L;
         }
         return iotCardService.pageIotcardLikeSn(offset, size, sn);
+    }
+
+    @GetMapping("camera/snLike")
+    public R cameraSnLike(@RequestParam(value = "sn") String sn,
+                                   @RequestParam(value = "offset", required = false) Long offset,
+                                   @RequestParam(value = "size", required = false) Long size){
+
+        if(Objects.isNull(offset)){
+            offset = 0L;
+        }
+
+        if(Objects.isNull(size)){
+            size = 10L;
+        }
+
+        return cameraService.cameraSnLike(offset, size, sn);
     }
 }
