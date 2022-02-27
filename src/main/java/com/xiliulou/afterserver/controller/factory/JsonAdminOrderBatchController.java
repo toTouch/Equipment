@@ -2,6 +2,7 @@ package com.xiliulou.afterserver.controller.factory;
 
 import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.service.BatchService;
+import com.xiliulou.afterserver.service.IotCardService;
 import com.xiliulou.afterserver.service.ProductNewService;
 import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.util.R;
@@ -28,6 +29,8 @@ public class JsonAdminOrderBatchController {
     private BatchService batchService;
     @Autowired
     private ProductNewService productNewService;
+    @Autowired
+    private IotCardService iotCardService;
 
 
     @GetMapping("/batch/list")
@@ -87,5 +90,19 @@ public class JsonAdminOrderBatchController {
     @PutMapping("/productNew")
     public R updateProductNew(@RequestBody ProductNewDetailsQuery productNewDetailsQuery){
         return productNewService.updateProductNew(productNewDetailsQuery);
+    }
+
+    @GetMapping("/iotCard/snLike")
+    public R snLike(@RequestParam("sn") String sn,
+                    @RequestParam(value = "offset", required = false) Long offset,
+                    @RequestParam(value = "size", required = false) Long size) {
+        if(Objects.isNull(offset)){
+            offset = 0L;
+        }
+
+        if(Objects.isNull(size)){
+            size = 10L;
+        }
+        return iotCardService.pageIotcardLikeSn(offset, size, sn);
     }
 }

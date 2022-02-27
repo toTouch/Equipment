@@ -294,6 +294,35 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
         return true;
     }
 
+    @Override
+    public R pageIotcardLikeSn(Long offset, Long size, String sn) {
+        Page<IotCard> page = PageUtil.getPage(offset, size);
+        page = iotCardMapper.selectPage(page,
+                new LambdaQueryWrapper<IotCard>()
+                        .like(StringUtils.isBlank(sn), IotCard::getSn, sn)
+                        .eq(IotCard::getDelFlag, IotCard.DEL_NORMAL)
+                        .orderByDesc(IotCard::getCreateTime));
+
+        List<IotCard> records = page.getRecords();
+        List<Map> data = new ArrayList<>();
+
+        if(CollectionUtils.isNotEmpty(records)){
+            records.forEach(item -> {
+                Map<String, Object> vo = new HashMap<>(2);
+                vo.put("id",item.getId());
+                vo.put("sn", item.getSn());
+
+                data.add(vo);
+            });
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("data", data);
+        result.put("total", page.getTotal());
+
+        return R.ok(result);
+    }
+
     private void expirationHandle(){
         iotCardMapper.expirationHandle(System.currentTimeMillis());
     }

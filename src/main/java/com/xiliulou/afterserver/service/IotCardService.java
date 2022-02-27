@@ -24,4 +24,6 @@ public interface IotCardService extends IService<IotCard> {
     R snLike(String sn);
 
     boolean checkBind(Long id);
+
+    R pageIotcardLikeSn(Long offset, Long size, String sn);
 }
