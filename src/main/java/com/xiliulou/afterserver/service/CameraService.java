@@ -32,4 +32,6 @@ public interface CameraService extends IService<Camera> {
     List<Camera> likeCameraBySerialNum(String serialNum);
 
     R likeSerialNumPull(String serialNum);
+
+    R cameraSnLike(Long offset, Long size, String sn);
 }
