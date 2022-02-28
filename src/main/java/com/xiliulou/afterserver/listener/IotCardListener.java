@@ -50,6 +50,17 @@ public class IotCardListener extends AnalysisEventListener<IotCardInfo> {
             throw new RuntimeException("物联网卡号不能为空，请核对物联网卡号");
         }
 
+        IotCard iotCardOld = iotCardService.queryBySn(iotCardInfo.getSn());
+        if(Objects.nonNull(iotCardOld)){
+            throw new RuntimeException("已添加该物联网卡号");
+        }
+
+        list.stream().map(item -> item.getSn()).forEach(item -> {
+            if(Objects.equals(item, iotCardInfo.getSn())){
+                throw new RuntimeException("已添加该物联网卡号");
+            }
+        });
+
         if(Objects.nonNull(iotCardInfo.getBatchName())){
             Batch batch = batchService.queryByName(iotCardInfo.getBatchName());
             if(Objects.isNull(batch)){

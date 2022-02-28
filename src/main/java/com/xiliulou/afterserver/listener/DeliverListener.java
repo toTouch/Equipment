@@ -140,7 +140,8 @@ public class DeliverListener extends AnalysisEventListener<DeliverInfo> {
                 }
             }
 
-            deliver.setNo("i"+RandomUtil.randomString(10));
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+            deliver.setNo(sdf.format(new Date()) + RandomUtil.randomString(6));
             deliverList.add(deliver);
         });
 

@@ -112,6 +112,11 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
             return R.fail("未查询到相关物联网卡信息");
         }
 
+        IotCard iotCardBySn = this.queryBySn(iotCard.getSn());
+        if(Objects.isNull(iotCardBySn) && !Objects.equals(iotCard.getId(), iotCardBySn.getId())){
+            return R.fail("已添加该物联网卡号");
+        }
+
         if(Objects.isNull(iotCard.getSn())){
             return R.fail("物联网卡号不能为空");
         }
