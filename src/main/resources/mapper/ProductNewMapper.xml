@@ -24,7 +24,7 @@
     <!--查询单个-->
     <select id="queryById" resultMap="ProductNewMap">
         select
-          id, no, model_id, batch_id, status, expiration_start_time,years, expiration_end_time, create_time,update_time del_flag, cache
+          id, no, model_id, batch_id, status, expiration_start_time,years, expiration_end_time, create_time,update_time ,del_flag, cache
         from t_product_new
         where id = #{id}
     </select>
