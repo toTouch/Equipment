@@ -61,7 +61,7 @@ public class AdminJsonCustomerController extends BaseController {
     public R update(@RequestBody Customer customer) {
         BaseMapper<Customer> baseMapper = customerService.getBaseMapper();
         Customer customerOld = baseMapper.selectOne(new QueryWrapper<Customer>().eq("name", customer.getName()));
-        if(Objects.nonNull(customerOld)){
+        if(Objects.nonNull(customerOld) && !Objects.equals(customer.getId(), customerOld.getId())){
             return R.fail("客户列表中已存在【"+ customer.getName() + "】");
         }
 
