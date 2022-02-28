@@ -125,12 +125,16 @@ public class AdminJsonProductNewController {
 
             if(Objects.nonNull(item.getIotCardId())){
                 IotCard iotCard = iotCardService.getById(item.getIotCardId());
-                item.setIotCardName(iotCard.getSn());
+                if(Objects.nonNull(iotCard)){
+                    item.setIotCardName(iotCard.getSn());
+                }
             }
 
             if(Objects.nonNull(item.getCameraId())){
                 Camera camera = cameraService.getById(item.getCameraId());
-                item.setCameraSerialNum(camera.getSerialNum());
+                if(Objects.nonNull(camera)){
+                    item.setCameraSerialNum(camera.getSerialNum());
+                }
             }
         });
 
