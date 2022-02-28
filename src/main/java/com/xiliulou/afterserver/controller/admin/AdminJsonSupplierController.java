@@ -64,7 +64,7 @@ public class AdminJsonSupplierController extends BaseController {
         }
         BaseMapper<Supplier> baseMapper = supplierService.getBaseMapper();
         Supplier supplierOld = baseMapper.selectOne(new QueryWrapper<Supplier>().eq("name", supplier.getName()));
-        if(Objects.nonNull(supplierOld)){
+        if(Objects.nonNull(supplierOld) && !Objects.equals(supplier.getId(), supplierOld.getId())){
             return R.fail("供应商列表已存在【" + supplier.getName()  + "】");
         }
 
