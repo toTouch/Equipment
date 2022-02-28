@@ -45,7 +45,7 @@ public class AdminJsonServerController {
     public R insert(@RequestBody Server server) {
         BaseMapper<Server> baseMapper = serverService.getBaseMapper();
         Server serverOld = baseMapper.selectOne(new QueryWrapper<Server>().eq("name",server.getName()));
-        if(Objects.nonNull(serverOld)){
+        if(Objects.nonNull(serverOld) && !Objects.equals(server.getId(), serverOld.getId())){
             return R.fail("服务商列表已存在【" + server.getName() + "】");
         }
 
