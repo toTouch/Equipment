@@ -63,11 +63,11 @@ xiliulou:
   token:
     infos:
       0:
-        maxTokenCnt: 5
+        maxTokenCnt: 10
         expiryTimeMillis: 7200000
         maxExpiryTimeMillis: 7200000
       1:
-        maxTokenCnt: 5
+        maxTokenCnt: 1
         expiryTimeMillis: 7200000
         maxExpiryTimeMillis: 7200000
       2:
@@ -75,11 +75,11 @@ xiliulou:
         expiryTimeMillis: 7200000
         maxExpiryTimeMillis: 7200000
       3:
-        maxTokenCnt: 5
-        expiryTimeMillis: 7200000
-        maxExpiryTimeMillis: 7200000
+        maxTokenCnt: 1
+        expiryTimeMillis: 7776000000
+        maxExpiryTimeMillis: 7776000000
       4:
-        maxTokenCnt: 5
+        maxTokenCnt: 1
         expiryTimeMillis: 7776000000
         maxExpiryTimeMillis: 7776000000
 
