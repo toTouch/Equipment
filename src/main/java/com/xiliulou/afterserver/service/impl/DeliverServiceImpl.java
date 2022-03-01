@@ -407,7 +407,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     public R insert(Deliver deliver,  Long wareHouseIdStart, Long wareHouseIdEnd) {
         //R r = saveWareHouseDetails(deliver, wareHouseIdStart, wareHouseIdEnd);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        deliver.setNo(sdf.format(new Date()) + RandomUtil.randomInt(6));
+        deliver.setNo(sdf.format(new Date()) + RandomUtil.randomInt(100000, 1000000));
         deliver.setCreateTime(System.currentTimeMillis());
         return R.ok(this.save(deliver));
 
