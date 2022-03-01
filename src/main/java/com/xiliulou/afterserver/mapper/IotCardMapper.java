@@ -22,5 +22,8 @@ public interface IotCardMapper extends BaseMapper<IotCard> {
     @Update("update t_iot_card set expiration_flag = 1 where expiration_time < #{curTime}")
     void expirationHandle(@Param("curTime") Long curTime);
 
+    @Update("update t_iot_card set expiration_flag = 0 where expiration_time > #{curTime}")
+    void notExpirationHandle(@Param("curTime") Long curTime);
+
     List<IotCard> iotCardList(@Param("iotCard")IotCard iotCard);
 }
