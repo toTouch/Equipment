@@ -169,6 +169,7 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
     @Override
     public R getPage(Long offset, Long size, IotCard iotCard) {
         expirationHandle();
+        notExpirationHandle();
         Page page = PageUtil.getPage(offset, size);
         IPage iPage = iotCardMapper.getPage(page, iotCard);
 
@@ -330,6 +331,10 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
 
     private void expirationHandle(){
         iotCardMapper.expirationHandle(System.currentTimeMillis());
+    }
+
+    private void notExpirationHandle(){
+        iotCardMapper.notExpirationHandle(System.currentTimeMillis());
     }
 
     private String getOperatorName(Integer operator){
