@@ -59,6 +59,11 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
             return R.fail("请填写摄像头序列号");
         }
 
+        Camera cameraOld = this.queryBySn(camera.getSerialNum());
+        if(Objects.nonNull(cameraOld)){
+            return R.fail("列表中已存在摄像头序列号");
+        }
+
         if(Objects.isNull(camera.getSupplierId())){
             return R.fail("请填写摄像头厂商");
         }
@@ -113,6 +118,11 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
             return R.fail("请填写摄像头序列号");
         }
 
+        Camera cameraBySn = this.queryBySn(camera.getSerialNum());
+        if(Objects.nonNull(cameraBySn) && !Objects.equals(cameraBySn.getId(), cameraQuery.getId())){
+            return R.fail("列表中已存在摄像头序列号");
+        }
+
         if(Objects.isNull(camera.getSupplierId())){
             return R.fail("请填写摄像头厂商");
         }
@@ -124,7 +134,7 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
 
         if(Objects.nonNull(cameraQuery.getIotCardId())){
             List<Camera> cameraList = baseMapper.selectList(new QueryWrapper<Camera>()
-                    .eq("iot_card_id", cameraQuery.getIotCardId()).eq("del_flag", Camera.DEL_NORMAL));
+                    .eq("iot_card_id", cameraQuery.getIotCardId()).eq("del_flag", Camera.DEL_NORMAL).notIn("id",cameraQuery.getId()));
             if(CollectionUtils.isNotEmpty(cameraList)){
                 return R.fail("物联网卡号已被其他摄像头绑定");
             }
@@ -264,6 +274,12 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
         }
 
         return R.ok(result);
+    }
+
+    private  Camera queryBySn(String sn){
+        return this.getBaseMapper().selectOne(new QueryWrapper<Camera>()
+                .eq("serial_num", sn)
+                .eq("del_flag", Camera.DEL_NORMAL));
     }
 
     @Override
