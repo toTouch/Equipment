@@ -405,14 +405,12 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public R insert(Deliver deliver,  Long wareHouseIdStart, Long wareHouseIdEnd) {
-        R r = saveWareHouseDetails(deliver, wareHouseIdStart, wareHouseIdEnd);
-        if(r == null){
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-            deliver.setNo(sdf.format(new Date()) + RandomUtil.randomString(6));
-            deliver.setCreateTime(System.currentTimeMillis());
-            r = R.ok(this.save(deliver));
-        }
-        return r;
+        //R r = saveWareHouseDetails(deliver, wareHouseIdStart, wareHouseIdEnd);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        deliver.setNo(sdf.format(new Date()) + RandomUtil.randomInt(6));
+        deliver.setCreateTime(System.currentTimeMillis());
+        return R.ok(this.save(deliver));
+
     }
 
 
@@ -425,7 +423,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         Deliver oldDeliver = this.getById(deliver.getId());
 
         if(ObjectUtils.isNotNull(oldDeliver)){
-            WareHouse wareHouseStart = warehouseService.getOne(new QueryWrapper<WareHouse>().eq("ware_houses", oldDeliver.getCity()));
+            /*WareHouse wareHouseStart = warehouseService.getOne(new QueryWrapper<WareHouse>().eq("ware_houses", oldDeliver.getCity()));
             WareHouse wareHouseEnd = warehouseService.getOne(new QueryWrapper<WareHouse>().eq("ware_houses", oldDeliver.getDestination()));
 
             if(ObjectUtils.isNotNull(wareHouseStart)){
@@ -434,7 +432,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
 
             if(ObjectUtils.isNotNull(wareHouseEnd)){
                 wareHouseIdEnd = Long.valueOf(wareHouseEnd.getId());
-            }
+            }*/
 
             if(Integer.valueOf(2).equals(oldDeliver.getState())
                     || Integer.valueOf(3).equals(oldDeliver.getState())){
@@ -449,14 +447,14 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                 if(Integer.valueOf(1).equals(deliver.getState())){
                     return R.fail("已发货或已到达的订单不可改变物流状态为未发货");
                 }
-            }else{
-                r = saveWareHouseDetails(deliver, wareHouseIdStart, wareHouseIdEnd);
-            }
+            }//else{
+            //    r = saveWareHouseDetails(deliver, wareHouseIdStart, wareHouseIdEnd);
+            //}
         }
-        if(r == null){
-            deliver.setCreateTime(System.currentTimeMillis());
-            r = R.ok(updateById(deliver));
-        }
+        //if(r == null){
+        deliver.setCreateTime(System.currentTimeMillis());
+        r = R.ok(updateById(deliver));
+        //}
         return r;
     }
 
