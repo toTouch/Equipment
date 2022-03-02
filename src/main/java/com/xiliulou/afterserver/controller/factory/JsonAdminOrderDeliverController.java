@@ -18,7 +18,7 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/admin/factory")
-public class JsonOrderDeliverController {
+public class JsonAdminOrderDeliverController {
     @Autowired
     DeliverService deliverService;
     @Autowired
