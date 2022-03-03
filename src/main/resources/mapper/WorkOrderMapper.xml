@@ -207,6 +207,7 @@
         wo.audit_remarks as wo_audit_remarks,
         wo.source_type as wo_source_type,
         wo.product_info as wo_product_info,
+        wo.over_insurance as wo_over_insurance,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,

@@ -17,7 +17,7 @@ spring:
         max-idle: 1
         min-idle: 1
     host:  ${REDIS-HOST:xiliulou-redis}
-    database: 2
+    database: 7
 
   klock:
     address: ${REDIS-HOST:xiliulou-redis}:6379
