@@ -57,7 +57,7 @@
                 and expiration_flag = #{iotCard.expirationFlag}
             </if>
         </where>
-        order by <!--expiration_flag ,--> expiration_time
+        order by  expiration_time, id
     </select>
 
     <select id="iotCardList" resultMap="getPageMap">
@@ -99,7 +99,7 @@
                 and expiration_flag = #{iotCard.expirationFlag}
             </if>
         </where>
-        order by expiration_flag , expiration_time
+        order by expiration_time, id
     </select>
     
     <insert id="saveOne" keyProperty="id" useGeneratedKeys="true">
