@@ -62,6 +62,7 @@
         <id property="productInfo" column="wo_product_info"></id>
         <id property="auditStatus" column="wo_audit_status"/>
         <id property="auditRemarks" column="wo_audit_remarks"/>
+        <id property="overInsurance" column="wo_over_insurance"/>
         <collection property="fileList" ofType="com.xiliulou.afterserver.entity.File">
             <id property="id" column="f_id"/>
             <id property="type" column="f_type"/>
@@ -104,6 +105,7 @@
         wo.audit_remarks as wo_audit_remarks,
         wo.source_type as wo_source_type,
         wo.product_info as wo_product_info,
+        wo.over_insurance as wo_over_insurance,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
@@ -528,6 +530,7 @@
             third_payment_status = #{thirdPaymentStatus},
             third_responsible_person = #{thirdResponsiblePerson},
             describeinfo = #{describeinfo},
+            over_insurance = #{overInsurance},
             <if test="type != null and type != ''">
                 type = #{type},
             </if>

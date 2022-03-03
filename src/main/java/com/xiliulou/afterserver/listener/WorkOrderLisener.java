@@ -90,6 +90,8 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
                 workOrder.setPointId(pointNew.getId());
             }
 
+            workOrder.setOverInsurance(getOverInsurance(item.getOverInsurance()));
+
             if(Objects.nonNull(item.getFee())){
                 workOrder.setFee(new BigDecimal(item.getFee()));
             }
@@ -263,6 +265,17 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
             log.error("工单导入：转换时间戳异常！dateTime={}",s);
             return 0;
         }
+    }
+
+    private Integer getOverInsurance(String overInsurance){
+        Integer overInsuranceInt = null;
+        if("0".equals(overInsurance) || "未过保".equals(overInsurance)){
+            overInsuranceInt = 0;
+        }
+        if("1".equals(overInsurance) || "已过保".equals(overInsurance)){
+            overInsuranceInt = 1;
+        }
+        return overInsuranceInt;
     }
 
     private Integer getThirdCompanyType(String thirdCompanyType){
