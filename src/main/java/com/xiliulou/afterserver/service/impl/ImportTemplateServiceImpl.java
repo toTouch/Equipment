@@ -83,4 +83,9 @@ public class ImportTemplateServiceImpl extends ServiceImpl<ImportTemplateMapper,
 
        return R.fail("请联系管理员上传模板");
     }
+
+    @Override
+    public R getPage() {
+        return R.ok(importTemplateMapper.selectList(null));
+    }
 }
