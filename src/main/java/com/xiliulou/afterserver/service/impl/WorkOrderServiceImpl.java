@@ -210,7 +210,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
 
-        String[] header = {"审核状态","工单类型", "点位", "移机起点", "移机终点",  "创建人",
+        String[] header = {"审核状态","工单类型", "点位","时效", "移机起点", "移机终点",  "创建人",
                 "状态", "时效", "描述",  "备注",  "工单原因", "第三方原因" , "第三方公司",
                 "第三方费用", "费用", "图片数量","处理时间","创建时间","服务商", "结算方式",
                 "第三方责任对接人", "工单编号", "第三方结算状态", "sn码","审核内容"};
@@ -268,6 +268,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 row.add("");
                 //row.add("");
             }
+
+            //过保
+            row.add(getOverInsurance(o.getOverInsurance()));
 
             //transferSourcePointId
             if("1".equals(o.getSourceType())){
