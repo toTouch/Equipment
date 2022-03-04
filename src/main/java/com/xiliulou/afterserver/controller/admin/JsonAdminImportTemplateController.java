@@ -31,4 +31,9 @@ public class JsonAdminImportTemplateController extends BaseController {
     public R info(@RequestParam("type") String type, HttpServletResponse response){
          return importTemplateService.infoByType(type, response);
     }
+
+    @GetMapping("admin/importTemplate/page")
+    public R getPage(){
+        return importTemplateService.getPage();
+    }
 }

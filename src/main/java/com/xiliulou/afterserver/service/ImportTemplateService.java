@@ -17,4 +17,6 @@ public interface ImportTemplateService  extends IService<ImportTemplate> {
     R upload(ImportTemplateQuery importTemplateQuery);
 
     R infoByType(String type, HttpServletResponse response);
+
+    R getPage();
 }
