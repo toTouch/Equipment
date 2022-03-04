@@ -39,13 +39,18 @@ public class JsonAdminOrderBatchController {
             return R.fail("登陆用户非工厂类型");
         }
 
+        if(Objects.isNull(size)){
+            size = 50L;
+        }
+
         if(Objects.isNull(offset)){
             offset = 0L;
         }
 
-        if(Objects.isNull(size)){
-            size = 50L;
-        }
+        //分页 手持终端第一页从零开始
+        offset = offset  * size;
+
+
 
         return batchService.queryByfactory(offset, size);
     }
@@ -62,12 +67,18 @@ public class JsonAdminOrderBatchController {
         if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)){
             return R.fail("登陆用户非工厂类型");
         }
-        if(Objects.isNull(offset)){
-            offset = 0L;
-        }
+
         if(Objects.isNull(size)){
             size = 50L;
         }
+
+        if(Objects.isNull(offset)){
+            offset = 0L;
+        }
+
+        //分页 手持终端第一页从零开始
+        offset = offset  * size;
+
         return productNewService.queryByBatchAndSupplier(batchId, offset, size);
     }
 
@@ -95,13 +106,18 @@ public class JsonAdminOrderBatchController {
     public R iotCardSnLike(@RequestParam("sn") String sn,
                     @RequestParam(value = "offset", required = false) Long offset,
                     @RequestParam(value = "size", required = false) Long size) {
-        if(Objects.isNull(offset)){
-            offset = 0L;
-        }
 
         if(Objects.isNull(size)){
             size = 10L;
         }
+
+        if(Objects.isNull(offset)){
+            offset = 0L;
+        }
+
+        //分页 手持终端第一页从零开始
+        offset = offset  * size;
+
         return iotCardService.pageIotcardLikeSn(offset, size, sn);
     }
 
@@ -110,13 +126,18 @@ public class JsonAdminOrderBatchController {
                                    @RequestParam(value = "offset", required = false) Long offset,
                                    @RequestParam(value = "size", required = false) Long size){
 
-        if(Objects.isNull(offset)){
-            offset = 0L;
-        }
 
         if(Objects.isNull(size)){
             size = 10L;
         }
+
+        if(Objects.isNull(offset)){
+            offset = 0L;
+        }
+
+        //分页 手持终端第一页从零开始
+        offset = offset  * size;
+
 
         return cameraService.cameraSnLike(offset, size, sn);
     }

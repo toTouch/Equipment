@@ -38,13 +38,16 @@ public class JsonAdminOrderDeliverController {
             return R.fail("登陆用户非工厂类型");
         }
 
+        if(Objects.isNull(size)){
+            size = 50L;
+        }
+
         if(Objects.isNull(offset)){
             offset = 0L;
         }
 
-        if(Objects.isNull(size)){
-            size = 50L;
-        }
+        //分页 手持终端第一页从零开始
+        offset = offset  * size;
         return deliverService.queryListByFactory(offset, size);
     }
 
