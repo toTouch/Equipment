@@ -90,8 +90,6 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
                 workOrder.setPointId(pointNew.getId());
             }
 
-            workOrder.setOverInsurance(getOverInsurance(item.getOverInsurance()));
-
             if(Objects.nonNull(item.getFee())){
                 workOrder.setFee(new BigDecimal(item.getFee()));
             }
