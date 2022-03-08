@@ -81,5 +81,4 @@ public class WorkOrderVo {
     private String parentWorkOrderReason;
     private String productInfo;
     private List<ProductInfoQuery> productInfoList;
-    private Integer overInsurance;
 }

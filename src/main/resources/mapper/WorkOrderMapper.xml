@@ -531,7 +531,6 @@
             third_payment_status = #{thirdPaymentStatus},
             third_responsible_person = #{thirdResponsiblePerson},
             describeinfo = #{describeinfo},
-            over_insurance = #{overInsurance},
             <if test="type != null and type != ''">
                 type = #{type},
             </if>
