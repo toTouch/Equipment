@@ -101,4 +101,7 @@ public interface PointNewMapper extends BaseMapper<PointNew> {
     Integer putAdminPointNewCreateUser(@Param("id")Long id, @Param("createUid")Long createUid);
 
     void updateMany(@Param("list")List<PointNew> list);
+
+    @Update("update t_point_new set status = 11 where warranty_time < #{curTime}")
+    void updatePastWarrantyStatus(@Param("curTime")Long curTime);
 }

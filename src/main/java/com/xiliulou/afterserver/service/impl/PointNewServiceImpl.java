@@ -434,6 +434,11 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         return null;
     }
 
+    @Override
+    public void updatePastWarrantyStatus(){
+        pointNewMapper.updatePastWarrantyStatus(System.currentTimeMillis());
+    }
+
     /*@Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public R saveCache(Long pointId, Long modelId, String no, Long batch) {

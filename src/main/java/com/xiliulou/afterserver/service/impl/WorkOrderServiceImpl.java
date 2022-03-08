@@ -92,6 +92,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         if (Objects.nonNull(workOrder.getWorkOrderType())) {
             workOrder.setType(workOrder.getWorkOrderType().toString());
         }
+        //检查质保过期点位
+        pointNewService.updatePastWarrantyStatus();
 
         Page page = PageUtil.getPage(offset, size);
         page = baseMapper.getPage(page, workOrder);
@@ -188,6 +190,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         if("null".equals(workOrder.getType())){
             workOrder.setType(null);
         }
+        //扫描质保过期点位
+        pointNewService.updatePastWarrantyStatus();
+
         List<WorkOrderVo> workOrderVoList = baseMapper.orderList(workOrder);
 
 
@@ -210,7 +215,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
 
-        String[] header = {"审核状态","工单类型", "点位","时效", "移机起点", "移机终点",  "创建人",
+        String[] header = {"审核状态","工单类型", "点位","点位状态","时效", "移机起点", "移机终点",  "创建人",
                 "状态", "时效", "描述",  "备注",  "工单原因", "第三方原因" , "第三方公司",
                 "第三方费用", "费用", "图片数量","处理时间","创建时间","服务商", "结算方式",
                 "第三方责任对接人", "工单编号", "第三方结算状态", "sn码","审核内容"};
@@ -268,6 +273,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 row.add("");
                 //row.add("");
             }
+
+            row.add(getPointStatusName(o.getPointStatus()));
 
             //transferSourcePointId
             if("1".equals(o.getSourceType())){
@@ -500,7 +507,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
 
-        String[] header = {"审核状态","工单类型", "点位", "创建人",
+        String[] header = {"审核状态","工单类型", "点位", "点位状态", "创建人",
                 "状态", "时效", "描述",  "备注",  "工单原因", "第三方原因" , "第三方公司",
                 "第三方费用", "费用", "图片数量","处理时间","创建时间","服务商", "结算方式",
                 "第三方责任对接人", "工单编号", "第三方结算状态", "sn码","审核内容"};
@@ -559,6 +566,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 //row.add("");
             }
 
+            row.add(getPointStatusName(o.getPointStatus()));
 
             //"创建人",
             if(Objects.nonNull(o.getCreaterId())){
@@ -728,6 +736,34 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             log.error("导出报表失败！", e);
         }
         throw new CustomBusinessException("导出报表失败！请联系客服！");
+    }
+
+    private String getPointStatusName(Integer pointStatus){
+        String pointStatusName = "";
+        if (Objects.equals(pointStatus,1)){
+            pointStatusName = "移机";
+        }else if (Objects.equals(pointStatus,2)){
+            pointStatusName = "运营中";
+        }else if (Objects.equals(pointStatus,3)){
+            pointStatusName = "已拆机";
+        }else if (Objects.equals(pointStatus,4)){
+            pointStatusName = "初始化";
+        }else if (Objects.equals(pointStatus,5)){
+            pointStatusName = "待安装";
+        }else if (Objects.equals(pointStatus,6)){
+            pointStatusName = "运输中";
+        }else if (Objects.equals(pointStatus,7)){
+            pointStatusName = "安装中";
+        }else if (Objects.equals(pointStatus,8)){
+            pointStatusName = "安装完成";
+        }else if (Objects.equals(pointStatus,9)){
+            pointStatusName = "已暂停";
+        }else if (Objects.equals(pointStatus,10)){
+            pointStatusName = "已取消";
+        }else if (Objects.equals(pointStatus,11)){
+            pointStatusName = "已过保";
+        }
+        return pointStatusName;
     }
 
     /*private void exportExcelNotMoveMachine(WorkOrderQuery workOrder, List<WorkOrderVo> workOrderVoList, HttpServletResponse response){

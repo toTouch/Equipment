@@ -90,45 +90,49 @@ public class PointUpdateInfo {
      */
     @ExcelProperty(index = 15)
     private String installTime;
-
+    /**
+     * 质保有效期
+     */
+    @ExcelProperty(index = 16)
+    private String warrantyPeriod;
     /**
      * 施工完成时间
      */
-    @ExcelProperty(index = 16)
+    @ExcelProperty(index = 17)
     private String completionTime;
     /**
      * 下单时间
      */
-    @ExcelProperty(index = 17)
+    @ExcelProperty(index = 18)
     private String orderTime;
 
     /**
      * 入账
      */
-    @ExcelProperty(index = 18)
+    @ExcelProperty(index = 19)
     private String isEntry;
     /**
      * 验收
      */
-    @ExcelProperty(index = 19)
+    @ExcelProperty(index = 20)
     private String isAcceptance;
 
     /**
      * '运营商'
      */
-    @ExcelProperty(index = 20)
+    @ExcelProperty(index = 21)
     private String operator;
     /**
      * '物流信息'
      */
-    @ExcelProperty(index = 21)
+    @ExcelProperty(index = 22)
     private String logisticsInfo;
     /**
      * 备注
      */
-    @ExcelProperty(index = 22)
+    @ExcelProperty(index = 23)
     private String remarks;
 
-    @ExcelProperty(index = 23)
+    @ExcelProperty(index = 24)
     private String delFlag;
 }
