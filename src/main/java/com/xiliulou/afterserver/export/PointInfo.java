@@ -74,38 +74,43 @@ public class PointInfo {
     @ExcelProperty(index = 11)
     private String installTime;
     /**
-     * 施工完成时间
+     * 质保有效期
      */
     @ExcelProperty(index = 12)
+    private String warrantyPeriod;
+    /**
+     * 施工完成时间
+     */
+    @ExcelProperty(index = 13)
     private String completionTime;
     /**
      * 入账
      */
-    @ExcelProperty(index = 13)
+    @ExcelProperty(index = 14)
     private String isEntry;
     /**
      * 验收
      */
-    @ExcelProperty(index = 14)
+    @ExcelProperty(index = 15)
     private String isAcceptance;
     /**
      * 下单时间
      */
-    @ExcelProperty(index = 15)
+    @ExcelProperty(index = 16)
     private String orderTime;
     /**
      * '运营商'
      */
-    @ExcelProperty(index = 16)
+    @ExcelProperty(index = 17)
     private String operator;
     /**
      * '物流信息'
      */
-    @ExcelProperty(index = 17)
+    @ExcelProperty(index = 18)
     private String logisticsInfo;
     /**
      * '备注'
      */
-    @ExcelProperty(index = 18)
+    @ExcelProperty(index = 19)
     private String remarks;
 }

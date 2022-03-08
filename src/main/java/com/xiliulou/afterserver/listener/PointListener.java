@@ -12,6 +12,7 @@ import com.xiliulou.afterserver.export.CustomerInfo;
 import com.xiliulou.afterserver.export.PointInfo;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpRequest;
@@ -19,10 +20,7 @@ import org.springframework.http.HttpRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author Hardy
@@ -104,6 +102,10 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
                 throw new RuntimeException("点位" + pointInfo.getName() + "没有查询到客户信息");
             }
         }
+        if(Objects.nonNull(pointInfo.getWarrantyPeriod()) && Objects.isNull(pointInfo.getInstallTime())){
+            log.error("insert PointInfo error! not calculation warrantyTime pointName={}",pointInfo.getName());
+            throw new RuntimeException("点位" + pointInfo.getName() + "没有添加安装时间");
+        }
         list.add(pointInfo);
         if (list.size() >= BATCH_COUNT) {
             saveData();
@@ -157,17 +159,26 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
 
             point.setCreateTime(System.currentTimeMillis());
 
+            Long installTime = 0L;
             if (item.getInstallTime() != null){
                 long l = 0;
                 try {
                     l = dateToStamp(item.getInstallTime());
+                    installTime = l;
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
                 point.setInstallTime(l);
             }else {
-                point.setInstallTime(System.currentTimeMillis());
+                installTime = System.currentTimeMillis();
+                point.setInstallTime(installTime);
             }
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(installTime);
+            calendar.add(Calendar.YEAR, Integer.parseInt(item.getWarrantyPeriod()));
+            point.setWarrantyPeriod(Integer.parseInt(item.getWarrantyPeriod()));
+            point.setWarrantyTime(calendar.getTimeInMillis());
 
             if(item.getStatus() != null){
                 if (Objects.equals(item.getStatus(),"1") || "移机".equals(item.getStatus())){
@@ -190,6 +201,8 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
                     point.setStatus(9);
                 }else if (Objects.equals(item.getStatus(),"10") || "已取消".equals(item.getStatus())){
                     point.setStatus(10);
+                }else if (Objects.equals(item.getStatus(),"11") || "已过保".equals(item.getStatus())){
+                    point.setStatus(11);
                 }
             }
 
@@ -276,6 +289,8 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
 
             point.setDelFlag(PointNew.DEL_NORMAL);
             point.setRemarks(item.getRemarks());
+
+
 
             pointList.add(point);
         });

@@ -39,4 +39,5 @@ public class WorkOrderQuery extends WorkOrder {
      * 柜子信息list
      */
     private List<ProductInfoQuery> productInfoList;
+    private Integer pointStatus;
 }
