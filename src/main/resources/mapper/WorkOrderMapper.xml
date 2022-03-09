@@ -110,7 +110,7 @@
         wot.type as wot_type,
         wor.name as wor_name,
         u.user_name as u_user_name,
-        p.name as p_name
+        p.name as p_name,
         p.status as p_status
         <!--f.id as f_id,
         f.type as f_type,
@@ -215,7 +215,7 @@
         wot.type as wot_type,
         wor.name as wor_name,
         u.user_name as u_user_name,
-        p.name as p_name
+        p.name as p_name,
         p.status as p_status
         FROM work_order as wo
         LEFT JOIN work_order_type as wot on wot.id = wo.id
