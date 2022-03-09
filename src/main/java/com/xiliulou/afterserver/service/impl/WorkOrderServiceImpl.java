@@ -1733,17 +1733,17 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if(Objects.isNull(workOrderQuery.getTransferDestinationPointId())){
                 return R.fail("请填写终点");
             }else{
-                if(Objects.equals(workOrderQuery.getSourceType(), 1)){
+                if(Objects.equals(workOrderQuery.getDestinationType(), 1)){
                     PointNew pointNew = pointNewService.queryByIdFromDB(workOrderQuery.getTransferDestinationPointId());
                     if(Objects.isNull(pointNew)){
-                        return R.fail("未查询到相关起点");
+                        return R.fail("未查询到相关终点");
                     }
                 }
 
-                if(Objects.equals(workOrderQuery.getSourceType(), 2)){
+                if(Objects.equals(workOrderQuery.getDestinationType(), 2)){
                     WareHouse wareHouse = warehouseService.getById(workOrderQuery.getTransferDestinationPointId());
                     if(Objects.isNull(wareHouse)){
-                        return R.fail("未查询到相关起点");
+                        return R.fail("未查询到相关终点");
                     }
                 }
             }
