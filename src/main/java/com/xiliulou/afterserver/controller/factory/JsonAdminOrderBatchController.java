@@ -5,6 +5,7 @@ import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.ProductNewDetailsQuery;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,7 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/admin/factory")
+@Slf4j
 public class JsonAdminOrderBatchController {
     /**
      * 服务对象
@@ -118,6 +120,7 @@ public class JsonAdminOrderBatchController {
         //分页 手持终端第一页从零开始
         offset = offset  * size;
 
+        log.info("物联网卡模糊搜索 -----> sn = {}", sn);
         return iotCardService.pageIotcardLikeSn(offset, size, sn);
     }
 
@@ -125,7 +128,6 @@ public class JsonAdminOrderBatchController {
     public R cameraSnLike(@RequestParam(value = "sn") String sn,
                                    @RequestParam(value = "offset", required = false) Long offset,
                                    @RequestParam(value = "size", required = false) Long size){
-
 
         if(Objects.isNull(size)){
             size = 10L;
