@@ -659,7 +659,7 @@ public class ProductNewServiceImpl implements ProductNewService {
                 Camera camera = cameraService.getById(productNew.getCameraId());
                 if(Objects.nonNull(camera)){
                     vo.setCameraId(camera.getId());
-                    vo.setCameraCard(camera.getSerialNum());
+                    vo.setSerialNum(camera.getSerialNum());
 
                     IotCard iotCard = iotCardService.getById(camera.getIotCardId());
                     if(Objects.nonNull(iotCard)){
