@@ -307,4 +307,22 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
         result.put("total", page.getTotal());
         return R.ok(result);
     }
+
+    @Override
+    public R queryCameraIotCardBySn(String sn) {
+        Camera camera = this.baseMapper.selectOne(new QueryWrapper<Camera>()
+                .eq("serial_num", sn)
+                .eq("del_flag", Camera.DEL_NORMAL));
+
+        Map<String, Object> result = new HashMap<>(2);
+        if(Objects.nonNull(camera)){
+            IotCard iotCard = iotCardService.getById(camera.getIotCardId());
+            if(Objects.nonNull(iotCard)){
+                result.put("serialNum", camera.getSerialNum());
+                result.put("iotCardSn", iotCard.getSn());
+            }
+
+        }
+        return R.ok(result);
+    }
 }
