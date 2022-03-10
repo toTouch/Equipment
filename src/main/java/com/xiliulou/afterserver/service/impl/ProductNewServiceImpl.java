@@ -26,6 +26,7 @@ import com.xiliulou.afterserver.web.query.ProductNewQuery;
 import com.xiliulou.afterserver.web.vo.BatchProductNewVo;
 import com.xiliulou.afterserver.web.vo.DeliverProductNewInfoVo;
 import com.xiliulou.afterserver.web.vo.ProductNewDetailsVo;
+import com.xiliulou.core.json.JsonUtil;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -689,6 +690,7 @@ public class ProductNewServiceImpl implements ProductNewService {
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public R updateProductNew(ProductNewDetailsQuery query) {
+        log.error("手持终端更新批次订单-------->" + JsonUtil.toJson(query));
         ProductNew productNewOld = this.productNewMapper.queryById(query.getId());
         if(Objects.isNull(productNewOld)){
             return R.fail(null, null, "未查询到相关柜机信息");
@@ -705,7 +707,7 @@ public class ProductNewServiceImpl implements ProductNewService {
                     .eq("camera_id", camera.getId())
                     .eq("del_flag", ProductNew.DEL_NORMAL));
 
-            if(Objects.nonNull(productNew)){
+            if(Objects.nonNull(productNew) && !Objects.equals(productNew.getId(), query.getId())){
                 return R.fail(null, null, "序列号已绑定到其他产品");
             }
         }
