@@ -286,7 +286,7 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
     public R cameraSnLike(Long offset, Long size, String sn) {
         Page<Camera> page = PageUtil.getPage(offset, size);
         page = this.getBaseMapper().selectPage(page, new LambdaQueryWrapper<Camera>()
-                        .like(Camera::getSerialNum, sn)
+                        .like(!StringUtils.isBlank(sn),Camera::getSerialNum, sn)
                         .eq(Camera::getDelFlag, Camera.DEL_NORMAL)
                         .orderByDesc(Camera::getCreateTime));
 

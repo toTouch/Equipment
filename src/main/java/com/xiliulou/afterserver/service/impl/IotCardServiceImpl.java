@@ -305,7 +305,7 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
         Page<IotCard> page = PageUtil.getPage(offset, size);
         page = iotCardMapper.selectPage(page,
                 new LambdaQueryWrapper<IotCard>()
-                        .like(StringUtils.isBlank(sn), IotCard::getSn, sn)
+                        .like(!StringUtils.isBlank(sn), IotCard::getSn, sn)
                         .eq(IotCard::getDelFlag, IotCard.DEL_NORMAL)
                         .orderByDesc(IotCard::getCreateTime));
 
