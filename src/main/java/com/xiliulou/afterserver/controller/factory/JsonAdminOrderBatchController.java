@@ -143,4 +143,9 @@ public class JsonAdminOrderBatchController {
 
         return cameraService.cameraSnLike(offset, size, sn);
     }
+
+    @GetMapping("camera/iotCardInfo")
+    public R queryCameraIotCardBySn(@RequestParam(value = "sn") String sn){
+        return cameraService.queryCameraIotCardBySn(sn);
+    }
 }
