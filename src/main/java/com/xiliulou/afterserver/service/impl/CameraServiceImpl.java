@@ -318,8 +318,8 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
         if(Objects.nonNull(camera)){
             IotCard iotCard = iotCardService.getById(camera.getIotCardId());
             if(Objects.nonNull(iotCard)){
-                result.put("serialNum", camera.getSerialNum());
-                result.put("iotCardSn", iotCard.getSn());
+                result.put("cameraIotCardId", iotCard.getId());
+                result.put("cameraIotCardSn", iotCard.getSn());
             }
 
         }
