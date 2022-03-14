@@ -251,6 +251,8 @@
             address = #{address},
             remarks = #{remarks},
             logistics_info = #{logisticsInfo},
+            warranty_period = #{warrantyPeriod},
+            warranty_time = #{warrantyTime},
             <if test="name != null">
                 name = #{name},
             </if>
@@ -287,12 +289,6 @@
             </if>
             <if test="auditStatus != null">
                 audit_status = #{auditStatus},
-            </if>
-            <if test="warrantyPeriod != null">
-                warranty_period = #{warrantyPeriod},
-            </if>
-            <if test="warrantyTime != null">
-                warranty_time = #{warrantyTime}
             </if>
         </set>
         where id = #{id}
