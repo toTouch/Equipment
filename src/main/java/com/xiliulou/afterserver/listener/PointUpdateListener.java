@@ -210,13 +210,11 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
             }
 
             if(Objects.isNull(item.getWarrantyPeriod())) {
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(installTime);
-                calendar.add(Calendar.YEAR, Integer.parseInt(item.getWarrantyPeriod()));
                 point.setWarrantyPeriod(Integer.parseInt(item.getWarrantyPeriod()));
-                point.setWarrantyTime(calendar.getTimeInMillis());
-                point.setLogisticsInfo(item.getLogisticsInfo());
+                point.setWarrantyTime(Integer.parseInt(item.getWarrantyPeriod()) * 3600000L * 24 * 360 + installTime);
             }
+
+            point.setLogisticsInfo(item.getLogisticsInfo());
 
             if (item.getCreateTime() != null){
                 long l = 0;
