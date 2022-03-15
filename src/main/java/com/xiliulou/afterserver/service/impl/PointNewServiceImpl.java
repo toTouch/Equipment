@@ -178,6 +178,9 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             String cameraInfo = JSON.toJSONString(pointNew.getCameraInfoList());
             pointNew.setCameraInfo(cameraInfo);
         }
+        if(Objects.isNull(pointNew.getInstallTime()) || Objects.isNull(pointNew.getWarrantyPeriod())){
+            pointNew.setWarrantyTime(null);
+        }
         pointNew.setDelFlag(PointNew.DEL_NORMAL);
         pointNew.setCreateTime(System.currentTimeMillis());
         pointNew.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
@@ -297,6 +300,9 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             }
             String cameraInfo = JSON.toJSONString(pointNew.getCameraInfoList());
             pointNew.setCameraInfo(cameraInfo);
+        }
+        if(Objects.isNull(pointNew.getInstallTime()) || Objects.isNull(pointNew.getWarrantyPeriod())){
+            pointNew.setWarrantyTime(null);
         }
         int update = this.pointNewMapper.update(pointNew);
         pointNew.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
@@ -432,6 +438,11 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             return R.fail("请填写安装类型");
         }
         return null;
+    }
+
+    @Override
+    public void updatePastWarrantyStatus(){
+        pointNewMapper.updatePastWarrantyStatus(System.currentTimeMillis());
     }
 
     /*@Override

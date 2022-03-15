@@ -82,24 +82,67 @@ public class PointNew {
      * 删除状态 0正常 1 删除
      */
     private Integer delFlag;
-
+    /**
+     * 安装时间
+     */
     private Long installTime;
-
-    //新需求
-    private String cardSupplier;//物联网卡供应商
-    private Long completionTime;//施工完成时间
-    private Integer isEntry;//是否入账
-    private Integer isAcceptance;//是否验收
-    
-    //取餐柜 1、餐厅柜 2、换电柜 3、充电柜 4、寄存柜 5、生鲜柜 6
-    private Integer productSeries;//产品系列
-    private Long orderTime;//工单时间
-    private String operator;//运营商
-    private String logisticsInfo;//物流信息
-    private String productInfo;//柜子信息
-    private String cameraInfo;//摄像头信息
-    private Integer auditStatus;//审核状态
-    private String auditRemarks;//审核备注
+    /**
+     * 物联网卡供应商
+     */
+    private String cardSupplier;
+    /**
+     * 施工完成时间
+     */
+    private Long completionTime;
+    /**
+     * 是否入账
+     */
+    private Integer isEntry;
+    /**
+     * 是否验收
+     */
+    private Integer isAcceptance;
+    /**
+     * 产品系列
+     * 取餐柜 1、餐厅柜 2、换电柜 3、充电柜 4、寄存柜 5、生鲜柜 6
+     */
+    private Integer productSeries;
+    /**
+     * 工单时间
+     */
+    private Long orderTime;
+    /**
+     * 运营商
+     */
+    private String operator;
+    /**
+     * 物流信息
+     */
+    private String logisticsInfo;
+    /**
+     * 柜子信息
+     */
+    private String productInfo;
+    /**
+     * 摄像头信息
+     */
+    private String cameraInfo;
+    /**
+     * 审核状态
+     */
+    private Integer auditStatus;
+    /**
+     * 审核备注
+     */
+    private String auditRemarks;
+    /**
+     * 质保时间
+     */
+    private Integer warrantyPeriod;
+    /**
+     * 质保结束时间
+     */
+    private Long warrantyTime;
 
 
     public static final Integer DEL_NORMAL = 0;
