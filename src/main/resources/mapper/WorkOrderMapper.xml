@@ -53,6 +53,7 @@
         <id property="workOrderReasonName" column="wor_name"/>
         <id property="creater" column="u_user_name"/>
         <id property="pointName" column="p_name"/>
+        <id property="pointStatus" column="p_status"/>
         <id property="describeinfo" column="wo_describeinfo"/>
         <id property="paymentMethod" column="wo_payment_method"/>
         <id property="thirdPaymentStatus" column="wo_third_payment_status"/>
@@ -109,7 +110,8 @@
         wot.type as wot_type,
         wor.name as wor_name,
         u.user_name as u_user_name,
-        p.name as p_name
+        p.name as p_name,
+        p.status as p_status
         <!--f.id as f_id,
         f.type as f_type,
         f.file_name as f_file_name,
@@ -169,6 +171,9 @@
             <if test="query.auditStatus != null">
                 and wo.audit_status = #{query.auditStatus}
             </if>
+            <if test="query.pointStatus != null">
+                and p.status = #{query.pointStatus}
+            </if>
         </where>
         ORDER BY wo.create_time DESC
     </select>
@@ -210,8 +215,8 @@
         wot.type as wot_type,
         wor.name as wor_name,
         u.user_name as u_user_name,
-        p.name as p_name
-
+        p.name as p_name,
+        p.status as p_status
         FROM work_order as wo
         LEFT JOIN work_order_type as wot on wot.id = wo.id
         LEFT JOIN work_order_reason as wor on wor.id = wo.work_order_reason_id
@@ -265,6 +270,9 @@
             </if>
             <if test="query.auditStatus != null">
                 and wo.audit_status = #{query.auditStatus}
+            </if>
+            <if test="query.pointStatus != null">
+                and p.status = #{query.pointStatus}
             </if>
         </where>
         ORDER BY wo.create_time DESC
