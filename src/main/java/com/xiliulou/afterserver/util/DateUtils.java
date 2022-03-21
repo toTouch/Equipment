@@ -22,7 +22,7 @@ public class DateUtils {
      */
     public static String getDatePoor(Long endTime, Long startTime) {
 
-        if(Objects.isNull(endTime) || Objects.isNull(startTime) || endTime - startTime < 0){
+        if(Objects.isNull(endTime) || Objects.isNull(startTime) || endTime - startTime <= 0){
             return "0天0小时0分钟";
         }
 

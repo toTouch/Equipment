@@ -334,7 +334,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
             //时效
             String prescription = DateUtils.getDatePoor(o.getProcessTime(), o.getCreateTime());
-            row.add(prescription);
+            row.add(StringUtils.isBlank(prescription)?"":prescription);
 
             //"描述", "
             row.add(o.getDescribeinfo() == null? "" : o.getDescribeinfo());
@@ -588,7 +588,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
             //时效
             String prescription = DateUtils.getDatePoor(o.getProcessTime(), o.getCreateTime());
-            row.add(prescription);
+            row.add(StringUtils.isBlank(prescription) ? "" : prescription);
 
             //"描述", "
             row.add(o.getDescribeinfo() == null? "" : o.getDescribeinfo());
