@@ -72,6 +72,21 @@ minio:
   secure: false
   bucketName: test
 
+storage:
+  ### oss:oss-cn-beijing.aliyuncs.com minio:http://172.21.0.9:9000
+  ossEndpoint: oss-cn-beijing.aliyuncs.com
+  accessKeyId: LTAI5tJpTD5MNbV1qfZnSxzh
+  accessKeySecret: pUhONTar46FesJIEC3o9OvHn4CLsmM
+  ### oss:wm-xiliulou-test minio:xll
+  bucketName: liubiqi
+  ### oss:img.wm.xiliulou.com
+  urlPrefix: ""
+  dir: after-service/
+  ### oss:0 minio:1
+  isUseOSS: 0
+
 userrole:
   unShow: [1,2,3,4]
   userRole: [2]
+
+

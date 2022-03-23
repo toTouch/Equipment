@@ -14,17 +14,18 @@ import com.xiliulou.afterserver.mapper.FileMapper;
 import com.xiliulou.afterserver.service.FileService;
 import com.xiliulou.afterserver.util.MinioUtil;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.storage.config.StorageConfig;
+import com.xiliulou.storage.service.impl.AliyunOssService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @program: XILIULOU
@@ -37,6 +38,10 @@ import java.util.Objects;
 public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements FileService {
     @Autowired
     MinioUtil minioUtil;
+    @Autowired
+    AliyunOssService aliyunOssService;
+    @Autowired
+    StorageConfig storageConfig;
 
 
     @Override
@@ -108,4 +113,44 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
         return R.fail("文件删除失败");
     }
 
+    /**
+     * 阿里云 oss 上传文件
+     * @param file
+     * @return
+     */
+    @Override
+    public R uploadFileToOss(MultipartFile file) {
+        String fileName = storageConfig.getDir() + StrUtil.DASHED
+                + IdUtil.simpleUUID() + StrUtil.DOT + FileUtil.extName(file.getOriginalFilename());
+        try {
+            aliyunOssService.uploadFile(storageConfig.getBucketName(),
+                    storageConfig.getDir() + StrUtil.SLASH + fileName,
+                                file.getInputStream());
+        }catch (IOException e){
+            log.error("aliyunOss upload File Error!", e);
+            return R.failMsg(e.getLocalizedMessage());
+        }
+
+        Map<String, Object> result = new HashMap<>(2);
+        result.put("fileName", fileName);
+        return R.fail(result);
+    }
+
+    @Override
+    public R downLoadFileToOss(String fileName) {
+        Long expiration = Optional.ofNullable(storageConfig.getExpiration()).orElse(1000L * 60L * 3L);
+        String url = null;
+        try{
+            url = aliyunOssService.getOssFileUrl(storageConfig.getBucketName(),
+                    storageConfig.getDir() + StrUtil.SLASH + fileName, expiration);
+        }catch (Exception e){
+            log.error("aliyunOss down File Error!", e);
+        }
+
+        if(StringUtils.isNotBlank(url)) {
+            return R.ok(url);
+        }
+
+        return R.fail("oss获取url失败，请联系管理员");
+    }
 }

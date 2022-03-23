@@ -22,4 +22,8 @@ public interface FileService extends IService<File> {
     List<File> queryByProductNewId(Long productId);
 
     R removeFile(Long fileId);
+
+    R uploadFileToOss(MultipartFile file);
+
+    R downLoadFileToOss(String fileName);
 }
