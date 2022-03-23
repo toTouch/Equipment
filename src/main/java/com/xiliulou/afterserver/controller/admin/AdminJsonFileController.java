@@ -49,14 +49,45 @@ public class AdminJsonFileController {
         return R.ok(fileService.removeById(id));
     }
 
+    /**
+     * minio 上传文件
+     * @param file
+     * @return
+     */
     @PostMapping("/admin/upload")
     public R uploadFile(@RequestParam("file") MultipartFile file) {
         return fileService.uploadFile(file);
     }
 
+
+    /**
+     * minio 下载文件
+     * @param fileName
+     * @return
+     */
     @GetMapping("/admin/downLoad")
     public void getFile(@RequestParam("fileName") String fileName, HttpServletResponse response) {
         fileService.downLoadFile(fileName, response);
+    }
+
+    /**
+     * oss 上传文件
+     * @param file
+     * @return
+     */
+    @PostMapping("/admin/oss/upload")
+    public R uploadFileToOss(@RequestParam("file") MultipartFile file) {
+        return fileService.uploadFileToOss(file);//downLoadFileToOss
+    }
+
+    /**
+     * oss 下载文件
+     * @param fileName
+     * @return
+     */
+    @GetMapping("/admin/oss/downLoad")
+    public R uploadFileToOss(@RequestParam("fileName") String fileName) {
+        return fileService.downLoadFileToOss(fileName);
     }
 
 
