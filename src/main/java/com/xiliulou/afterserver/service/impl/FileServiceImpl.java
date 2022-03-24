@@ -124,8 +124,8 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
                 + IdUtil.simpleUUID() + StrUtil.DOT + FileUtil.extName(file.getOriginalFilename());
 
         try {
-            aliyunOssService.uploadFile("liubiqi",
-                    fileName,
+            aliyunOssService.uploadFile(storageConfig.getBucketName(),
+                    storageConfig.getDir() + fileName,
                                 file.getInputStream());
         }catch (IOException e){
             log.error("aliyunOss upload File Error!", e);
