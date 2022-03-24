@@ -200,7 +200,7 @@ public class AdminJsonProductNewController {
     public R getTestFile(@RequestParam("fileName") String fileName){
         String url = null;
         try{
-            url = aliyunOssService.getOssFileUrl(StorageConfig.getBucketName(), fileName, 120 * 1000);
+            url = aliyunOssService.getOssFileUrl(StorageConfig.getOssTestFileBucketName(), fileName, 120 * 1000);
         }catch(Exception e){
             log.error("oss error!", e);
         }
