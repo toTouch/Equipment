@@ -88,10 +88,10 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     public R downLoadFile(String fileName, HttpServletResponse response) {
         String url = "";
         if(Objects.equals(StorageConfig.IS_USE_OSS, storageConfig.getIsUseOSS())){
-            Long expiration = Optional.ofNullable(storageConfig.getExpiration()).orElse(1000L * 60L * 3L);
+            Long expiration = Optional.ofNullable(storageConfig.getExpiration()).orElse(1000L * 60L * 3L) + System.currentTimeMillis();
             try{
                 url = aliyunOssService.getOssFileUrl(storageConfig.getBucketName(),
-                        storageConfig.getDir() + fileName, System.currentTimeMillis() + expiration);
+                        storageConfig.getDir() + fileName, expiration);
             }catch (Exception e){
                 log.error("aliyunOss down File Error!", e);
                 return R.fail("oss获取url失败，请联系管理员");
