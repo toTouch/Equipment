@@ -13,7 +13,7 @@ public interface FileService extends IService<File> {
 
     R uploadFile(MultipartFile file);
 
-    void downLoadFile(String fileName, HttpServletResponse response);
+    R downLoadFile(String fileName, HttpServletResponse response);
 
     R getFileList(Long pid);
 
@@ -22,8 +22,4 @@ public interface FileService extends IService<File> {
     List<File> queryByProductNewId(Long productId);
 
     R removeFile(Long fileId);
-
-    R uploadFileToOss(MultipartFile file);
-
-    R downLoadFileToOss(String fileName);
 }
