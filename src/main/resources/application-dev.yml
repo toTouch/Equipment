@@ -81,7 +81,7 @@ storage:
   ### minio:by-xiliulou
   accessKey: by-xiliulou
   ### minio:by123456
-  secretKey: minioadmin
+  secretKey: by123456
   ### oss:liubiqi minio:after-service
   bucketName: liubiqi
   minioBucketName: after-service
