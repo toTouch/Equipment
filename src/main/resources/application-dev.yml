@@ -110,7 +110,7 @@ storage:
   bucketName: liubiqi
   minioBucketName: after-service
   ### ossTestFileBucketName:ZgeTest
-  ossTestFileBucketName: ZgeTest
+  ossTestFileBucketName: zge-test
   ### oss:img.wm.xiliulou.com
   urlPrefix:
   dir: after-service/
