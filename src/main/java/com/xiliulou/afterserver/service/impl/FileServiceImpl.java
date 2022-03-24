@@ -49,8 +49,8 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
         String resultFileName = "";
         String bucketName = "";
         if(Objects.equals(StorageConfig.IS_USE_OSS, storageConfig.getIsUseOSS())){
-            String fileDirName = storageConfig.getDir().replaceAll("/","");
-            String fileName =  fileDirName + StrUtil.DASHED + IdUtil.simpleUUID() + StrUtil.DOT + FileUtil.extName(file.getOriginalFilename());
+            String fileDirName = storageConfig.getDir().replaceAll("/","-");
+            String fileName =  fileDirName + IdUtil.simpleUUID() + StrUtil.DOT + FileUtil.extName(file.getOriginalFilename());
 
             try {
                 aliyunOssService.uploadFile(storageConfig.getBucketName(), storageConfig.getDir() + fileName, file.getInputStream());
