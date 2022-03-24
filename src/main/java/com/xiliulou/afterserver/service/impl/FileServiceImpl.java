@@ -120,7 +120,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
      */
     @Override
     public R uploadFileToOss(MultipartFile file) {
-        String fileName = storageConfig.getDir() + StrUtil.DASHED
+        String fileName = storageConfig.getDir().replaceAll("/","") + StrUtil.DASHED
                 + IdUtil.simpleUUID() + StrUtil.DOT + FileUtil.extName(file.getOriginalFilename());
         try {
             aliyunOssService.uploadFile(storageConfig.getBucketName(),
@@ -142,7 +142,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
         String url = null;
         try{
             url = aliyunOssService.getOssFileUrl(storageConfig.getBucketName(),
-                    storageConfig.getDir() + StrUtil.SLASH + fileName, expiration);
+                    storageConfig.getDir().replaceAll("/", "") + StrUtil.SLASH + fileName, expiration);
         }catch (Exception e){
             log.error("aliyunOss down File Error!", e);
         }
