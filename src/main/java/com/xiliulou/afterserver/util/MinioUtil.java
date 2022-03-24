@@ -53,9 +53,8 @@ public class MinioUtil {
     @PostConstruct
     public void init() {
         try {
-            String[] minioEndpoint = storageConfig.getMinioEndpoint().split(":");
-            String endpoint = minioEndpoint[0];
-            Integer port = Integer.parseInt(minioEndpoint[1]);
+            String endpoint = storageConfig.getMinioEndpoint().substring(0,storageConfig.getMinioEndpoint().lastIndexOf(":"));
+            Integer port = Integer.parseInt(storageConfig.getMinioEndpoint().substring(storageConfig.getMinioEndpoint().lastIndexOf(":")+ 1));
 
             this.minioClient = new MinioClient(endpoint, port, storageConfig.getAccessKey(), storageConfig.getSecretKey(), storageConfig.getSecure());
         } catch (InvalidEndpointException e) {
