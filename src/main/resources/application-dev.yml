@@ -83,11 +83,11 @@ storage:
   ### minio:by123456
   secretKey: by123456
   ### oss:liubiqi minio:after-service
-  bucketName: liubiqi
+  bucketName: zge-test
   minioBucketName: after-service
   ### oss:img.wm.xiliulou.com
   urlPrefix:
-  dir: after-service/
+  dir: after-service/zgw/test/uuid/
   secure: false
   ### oss:0 minio:1
   isUseOSS: 0
