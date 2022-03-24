@@ -80,7 +80,7 @@ storage:
   ### oss:wm-xiliulou-test minio:xll
   bucketName: liubiqi
   ### oss:img.wm.xiliulou.com
-  urlPrefix: ""
+  #urlPrefix:
   dir: after-service/
   ### oss:0 minio:1
   isUseOSS: 0
