@@ -120,9 +120,9 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
      */
     @Override
     public R uploadFileToOss(MultipartFile file) {
-        //String fileName = storageConfig.getDir().replaceAll("/","") + StrUtil.DASHED
-               // + IdUtil.simpleUUID() + StrUtil.DOT + FileUtil.extName(file.getOriginalFilename());
-        String fileName = "after-service/zgwTest++++++++gegege." + FileUtil.extName(file.getOriginalFilename());
+        String fileName = storageConfig.getDir().replaceAll("/","") + StrUtil.DASHED
+                + IdUtil.simpleUUID() + StrUtil.DOT + FileUtil.extName(file.getOriginalFilename());
+
         try {
             aliyunOssService.uploadFile("liubiqi",
                     fileName,
