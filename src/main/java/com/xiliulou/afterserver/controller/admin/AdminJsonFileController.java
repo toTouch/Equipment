@@ -50,7 +50,7 @@ public class AdminJsonFileController {
     }
 
     /**
-     * minio 上传文件
+     * 上传文件
      * @param file
      * @return
      */
@@ -61,7 +61,7 @@ public class AdminJsonFileController {
 
 
     /**
-     * minio 下载文件
+     *下载文件
      * @param fileName
      * @return
      */
