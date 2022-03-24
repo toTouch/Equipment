@@ -66,30 +66,9 @@ public class AdminJsonFileController {
      * @return
      */
     @GetMapping("/admin/downLoad")
-    public void getFile(@RequestParam("fileName") String fileName, HttpServletResponse response) {
-        fileService.downLoadFile(fileName, response);
+    public R getFile(@RequestParam("fileName") String fileName, HttpServletResponse response) {
+        return fileService.downLoadFile(fileName, response);
     }
-
-    /**
-     * oss 上传文件
-     * @param file
-     * @return
-     */
-    @PostMapping("/admin/oss/upload")
-    public R uploadFileToOss(@RequestParam("file") MultipartFile file) {
-        return fileService.uploadFileToOss(file);//downLoadFileToOss
-    }
-
-    /**
-     * oss 下载文件
-     * @param fileName
-     * @return
-     */
-    @GetMapping("/admin/oss/downLoad")
-    public R uploadFileToOss(@RequestParam("fileName") String fileName) {
-        return fileService.downLoadFileToOss(fileName);
-    }
-
 
     /**
      * 产品批次文件

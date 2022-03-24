@@ -46,36 +46,71 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
 
     @Override
     public R uploadFile(MultipartFile file) {
-        String fileName = IdUtil.simpleUUID() + StrUtil.DOT + FileUtil.extName(file.getOriginalFilename());
-        Map<String, String> resultMap = new HashMap<>(2);
-        resultMap.put("bucketName", FileConstant.BUCKET_NAME);
+        String resultFileName = "";
+        String bucketName = "";
+        if(Objects.equals(StorageConfig.IS_USE_OSS, storageConfig.getIsUseOSS())){
+            String fileDirName = storageConfig.getDir().replaceAll("/","");
+            String fileName =  fileDirName + StrUtil.DASHED + IdUtil.simpleUUID() + StrUtil.DOT + FileUtil.extName(file.getOriginalFilename());
 
-        resultMap.put("fileName", FileConstant.BUCKET_NAME + StrUtil.DASHED + fileName);
+            try {
+                aliyunOssService.uploadFile(storageConfig.getBucketName(), storageConfig.getDir() + fileName, file.getInputStream());
 
-        try {
-            minioUtil.putObject(FileConstant.BUCKET_NAME, FileConstant.BUCKET_NAME + StrUtil.DASHED + fileName, file.getInputStream());
-            //文件管理数据记录,收集管理追踪文件
+                resultFileName = fileName;
+                bucketName = storageConfig.getBucketName();
+            }catch (IOException e){
+                log.error("aliyunOss upload File Error!", e);
+                return R.failMsg(e.getLocalizedMessage());
+            }
 
-        } catch (Exception e) {
-            log.error("上传失败", e);
-            return R.failMsg(e.getLocalizedMessage());
+        }else if(Objects.equals(StorageConfig.IS_USE_MINIO, storageConfig.getIsUseOSS())){
+            String fileName = IdUtil.simpleUUID() + StrUtil.DOT + FileUtil.extName(file.getOriginalFilename());
+
+            try {
+                minioUtil.putObject(storageConfig.getMinioBucketName(), storageConfig.getMinioBucketName() + StrUtil.DASHED + fileName, file.getInputStream());
+
+                resultFileName = storageConfig.getMinioBucketName() + StrUtil.DASHED + fileName;
+                bucketName = storageConfig.getMinioBucketName();
+            } catch (Exception e) {
+                log.error("上传失败", e);
+                return R.failMsg(e.getLocalizedMessage());
+            }
+
         }
+
+        Map<String, String> resultMap = new HashMap<>(2);
+        resultMap.put("bucketName", bucketName);
+        resultMap.put("fileName", resultFileName);
         return R.ok(resultMap);
 
     }
 
     @Override
-    public void downLoadFile(String fileName, HttpServletResponse response) {
+    public R downLoadFile(String fileName, HttpServletResponse response) {
+        String url = "";
+        if(Objects.equals(StorageConfig.IS_USE_OSS, storageConfig.getIsUseOSS())){
+            Long expiration = Optional.ofNullable(storageConfig.getExpiration()).orElse(1000L * 60L * 3L);
+            try{
+                url = aliyunOssService.getOssFileUrl(storageConfig.getBucketName(),
+                        storageConfig.getDir() + fileName, System.currentTimeMillis() + expiration);
+            }catch (Exception e){
+                log.error("aliyunOss down File Error!", e);
+            }
 
-        int separator = fileName.lastIndexOf(StrUtil.DASHED);
-        String bucketName = fileName.substring(0, separator);
+            return R.fail("oss获取url失败，请联系管理员");
+        } else if(Objects.equals(StorageConfig.IS_USE_MINIO, storageConfig.getIsUseOSS())){
 
-        try (InputStream inputStream = minioUtil.getObject(bucketName, fileName)) {
-            response.setContentType("application/octet-stream; charset=UTF-8");
-            IoUtil.copy(inputStream, response.getOutputStream());
-        } catch (Exception e) {
-            log.error("文件读取异常", e);
+            int separator = fileName.lastIndexOf(StrUtil.DASHED);
+            String bucketName = fileName.substring(0, separator);
+
+            try (InputStream inputStream = minioUtil.getObject(bucketName, fileName)) {
+                response.setContentType("application/octet-stream; charset=UTF-8");
+                IoUtil.copy(inputStream, response.getOutputStream());
+            } catch (Exception e) {
+                log.error("文件读取异常", e);
+            }
         }
+
+        return R.ok(url);
     }
 
     @Override
@@ -111,47 +146,5 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
             }
         }
         return R.fail("文件删除失败");
-    }
-
-    /**
-     * 阿里云 oss 上传文件
-     * @param file
-     * @return
-     */
-    @Override
-    public R uploadFileToOss(MultipartFile file) {
-        String fileName = storageConfig.getDir().replaceAll("/","") + StrUtil.DASHED
-                + IdUtil.simpleUUID() + StrUtil.DOT + FileUtil.extName(file.getOriginalFilename());
-
-        try {
-            aliyunOssService.uploadFile(storageConfig.getBucketName(),
-                    storageConfig.getDir() + fileName,
-                                file.getInputStream());
-        }catch (IOException e){
-            log.error("aliyunOss upload File Error!", e);
-            return R.failMsg(e.getLocalizedMessage());
-        }
-
-        Map<String, Object> result = new HashMap<>(2);
-        result.put("fileName", fileName);
-        return R.fail(result);
-    }
-
-    @Override
-    public R downLoadFileToOss(String fileName) {
-        Long expiration = Optional.ofNullable(storageConfig.getExpiration()).orElse(1000L * 60L * 3L);
-        String url = null;
-        try{
-            url = aliyunOssService.getOssFileUrl(storageConfig.getBucketName(),
-                    storageConfig.getDir().replaceAll("/", "") + StrUtil.SLASH + fileName, System.currentTimeMillis() + expiration);
-        }catch (Exception e){
-            log.error("aliyunOss down File Error!", e);
-        }
-
-        if(StringUtils.isNotBlank(url)) {
-            return R.ok(url);
-        }
-
-        return R.fail("oss获取url失败，请联系管理员");
     }
 }
