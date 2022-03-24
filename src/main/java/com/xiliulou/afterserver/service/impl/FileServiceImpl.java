@@ -94,9 +94,10 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
                         storageConfig.getDir() + fileName, System.currentTimeMillis() + expiration);
             }catch (Exception e){
                 log.error("aliyunOss down File Error!", e);
+                return R.fail("oss获取url失败，请联系管理员");
             }
 
-            return R.fail("oss获取url失败，请联系管理员");
+            return R.ok(url);
         } else if(Objects.equals(StorageConfig.IS_USE_MINIO, storageConfig.getIsUseOSS())){
 
             int separator = fileName.lastIndexOf(StrUtil.DASHED);
@@ -110,7 +111,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
             }
         }
 
-        return R.ok(url);
+        return null;
     }
 
     @Override
