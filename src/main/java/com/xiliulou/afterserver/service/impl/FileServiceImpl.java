@@ -142,7 +142,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
         String url = null;
         try{
             url = aliyunOssService.getOssFileUrl(storageConfig.getBucketName(),
-                    storageConfig.getDir().replaceAll("/", "") + StrUtil.SLASH + fileName, expiration);
+                    storageConfig.getDir().replaceAll("/", "") + StrUtil.SLASH + fileName, System.currentTimeMillis() + expiration);
         }catch (Exception e){
             log.error("aliyunOss down File Error!", e);
         }
