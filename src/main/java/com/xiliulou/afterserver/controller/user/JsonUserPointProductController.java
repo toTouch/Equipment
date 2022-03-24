@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -125,6 +126,11 @@ public class JsonUserPointProductController {
     @DeleteMapping("/user/file/{id}")
     public R delFile(@PathVariable("id") Long id){
         return R.ok(fileService.removeById(id));
+    }
+
+    @GetMapping("/user/downLoad")
+    public void getFile(@RequestParam("fileName") String fileName, HttpServletResponse response) {
+        fileService.downLoadFile(fileName, response);
     }
 
 }
