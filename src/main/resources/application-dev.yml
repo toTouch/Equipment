@@ -90,7 +90,7 @@ storage:
   dir: after-service/
   secure: false
   ### oss:0 minio:1
-  isUseOSS: 1
+  isUseOSS: 0
 
 
 userrole:
