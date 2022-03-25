@@ -620,18 +620,20 @@ public class ProductNewServiceImpl implements ProductNewService {
                 .eq("del_flag", ProductNew.DEL_NORMAL));
 
         List<ProductNew> list = page.getRecords();
+        if(CollectionUtils.isEmpty(list)){
+            return R.fail(null, "查询产品信息为空");
+        }
 
         List<BatchProductNewVo> data = new ArrayList<>();
-        if(CollectionUtils.isNotEmpty(list)){
-            list.stream().forEach(item -> {
-                BatchProductNewVo batchProductNewVo = new BatchProductNewVo();
-                batchProductNewVo.setId(item.getId());
-                batchProductNewVo.setNo(item.getNo());
-                batchProductNewVo.setStatus(this.getStatusName(item.getStatus()));
+        list.stream().forEach(item -> {
+            BatchProductNewVo batchProductNewVo = new BatchProductNewVo();
+            batchProductNewVo.setId(item.getId());
+            batchProductNewVo.setNo(item.getNo());
+            batchProductNewVo.setStatus(this.getStatusName(item.getStatus()));
 
-                data.add(batchProductNewVo);
-            });
-        }
+            data.add(batchProductNewVo);
+        });
+
 
         Map result = new HashMap(2);
         result.put("data", data);
