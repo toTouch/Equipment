@@ -609,14 +609,14 @@ public class ProductNewServiceImpl implements ProductNewService {
             return R.fail("未查询到相关用户");
         }
 
-        Supplier supplier = supplierService.getById(user.getSupplierId());
+        Supplier supplier = supplierService.getById(user.getThirdId());
         if(Objects.isNull(supplier)){
             return R.fail("用户未绑定工厂，请联系管理员");
         }
 
         Page page = PageUtil.getPage(offset, size);
         page = productNewMapper.selectPage(page, new QueryWrapper<ProductNew>().eq("batch_id", batchId)
-                .eq("supplier_id", user.getSupplierId())
+                .eq("third_id", user.getThirdId())
                 .eq("del_flag", ProductNew.DEL_NORMAL));
 
         List<ProductNew> list = page.getRecords();

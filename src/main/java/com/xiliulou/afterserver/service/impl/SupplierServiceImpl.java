@@ -78,7 +78,7 @@ public class SupplierServiceImpl extends ServiceImpl<SupplierMapper, Supplier> i
             return R.fail(null, "未查询到相关用户信息");
         }
 
-        Supplier supplier = this.getById(user.getSupplierId());
+        Supplier supplier = this.getById(user.getThirdId());
         if(Objects.isNull(supplier)){
             return R.fail(null, "未查询到相关工厂信息");
         }
