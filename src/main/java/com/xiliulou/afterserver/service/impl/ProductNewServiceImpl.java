@@ -616,7 +616,7 @@ public class ProductNewServiceImpl implements ProductNewService {
 
         Page page = PageUtil.getPage(offset, size);
         page = productNewMapper.selectPage(page, new QueryWrapper<ProductNew>().eq("batch_id", batchId)
-                .eq("third_id", user.getThirdId())
+                .eq("supplier_id", user.getThirdId())
                 .eq("del_flag", ProductNew.DEL_NORMAL));
 
         List<ProductNew> list = page.getRecords();
