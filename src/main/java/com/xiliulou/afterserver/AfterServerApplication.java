@@ -2,7 +2,6 @@ package com.xiliulou.afterserver;
 
 import com.xiliulou.afterserver.config.MinioConfig;
 import com.xiliulou.cache.redis.EnableRedis;
-import com.xiliulou.iot.EnableIot;
 import com.xiliulou.storage.EnableStorage;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -49,16 +49,26 @@ public class AdminJsonFileController {
         return R.ok(fileService.removeById(id));
     }
 
+    /**
+     * 上传文件
+     * @param file
+     * @return
+     */
     @PostMapping("/admin/upload")
     public R uploadFile(@RequestParam("file") MultipartFile file) {
         return fileService.uploadFile(file);
     }
 
-    @GetMapping("/admin/downLoad")
-    public void getFile(@RequestParam("fileName") String fileName, HttpServletResponse response) {
-        fileService.downLoadFile(fileName, response);
-    }
 
+    /**
+     *下载文件
+     * @param fileName
+     * @return
+     */
+    @GetMapping("/admin/downLoad")
+    public R getFile(@RequestParam("fileName") String fileName, HttpServletResponse response) {
+        return fileService.downLoadFile(fileName, response);
+    }
 
     /**
      * 产品批次文件

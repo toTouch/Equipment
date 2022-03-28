@@ -115,6 +115,7 @@ public class AdminJsonPointNewController {
                        @RequestParam(value = "snNo",required = false) String snNo,
                        @RequestParam(value ="productSeries", required = false) Integer productSeries,
                        @RequestParam(value ="auditStatus", required = false) Integer auditStatus){
+        pointNewService.updatePastWarrantyStatus();
         List<PointNew> pointNews = pointNewService.queryAllByLimit(offset, limit, name,cid,status,customerId,startTime,endTime,createUid,snNo, productSeries, auditStatus);
 
         if (Objects.nonNull(pointNews)){
@@ -269,6 +270,7 @@ public class AdminJsonPointNewController {
                               @RequestParam(value ="productSeries", required = false) Integer productSeries,
                               @RequestParam(value ="auditStatus", required = false) Integer auditStatus,
                                  HttpServletResponse response){
+        pointNewService.updatePastWarrantyStatus();
         List<PointNew> pointNews = pointNewService.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid,snNo,productSeries, auditStatus);
 
 
@@ -286,7 +288,7 @@ public class AdminJsonPointNewController {
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
 
-        String[] header = {"审核状态", "产品系列", "城市名称", "客户名称", "柜机名称", "点位状态", "创建人", "创建时间", "安装类型", "雨棚数量", "是否录入资产编码", "照片数量", "SN码", "物联网卡号", "物联网卡供应商","详细地址", "安装时间", "施工完成时间",  "入账","验收","下单时间","运营商","物流信息","审核内容","备注" };
+        String[] header = {"审核状态", "产品系列", "城市名称", "客户名称", "柜机名称", "点位状态", "创建人", "创建时间", "安装类型", "雨棚数量", "是否录入资产编码", "照片数量", "SN码", "物联网卡号", "物联网卡供应商","详细地址", "安装时间", "质保有效期","质保结束时间","施工完成时间",  "入账","验收","下单时间","运营商","物流信息","审核内容","备注" };
         List<Product> productAll = productService.list();
         Integer max = 0;
 
@@ -417,6 +419,8 @@ public class AdminJsonPointNewController {
                 list.add("已暂停");
             }else if (Objects.equals(item.getStatus(),10)){
                 list.add("已取消");
+            }else if (Objects.equals(item.getStatus(),11)){
+                list.add("已过保");
             }
 
             //创建人
@@ -488,7 +492,14 @@ public class AdminJsonPointNewController {
             }else{
                 list.add("");
             }
-
+            //质保有效期
+            list.add(item.getWarrantyPeriod() == null ? "0年" : item.getWarrantyPeriod() + "年");
+            //质保结束时间
+            if (item.getWarrantyTime() != null) {
+                list.add(DateUtils.stampToDate(item.getWarrantyTime().toString()));
+            }else{
+                list.add("");
+            }
             //施工完成时间
             if (item.getCompletionTime() != null) {
                 list.add(DateUtils.stampToDate(item.getCompletionTime().toString()));

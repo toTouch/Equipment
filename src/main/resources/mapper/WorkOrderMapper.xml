@@ -53,12 +53,14 @@
         <id property="workOrderReasonName" column="wor_name"/>
         <id property="creater" column="u_user_name"/>
         <id property="pointName" column="p_name"/>
+        <id property="pointStatus" column="p_status"/>
         <id property="describeinfo" column="wo_describeinfo"/>
         <id property="paymentMethod" column="wo_payment_method"/>
         <id property="thirdPaymentStatus" column="wo_third_payment_status"/>
         <id property="destinationType" column="wo_destination_type"></id>
         <id property="sourceType" column="wo_source_type"></id>
         <id property="thirdResponsiblePerson" column="wo_third_responsible_person"></id>
+        <id property="productInfo" column="wo_product_info"></id>
         <id property="auditStatus" column="wo_audit_status"/>
         <id property="auditRemarks" column="wo_audit_remarks"/>
         <collection property="fileList" ofType="com.xiliulou.afterserver.entity.File">
@@ -102,12 +104,14 @@
         wo.audit_status as wo_audit_status,
         wo.audit_remarks as wo_audit_remarks,
         wo.source_type as wo_source_type,
+        wo.product_info as wo_product_info,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
         wor.name as wor_name,
         u.user_name as u_user_name,
-        p.name as p_name
+        p.name as p_name,
+        p.status as p_status
         <!--f.id as f_id,
         f.type as f_type,
         f.file_name as f_file_name,
@@ -167,6 +171,9 @@
             <if test="query.auditStatus != null">
                 and wo.audit_status = #{query.auditStatus}
             </if>
+            <if test="query.pointStatus != null">
+                and p.status = #{query.pointStatus}
+            </if>
         </where>
         ORDER BY wo.create_time DESC
     </select>
@@ -202,13 +209,14 @@
         wo.audit_status as wo_audit_status,
         wo.audit_remarks as wo_audit_remarks,
         wo.source_type as wo_source_type,
+        wo.product_info as wo_product_info,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
         wor.name as wor_name,
         u.user_name as u_user_name,
-        p.name as p_name
-
+        p.name as p_name,
+        p.status as p_status
         FROM work_order as wo
         LEFT JOIN work_order_type as wot on wot.id = wo.id
         LEFT JOIN work_order_reason as wor on wor.id = wo.work_order_reason_id
@@ -262,6 +270,9 @@
             </if>
             <if test="query.auditStatus != null">
                 and wo.audit_status = #{query.auditStatus}
+            </if>
+            <if test="query.pointStatus != null">
+                and p.status = #{query.pointStatus}
             </if>
         </where>
         ORDER BY wo.create_time DESC
@@ -573,6 +584,9 @@
             </if>
             <if test="transferDestinationPointId != null">
                 transfer_destination_point_id = #{transferDestinationPointId},
+            </if>
+            <if test="productInfo != null and productInfo != ''">
+                product_info = #{productInfo},
             </if>
         </set>
         where id = #{id}

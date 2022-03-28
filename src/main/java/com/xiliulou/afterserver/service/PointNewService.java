@@ -93,4 +93,6 @@ public interface PointNewService extends IService<PointNew> {
     //R saveCache(Long pointId, Long modelId, String no, Long batch);
 
     //R deleteProduct(Long pointId, Long producutId);
+
+    void updatePastWarrantyStatus();
 }

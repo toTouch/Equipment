@@ -17,7 +17,7 @@ spring:
         max-idle: 1
         min-idle: 1
     host:  ${REDIS-HOST:xiliulou-redis}
-    database: 2
+    database: 7
 
   klock:
     address: ${REDIS-HOST:xiliulou-redis}:6379
@@ -88,13 +88,34 @@ jwt:
   secret: 20e5@cda38da811*27ed6fa.d226&8
   expire: 1296000
 
-minio:
-  endpoint: http://172.26.20.230
-  port: 9000
+#minio:
+ # endpoint: http://172.26.20.230
+ # port: 9000
+ # accessKey: by-xiliulou
+ # secretKey: by123456
+ # secure: false
+ # bucketName: test
+
+storage:
+  ### oss:oss-cn-beijing.aliyuncs.com minio:http://172.26.20.230:9000
+  ossEndpoint: oss-cn-beijing.aliyuncs.com
+  minioEndpoint: http://172.26.20.230:9000
+  accessKeyId: LTAI5tJpTD5MNbV1qfZnSxzh
+  accessKeySecret: pUhONTar46FesJIEC3o9OvHn4CLsmM
+  ### minio:by-xiliulou
   accessKey: by-xiliulou
+  ### minio:by123456
   secretKey: by123456
+  ### oss:liubiqi minio:after-service
+  bucketName: zge-test
+  minioBucketName: after-service
+  ### oss:img.wm.xiliulou.com
+  urlPrefix:
+  dir: after-service/zgw/test/uuid/
   secure: false
-  bucketName: test
+  ### oss:0 minio:1
+  isUseOSS: 0
+
 
 storage:
   ### oss:oss-cn-beijing.aliyuncs.com minio:http://172.26.20.230:9000
@@ -121,3 +142,5 @@ storage:
 userrole:
   unShow: [1,2,3,4]
   userRole: [2]
+
+
