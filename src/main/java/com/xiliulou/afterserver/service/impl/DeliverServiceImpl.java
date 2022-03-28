@@ -470,7 +470,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             return R.fail("未查询到相关用户");
         }
 
-        Supplier supplier = supplierService.getById(user.getSupplierId());
+        Supplier supplier = supplierService.getById(user.getThirdId());
         if(Objects.isNull(supplier)){
             return R.fail("用户未绑定工厂，请联系管理员");
         }
@@ -529,7 +529,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             return R.fail("未查询到相关用户");
         }
 
-        Supplier supplier = supplierService.getById(user.getSupplierId());
+        Supplier supplier = supplierService.getById(user.getThirdId());
         if(Objects.isNull(supplier)){
             return R.fail("用户未绑定工厂，请联系管理员");
         }
@@ -632,7 +632,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             return R.fail("未查询到相关用户");
         }
 
-        Supplier supplier = supplierService.getById(user.getSupplierId());
+        Supplier supplier = supplierService.getById(user.getThirdId());
         if(Objects.isNull(supplier)){
             return R.fail("用户未绑定工厂，请联系管理员");
         }

@@ -23,7 +23,8 @@ public class User {
     private Integer roleId;
     private Long createTime;
     private Integer userType;
-    private Long supplierId;
+    //private Long supplierId;
+    private Long thirdId;
     private String picture;
 
     public static final Integer AFTER_USER_ROLE = 1;
