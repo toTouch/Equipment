@@ -69,7 +69,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             if(Objects.isNull(supplier)){
                 return Pair.of(false, "未查询到工厂，请检查");
             }
-            user.setSupplierName(supplier.getName());
         }
         user.setRoleId(User.AFTER_USER_ROLE);
         user.setPicture("1.npg");
