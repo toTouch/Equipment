@@ -17,10 +17,7 @@ import org.springframework.beans.BeanUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> {
@@ -144,6 +141,11 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
             }
         }
 
+        if(Objects.nonNull(pointInfo.getWarrantyPeriod()) && Objects.isNull(pointInfo.getInstallTime())){
+            log.error("insert PointInfo error! not calculation warrantyTime pointName={}",pointInfo.getName());
+            throw new RuntimeException("点位" + pointInfo.getName() + "没有添加安装时间");
+        }
+
         list.add(pointInfo);
         if (list.size() >= BATCH_COUNT) {
             saveData();
@@ -192,14 +194,24 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
             point.setCardNumber(item.getCardNumber());
             point.setCardSupplier(item.getCardSupplier());
 
+            Long installTime = 0L;
             if (item.getInstallTime() != null){
                 long l = 0;
                 try {
                     l = dateToStamp(item.getInstallTime());
+                    installTime = l;
                 } catch (ParseException e) {
-
+                    e.printStackTrace();
                 }
                 point.setInstallTime(l);
+            }else {
+                installTime = System.currentTimeMillis();
+                point.setInstallTime(installTime);
+            }
+
+            if(Objects.isNull(item.getWarrantyPeriod())) {
+                point.setWarrantyPeriod(Integer.parseInt(item.getWarrantyPeriod()));
+                point.setWarrantyTime(Integer.parseInt(item.getWarrantyPeriod()) * 3600000L * 24 * 360 + installTime);
             }
 
             point.setLogisticsInfo(item.getLogisticsInfo());
@@ -393,7 +405,10 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
             statusInt = 9;
         }else if("10".equals(status) || "已取消".equals(status)){
             statusInt = 10;
+        }else if("11".equals(status) || "已过保".equals(status)){
+            statusInt = 11;
         }
+
        return statusInt;
     }
 

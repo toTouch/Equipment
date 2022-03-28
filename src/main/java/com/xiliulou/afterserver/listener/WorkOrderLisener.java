@@ -265,6 +265,17 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
         }
     }
 
+    private Integer getOverInsurance(String overInsurance){
+        Integer overInsuranceInt = null;
+        if("0".equals(overInsurance) || "未过保".equals(overInsurance)){
+            overInsuranceInt = 0;
+        }
+        if("1".equals(overInsurance) || "已过保".equals(overInsurance)){
+            overInsuranceInt = 1;
+        }
+        return overInsuranceInt;
+    }
+
     private Integer getThirdCompanyType(String thirdCompanyType){
         Integer thirdCompanyTypeNum = null;
         if("1".equals(thirdCompanyType) || "客户".equals(thirdCompanyType)){

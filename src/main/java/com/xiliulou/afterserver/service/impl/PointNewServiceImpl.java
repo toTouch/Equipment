@@ -17,8 +17,10 @@ import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.vo.PointNewInfoVo;
+import com.xiliulou.afterserver.web.query.CameraInfoQuery;
 import com.xiliulou.afterserver.web.query.PointAuditStatusQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
+import com.xiliulou.afterserver.web.query.ProductInfoQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -153,16 +155,35 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             return r;
         }
         if(Objects.nonNull(pointNew.getProductInfoList())) {
+            Iterator<ProductInfoQuery> iterator = pointNew.getProductInfoList().iterator();
+            while (iterator.hasNext()){
+                ProductInfoQuery productInfoQuery = iterator.next();
+                if(Objects.isNull(productInfoQuery.getProductId()) || Objects.isNull(productInfoQuery.getNumber())){
+                    iterator.remove();
+                }
+            }
             String productInfo = JSON.toJSONString(pointNew.getProductInfoList());
             pointNew.setProductInfo(productInfo);
         }
         if(Objects.nonNull(pointNew.getCameraInfoList())) {
+            Iterator<CameraInfoQuery> iterator = pointNew.getCameraInfoList().iterator();
+            while(iterator.hasNext()){
+                CameraInfoQuery cameraInfoQuery = iterator.next();
+                if(StringUtils.isBlank(cameraInfoQuery.getCameraSupplier())
+                        && StringUtils.isBlank(cameraInfoQuery.getCameraSn())
+                        && StringUtils.isBlank(cameraInfoQuery.getCameraNumber())){
+                    iterator.remove();
+                }
+            }
             String cameraInfo = JSON.toJSONString(pointNew.getCameraInfoList());
             pointNew.setCameraInfo(cameraInfo);
         }
         PointNew pointNewOld = queryByName(pointNew.getName());
         if(Objects.nonNull(pointNewOld)){
             return R.fail("该点位已存在");
+        }
+        if(Objects.isNull(pointNew.getInstallTime()) || Objects.isNull(pointNew.getWarrantyPeriod())){
+            pointNew.setWarrantyTime(null);
         }
         pointNew.setDelFlag(PointNew.DEL_NORMAL);
         pointNew.setCreateTime(System.currentTimeMillis());
@@ -266,16 +287,35 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             return r;
         }
         if(Objects.nonNull(pointNew.getProductInfoList())) {
+            Iterator<ProductInfoQuery> iterator = pointNew.getProductInfoList().iterator();
+            while (iterator.hasNext()){
+                ProductInfoQuery productInfoQuery = iterator.next();
+                if(Objects.isNull(productInfoQuery.getProductId()) || Objects.isNull(productInfoQuery.getNumber())){
+                    iterator.remove();
+                }
+            }
             String productInfo = JSON.toJSONString(pointNew.getProductInfoList());
             pointNew.setProductInfo(productInfo);
         }
         if(Objects.nonNull(pointNew.getCameraInfoList())) {
+            Iterator<CameraInfoQuery> iterator = pointNew.getCameraInfoList().iterator();
+            while(iterator.hasNext()){
+                CameraInfoQuery cameraInfoQuery = iterator.next();
+                if(StringUtils.isBlank(cameraInfoQuery.getCameraSupplier())
+                        && StringUtils.isBlank(cameraInfoQuery.getCameraSn())
+                        && StringUtils.isBlank(cameraInfoQuery.getCameraNumber())){
+                    iterator.remove();
+                }
+            }
             String cameraInfo = JSON.toJSONString(pointNew.getCameraInfoList());
             pointNew.setCameraInfo(cameraInfo);
         }
         PointNew pointNewOld = queryByName(pointNew.getName());
         if(Objects.nonNull(pointNewOld) && !Objects.equals(pointNew.getId(), pointNewOld.getId())){
             return R.fail("该点位已存在");
+        }
+        if(Objects.isNull(pointNew.getInstallTime()) || Objects.isNull(pointNew.getWarrantyPeriod())){
+            pointNew.setWarrantyTime(null);
         }
         int update = this.pointNewMapper.update(pointNew);
         pointNew.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
@@ -368,6 +408,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         return this.pointNewMapper.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid,snNo,productSeries,auditStatus);
     }
 
+    @Override
     public R putAdminPointNewCreateUser(Long id, Long createUid){
         if(Objects.isNull(id) || Objects.isNull(createUid)){
             return R.fail("参数非法，请检查");
@@ -410,6 +451,11 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             return R.fail("请填写安装类型");
         }
         return null;
+    }
+
+    @Override
+    public void updatePastWarrantyStatus(){
+        pointNewMapper.updatePastWarrantyStatus(System.currentTimeMillis());
     }
 
     /*@Override

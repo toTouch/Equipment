@@ -80,6 +80,18 @@ public class WorkOrder implements Serializable {
     private String thirdResponsiblePerson;
     private Integer auditStatus;
     private String auditRemarks;
+    /**
+     * 产品信息
+     */
+    private String productInfo;
+
+    //从什么地方转移到什么地方
+    //起点
+    private Long transferSourcePointId;
+    //终点
+    private Long transferDestinationPointId;
+
+    private String describeinfo;
 
 
     /**
@@ -95,20 +107,11 @@ public class WorkOrder implements Serializable {
     public static final Integer PAYMENT_METHOD_MONTHLY = 1;
     public static final Integer PAYMENT_METHOD_NOW = 2;
 
-    //从什么地方转移到什么地方
-    //起点
-    private Long transferSourcePointId;
-    //终点
-    private Long transferDestinationPointId;
 
-    private String describeinfo;
     //客户
     public static final Integer COMPANY_TYPE_CUSTOMER = 1;
-    /**
-     *    供应商
-     */
+    //供应商
     public static final Integer COMPANY_TYPE_SUPPLIER = 2;
-
     public static final Integer COMPANY_TYPE_SERVER = 3;
 
     // 0：未完成1;待处理2:已处理3:待分析4：已完结5：已完成
@@ -129,7 +132,7 @@ public class WorkOrder implements Serializable {
     public static final Integer TYPE_CONTACT = 3;
     //4.移机
     public static final Integer TYPE_MOBLIE = 4;
-    //5.售后
+    //5.维护
     public static final Integer TYPE_AFTER = 5;
     //6.归仓
     public static final Integer TYPE_BELONG_WAREHOUSE = 6;

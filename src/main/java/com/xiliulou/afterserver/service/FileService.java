@@ -13,7 +13,7 @@ public interface FileService extends IService<File> {
 
     R uploadFile(MultipartFile file);
 
-    void downLoadFile(String fileName, HttpServletResponse response);
+    R downLoadFile(String fileName, HttpServletResponse response);
 
     R getFileList(Long pid);
 
