@@ -65,7 +65,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return Pair.of(false, "请填写合法密码");
         }
         if(Objects.equals(User.TYPE_FACTORY, user.getUserType())){
-            Supplier supplier = supplierService.getById(user.getSupplierId());
+            Supplier supplier = supplierService.getById(user.getThirdId());
             if(Objects.isNull(supplier)){
                 return Pair.of(false, "未查询到工厂，请检查");
             }
