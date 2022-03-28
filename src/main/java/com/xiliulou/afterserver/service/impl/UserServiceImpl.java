@@ -11,11 +11,9 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.config.RolePermissionConfig;
-import com.xiliulou.afterserver.entity.Deliver;
-import com.xiliulou.afterserver.entity.Supplier;
-import com.xiliulou.afterserver.entity.User;
-import com.xiliulou.afterserver.entity.UserRole;
+import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.UserMapper;
+import com.xiliulou.afterserver.service.ServerService;
 import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.service.UserRoleService;
 import com.xiliulou.afterserver.service.UserService;
@@ -51,6 +49,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     UserRoleService userRoleService;
     @Autowired
     SupplierService supplierService;
+    @Autowired
+    ServerService serverService;
 
     @Override
     public Pair<Boolean, Object> register(User user) {
@@ -68,6 +68,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             Supplier supplier = supplierService.getById(user.getThirdId());
             if(Objects.isNull(supplier)){
                 return Pair.of(false, "未查询到工厂，请检查");
+            }
+        }
+        if(Objects.equals(User.TYPE_PATROL_APPLET, user.getUserType())) {
+            Server server = serverService.getById(user.getThirdId());
+            if(Objects.isNull(server)){
+                return Pair.of(false, "未查询到服务商，请检查");
             }
         }
         user.setRoleId(User.AFTER_USER_ROLE);

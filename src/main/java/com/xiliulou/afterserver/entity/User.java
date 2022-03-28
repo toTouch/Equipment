@@ -34,6 +34,7 @@ public class User {
     public static final Integer TYPE_AFTER_SALE = 2;
     public static final Integer TYPE_PATROL_APPLET = 3;
     public static final Integer TYPE_FACTORY = 4;
+    public static final Integer TYPE_COMMISSIONER = 5;
 
     @TableField(exist = false)
     private List<Long> rids;
