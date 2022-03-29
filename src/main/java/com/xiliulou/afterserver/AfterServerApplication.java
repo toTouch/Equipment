@@ -14,7 +14,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @EnableRedis
 public class AfterServerApplication {
 
-
     public static void main(String[] args) {
 
         SpringApplication.run(AfterServerApplication.class, args);
