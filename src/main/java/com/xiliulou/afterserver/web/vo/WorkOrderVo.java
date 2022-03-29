@@ -2,6 +2,7 @@ package com.xiliulou.afterserver.web.vo;
 
 import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.web.query.ProductInfoQuery;
+import com.xiliulou.afterserver.web.query.WorkOrderServerQuery;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -82,4 +83,5 @@ public class WorkOrderVo {
     private String productInfo;
     private List<ProductInfoQuery> productInfoList;
     private Integer pointStatus;
+    private List<WorkOrderServerQuery> workOrderServerList;
 }

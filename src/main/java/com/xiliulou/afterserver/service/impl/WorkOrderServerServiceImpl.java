@@ -4,9 +4,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.WorkOrderServer;
 import com.xiliulou.afterserver.mapper.WorkOrderServerMapper;
 import com.xiliulou.afterserver.service.WorkOrderServerService;
+import com.xiliulou.afterserver.web.query.WorkOrderServerQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author zgw
@@ -19,5 +23,8 @@ public class WorkOrderServerServiceImpl extends ServiceImpl<WorkOrderServerMappe
     @Autowired
     WorkOrderServerMapper workOrderServerMapper;
 
-
+    @Override
+    public List<WorkOrderServerQuery> queryByWorkOrderId(Long workOrderId) {
+        return this.baseMapper.queryByWorkOrderId(workOrderId);
+    }
 }

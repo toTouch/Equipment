@@ -63,11 +63,9 @@
         <id property="productInfo" column="wo_product_info"></id>
         <id property="auditStatus" column="wo_audit_status"/>
         <id property="auditRemarks" column="wo_audit_remarks"/>
-        <collection property="fileList" ofType="com.xiliulou.afterserver.entity.File">
-            <id property="id" column="f_id"/>
-            <id property="type" column="f_type"/>
-            <id property="fileName" column="f_file_name"/>
-            <id property="bindId" column="f_bind_id"/>
+        <collection property="workOrderServerList"
+                    select="com.xiliulou.afterserver.mapper.WorkOrderServerMapper.queryByWorkOrderId"
+                    column="id">
         </collection>
     </resultMap>
 
