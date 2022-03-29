@@ -65,7 +65,7 @@
         <id property="auditRemarks" column="wo_audit_remarks"/>
         <collection property="workOrderServerList"
                     select="com.xiliulou.afterserver.mapper.WorkOrderServerMapper.queryByWorkOrderId"
-                    column="id">
+                    column="wo_id">
         </collection>
     </resultMap>
 
