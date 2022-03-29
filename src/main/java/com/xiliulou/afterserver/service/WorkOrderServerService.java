@@ -2,6 +2,9 @@ package com.xiliulou.afterserver.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.WorkOrderServer;
+import com.xiliulou.afterserver.web.query.WorkOrderServerQuery;
+
+import java.util.List;
 
 /**
  * @author zgw
@@ -9,5 +12,7 @@ import com.xiliulou.afterserver.entity.WorkOrderServer;
  * @mood
  */
 public interface WorkOrderServerService extends IService<WorkOrderServer> {
+
+    List<WorkOrderServerQuery> queryByWorkOrderId(Long workOrderId);
 
 }

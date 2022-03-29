@@ -40,4 +40,5 @@ public class WorkOrderQuery extends WorkOrder {
      */
     private List<ProductInfoQuery> productInfoList;
     private Integer pointStatus;
+    private List<WorkOrderServerQuery> workOrderServerList;
 }
