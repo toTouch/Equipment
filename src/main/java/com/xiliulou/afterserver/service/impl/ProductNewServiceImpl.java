@@ -514,7 +514,7 @@ public class ProductNewServiceImpl implements ProductNewService {
                 return R.fail(null, null,"主柜绑定物联网卡号与上报物联网卡号不一致，请修改");
             }
 
-            if(Objects.equals(iotCard.getBatchId(), mainProduct.getBatchId())){
+            if(!Objects.equals(iotCard.getBatchId(), mainProduct.getBatchId())){
                 return R.fail(null, null, "主柜批次与物联网卡批次不一致，请核对");
             }
 
