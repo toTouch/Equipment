@@ -1491,7 +1491,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             });
         }
 
-        if(!workOrder.getWorkOrderServerList().isEmpty()){
+        if(!CollectionUtils.isEmpty(workOrder.getWorkOrderServerList())){
             workOrder.getWorkOrderServerList().forEach(item ->{
                 WorkOrderServer workOrderServer = new WorkOrderServer();
                 workOrderServer.setWorkOrderId(workOrder.getId());
