@@ -19,6 +19,8 @@ public class WorkOrderServer {
     private Long workOrderId;
 
     private Long serverId;
+
+    private String serverName;
     /**
      * 工单费用
      */
@@ -51,6 +53,10 @@ public class WorkOrderServer {
      * 第三方公司id
      */
     private String thirdCompanyId;
+    /**
+     * 第三方名字
+     */
+    private String thirdCompanyName;
     /**
      * 第三方费用
      */
