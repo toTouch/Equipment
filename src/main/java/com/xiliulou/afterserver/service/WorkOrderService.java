@@ -71,4 +71,6 @@ public interface WorkOrderService extends IService<WorkOrder> {
     R updateAuditStatus(WorkOrderAuditStatusQuery workOrderAuditStatusQuery);
 
     R putAdminPointNewCreateUser(Long id, Long createrId);
+
+    R queryAssignmentStatusList();
 }
