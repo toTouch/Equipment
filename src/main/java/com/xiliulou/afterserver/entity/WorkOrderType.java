@@ -28,5 +28,6 @@ public class WorkOrderType {
     public static final Integer TRANSFER = 4;
     //售后
     public static final Integer AFTER_SALE = 5;
-
+    //物流
+    public static final Integer LOGISTICS = 6;
 }

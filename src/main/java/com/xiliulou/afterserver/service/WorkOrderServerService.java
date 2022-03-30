@@ -15,4 +15,5 @@ public interface WorkOrderServerService extends IService<WorkOrderServer> {
 
     List<WorkOrderServerQuery> queryByWorkOrderId(Long workOrderId);
 
+    Boolean removeByWorkOrderId(Long id);
 }

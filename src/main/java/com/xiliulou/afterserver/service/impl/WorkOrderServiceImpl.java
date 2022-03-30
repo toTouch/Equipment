@@ -85,6 +85,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     WarehouseService warehouseService;
     @Autowired
     ProductService productService;
+    @Autowired
+    WorkOrderServerService workOrderServerService;
 
 
     @Override
@@ -104,8 +106,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         list.forEach(item -> {
-
-            item.setPaymentMethodName(getPaymentMethod(item.getPaymentMethod()));
 
             if (Objects.nonNull(item.getCreaterId())){
                 User userById = userService.getUserById(item.getCreaterId());
@@ -135,11 +135,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
             }
 
-            if(Objects.nonNull(item.getProcessTime())){
+            /*if(Objects.nonNull(item.getProcessTime())){
                 String prescription = DateUtils.getDatePoor(item.getProcessTime() , item.getCreateTime());
                 item.setPrescription(prescription);
                 item.setPrescriptionMillis(item.getProcessTime() - item.getCreateTime());
-            }
+            }*/
 
             if(Objects.nonNull(item.getProductInfo())) {
                 List<ProductInfoQuery> productInfo = JSON.parseArray(item.getProductInfo(), ProductInfoQuery.class);
@@ -1443,35 +1443,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         workOrder.setOrderNo(RandomUtil.randomString(10));
-        if (workOrder.getThirdCompanyId() != null && workOrder.getThirdCompanyType() != null) {
-            if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)){
-                Customer customer = customerService.getById(workOrder.getThirdCompanyId());
-                if(Objects.nonNull(customer)) {
-                    workOrder.setThirdCompanyName(customer.getName());
-                }
-            }
 
-            if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
-                Supplier supplier = supplierService.getById(workOrder.getThirdCompanyId());
-                if (Objects.nonNull(supplier)){
-                    workOrder.setThirdCompanyName(supplier.getName());
-                }
-            }
 
-            if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SERVER)){
-                Server server = serverService.getById(workOrder.getThirdCompanyId());
-                if (Objects.nonNull(server)){
-                    workOrder.setThirdCompanyName(server.getName());
-                }
-            }
-        }
-
-        if (workOrder.getServerId()!=null){
+        /*if (workOrder.getServerId()!=null){
             Server server = serverService.getById(workOrder.getServerId());
             if(Objects.nonNull(server)){
                 workOrder.setServerName(server.getName());
             }
-        }
+        }*/
 
         if(!Objects.equals(workOrder.getType(), String.valueOf(WorkOrder.TYPE_AFTER))){
             if(Objects.nonNull(workOrder.getProductInfoList())) {
@@ -1486,8 +1465,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrder.setProductInfo(productInfo);
             }
         }
-
-
 
         int insert = this.baseMapper.insert(workOrder);
         if (insert == 0) {
@@ -1506,6 +1483,57 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             });
         }
 
+        if(!workOrder.getWorkOrderServerList().isEmpty()){
+            workOrder.getWorkOrderServerList().forEach(item ->{
+                WorkOrderServer workOrderServer = new WorkOrderServer();
+                workOrderServer.setWorkOrderId(workOrder.getId());
+                workOrderServer.setServerId(item.getServerId());
+                //服务商名称
+                if (item.getServerId()!=null){
+                    Server server = serverService.getById(item.getServerId());
+                    if(Objects.nonNull(server)){
+                        workOrderServer.setServerName(server.getName());
+                    }
+                }
+                workOrderServer.setFee(item.getFee());
+                workOrderServer.setPaymentMethod(item.getPaymentMethod());
+                workOrderServer.setSolution(item.getSolution());
+                workOrderServer.setSolutionTime(item.getSolutionTime());
+                workOrderServer.setPrescription(item.getPrescription());
+                workOrderServer.setIsUseThird(item.getIsUseThird());
+                workOrderServer.setThirdCompanyType(item.getThirdCompanyType());
+                workOrderServer.setThirdCompanyId(item.getThirdCompanyId());
+                //第三方公司名称
+                if (item.getThirdCompanyId() != null && item.getThirdCompanyType() != null) {
+                    if (item.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)){
+                        Customer customer = customerService.getById(item.getThirdCompanyId());
+                        if(Objects.nonNull(customer)) {
+                            workOrderServer.setThirdCompanyName(customer.getName());
+                        }
+                    }
+
+                    if (item.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
+                        Supplier supplier = supplierService.getById(item.getThirdCompanyId());
+                        if (Objects.nonNull(supplier)){
+                            workOrderServer.setThirdCompanyName(supplier.getName());
+                        }
+                    }
+
+                    if (item.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SERVER)){
+                        Server server = serverService.getById(item.getThirdCompanyId());
+                        if (Objects.nonNull(server)){
+                            workOrderServer.setThirdCompanyName(server.getName());
+                        }
+                    }
+                }
+                workOrderServer.setThirdCompanyPay(item.getThirdCompanyPay());
+                workOrderServer.setThirdPaymentStatus(item.getThirdPaymentStatus());
+                workOrderServer.setThirdReason(item.getThirdReason());
+                workOrderServer.setThirdResponsiblePerson(item.getThirdResponsiblePerson());
+
+                workOrderServerService.save(workOrderServer);
+            });
+        }
 
         return R.ok();
     }
@@ -1541,7 +1569,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return r;
         }
 
-        if (workOrder.getThirdCompanyId() != null && workOrder.getThirdCompanyType() != null) {
+       /* if (workOrder.getThirdCompanyId() != null && workOrder.getThirdCompanyType() != null) {
             if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)){
                 Customer customer = customerService.getById(workOrder.getThirdCompanyId());
                 if(Objects.nonNull(customer)) {
@@ -1569,7 +1597,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if(Objects.nonNull(server)){
                 workOrder.setServerName(server.getName());
             }
-        }
+        }*/
 
         if(!Objects.equals(workOrder.getType(), String.valueOf(WorkOrder.TYPE_AFTER))){
             if(Objects.nonNull(workOrder.getProductInfoList())) {
@@ -1585,10 +1613,62 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
         }
 
-
         workOrder.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
         this.baseMapper.updateOne(workOrder);
-        //this.baseMapper.updateById(workOrder);
+
+        //服务商第三方信息
+        workOrderServerService.removeByWorkOrderId(workOrder.getId());
+        if(!workOrder.getWorkOrderServerList().isEmpty()){
+            workOrder.getWorkOrderServerList().forEach(item ->{
+                WorkOrderServer workOrderServer = new WorkOrderServer();
+                workOrderServer.setWorkOrderId(workOrder.getId());
+                workOrderServer.setServerId(item.getServerId());
+                //服务商名称
+                if (item.getServerId()!=null){
+                    Server server = serverService.getById(item.getServerId());
+                    if(Objects.nonNull(server)){
+                        workOrderServer.setServerName(server.getName());
+                    }
+                }
+                workOrderServer.setFee(item.getFee());
+                workOrderServer.setPaymentMethod(item.getPaymentMethod());
+                workOrderServer.setSolution(item.getSolution());
+                workOrderServer.setSolutionTime(item.getSolutionTime());
+                workOrderServer.setPrescription(item.getPrescription());
+                workOrderServer.setIsUseThird(item.getIsUseThird());
+                workOrderServer.setThirdCompanyType(item.getThirdCompanyType());
+                workOrderServer.setThirdCompanyId(item.getThirdCompanyId());
+                //第三方公司名称
+                if (item.getThirdCompanyId() != null && item.getThirdCompanyType() != null) {
+                    if (item.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)){
+                        Customer customer = customerService.getById(item.getThirdCompanyId());
+                        if(Objects.nonNull(customer)) {
+                            workOrderServer.setThirdCompanyName(customer.getName());
+                        }
+                    }
+
+                    if (item.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
+                        Supplier supplier = supplierService.getById(item.getThirdCompanyId());
+                        if (Objects.nonNull(supplier)){
+                            workOrderServer.setThirdCompanyName(supplier.getName());
+                        }
+                    }
+
+                    if (item.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SERVER)){
+                        Server server = serverService.getById(item.getThirdCompanyId());
+                        if (Objects.nonNull(server)){
+                            workOrderServer.setThirdCompanyName(server.getName());
+                        }
+                    }
+                }
+                workOrderServer.setThirdCompanyPay(item.getThirdCompanyPay());
+                workOrderServer.setThirdPaymentStatus(item.getThirdPaymentStatus());
+                workOrderServer.setThirdReason(item.getThirdReason());
+                workOrderServer.setThirdResponsiblePerson(item.getThirdResponsiblePerson());
+
+                workOrderServerService.save(workOrderServer);
+            });
+        }
         return R.ok();
     }
 
