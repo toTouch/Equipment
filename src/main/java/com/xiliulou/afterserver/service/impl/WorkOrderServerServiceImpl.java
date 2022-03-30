@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.WorkOrderServer;
 import com.xiliulou.afterserver.mapper.WorkOrderServerMapper;
@@ -26,5 +27,10 @@ public class WorkOrderServerServiceImpl extends ServiceImpl<WorkOrderServerMappe
     @Override
     public List<WorkOrderServerQuery> queryByWorkOrderId(Long workOrderId) {
         return this.baseMapper.queryByWorkOrderId(workOrderId);
+    }
+
+    @Override
+    public Boolean removeByWorkOrderId(Long id) {
+        return this.baseMapper.delete(new UpdateWrapper<WorkOrderServer>().eq("work_order_id", id)) > 0 ;
     }
 }
