@@ -17,6 +17,10 @@ public class WorkOrderServerQuery {
 
     private Long serverId;
     /**
+     * 服务商名字
+     */
+    private String serverName;
+    /**
      * 工单费用
      */
     private BigDecimal fee;
@@ -48,6 +52,10 @@ public class WorkOrderServerQuery {
      * 第三方公司id
      */
     private String thirdCompanyId;
+    /**
+     * 第三方公司名
+     */
+    private String thirdCompanyName;
     /**
      * 第三方费用
      */
