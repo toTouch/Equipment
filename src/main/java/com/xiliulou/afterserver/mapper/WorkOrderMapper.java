@@ -48,5 +48,5 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
     @Update("update work_order set creater_id = #{createUid} where id = #{id}")
     Integer putAdminPointNewCreateUser(@Param("id")Long id, @Param("createUid") Long createUid);
 
-    Page<WorkOrderAssignmentVo> queryAssignmentStatusList(Page page, @Param("uid") Long uid);
+    Page<WorkOrderAssignmentVo> queryAssignmentStatusList(Page page, @Param("uid") Long uid, @Param("status")Integer status);
 }
