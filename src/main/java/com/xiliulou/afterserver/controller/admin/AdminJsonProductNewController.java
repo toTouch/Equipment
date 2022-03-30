@@ -10,6 +10,7 @@ import com.xiliulou.afterserver.web.query.ProductNewQuery;
 import com.xiliulou.storage.config.StorageConfig;
 import com.xiliulou.storage.service.impl.AliyunOssService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -199,8 +200,12 @@ public class AdminJsonProductNewController {
     @GetMapping("admin/productNew/testFile")
     public R getTestFile(@RequestParam("fileName") String fileName){
         String url = null;
+        String testFileName = "";
+        if(StringUtils.isNotBlank(StorageConfig.getTestFileDir())){
+            testFileName = StorageConfig.getTestFileDir();
+        }
         try{
-            url = aliyunOssService.getOssFileUrl(StorageConfig.getOssTestFileBucketName(), fileName, 120 * 1000);
+            url = aliyunOssService.getOssFileUrl(StorageConfig.getOssTestFileBucketName(), testFileName + "/" + fileName, 120 * 1000);
         }catch(Exception e){
             log.error("oss error!", e);
         }
