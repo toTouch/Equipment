@@ -105,7 +105,7 @@
                     column="wo_id">
         </collection>
     </resultMap>-->
-    removeByWorkOrderId
+
     <select id="getPage" resultMap="pageMap">
         SELECT wo.id as wo_id,
         wo.type as wo_type,
