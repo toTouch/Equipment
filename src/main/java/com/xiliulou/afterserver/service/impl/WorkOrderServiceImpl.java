@@ -1599,7 +1599,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         //服务商第三方信息
         workOrderServerService.removeByWorkOrderId(workOrder.getId());
-        if(!workOrder.getWorkOrderServerList().isEmpty()){
+        if(!CollectionUtils.isEmpty(workOrder.getWorkOrderServerList())){
             workOrder.getWorkOrderServerList().forEach(item ->{
                 WorkOrderServer workOrderServer = new WorkOrderServer();
                 workOrderServer.setWorkOrderId(workOrder.getId());
