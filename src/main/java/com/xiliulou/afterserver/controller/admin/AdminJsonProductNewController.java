@@ -205,7 +205,7 @@ public class AdminJsonProductNewController {
             testFileName = StorageConfig.getTestFileDir();
         }
         try{
-            url = aliyunOssService.getOssFileUrl(StorageConfig.getOssTestFileBucketName(), testFileName + "/" + fileName, 120 * 1000);
+            url = aliyunOssService.getOssFileUrl(StorageConfig.getOssTestFileBucketName(), testFileName  + fileName, 120 * 1000);
         }catch(Exception e){
             log.error("oss error!", e);
         }
