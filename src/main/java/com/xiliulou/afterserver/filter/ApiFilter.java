@@ -116,7 +116,7 @@ public abstract class ApiFilter implements Filter {
             return Pair.of(false, "requestTime不能为空！");
         }
 
-        if ((apiRequestQuery.getRequestTime() - System.currentTimeMillis()) > 2000) {
+        if ((apiRequestQuery.getRequestTime() - System.currentTimeMillis()) > 20000) {
             return Pair.of(false, "requestTime不合法");
         }
 
