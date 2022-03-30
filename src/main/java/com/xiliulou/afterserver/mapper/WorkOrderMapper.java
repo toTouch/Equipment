@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiliulou.afterserver.entity.WorkOrder;
 import com.xiliulou.afterserver.web.query.WorkOrderQuery;
-import com.xiliulou.afterserver.web.vo.AfterCountListVo;
-import com.xiliulou.afterserver.web.vo.AfterCountVo;
-import com.xiliulou.afterserver.web.vo.AfterOrderVo;
-import com.xiliulou.afterserver.web.vo.WorkOrderVo;
+import com.xiliulou.afterserver.web.vo.*;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Update;
 
@@ -50,4 +47,6 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
 
     @Update("update work_order set creater_id = #{createUid} where id = #{id}")
     Integer putAdminPointNewCreateUser(@Param("id")Long id, @Param("createUid") Long createUid);
+
+    Page<WorkOrderAssignmentVo> queryAssignmentStatusList(Page page, @Param("uid") Long uid);
 }

@@ -1747,9 +1747,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     @Override
-    public R queryAssignmentStatusList() {
+    public R queryAssignmentStatusList(Long offset, Long size) {
         Long uid = SecurityUtils.getUid();
-
+        Page page = PageUtil.getPage(offset, size);
+        List<WorkOrderAssignmentVo> list = baseMapper.queryAssignmentStatusList(page, uid);
         return null;
     }
     //    /**

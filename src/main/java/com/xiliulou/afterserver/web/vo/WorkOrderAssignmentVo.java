@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.web.vo;
 
 import com.xiliulou.afterserver.web.query.ProductInfoQuery;
+import com.xiliulou.afterserver.web.query.WorkOrderServerQuery;
 import lombok.Data;
 
 import java.util.List;
@@ -25,8 +26,10 @@ public class WorkOrderAssignmentVo {
     private String info;
     //起点
     private Long transferSourcePointId;
+    private String transferSourcePointName;
     //终点
     private Long transferDestinationPointId;
+    private String transferDestinationPointName;
     /**
      * 起点 1点位 2仓库
      */
@@ -35,5 +38,6 @@ public class WorkOrderAssignmentVo {
      * 终点  1点位 2仓库
      */
     private Integer destinationType;
-
+    private String describeinfo;
+    private List<WorkOrderServerQuery> workOrderServerList;
 }
