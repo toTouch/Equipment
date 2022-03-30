@@ -513,11 +513,6 @@ public class ProductNewServiceImpl implements ProductNewService {
             if(!Objects.equals(mainProduct.getIotCardId(), iotCard.getId())){
                 return R.fail(null, null,"主柜绑定物联网卡号与上报物联网卡号不一致，请修改");
             }
-
-            if(!Objects.equals(iotCard.getBatchId(), mainProduct.getBatchId())){
-                return R.fail(null, null, "主柜批次与物联网卡批次不一致，请核对");
-            }
-
         }
 
         return R.ok(Arrays.asList(mainProductNo));
@@ -761,10 +756,6 @@ public class ProductNewServiceImpl implements ProductNewService {
         Batch iotBatch = batchService.queryByIdFromDB(iotCard.getBatchId());
         if(Objects.isNull(iotBatch)){
             return R.fail(null,null,"未查询到物联网卡批次，请录入");
-        }
-
-        if(Objects.equals(productNew.getType(), ProductNew.TYPE_M) && !Objects.equals(iotCard.getBatchId(), productNew.getBatchId())){
-            return R.fail(null,null,"柜机批次与物联网卡批次不一致，请核对");
         }
 
         if(Objects.isNull(productNew.getCameraId())){
