@@ -141,7 +141,7 @@ public class AdminJsonProductNewController {
             }
 
             ColorCard colorCard = colorCardService.getById(item.getColor());
-            if(Objects.isNull(colorCard)){
+            if(Objects.nonNull(colorCard)){
                 item.setColorName(colorCard.getName());
             }
         });
