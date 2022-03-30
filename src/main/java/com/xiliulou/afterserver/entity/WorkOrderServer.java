@@ -11,7 +11,7 @@ import java.math.BigDecimal;
  * @mood
  */
 @Data
-@TableName("work_order")
+@TableName("t_work_order_server")
 public class WorkOrderServer {
 
     private Long id;
