@@ -19,6 +19,8 @@
         <result property="cameraId" column="camera_id" jdbcType="INTEGER"/>
         <result property="surface" column="surface" jdbcType="INTEGER"/>
         <result property="color" column="color" jdbcType="INTEGER"/>
+        <result property="testResult" column="test_result" jdbcType="INTEGER"/>
+        <result property="testFile" column="test_file"/>
     </resultMap>
 
     <!--查询单个-->
@@ -32,7 +34,7 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="ProductNewMap">
         select
-          p.id, p.no, p.model_id, p.batch_id, p.status, p.expiration_start_time, p.years, p.expiration_end_time, p.create_time,p.update_time, p.del_flag, p.serial_num, p.type, p.supplier_id,p.remarks,p.iot_card_id,p.camera_id,p.surface,p.color
+          p.id, p.no, p.model_id, p.batch_id, p.status, p.expiration_start_time, p.years, p.expiration_end_time, p.create_time,p.update_time, p.del_flag, p.serial_num, p.type, p.supplier_id,p.remarks,p.iot_card_id,p.camera_id,p.surface,p.color, p.test_result, p.test_file
         from t_product_new p left join t_point_product_bind b
         on p.id = b.product_id
         <where>
