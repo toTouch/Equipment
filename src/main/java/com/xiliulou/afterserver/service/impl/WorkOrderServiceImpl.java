@@ -28,6 +28,7 @@ import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.*;
 import com.xiliulou.afterserver.web.vo.*;
 import io.micrometer.core.instrument.util.JsonUtils;
@@ -111,6 +112,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 User userById = userService.getUserById(item.getCreaterId());
                 if (Objects.nonNull(userById)){
                     item.setUserName(userById.getUserName());
+                }
+            }
+
+            if(Objects.nonNull(item.getCommissionerId())){
+                User userById = userService.getUserById(item.getCommissionerId());
+                if (Objects.nonNull(userById)){
+                    item.setCommissionerName(userById.getUserName());
                 }
             }
 
@@ -1530,7 +1538,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrderServer.setThirdPaymentStatus(item.getThirdPaymentStatus());
                 workOrderServer.setThirdReason(item.getThirdReason());
                 workOrderServer.setThirdResponsiblePerson(item.getThirdResponsiblePerson());
-
                 workOrderServerService.save(workOrderServer);
             });
         }
@@ -1569,35 +1576,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return r;
         }
 
-       /* if (workOrder.getThirdCompanyId() != null && workOrder.getThirdCompanyType() != null) {
-            if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)){
-                Customer customer = customerService.getById(workOrder.getThirdCompanyId());
-                if(Objects.nonNull(customer)) {
-                    workOrder.setThirdCompanyName(customer.getName());
-                }
-            }
-
-            if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
-                Supplier supplier = supplierService.getById(workOrder.getThirdCompanyId());
-                if (Objects.nonNull(supplier)){
-                    workOrder.setThirdCompanyName(supplier.getName());
-                }
-            }
-
-            if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SERVER)){
-                Server server = serverService.getById(workOrder.getThirdCompanyId());
-                if (Objects.nonNull(server)){
-                    workOrder.setThirdCompanyName(server.getName());
-                }
-            }
+        if(!Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT) && !Objects.equals(oldWorkOrder.getCommissionerId(), workOrder.getCommissionerId())){
+            return R.fail("非待派单状态，不可修改专员信息");
         }
-
-        if (workOrder.getServerId()!=null){
-            Server server = serverService.getById(workOrder.getServerId());
-            if(Objects.nonNull(server)){
-                workOrder.setServerName(server.getName());
-            }
-        }*/
 
         if(!Objects.equals(workOrder.getType(), String.valueOf(WorkOrder.TYPE_AFTER))){
             if(Objects.nonNull(workOrder.getProductInfoList())) {
@@ -1763,6 +1744,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         return R.fail("修改失败");
+    }
+
+    @Override
+    public R queryAssignmentStatusList() {
+        Long uid = SecurityUtils.getUid();
+
+        return null;
     }
     //    /**
 //     * 预览

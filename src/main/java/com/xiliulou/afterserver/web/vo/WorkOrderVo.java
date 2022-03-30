@@ -83,5 +83,7 @@ public class WorkOrderVo {
     private String productInfo;
     private List<ProductInfoQuery> productInfoList;
     private Integer pointStatus;
+    private Long commissionerId;
+    private String commissionerName;
     private List<WorkOrderServerQuery> workOrderServerList;
 }

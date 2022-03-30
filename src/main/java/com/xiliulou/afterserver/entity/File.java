@@ -25,6 +25,7 @@ public class File {
     private Long createTime;
     private Long bindId;
     private Integer fileType;
+    private Long serverId;
 
 
     /**

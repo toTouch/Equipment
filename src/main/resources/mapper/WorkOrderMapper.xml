@@ -63,6 +63,7 @@
         <id property="productInfo" column="wo_product_info"></id>
         <id property="auditStatus" column="wo_audit_status"/>
         <id property="auditRemarks" column="wo_audit_remarks"/>
+        <id property="commissionerId" column="wo_commissioner_id"/>
         <collection property="workOrderServerList"
                     select="com.xiliulou.afterserver.mapper.WorkOrderServerMapper.queryByWorkOrderId"
                     column="wo_id">
@@ -103,6 +104,7 @@
         wo.audit_remarks as wo_audit_remarks,
         wo.source_type as wo_source_type,
         wo.product_info as wo_product_info,
+        wo.commissioner_id as wo_commissioner_id,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
