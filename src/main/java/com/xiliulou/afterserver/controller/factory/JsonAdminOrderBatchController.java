@@ -32,6 +32,8 @@ public class JsonAdminOrderBatchController {
     private IotCardService iotCardService;
     @Autowired
     private CameraService cameraService;
+    @Autowired
+    ColorCardService colorCardService;
 
 
     @GetMapping("/batch/list")
@@ -147,5 +149,10 @@ public class JsonAdminOrderBatchController {
     @GetMapping("camera/iotCardInfo")
     public R queryCameraIotCardBySn(@RequestParam(value = "sn") String sn){
         return cameraService.queryCameraIotCardBySn(sn);
+    }
+
+    @GetMapping("colorCard/pull")
+    public R queryPull(@RequestParam("name") String name){
+        return  colorCardService.queryPull(name);
     }
 }
