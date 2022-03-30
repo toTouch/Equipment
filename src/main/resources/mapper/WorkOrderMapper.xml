@@ -70,6 +70,42 @@
         </collection>
     </resultMap>
 
+    <!--<resultMap id="userMap" type="com.xiliulou.afterserver.web.vo.WorkOrderAssignmentVo">
+        <id property="id" column="wo_id"/>
+        <id property="type" column="wo_type"/>
+        <id property="pointId" column="wo_point_id"/>
+        <id property="info" column="wo_info"/>
+        <id property="status" column="wo_status"/>
+        <id property="orderNo" column="wo_order_no"/>
+        <id property="createTime" column="wo_create_time"/>
+        <id property="workOrderType" column="wot_type"/>
+        <id property="thirdCompanyName" column="wo_third_company_name"/>
+        <id property="serverName" column="wo_server_name"/>
+        <id property="transferSourcePointId" column="wo_transfer_source_point_id"/>
+        <id property="transferSourcePointName" column="wo_transfer_source_point_name"/>
+        <id property="transferDestinationPointId" column="wo_transfer_destination_point_id"/>
+        <id property="transferDestinationPointName" column="wo_transfer_destination_point_name"/>
+
+        <id property="workOrderReasonName" column="wor_name"/>
+        <id property="creater" column="u_user_name"/>
+        <id property="pointName" column="p_name"/>
+        <id property="pointStatus" column="p_status"/>
+        <id property="describeinfo" column="wo_describeinfo"/>
+        <id property="paymentMethod" column="wo_payment_method"/>
+        <id property="thirdPaymentStatus" column="wo_third_payment_status"/>
+        <id property="destinationType" column="wo_destination_type"></id>
+        <id property="sourceType" column="wo_source_type"></id>
+        <id property="thirdResponsiblePerson" column="wo_third_responsible_person"></id>
+        <id property="productInfo" column="wo_product_info"></id>
+        <id property="auditStatus" column="wo_audit_status"/>
+        <id property="auditRemarks" column="wo_audit_remarks"/>
+        <id property="commissionerId" column="wo_commissioner_id"/>
+        <collection property="workOrderServerList"
+                    select="com.xiliulou.afterserver.mapper.WorkOrderServerMapper.queryByWorkOrderId"
+                    column="wo_id">
+        </collection>
+    </resultMap>-->
+
     <select id="getPage" resultMap="pageMap">
         SELECT wo.id as wo_id,
         wo.type as wo_type,
@@ -591,5 +627,36 @@
         </set>
         where id = #{id}
     </update>
+
+
+
+    <select id="queryAssignmentStatusList" resultMap="pageMap">
+        SELECT wo.id as wo_id,
+        wo.order_no as wo_order_no,
+        wo.status as wo_status,
+        wo.type as wo_type,
+        wo.point_id as wo_point_id,
+        p.name as p_name,
+        p.status as p_status
+        wo.create_time as wo_create_time,
+        wo.product_info as wo_product_info,
+        wo.info as wo_info,
+        wo.transfer_source_point_id as wo_transfer_source_point_id,
+        wo.transfer_destination_point_id as wo_transfer_destination_point_id,
+        (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
+        (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
+        wo.destination_type as wo_destination_type,
+        wo.source_type as wo_source_type,
+        wo.describeinfo as wo_describeinfo,
+        wo.code as wo_code,
+        wo.work_order_reason_id as wo_work_order_reason_id,
+        wo.reason as wo_reason,
+
+        FROM work_order as wo
+        LEFT JOIN work_order_type as wot on wot.id = wo.id
+        LEFT JOIN t_point_new as p on p.id = wo.point_id
+        where  commissioner_id = #{uid}
+        ORDER BY wo.create_time DESC
+    </select>
 </mapper>
 
