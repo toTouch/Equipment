@@ -39,5 +39,9 @@ public class WorkOrderAssignmentVo {
      */
     private Integer destinationType;
     private String describeinfo;
+    private String code;
+    private Long workOrderReasonId;
+    private String parentWorkOrderReason;
+    private String workOrderReasonName;
     private List<WorkOrderServerQuery> workOrderServerList;
 }
