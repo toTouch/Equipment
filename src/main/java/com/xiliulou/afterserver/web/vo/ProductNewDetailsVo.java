@@ -39,6 +39,10 @@ public class ProductNewDetailsVo {
      */
     private Integer color;
     /**
+     * 颜色名称
+     */
+    private String colorName;
+    /**
      * 物联网卡id
      */
     private Long iotCardId;

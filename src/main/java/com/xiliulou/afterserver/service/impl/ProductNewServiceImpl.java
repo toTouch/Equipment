@@ -75,6 +75,8 @@ public class ProductNewServiceImpl implements ProductNewService {
     private DeliverService deliverService;
     @Autowired
     private WarehouseService warehouseService;
+    @Autowired
+    private ColorCardService colorCardService;
     /**
      * 通过ID查询单条数据从DB
      *
@@ -670,6 +672,10 @@ public class ProductNewServiceImpl implements ProductNewService {
             if(Objects.nonNull(iotCard)){
                 vo.setIotCardId(iotCard.getId());
                 vo.setIotCardNo(iotCard.getSn());
+            }
+            ColorCard colorCard = colorCardService.getById(productNew.getColor());
+            if(Objects.nonNull(colorCard)){
+                vo.setColorName(colorCard.getName());
             }
 
             vo.setColor(productNew.getColor());

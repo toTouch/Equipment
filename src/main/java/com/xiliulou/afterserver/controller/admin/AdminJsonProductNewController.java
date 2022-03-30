@@ -46,6 +46,8 @@ public class AdminJsonProductNewController {
     private AliyunOssService aliyunOssService;
     @Autowired
     private StorageConfig StorageConfig;
+    @Autowired
+    private ColorCardService colorCardService;
 
     //@PostMapping("/admin/productNew")
     public R saveAdminPointNew(@RequestBody ProductNew productNew){
@@ -136,6 +138,11 @@ public class AdminJsonProductNewController {
                 if(Objects.nonNull(camera)){
                     item.setCameraSerialNum(camera.getSerialNum());
                 }
+            }
+
+            ColorCard colorCard = colorCardService.getById(item.getColor());
+            if(Objects.isNull(colorCard)){
+                item.setColorName(colorCard.getName());
             }
         });
 
