@@ -6,10 +6,12 @@ import com.xiliulou.afterserver.service.WorkOrderService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.WorkOrderAssignmentQuery;
+import com.xiliulou.afterserver.web.query.WorkerOrderUpdateStatusQuery;
 import org.bouncycastle.jcajce.provider.util.SecretKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 
 /**
@@ -23,20 +25,23 @@ public class JsonUserWorkOrderController {
     @Autowired
     WorkOrderService workOrderService;
 
-    @PostMapping("/admin/wechat/workOrder/assignment")
-    public R queryAssignmentStatusList(@RequestParam(value = "offset", required = false, defaultValue = "0") Long offset, @RequestParam(value = "size",required = false, defaultValue = "20") Long size){
-        if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_COMMISSIONER)){
-            return R.fail("用户非专员，没有权限");
-        }
-        return workOrderService.queryAssignmentStatusList(offset, size);
+    @PostMapping("/admin/wechat/workOrder")
+    public R queryAssignmentStatusList(@RequestParam(value = "offset", required = false, defaultValue = "0") Long offset,
+                                       @RequestParam(value = "size",required = false, defaultValue = "20") Long size,
+                                       @RequestParam("status")Integer status){
+
+        return workOrderService.queryAssignmentStatusList(offset, size, status);
     }
 
 
-    @PutMapping("/admin/wechat/workOrder/assignment")
+    @PutMapping("/admin/wechat/workOrder")
     public R updateAssignment(@RequestBody WorkOrderAssignmentQuery workOrderAssignmentQuery){
-        if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_COMMISSIONER)){
-            return R.fail("用户非专员，没有权限");
-        }
         return workOrderService.updateAssignment(workOrderAssignmentQuery);
     }
+
+    @PutMapping("/admin/wechat/workOrder/assignment/status")
+    public R updateWorkOrderStatus(@RequestBody WorkerOrderUpdateStatusQuery query, HttpServletRequest request){
+        return workOrderService.updateWorkOrderStatus(query);
+    }
+
 }

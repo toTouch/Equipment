@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.web.query;
 
+import com.xiliulou.afterserver.entity.File;
 import lombok.Data;
 
 import java.util.List;
@@ -42,4 +43,5 @@ public class WorkOrderAssignmentQuery {
     private String parentWorkOrderReason;
     private String workOrderReasonName;
     private List<WorkOrderServerQuery> workOrderServerList;
+    private List<File> fileList;
 }
