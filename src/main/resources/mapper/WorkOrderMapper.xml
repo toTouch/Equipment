@@ -91,10 +91,6 @@
         <id property="code" column="wo_code"></id>
         <id property="workOrderReasonId" column="wo_work_order_reason_id"></id>
         <id property="workOrderReasonName" column="wor_name"/>
-        <collection property="workOrderServerList"
-                    select="com.xiliulou.afterserver.mapper.WorkOrderServerMapper.queryByWorkOrderId"
-                    column="wo_id">
-        </collection>
     </resultMap>
 
     <select id="getPage" resultMap="pageMap">
@@ -647,7 +643,18 @@
         LEFT JOIN work_order_type as wot on wot.id = wo.id
         LEFT JOIN t_point_new as p on p.id = wo.point_id
         LEFT JOIN work_order_reason as wor on wor.id = wo.work_order_reason_id
-        where  commissioner_id = #{uid} and status = #{status}
+        <where>
+             status = #{status}
+             <if test="uid != null">
+                  commissioner_id = #{uid}
+             </if>
+            <if test="list != null and list.size() > 0">
+                and id in
+                <foreach collection="list" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
         ORDER BY wo.create_time DESC
     </select>
 </mapper>

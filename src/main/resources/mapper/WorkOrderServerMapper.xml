@@ -30,6 +30,9 @@
             <if test="workOrderId != null">
                 and work_order_id = #{workOrderId}
             </if>
+            <if test="serverId != null">
+                and server_id = #{serverId}
+            </if>
         </where>
     </select>
 </mapper>

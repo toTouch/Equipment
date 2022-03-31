@@ -25,12 +25,17 @@ public class WorkOrderServerServiceImpl extends ServiceImpl<WorkOrderServerMappe
     WorkOrderServerMapper workOrderServerMapper;
 
     @Override
-    public List<WorkOrderServerQuery> queryByWorkOrderId(Long workOrderId) {
-        return this.baseMapper.queryByWorkOrderId(workOrderId);
+    public List<WorkOrderServerQuery> queryByWorkOrderIdAndServerId(Long workOrderId, Long serverId) {
+        return this.baseMapper.queryByWorkOrderId(workOrderId, serverId);
     }
 
     @Override
     public Boolean removeByWorkOrderId(Long id) {
         return this.baseMapper.delete(new UpdateWrapper<WorkOrderServer>().eq("work_order_id", id)) > 0 ;
+    }
+
+    @Override
+    public List<Long> queryWorkOrderIds(Long serverId) {
+        return this.baseMapper.queryWorkOrderIds(serverId);
     }
 }

@@ -1749,21 +1749,33 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
     @Override
     public R queryAssignmentStatusList(Long offset, Long size, Integer status) {
-        Long uid = SecurityUtils.getUid();
+        Long uid = null;
+        Long serverId = null;
+        List<Long> workOrderServerIds = null;
+        if(Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_COMMISSIONER)){
+             uid = SecurityUtils.getUid();
+        }else if(Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_PATROL_APPLET)){
+            serverId = SecurityUtils.getUid();
+            workOrderServerIds = workOrderServerService.queryWorkOrderIds(serverId);
+        }
+
         Page<WorkOrderAssignmentVo> page = PageUtil.getPage(offset, size);
-        page = baseMapper.queryAssignmentStatusList(page, uid, status);
+        page = baseMapper.queryAssignmentStatusList(page, uid, workOrderServerIds, status);
         List<WorkOrderAssignmentVo> data = page.getRecords();
 
 
         if(CollectionUtils.isEmpty(data)){
-            data.forEach(item->{
+            for(WorkOrderAssignmentVo item : data){
                 item.setParentWorkOrderReason(this.getParentWorkOrderReason(item.getWorkOrderReasonId()));
 
                 if(Objects.nonNull(item.getProductInfo())) {
                     List<ProductInfoQuery> productInfo = JSON.parseArray(item.getProductInfo(), ProductInfoQuery.class);
                     item.setProductInfoList(productInfo);
+
+                    List<WorkOrderServerQuery> workOrderServerList = workOrderServerService.queryByWorkOrderIdAndServerId(item.getId(), serverId);
+                    item.setWorkOrderServerList(workOrderServerList);
                 }
-            });
+            }
         }
 
         Map<String, Object> result = new HashMap<>();
@@ -1780,66 +1792,74 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         if(Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_SUSPEND)){
-            return R.fail("工单已暂停，不可操作");
+            return R.fail("工单已暂停，不可上传");
         }
 
         WorkOrder workOrder = new WorkOrder();
         BeanUtils.copyProperties(workOrderAssignmentQuery, workOrder);
+        if(Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_COMMISSIONER)){
+            if(Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_ASSIGNMENT)
+                    && Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_INIT)){
+                workOrder.setAssignmentTime(System.currentTimeMillis());
+            }
+        }
         this.updateById(workOrder);
 
-        //服务商第三方信息
-        workOrderServerService.removeByWorkOrderId(workOrder.getId());
-        if(!CollectionUtils.isEmpty(workOrderAssignmentQuery.getWorkOrderServerList())) {
-            workOrderAssignmentQuery.getWorkOrderServerList().forEach(item -> {
-                WorkOrderServer workOrderServer = new WorkOrderServer();
-                workOrderServer.setWorkOrderId(workOrder.getId());
-                workOrderServer.setServerId(item.getServerId());
-                //服务商名称
-                if (item.getServerId() != null) {
-                    Server server = serverService.getById(item.getServerId());
-                    if (Objects.nonNull(server)) {
-                        workOrderServer.setServerName(server.getName());
-                    }
-                }
-                workOrderServer.setFee(item.getFee());
-                workOrderServer.setPaymentMethod(item.getPaymentMethod());
-                workOrderServer.setSolution(item.getSolution());
-                workOrderServer.setSolutionTime(item.getSolutionTime());
-                workOrderServer.setPrescription(item.getPrescription());
-                workOrderServer.setIsUseThird(item.getIsUseThird());
-                workOrderServer.setThirdCompanyType(item.getThirdCompanyType());
-                workOrderServer.setThirdCompanyId(item.getThirdCompanyId());
-                //第三方公司名称
-                if (item.getThirdCompanyId() != null && item.getThirdCompanyType() != null) {
-                    if (item.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)) {
-                        Customer customer = customerService.getById(item.getThirdCompanyId());
-                        if (Objects.nonNull(customer)) {
-                            workOrderServer.setThirdCompanyName(customer.getName());
-                        }
-                    }
-
-                    if (item.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)) {
-                        Supplier supplier = supplierService.getById(item.getThirdCompanyId());
-                        if (Objects.nonNull(supplier)) {
-                            workOrderServer.setThirdCompanyName(supplier.getName());
-                        }
-                    }
-
-                    if (item.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SERVER)) {
-                        Server server = serverService.getById(item.getThirdCompanyId());
+        if(Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_PATROL_APPLET)){
+            //服务商第三方信息
+            workOrderServerService.removeByWorkOrderId(workOrder.getId());
+            if(!CollectionUtils.isEmpty(workOrderAssignmentQuery.getWorkOrderServerList())) {
+                workOrderAssignmentQuery.getWorkOrderServerList().forEach(item -> {
+                    WorkOrderServer workOrderServer = new WorkOrderServer();
+                    workOrderServer.setWorkOrderId(workOrder.getId());
+                    workOrderServer.setServerId(item.getServerId());
+                    //服务商名称
+                    if (item.getServerId() != null) {
+                        Server server = serverService.getById(item.getServerId());
                         if (Objects.nonNull(server)) {
-                            workOrderServer.setThirdCompanyName(server.getName());
+                            workOrderServer.setServerName(server.getName());
                         }
                     }
-                }
-                workOrderServer.setThirdCompanyPay(item.getThirdCompanyPay());
-                workOrderServer.setThirdPaymentStatus(item.getThirdPaymentStatus());
-                workOrderServer.setThirdReason(item.getThirdReason());
-                workOrderServer.setThirdResponsiblePerson(item.getThirdResponsiblePerson());
+                    workOrderServer.setFee(item.getFee());
+                    workOrderServer.setPaymentMethod(item.getPaymentMethod());
+                    workOrderServer.setSolution(item.getSolution());
+                    workOrderServer.setSolutionTime(item.getSolutionTime());
+                    workOrderServer.setPrescription(item.getPrescription());
+                    workOrderServer.setIsUseThird(item.getIsUseThird());
+                    workOrderServer.setThirdCompanyType(item.getThirdCompanyType());
+                    workOrderServer.setThirdCompanyId(item.getThirdCompanyId());
+                    //第三方公司名称
+                    if (item.getThirdCompanyId() != null && item.getThirdCompanyType() != null) {
+                        if (item.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)) {
+                            Customer customer = customerService.getById(item.getThirdCompanyId());
+                            if (Objects.nonNull(customer)) {
+                                workOrderServer.setThirdCompanyName(customer.getName());
+                            }
+                        }
 
-                workOrderServerService.save(workOrderServer);
+                        if (item.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)) {
+                            Supplier supplier = supplierService.getById(item.getThirdCompanyId());
+                            if (Objects.nonNull(supplier)) {
+                                workOrderServer.setThirdCompanyName(supplier.getName());
+                            }
+                        }
 
-            });
+                        if (item.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SERVER)) {
+                            Server server = serverService.getById(item.getThirdCompanyId());
+                            if (Objects.nonNull(server)) {
+                                workOrderServer.setThirdCompanyName(server.getName());
+                            }
+                        }
+                    }
+                    workOrderServer.setThirdCompanyPay(item.getThirdCompanyPay());
+                    workOrderServer.setThirdPaymentStatus(item.getThirdPaymentStatus());
+                    workOrderServer.setThirdReason(item.getThirdReason());
+                    workOrderServer.setThirdResponsiblePerson(item.getThirdResponsiblePerson());
+
+                    workOrderServerService.save(workOrderServer);
+
+                });
+            }
         }
 
         if(!CollectionUtils.isEmpty(workOrderAssignmentQuery.getFileList())) {
@@ -1852,8 +1872,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 fileService.save(file);
             });
         }
-
-
         return R.ok();
     }
 

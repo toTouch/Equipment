@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.xiliulou.afterserver.entity.WorkOrderServer;
 import com.xiliulou.afterserver.web.query.WorkOrderServerQuery;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -14,5 +15,8 @@ import java.util.List;
  */
 public interface WorkOrderServerMapper extends BaseMapper<WorkOrderServer> {
 
-    List<WorkOrderServerQuery> queryByWorkOrderId(@Param("workOrderId") Long workOrderId);
+    List<WorkOrderServerQuery> queryByWorkOrderId(@Param("workOrderId") Long workOrderId, @Param("serverId")Long serverId);
+
+    @Select("SELECT work_order_id FROM t_work_order_server WHERE server_id = #{serverId}")
+    List<Long> queryWorkOrderIds(Long serverId);
 }
