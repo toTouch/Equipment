@@ -1796,8 +1796,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         //如果为专员，待处理状态 不可修改服务商数量
-        if(Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_ASSIGNMENT)){
-
+        if(!Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_ASSIGNMENT)){
+            workOrderServerService.queryByWorkOrderIdAndServerId(workOrderOld.getId(), null);
         }
 
 
