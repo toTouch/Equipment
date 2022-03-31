@@ -621,7 +621,7 @@
 
 
 
-    <select id="queryAssignmentStatusList" resultMap="pageMap">
+    <select id="queryAssignmentStatusList" resultMap="userMap">
         SELECT wo.id as wo_id,
         wo.order_no as wo_order_no,
         wo.status as wo_status,
