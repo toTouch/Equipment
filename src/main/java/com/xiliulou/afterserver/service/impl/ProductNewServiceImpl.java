@@ -645,7 +645,17 @@ public class ProductNewServiceImpl implements ProductNewService {
     public R queryProductNewInfoById(String no) {
         ProductNew productNew = this.queryByNo(no);
 
-        if(!Objects.equals(productNew.getSupplierId(), SecurityUtils.getUserInfo().getSupplierId())){
+        Long uid = SecurityUtils.getUid();
+        if(Objects.isNull(uid)){
+            return R.fail("未查询到相关用户");
+        }
+
+        User user = userService.getUserById(uid);
+        if(Objects.isNull(user)){
+            return R.fail("未查询到相关用户");
+        }
+
+        if(!Objects.equals(productNew.getSupplierId(), user.getThirdId())){
             return R.fail(null,"柜机厂家与登录厂家不一致，请重新登陆");
         }
 
