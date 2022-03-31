@@ -36,6 +36,9 @@ public class JsonUserWorkOrderController {
 
     @PutMapping("/admin/wechat/workOrder")
     public R updateAssignment(@RequestBody WorkOrderAssignmentQuery workOrderAssignmentQuery){
+        if(Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_COMMISSIONER)){
+            return R.fail("请使用专员账号进行登录");
+        }
         return workOrderService.updateAssignment(workOrderAssignmentQuery);
     }
 
