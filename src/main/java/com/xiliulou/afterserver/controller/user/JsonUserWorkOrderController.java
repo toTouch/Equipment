@@ -25,7 +25,7 @@ public class JsonUserWorkOrderController {
     @Autowired
     WorkOrderService workOrderService;
 
-    @PostMapping("/admin/wechat/workOrder")
+    @GetMapping("/admin/wechat/workOrder")
     public R queryAssignmentStatusList(@RequestParam(value = "offset", required = false, defaultValue = "0") Long offset,
                                        @RequestParam(value = "size",required = false, defaultValue = "20") Long size,
                                        @RequestParam("status")Integer status){

@@ -42,6 +42,7 @@ public class WorkOrderAssignmentQuery {
     private Long workOrderReasonId;
     private String parentWorkOrderReason;
     private String workOrderReasonName;
+    private String solution;
     private List<WorkOrderServerQuery> workOrderServerList;
     private List<File> fileList;
 }

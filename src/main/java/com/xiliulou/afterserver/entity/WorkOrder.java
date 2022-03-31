@@ -94,6 +94,8 @@ public class WorkOrder implements Serializable {
     private String describeinfo;
 
     private Long commissionerId;
+    //派单时间
+    private Long assignmentTime;
 
 
     /**

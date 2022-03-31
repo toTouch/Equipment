@@ -13,7 +13,9 @@ import java.util.List;
  */
 public interface WorkOrderServerService extends IService<WorkOrderServer> {
 
-    List<WorkOrderServerQuery> queryByWorkOrderId(Long workOrderId);
+    List<WorkOrderServerQuery> queryByWorkOrderIdAndServerId(Long workOrderId, Long serverId);
 
     Boolean removeByWorkOrderId(Long id);
+
+    List<Long> queryWorkOrderIds(Long serverId);
 }
