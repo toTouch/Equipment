@@ -646,7 +646,7 @@ public class ProductNewServiceImpl implements ProductNewService {
         ProductNew productNew = this.queryByNo(no);
 
         if(!Objects.equals(productNew.getSupplierId(), SecurityUtils.getUserInfo().getSupplierId())){
-            return R.fail("柜机厂家与登录厂家不一致，请重新登陆");
+            return R.fail(null,"柜机厂家与登录厂家不一致，请重新登陆");
         }
 
         ProductNewDetailsVo vo = new ProductNewDetailsVo();
@@ -689,7 +689,7 @@ public class ProductNewServiceImpl implements ProductNewService {
 
             vo.setColor(productNew.getColor());
             vo.setSurface(productNew.getSurface());
-            //vo.setCreateTime(sdf.format(new Date(productNew.getCreateTime())));
+            vo.setCreateTime(sdf.format(new Date(productNew.getCreateTime())));
         }
 
         return R.ok(vo);
