@@ -225,7 +225,7 @@ public class ProductNewServiceImpl implements ProductNewService {
         if(Objects.nonNull(query.getCameraCardId())){
             Camera camera =  cameraService.getById(query.getCameraCardId());
             if(Objects.isNull(camera)){
-                return R.fail("未查询摄像头序列号");
+                return R.fail("未查询到摄像头序列号");
             }
 
             ProductNew productNew = productNewMapper.selectOne(new QueryWrapper<ProductNew>()
@@ -644,6 +644,11 @@ public class ProductNewServiceImpl implements ProductNewService {
     @Override
     public R queryProductNewInfoById(String no) {
         ProductNew productNew = this.queryByNo(no);
+
+        if(!Objects.equals(productNew.getSupplierId(), SecurityUtils.getUserInfo().getSupplierId())){
+            return R.fail("柜机厂家与登录厂家不一致，请重新登陆");
+        }
+
         ProductNewDetailsVo vo = new ProductNewDetailsVo();
 
         if(!Objects.isNull(productNew)){
@@ -706,7 +711,7 @@ public class ProductNewServiceImpl implements ProductNewService {
         if(StringUtils.isNotBlank(query.getSerialNum())){
             camera =  cameraService.queryBySerialNum(query.getSerialNum());
             if(Objects.isNull(camera)){
-                return R.fail(null, null, "未查询摄像头序列号");
+                return R.fail(null, null, "未查询到摄像头序列号");
             }
 
             ProductNew productNew = productNewMapper.selectOne(new QueryWrapper<ProductNew>()
