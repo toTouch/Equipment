@@ -66,4 +66,6 @@ public class ProductNewDetailsVo {
      * 摄像头物联网卡id
      */
     private Long cameraCardId;
+
+    private String createTime;
 }
