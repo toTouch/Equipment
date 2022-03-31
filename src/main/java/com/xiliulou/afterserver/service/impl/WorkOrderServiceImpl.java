@@ -1752,9 +1752,16 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         Page<WorkOrderAssignmentVo> page = PageUtil.getPage(offset, size);
         page = baseMapper.queryAssignmentStatusList(page, uid, WorkOrder.STATUS_ASSIGNMENT);
         List<WorkOrderAssignmentVo> data = page.getRecords();
+
+
         if(CollectionUtils.isEmpty(data)){
             data.forEach(item->{
                 item.setParentWorkOrderReason(this.getParentWorkOrderReason(item.getWorkOrderReasonId()));
+
+                if(Objects.nonNull(item.getProductInfo())) {
+                    List<ProductInfoQuery> productInfo = JSON.parseArray(item.getProductInfo(), ProductInfoQuery.class);
+                    item.setProductInfoList(productInfo);
+                }
             });
         }
 
@@ -1762,6 +1769,16 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         result.put("data", data);
         result.put("total", page.getTotal());
         return R.ok(result);
+    }
+
+    @Override
+    public R updateAssignment(WorkOrderAssignmentQuery workOrderAssignmentQuery) {
+        WorkOrder workOrderOld = this.getById(workOrderAssignmentQuery.getId());
+        if(Objects.isNull(workOrderOld)){
+            return R.fail("未查询到工单相关信息");
+        }
+        WorkOrder workOrder = new WorkOrder();
+        return null;
     }
     //    /**
 //     * 预览
