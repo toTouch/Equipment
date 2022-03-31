@@ -20,7 +20,7 @@ public class JsonAdminColorCardController {
     ColorCardService colorCardService;
 
     @GetMapping("admin/colorCard")
-    public R queryPull(@RequestParam("name") String name){
+    public R queryPull(@RequestParam(value = "name",required = false) String name){
         return  colorCardService.queryPull(name);
     }
 
