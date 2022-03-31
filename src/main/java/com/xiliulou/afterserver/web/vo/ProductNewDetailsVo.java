@@ -67,5 +67,5 @@ public class ProductNewDetailsVo {
      */
     private Long cameraCardId;
 
-    //private String createTime;
+    private String createTime;
 }
