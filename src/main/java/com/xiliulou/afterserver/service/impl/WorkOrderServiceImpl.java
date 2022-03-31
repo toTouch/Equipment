@@ -37,6 +37,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
@@ -1787,6 +1788,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     public R updateAssignment(WorkOrderAssignmentQuery workOrderAssignmentQuery) {
         WorkOrder workOrderOld = this.getById(workOrderAssignmentQuery.getId());
+        List<WorkOrderServerQuery> workOrderServerList = workOrderAssignmentQuery.getWorkOrderServerList();
+        List<WorkOrderServerQuery> workOrderServerQuerys = workOrderServerService.queryByWorkOrderIdAndServerId(workOrderOld.getId(), null);
         if (Objects.isNull(workOrderOld)) {
             return R.fail("未查询到工单相关信息");
         }
@@ -1797,34 +1800,74 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         //如果为专员，待处理状态 不可修改服务商数量
         if(!Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_ASSIGNMENT)){
-            List<WorkOrderServerQuery> workOrderServerQuerys = workOrderServerService.queryByWorkOrderIdAndServerId(workOrderOld.getId(), null);
+            Integer workOrderServerOldCount = 0;
+            Integer workOrderServerCount = 0;
+            if(!CollectionUtils.isEmpty(workOrderServerQuerys)){
+                workOrderServerOldCount = workOrderServerQuerys.size();
+            }
+            if(!CollectionUtils.isEmpty(workOrderServerQuerys)){
+                workOrderServerCount = workOrderServerList.size();
+            }
+            if(!Objects.equals(workOrderServerOldCount, workOrderServerCount)){
+                return R.fail("非待派发模式不可添加或删除服务商");
+            }
         }
-
 
         WorkOrder workOrder = new WorkOrder();
         BeanUtils.copyProperties(workOrderAssignmentQuery, workOrder);
-        if(Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_COMMISSIONER)){
-            if(Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_ASSIGNMENT)
-                    && Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_INIT)){
-                workOrder.setAssignmentTime(System.currentTimeMillis());
-            }
+
+        if(Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_ASSIGNMENT)
+                && Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_INIT)){
+            workOrder.setAssignmentTime(System.currentTimeMillis());
         }
+
 
         if(Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_INIT)){
             createWorkOrderServer(workOrderOld, workOrderAssignmentQuery);
         }else{
-            updateWorkOrderServer(workOrderOld, workOrderAssignmentQuery);
+            updateWorkOrderServer(workOrderServerList);
         }
 
         this.updateById(workOrder);
 
-
-
         return R.ok();
     }
 
-    private void updateWorkOrderServer(WorkOrder workOrder,WorkOrderAssignmentQuery workOrderAssignmentQuery){
+    @Override
+    public R updateServer(String solution, Long workOrderId) {
+        Long uid = SecurityUtils.getUid();
 
+        WorkOrder workOrderOld = this.getById(workOrderId);
+        if (Objects.isNull(workOrderOld)) {
+            return R.fail("未查询到工单相关信息");
+        }
+
+        if(Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_SUSPEND)){
+            return R.fail("工单已暂停，不可上传");
+        }
+
+        if(Objects.isNull(uid)){
+            return R.fail("未查询到相关用户");
+        }
+
+        User user = userService.getUserById(uid);
+        if(Objects.isNull(user)){
+            return R.fail("未查询到相关用户");
+        }
+
+
+
+        return null;
+    }
+
+    private void updateWorkOrderServer(List<WorkOrderServerQuery> workOrderServerList){
+        if(!CollectionUtils.isEmpty(workOrderServerList)){
+            for(WorkOrderServerQuery item : workOrderServerList){
+                WorkOrderServer workOrderServer = new WorkOrderServer();
+                BeanUtils.copyProperties(item, workOrderServer);
+                workOrderServerService.updateById(workOrderServer);
+            }
+        }
     }
 
     private void createWorkOrderServer(WorkOrder workOrder,WorkOrderAssignmentQuery workOrderAssignmentQuery){
