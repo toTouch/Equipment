@@ -689,7 +689,7 @@ public class ProductNewServiceImpl implements ProductNewService {
 
             vo.setColor(productNew.getColor());
             vo.setSurface(productNew.getSurface());
-            vo.setCreateTime(sdf.format(new Date(productNew.getCreateTime())));
+            //vo.setCreateTime(sdf.format(new Date(productNew.getCreateTime())));
         }
 
         return R.ok(vo);
