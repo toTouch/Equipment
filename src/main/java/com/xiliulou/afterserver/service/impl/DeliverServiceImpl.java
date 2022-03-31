@@ -176,7 +176,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
 
             records.setPaymentMethodName(getpaymentMethodName(records.getPaymentMethod()));
 
-            List<DeliverLog> deliverLogs = deliverLogService.getByDeliverId(deliver.getId());
+            List<DeliverLog> deliverLogs = deliverLogService.getByDeliverId(records.getId());
             Map<String, List<DeliverInfoVo>> result = new HashMap<>();
 
             if(CollectionUtils.isNotEmpty(deliverLogs)){
