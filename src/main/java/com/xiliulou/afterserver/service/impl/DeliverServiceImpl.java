@@ -423,16 +423,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         Deliver oldDeliver = this.getById(deliver.getId());
 
         if(ObjectUtils.isNotNull(oldDeliver)){
-            /*WareHouse wareHouseStart = warehouseService.getOne(new QueryWrapper<WareHouse>().eq("ware_houses", oldDeliver.getCity()));
-            WareHouse wareHouseEnd = warehouseService.getOne(new QueryWrapper<WareHouse>().eq("ware_houses", oldDeliver.getDestination()));
 
-            if(ObjectUtils.isNotNull(wareHouseStart)){
-                wareHouseIdStart = Long.valueOf(wareHouseStart.getId());
-            }
-
-            if(ObjectUtils.isNotNull(wareHouseEnd)){
-                wareHouseIdEnd = Long.valueOf(wareHouseEnd.getId());
-            }*/
 
             if(Integer.valueOf(2).equals(oldDeliver.getState())
                     || Integer.valueOf(3).equals(oldDeliver.getState())){
@@ -447,9 +438,15 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                 if(Integer.valueOf(1).equals(deliver.getState())){
                     return R.fail("已发货或已到达的订单不可改变物流状态为未发货");
                 }
-            }//else{
-            //    r = saveWareHouseDetails(deliver, wareHouseIdStart, wareHouseIdEnd);
-            //}
+
+                if(!Objects.equals(oldDeliver.getCityType(), deliver.getCityType()) || !Objects.equals(oldDeliver.getCityId(), deliver.getCityId())){
+                    return R.fail("已发货或已到达的订单不可改变起点");
+                }
+
+                if(!Objects.equals(oldDeliver.getDestinationType(), deliver.getDestinationType()) || !Objects.equals(oldDeliver.getDestinationId(), deliver.getDestinationId())){
+                    return R.fail("已发货或已到达的订单不可改变起点");
+                }
+            }
         }
         //if(r == null){
         deliver.setCreateTime(System.currentTimeMillis());
@@ -479,9 +476,11 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         page = baseMapper.selectPage(page, new QueryWrapper<Deliver>()
                 .eq("city_type", Deliver.CITY_TYPE_FACTORY)
                 .eq("city", supplier.getName())
-                .eq("state", 1));
+                .eq("state", 1)
+                .orderByDesc("create_time"));
 
         List<Deliver> list = page.getRecords();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         List<OrderDeliverVo> data = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(list)){
@@ -507,6 +506,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                 }
 
                 orderDeliverVo.setContent(orderDeliverContentVos);
+                orderDeliverVo.setCreateTime(sdf.format(new Date(item.getCreateTime())));
                 data.add(orderDeliverVo);
             });
         }

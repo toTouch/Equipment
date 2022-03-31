@@ -14,4 +14,5 @@ public class OrderDeliverVo {
     private String no;
     private List<OrderDeliverContentVo> content;
     private String remark;
+    private String createTime;
 }

@@ -650,6 +650,7 @@ public class ProductNewServiceImpl implements ProductNewService {
         }
 
         ProductNewDetailsVo vo = new ProductNewDetailsVo();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         if(!Objects.isNull(productNew)){
             vo.setId(productNew.getId());
@@ -688,6 +689,7 @@ public class ProductNewServiceImpl implements ProductNewService {
 
             vo.setColor(productNew.getColor());
             vo.setSurface(productNew.getSurface());
+            vo.setCreateTime(sdf.format(new Date(productNew.getCreateTime())));
         }
 
         return R.ok(vo);
