@@ -146,6 +146,6 @@ public class ProductNew {
     private String iotCardName;
     @TableField(exist = false)
     private String cameraSerialNum;
-   // @TableField(exist = false)
-   // private String supplierName;
+    @TableField(exist = false)
+    private String colorName;
 }

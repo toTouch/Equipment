@@ -10,6 +10,7 @@ import com.xiliulou.afterserver.web.query.ProductNewQuery;
 import com.xiliulou.storage.config.StorageConfig;
 import com.xiliulou.storage.service.impl.AliyunOssService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,6 +46,8 @@ public class AdminJsonProductNewController {
     private AliyunOssService aliyunOssService;
     @Autowired
     private StorageConfig StorageConfig;
+    @Autowired
+    private ColorCardService colorCardService;
 
     //@PostMapping("/admin/productNew")
     public R saveAdminPointNew(@RequestBody ProductNew productNew){
@@ -136,6 +139,11 @@ public class AdminJsonProductNewController {
                     item.setCameraSerialNum(camera.getSerialNum());
                 }
             }
+
+            ColorCard colorCard = colorCardService.getById(item.getColor());
+            if(Objects.nonNull(colorCard)){
+                item.setColorName(colorCard.getName());
+            }
         });
 
 
@@ -199,8 +207,12 @@ public class AdminJsonProductNewController {
     @GetMapping("admin/productNew/testFile")
     public R getTestFile(@RequestParam("fileName") String fileName){
         String url = null;
+        String testFileName = "";
+        if(StringUtils.isNotBlank(StorageConfig.getTestFileDir())){
+            testFileName = StorageConfig.getTestFileDir();
+        }
         try{
-            url = aliyunOssService.getOssFileUrl(StorageConfig.getOssTestFileBucketName(), fileName, 120 * 1000);
+            url = aliyunOssService.getOssFileUrl(StorageConfig.getOssTestFileBucketName(), testFileName  + fileName, System.currentTimeMillis() + 120 * 1000);
         }catch(Exception e){
             log.error("oss error!", e);
         }
