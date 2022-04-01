@@ -36,8 +36,8 @@ public class JsonUserPointProductController {
 
 
     @PostMapping("/user/upload")
-    public R uploadFile(@RequestParam("file") MultipartFile file) {
-        return fileService.uploadFile(file);
+    public R uploadFile(@RequestParam("file") MultipartFile file, @RequestParam(value = "fileType", required = false, defaultValue = "0") Integer fileType) {
+        return fileService.uploadFile(file, fileType);
     }
 
     @DeleteMapping("/user/removeFile")
@@ -151,8 +151,8 @@ public class JsonUserPointProductController {
     }
 
     @GetMapping("/user/downLoad")
-    public void getFile(@RequestParam("fileName") String fileName, HttpServletResponse response) {
-        fileService.downLoadFile(fileName, response);
+    public void getFile(@RequestParam("fileName") String fileName, @RequestParam(value = "fileType", required = false, defaultValue = "0")Integer fileType, HttpServletResponse response) {
+        fileService.downLoadFile(fileName,fileType, response);
     }
 
 }

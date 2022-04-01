@@ -1561,6 +1561,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("已暂停状态工单不可修改为已完结");
         }
 
+        Integer status =  WorkOrder.STATUS_ASSIGNMENT.equals(query.getStatus()) ? -1 :  query.getStatus();
+        if(status < workOrder.getStatus()){
+            return R.fail("状态不可往前修改");
+        }
+
         workOrder.setStatus(query.getStatus());
 
         workOrder.setWorkOrderReasonId(query.getWorkOrderReasonId());
@@ -1817,12 +1822,18 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         if(Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_SUSPEND)){
-            if(!Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_INIT) || !Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_ASSIGNMENT)){
+            if(!Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_INIT)
+                    || !Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_ASSIGNMENT)
+                    || Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_SUSPEND)){
+
                 return R.fail("非待处理和待派单的工单不可修改为已暂停");
             }
         }
 
-
+        Integer status =  WorkOrder.STATUS_ASSIGNMENT.equals(workOrderAssignmentQuery.getStatus()) ? -1 :  workOrderAssignmentQuery.getStatus();
+        if(status < workOrderOld.getStatus()){
+            return R.fail("状态不可往前修改");
+        }
 
         //待处理状态 不可修改服务商数量
         if (!Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
@@ -1921,6 +1932,25 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             workOrder.setStatus(WorkOrder.STATUS_PROCESSING);
         }
 
+        return R.ok();
+    }
+
+    @Override
+    public R submitReview(Long id,Integer status) {
+
+        WorkOrder workOrder = this.getById(id);
+        if(Objects.isNull(workOrder)){
+            return R.fail("未查询到工单相关信息");
+        }
+
+        if(!Objects.equals(status, WorkOrder.STATUS_FINISHED)){
+            return R.fail("请修改状态为已完结");
+        }
+
+        WorkOrder update  = new WorkOrder();
+        update.setId(id);
+        update.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
+        this.updateById(update);
         return R.ok();
     }
 

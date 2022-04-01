@@ -66,8 +66,8 @@ public class AdminJsonFileController {
      * @return
      */
     @GetMapping("/admin/downLoad")
-    public R getFile(@RequestParam("fileName") String fileName, HttpServletResponse response) {
-        return fileService.downLoadFile(fileName, response);
+    public R getFile(@RequestParam("fileName") String fileName,@RequestParam(value = "fileType", required = false, defaultValue = "0") Integer fileType, HttpServletResponse response) {
+        return fileService.downLoadFile(fileName,fileType, response);
     }
 
     /**

@@ -77,4 +77,6 @@ public interface WorkOrderService extends IService<WorkOrder> {
     R updateAssignment(WorkOrderAssignmentQuery workOrderAssignmentQuery);
 
     R updateServer(String solution, Long workOrderId);
+
+    R submitReview(Long id, Integer status);
 }
