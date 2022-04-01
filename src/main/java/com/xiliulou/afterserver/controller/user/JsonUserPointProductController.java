@@ -66,9 +66,24 @@ public class JsonUserPointProductController {
             }
         }
 
-        //if(){
+        if(Objects.equals(File.TYPE_WORK_ORDER, file.getFileType())){
+            QueryWrapper<File> wrapper = new QueryWrapper<>();
+            wrapper.eq("type", File.TYPE_WORK_ORDER);
+            wrapper.eq("bind_id", file.getBindId());
+            if(Objects.equals(0, file.getFileType())){
+                wrapper.eq("file_type", 0);
+            }else{
+                wrapper.ge("file_type", 1);
+            }
 
-        //}
+            Integer count = fileService.getBaseMapper().selectCount(wrapper);
+
+            if(Objects.equals(0, file.getFileType()) && count >= 6){
+                return R.fail("该类其他图片已达上限，请删除图片后继续上传！");
+            }else if (count >= 10){
+                return R.fail("该类其他图片已达上限，请删除图片后继续上传！");
+            }
+        }
 
 
         file.setCreateTime(System.currentTimeMillis());
