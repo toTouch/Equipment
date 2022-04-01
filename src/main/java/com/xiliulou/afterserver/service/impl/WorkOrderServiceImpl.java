@@ -1556,6 +1556,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         if (Objects.isNull(workOrder)) {
             return R.fail("id不存在");
         }
+
+        if(Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_SUSPEND) && Objects.equals(query.getStatus(), WorkOrder.STATUS_FINISHED)){
+            return R.fail("已暂停状态工单不可修改为已完结");
+        }
+
         workOrder.setStatus(query.getStatus());
 
         workOrder.setWorkOrderReasonId(query.getWorkOrderReasonId());
@@ -1750,7 +1755,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     @Override
-    public R queryAssignmentStatusList(Long offset, Long size, Integer status) {
+    public R queryAssignmentStatusList(Long offset, Long size,Integer auditStatus, Integer status) {
         Long uid = null;
         Long serverId = null;
         List<Long> workOrderServerIds = null;
@@ -1762,7 +1767,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         Page<WorkOrderAssignmentVo> page = PageUtil.getPage(offset, size);
-        page = baseMapper.queryAssignmentStatusList(page, uid, workOrderServerIds, status);
+        page = baseMapper.queryAssignmentStatusList(page, uid, workOrderServerIds,auditStatus, status);
         List<WorkOrderAssignmentVo> data = page.getRecords();
 
 
@@ -1799,10 +1804,30 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("工单已暂停，不可上传");
         }
 
+        if(Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_PROCESSING) && !Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_FINISHED)){
+            return R.fail("提交已处理工单必须修改工单状态为已完结");
+        }
+
+        if(Objects.equals(workOrderOld.getAuditStatus(), WorkOrder.AUDIT_STATUS_PASSED)){
+            return R.fail("审核通过的工单不允许修改");
+        }
+
+        if(Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_FINISHED)){
+            return R.fail("审核通过的工单不允许修改");
+        }
+
+        if(Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_SUSPEND)){
+            if(!Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_INIT) || !Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_ASSIGNMENT)){
+                return R.fail("非待处理和待派单的工单不可修改为已暂停");
+            }
+        }
+
+
+
         //待处理状态 不可修改服务商数量
         if (!Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
-            Integer workOrderServerOldCount = 0;
-            Integer workOrderServerCount = 0;
+            int workOrderServerOldCount = 0;
+            int workOrderServerCount = 0;
             if (!CollectionUtils.isEmpty(workOrderServerQuerys)) {
                 workOrderServerOldCount = workOrderServerQuerys.size();
             }
@@ -1818,6 +1843,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 return R.fail("非待派发模式不可修改服务商");
             }
         }
+
 
         WorkOrder workOrder = new WorkOrder();
         BeanUtils.copyProperties(workOrderAssignmentQuery, workOrder);
@@ -1864,6 +1890,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         List<WorkOrderServerQuery> workOrderServer = workOrderServerService.queryByWorkOrderIdAndServerId(workOrderId, user.getThirdId());
         if (CollectionUtils.isEmpty(workOrderServer) || workOrderServer.size() > 1) {
             return R.fail("未查询出或查询出多条服务商工单信息");
+        }
+
+        if(Objects.nonNull(workOrderServer.get(0).getSolutionTime())){
+            return R.fail("服务商工单已提交，不可修改");
         }
 
         WorkOrderServer updateWorkOrderServer = new WorkOrderServer();
