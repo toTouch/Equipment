@@ -75,6 +75,8 @@ public class ProductNewServiceImpl implements ProductNewService {
     private DeliverService deliverService;
     @Autowired
     private WarehouseService warehouseService;
+    @Autowired
+    private ColorCardService colorCardService;
     /**
      * 通过ID查询单条数据从DB
      *
@@ -223,7 +225,7 @@ public class ProductNewServiceImpl implements ProductNewService {
         if(Objects.nonNull(query.getCameraCardId())){
             Camera camera =  cameraService.getById(query.getCameraCardId());
             if(Objects.isNull(camera)){
-                return R.fail("未查询摄像头序列号");
+                return R.fail("未查询到摄像头序列号");
             }
 
             ProductNew productNew = productNewMapper.selectOne(new QueryWrapper<ProductNew>()
@@ -511,13 +513,11 @@ public class ProductNewServiceImpl implements ProductNewService {
             ProductNew mainProduct = mainProducts.get(0);
             mainProductNo = mainProduct.getNo();
             if(!Objects.equals(mainProduct.getIotCardId(), iotCard.getId())){
-                return R.fail(null, null,"主柜绑定物联网卡号与上报物联网卡号不一致，请修改");
+                ProductNew updateMainProduct = new ProductNew();
+                updateMainProduct.setId(mainProduct.getId());
+                updateMainProduct.setIotCardId(iotCard.getId());
+                this.update(updateMainProduct);
             }
-
-            if(!Objects.equals(iotCard.getBatchId(), mainProduct.getBatchId())){
-                return R.fail(null, null, "主柜批次与物联网卡批次不一致，请核对");
-            }
-
         }
 
         return R.ok(Arrays.asList(mainProductNo));
@@ -644,7 +644,23 @@ public class ProductNewServiceImpl implements ProductNewService {
     @Override
     public R queryProductNewInfoById(String no) {
         ProductNew productNew = this.queryByNo(no);
+
+        Long uid = SecurityUtils.getUid();
+        if(Objects.isNull(uid)){
+            return R.fail("未查询到相关用户");
+        }
+
+        User user = userService.getUserById(uid);
+        if(Objects.isNull(user)){
+            return R.fail("未查询到相关用户");
+        }
+
+        if(!Objects.equals(productNew.getSupplierId(), user.getThirdId())){
+            return R.fail(null,"柜机厂家与登录厂家不一致，请重新登陆");
+        }
+
         ProductNewDetailsVo vo = new ProductNewDetailsVo();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         if(!Objects.isNull(productNew)){
             vo.setId(productNew.getId());
@@ -676,9 +692,14 @@ public class ProductNewServiceImpl implements ProductNewService {
                 vo.setIotCardId(iotCard.getId());
                 vo.setIotCardNo(iotCard.getSn());
             }
+            ColorCard colorCard = colorCardService.getById(productNew.getColor());
+            if(Objects.nonNull(colorCard)){
+                vo.setColorName(colorCard.getName());
+            }
 
             vo.setColor(productNew.getColor());
             vo.setSurface(productNew.getSurface());
+            vo.setCreateTime(sdf.format(new Date(productNew.getCreateTime())));
         }
 
         return R.ok(vo);
@@ -702,7 +723,7 @@ public class ProductNewServiceImpl implements ProductNewService {
         if(StringUtils.isNotBlank(query.getSerialNum())){
             camera =  cameraService.queryBySerialNum(query.getSerialNum());
             if(Objects.isNull(camera)){
-                return R.fail(null, null, "未查询摄像头序列号");
+                return R.fail(null, null, "未查询到摄像头序列号");
             }
 
             ProductNew productNew = productNewMapper.selectOne(new QueryWrapper<ProductNew>()
@@ -761,10 +782,6 @@ public class ProductNewServiceImpl implements ProductNewService {
         Batch iotBatch = batchService.queryByIdFromDB(iotCard.getBatchId());
         if(Objects.isNull(iotBatch)){
             return R.fail(null,null,"未查询到物联网卡批次，请录入");
-        }
-
-        if(Objects.equals(productNew.getType(), ProductNew.TYPE_M) && !Objects.equals(iotCard.getBatchId(), productNew.getBatchId())){
-            return R.fail(null,null,"柜机批次与物联网卡批次不一致，请核对");
         }
 
         if(Objects.isNull(productNew.getCameraId())){

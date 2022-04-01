@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import lombok.extern.slf4j.Slf4j;
@@ -253,9 +254,11 @@ public class BatchServiceImpl implements BatchService {
             return R.fail("用户未绑定工厂，请联系管理员");
         }
         Page page = PageUtil.getPage(offset, size);
-        page = batchMapper.selectPage(page, new QueryWrapper<Batch>().eq("supplier_id", user.getThirdId()));
+        page = batchMapper.selectPage(page, new QueryWrapper<Batch>().eq("supplier_id", user.getThirdId()).orderByDesc("create_time"));
 
         List<Batch> batchList = page.getRecords();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         List<OrderBatchVo> data = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(batchList)){
@@ -265,7 +268,7 @@ public class BatchServiceImpl implements BatchService {
                 orderBatchVo.setBatchNo(item.getBatchNo());
                 orderBatchVo.setProductNum(item.getProductNum());
                 orderBatchVo.setRemarks(StringUtils.isBlank(item.getRemarks()) ? "暂无" : item.getRemarks());
-
+                orderBatchVo.setCreateTime(sdf.format(new Date(item.getCreateTime())));
                 Product product = productService.getById(item.getModelId());
                 if(Objects.nonNull(product)){
                     orderBatchVo.setModelName(product.getName());

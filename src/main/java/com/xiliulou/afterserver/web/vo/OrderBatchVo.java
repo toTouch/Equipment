@@ -14,4 +14,5 @@ public class OrderBatchVo {
     private String modelName;
     private Integer productNum;
     private String remarks;
+    private String createTime;
 }

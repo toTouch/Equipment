@@ -121,21 +121,22 @@ storage:
   ### oss:oss-cn-beijing.aliyuncs.com minio:http://172.26.20.230:9000
   ossEndpoint: oss-cn-beijing.aliyuncs.com
   minioEndpoint: http://172.26.20.230:9000
-  accessKeyId: LTAI5tJpTD5MNbV1qfZnSxzh
-  accessKeySecret: pUhONTar46FesJIEC3o9OvHn4CLsmM
+  accessKeyId: SuoR5L5r9lJKzNiO
+  accessKeySecret: WsCM0f7upVDgOSLWpTr0HPLgjeCEoc
   ### minio:by-xiliulou
   accessKey: by-xiliulou
   ### minio:by123456
   secretKey: by123456
   ### oss:liubiqi minio:after-service
-  bucketName: liubiqi
+  bucketName: meituan-pressure
   minioBucketName: after-service
   ### ossTestFileBucketName:ZgeTest
-  ossTestFileBucketName: zge-test
+  ossTestFileBucketName: meituan-pressure
   ### oss:img.wm.xiliulou.com
   urlPrefix:
   dir: after-service/
   secure: false
+  testFileDir:
   ### oss:0 minio:1
   isUseOSS: 0
 
