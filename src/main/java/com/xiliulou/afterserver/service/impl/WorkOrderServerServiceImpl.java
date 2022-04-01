@@ -38,4 +38,11 @@ public class WorkOrderServerServiceImpl extends ServiceImpl<WorkOrderServerMappe
     public List<Long> queryWorkOrderIds(Long serverId) {
         return this.baseMapper.queryWorkOrderIds(serverId);
     }
+
+    @Override
+    public Boolean updateSolutionByWorkOrderAndServerId(Long workOrderId, Long thirdId, String solution) {
+        return baseMapper.updateSolutionByWorkOrderAndServerId(workOrderId, thirdId ,solution);
+    }
+
+
 }

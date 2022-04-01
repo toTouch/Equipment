@@ -1811,6 +1811,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if(!Objects.equals(workOrderServerOldCount, workOrderServerCount)){
                 return R.fail("非待派发模式不可添加或删除服务商");
             }
+
+            
         }
 
         WorkOrder workOrder = new WorkOrder();
@@ -1837,15 +1839,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     public R updateServer(String solution, Long workOrderId) {
         Long uid = SecurityUtils.getUid();
 
-        WorkOrder workOrderOld = this.getById(workOrderId);
-        if (Objects.isNull(workOrderOld)) {
-            return R.fail("未查询到工单相关信息");
-        }
-
-        if(Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_SUSPEND)){
-            return R.fail("工单已暂停，不可上传");
-        }
-
         if(Objects.isNull(uid)){
             return R.fail("未查询到相关用户");
         }
@@ -1855,9 +1848,46 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("未查询到相关用户");
         }
 
+        WorkOrder workOrderOld = this.getById(workOrderId);
+        if (Objects.isNull(workOrderOld)) {
+            return R.fail("未查询到工单相关信息");
+        }
 
+        if(Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_SUSPEND)){
+            return R.fail("工单已暂停，不可上传");
+        }
 
-        return null;
+        List<WorkOrderServerQuery> workOrderServer =  workOrderServerService.queryByWorkOrderIdAndServerId(workOrderId, user.getThirdId());
+        if(CollectionUtils.isEmpty(workOrderServer) || workOrderServer.size() > 1){
+            return R.fail("未查询出或查询出多条服务商工单信息");
+        }
+
+        WorkOrderServer updateWorkOrderServer = new WorkOrderServer();
+        updateWorkOrderServer.setId(workOrderServer.get(0).getId());
+        updateWorkOrderServer.setSolution(solution);
+        updateWorkOrderServer.setSolutionTime(System.currentTimeMillis());
+        updateWorkOrderServer.setPrescription(updateWorkOrderServer.getSolutionTime() - workOrderOld.getAssignmentTime());
+        workOrderServerService.updateById(updateWorkOrderServer);
+
+        //判断全部工单是否完成
+        List<WorkOrderServerQuery> WorkOrderServerList =  workOrderServerService.queryByWorkOrderIdAndServerId(workOrderId, null);
+        Boolean isAllComplete = true;
+        if(CollectionUtils.isEmpty(WorkOrderServerList)){
+            for(WorkOrderServerQuery item : WorkOrderServerList){
+                if(Objects.isNull(item.getSolutionTime())){
+                    isAllComplete = false;
+                }
+            }
+        }
+
+        //全部完成修改工单为已处理
+        if(isAllComplete){
+            WorkOrder workOrder = new WorkOrder();
+            workOrder.setId(workOrderOld.getId());
+            workOrder.setStatus(WorkOrder.STATUS_PROCESSING);
+        }
+
+        return R.ok();
     }
 
     private void updateWorkOrderServer(List<WorkOrderServerQuery> workOrderServerList){
