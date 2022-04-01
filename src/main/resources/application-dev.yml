@@ -117,7 +117,7 @@ storage:
   secure: false
   testFileDir:
   ### oss:0 minio:1
-  isUseOSS: 0
+  isUseOSS: 1
 
 userrole:
   unShow: [1,2,3,4]
