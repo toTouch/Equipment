@@ -5,6 +5,7 @@ import com.xiliulou.afterserver.entity.WorkOrderServer;
 import com.xiliulou.afterserver.web.query.WorkOrderServerQuery;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -19,4 +20,7 @@ public interface WorkOrderServerMapper extends BaseMapper<WorkOrderServer> {
 
     @Select("SELECT work_order_id FROM t_work_order_server WHERE server_id = #{serverId}")
     List<Long> queryWorkOrderIds(Long serverId);
+
+    @Update("update t_work_order_server set solution = #{solution} where work_order_id = #{workOrderId} and server_id = #{thirdId}")
+    Boolean updateSolutionByWorkOrderAndServerId(@Param("workOrderId") Long workOrderId, @Param("thirdId")Long thirdId, @Param("solution")String solution);
 }

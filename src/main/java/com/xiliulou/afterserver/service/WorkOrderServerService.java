@@ -18,4 +18,6 @@ public interface WorkOrderServerService extends IService<WorkOrderServer> {
     Boolean removeByWorkOrderId(Long id);
 
     List<Long> queryWorkOrderIds(Long serverId);
+
+    Boolean updateSolutionByWorkOrderAndServerId(Long workOrderId, Long thirdId, String solution);
 }
