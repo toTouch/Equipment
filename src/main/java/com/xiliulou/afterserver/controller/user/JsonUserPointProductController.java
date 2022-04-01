@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Hardy
@@ -47,21 +48,27 @@ public class JsonUserPointProductController {
     @PostMapping("/user/file")
     public R adminPrductFile(@RequestBody File file){
 
-        QueryWrapper<File> wrapper = new QueryWrapper<>();
-        wrapper.eq("type", File.TYPE_POINTNEW);
-        wrapper.eq("file_type", file.getFileType());
-        wrapper.eq("bind_id", file.getBindId());
 
-        if(file.getFileType() % 100 == 0){
-            Integer count = fileService.getBaseMapper().selectCount(wrapper);
-            if(count >= 2){
-                return R.fail("该类其他图片已达上限，请删除图片后继续上传！");
+        if(Objects.equals(File.TYPE_POINTNEW, file.getFileType())){
+            QueryWrapper<File> wrapper = new QueryWrapper<>();
+            wrapper.eq("type", File.TYPE_POINTNEW);
+            wrapper.eq("file_type", file.getFileType());
+            wrapper.eq("bind_id", file.getBindId());
+            if(file.getFileType() % 100 == 0){
+                Integer count = fileService.getBaseMapper().selectCount(wrapper);
+                if(count >= 2){
+                    return R.fail("该类其他图片已达上限，请删除图片后继续上传！");
+                }
+            }
+
+            if(!(file.getFileType() % 100 == 0)){
+                fileService.getBaseMapper().delete(wrapper);
             }
         }
 
-        if(!(file.getFileType() % 100 == 0)){
-            fileService.getBaseMapper().delete(wrapper);
-        }
+        //if(){
+
+        //}
 
 
         file.setCreateTime(System.currentTimeMillis());
