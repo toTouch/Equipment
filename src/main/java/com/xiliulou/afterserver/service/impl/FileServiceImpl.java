@@ -53,8 +53,10 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
                 bucketName = storageConfig.getBucketName();
                 dirName = storageConfig.getDir();
             }
-            if(fileType.equals(1)){
 
+            if(fileType.equals(1)){
+                bucketName = storageConfig.getOssVidioBucketName();
+                dirName = storageConfig.getVidioDir();
             }
             String fileDirName = dirName.replaceAll("/","-");
             String fileName =  fileDirName + IdUtil.simpleUUID() + StrUtil.DOT + FileUtil.extName(file.getOriginalFilename());
@@ -91,13 +93,21 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     }
 
     @Override
-    public R downLoadFile(String fileName, HttpServletResponse response) {
+    public R downLoadFile(String fileName,Integer fileType, HttpServletResponse response) {
         String url = "";
+        String dirName = "";
         if(Objects.equals(StorageConfig.IS_USE_OSS, storageConfig.getIsUseOSS())){
             Long expiration = Optional.ofNullable(storageConfig.getExpiration()).orElse(1000L * 60L * 3L) + System.currentTimeMillis();
             try{
+                if(fileType.equals(0)){
+                    dirName = storageConfig.getDir();
+                }
+
+                if(fileType.equals(1)){
+                    dirName = storageConfig.getVidioDir();
+                }
                 url = aliyunOssService.getOssFileUrl(storageConfig.getBucketName(),
-                        storageConfig.getDir() + fileName, expiration);
+                        dirName + fileName, expiration);
             }catch (Exception e){
                 log.error("aliyunOss down File Error!", e);
                 return R.fail("oss获取url失败，请联系管理员");

@@ -58,4 +58,9 @@ public class JsonUserWorkOrderController {
         }
         return workOrderService.updateWorkOrderStatus(query);
     }
+
+    @PutMapping("/admin/wechat/workOrder/submit/review")
+    public R submitReview(@RequestParam("id") Long id, @RequestParam("status")Integer status){
+        return workOrderService.submitReview(id, status);
+    }
 }
