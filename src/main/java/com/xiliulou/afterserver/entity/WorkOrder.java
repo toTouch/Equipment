@@ -144,6 +144,7 @@ public class WorkOrder implements Serializable {
     //7.派送安装
     public static final Integer TYPE_SEND_INSERT = 7;
 
+    //审核状态 1待审核 2未通过 3已通过
     public static final Integer AUDIT_STATUS_WAIT = 1;
     public static final Integer AUDIT_STATUS_FAIL = 2;
     public static final Integer AUDIT_STATUS_PASSED = 3;

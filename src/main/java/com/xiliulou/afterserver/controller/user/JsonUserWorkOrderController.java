@@ -28,9 +28,10 @@ public class JsonUserWorkOrderController {
     @GetMapping("/admin/wechat/workOrder")
     public R queryAssignmentStatusList(@RequestParam(value = "offset", required = false, defaultValue = "0") Long offset,
                                        @RequestParam(value = "size",required = false, defaultValue = "20") Long size,
+                                       @RequestParam(value = "auditStatus") Integer auditStatus,
                                        @RequestParam("status")Integer status){
 
-        return workOrderService.queryAssignmentStatusList(offset, size, status);
+        return workOrderService.queryAssignmentStatusList(offset, size,auditStatus, status);
     }
 
 
