@@ -55,8 +55,8 @@ public class AdminJsonFileController {
      * @return
      */
     @PostMapping("/admin/upload")
-    public R uploadFile(@RequestParam("file") MultipartFile file) {
-        return fileService.uploadFile(file);
+    public R uploadFile(@RequestParam("file") MultipartFile file, @RequestParam(value = "fileType", required = false, defaultValue = "0")Integer fileType) {
+        return fileService.uploadFile(file, fileType);
     }
 
 
