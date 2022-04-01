@@ -1812,8 +1812,12 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("审核通过的工单不允许修改");
         }
 
-        if(Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_FINISHED)){
+        if(Objects.equals(workOrderOld.getAuditStatus(), WorkOrder.AUDIT_STATUS_NOT)){
             return R.fail("审核通过的工单不允许修改");
+        }
+
+        if(Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_FINISHED)){
+            return R.fail("");
         }
 
         if(Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_SUSPEND)){
