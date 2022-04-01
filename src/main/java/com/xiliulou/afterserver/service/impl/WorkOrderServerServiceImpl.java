@@ -2,6 +2,7 @@ package com.xiliulou.afterserver.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.entity.WorkOrderServer;
 import com.xiliulou.afterserver.mapper.WorkOrderServerMapper;
 import com.xiliulou.afterserver.service.WorkOrderServerService;
@@ -26,7 +27,11 @@ public class WorkOrderServerServiceImpl extends ServiceImpl<WorkOrderServerMappe
 
     @Override
     public List<WorkOrderServerQuery> queryByWorkOrderIdAndServerId(Long workOrderId, Long serverId) {
-        return this.baseMapper.queryByWorkOrderId(workOrderId, serverId);
+        List<WorkOrderServerQuery> WorkOrderServerList =  this.baseMapper.queryByWorkOrderId(workOrderId, serverId);
+        WorkOrderServerList.stream().forEach(item -> {
+
+        });
+        return
     }
 
     @Override

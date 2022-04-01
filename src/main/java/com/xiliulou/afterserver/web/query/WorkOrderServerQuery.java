@@ -1,8 +1,10 @@
 package com.xiliulou.afterserver.web.query;
 
+import com.xiliulou.afterserver.entity.File;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author zgw
@@ -72,4 +74,8 @@ public class WorkOrderServerQuery {
      * 第三方对接人
      */
     private String thirdResponsiblePerson;
+    /**
+     * 文件内容
+     */
+    private List<File> fileList;
 }

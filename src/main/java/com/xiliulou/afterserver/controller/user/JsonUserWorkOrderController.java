@@ -52,9 +52,9 @@ public class JsonUserWorkOrderController {
 
     @PutMapping("/admin/wechat/workOrder/assignment/status")
     public R updateWorkOrderStatus(@RequestBody WorkerOrderUpdateStatusQuery query, HttpServletRequest request){
+        if(Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_COMMISSIONER)){
+            return R.fail("请使用专员账号进行登录");
+        }
         return workOrderService.updateWorkOrderStatus(query);
     }
-
-
-
 }
