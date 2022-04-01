@@ -156,7 +156,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 item.setProductInfoList(productInfo);
             }
 
-            LambdaQueryWrapper<File> eq = new LambdaQueryWrapper<File>()
+            /*LambdaQueryWrapper<File> eq = new LambdaQueryWrapper<File>()
                     .eq(File::getType, File.TYPE_WORK_ORDER)
                     .eq(Objects.nonNull(workOrder.getWorkOrderType()), File::getFileType, workOrder.getWorkOrderType())
                     .eq(File::getBindId, item.getId());
@@ -164,7 +164,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             item.setFileList(fileList);
             item.setFileCount(CollectionUtil.isEmpty(fileList) ? 0 : fileList.size());
 
-            item.setParentWorkOrderReason(this.getParentWorkOrderReason(item.getWorkOrderReasonId()));
+            item.setParentWorkOrderReason(this.getParentWorkOrderReason(item.getWorkOrderReasonId()));*/
         });
         page.setRecords(list);
         return page;
