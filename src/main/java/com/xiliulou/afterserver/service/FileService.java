@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface FileService extends IService<File> {
 
-    R uploadFile(MultipartFile file);
+    R uploadFile(MultipartFile file, Integer fileType);
 
     R downLoadFile(String fileName, HttpServletResponse response);
 

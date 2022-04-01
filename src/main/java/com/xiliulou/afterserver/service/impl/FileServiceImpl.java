@@ -44,18 +44,25 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     StorageConfig storageConfig;
 
     @Override
-    public R uploadFile(MultipartFile file) {
+    public R uploadFile(MultipartFile file, Integer fileType) {
         String resultFileName = "";
         String bucketName = "";
+        String dirName = "";
         if(Objects.equals(StorageConfig.IS_USE_OSS, storageConfig.getIsUseOSS())){
-            String fileDirName = storageConfig.getDir().replaceAll("/","-");
+            if(fileType.equals(0)){
+                bucketName = storageConfig.getBucketName();
+                dirName = storageConfig.getDir();
+            }
+            if(fileType.equals(1)){
+
+            }
+            String fileDirName = dirName.replaceAll("/","-");
             String fileName =  fileDirName + IdUtil.simpleUUID() + StrUtil.DOT + FileUtil.extName(file.getOriginalFilename());
 
             try {
-                aliyunOssService.uploadFile(storageConfig.getBucketName(), storageConfig.getDir() + fileName, file.getInputStream());
+                aliyunOssService.uploadFile(bucketName, dirName + fileName, file.getInputStream());
 
                 resultFileName = fileName;
-                bucketName = storageConfig.getBucketName();
             }catch (IOException e){
                 log.error("aliyunOss upload File Error!", e);
                 return R.failMsg(e.getLocalizedMessage());
