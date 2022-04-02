@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service.impl;
 
+import com.alibaba.excel.util.CollectionUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -41,6 +42,7 @@ public class WorkOrderServerServiceImpl extends ServiceImpl<WorkOrderServerMappe
             List<File> files = fileMapper.selectList(fileLambdaQueryWrapper);
 
             item.setFileList(files);
+            item.setFileCount(CollectionUtils.isEmpty(files)?0:files.size());
         });
         return WorkOrderServerList;
     }

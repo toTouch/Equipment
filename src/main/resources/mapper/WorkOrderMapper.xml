@@ -27,11 +27,11 @@
         <id property="type" column="wo_type"/>
         <id property="pointId" column="wo_point_id"/>
         <id property="info" column="wo_info"/>
-        <id property="fee" column="wo_fee"/>
-        <id property="thirdCompanyType" column="wo_third_company_type"/>
-        <id property="thirdCompanyId" column="wo_third_company_id"/>
-        <id property="thirdCompanyPay" column="wo_third_company_pay"/>
-        <id property="thirdReason" column="wo_third_reason"/>
+<!--        <id property="fee" column="wo_fee"/>-->
+<!--        <id property="thirdCompanyType" column="wo_third_company_type"/>-->
+<!--        <id property="thirdCompanyId" column="wo_third_company_id"/>-->
+<!--        <id property="thirdCompanyPay" column="wo_third_company_pay"/>-->
+<!--        <id property="thirdReason" column="wo_third_reason"/>-->
         <id property="workOrderReasonId" column="wo_work_order_reason_id"/>
         <id property="processor" column="wo_processor"/>
         <id property="createrId" column="wo_creater_id"/>
@@ -40,34 +40,30 @@
         <id property="orderNo" column="wo_order_no"/>
         <id property="createTime" column="wo_create_time"/>
         <id property="workOrderType" column="wot_type"/>
-        <id property="thirdCompanyName" column="wo_third_company_name"/>
-        <id property="serverName" column="wo_server_name"/>
+<!--        <id property="thirdCompanyName" column="wo_third_company_name"/>-->
+<!--        <id property="serverName" column="wo_server_name"/>-->
         <id property="transferSourcePointId" column="wo_transfer_source_point_id"/>
         <id property="transferSourcePointName" column="wo_transfer_source_point_name"/>
         <id property="transferDestinationPointId" column="wo_transfer_destination_point_id"/>
         <id property="transferDestinationPointName" column="wo_transfer_destination_point_name"/>
         <id property="product" column="wo_product"/>
         <id property="code" column="wo_code"/>
-        <id property="serverId" column="wo_server_id"/>
+<!--        <id property="serverId" column="wo_server_id"/>-->
         <id property="reason" column="wo_reason"/>
         <id property="workOrderReasonName" column="wor_name"/>
         <id property="creater" column="u_user_name"/>
         <id property="pointName" column="p_name"/>
         <id property="pointStatus" column="p_status"/>
         <id property="describeinfo" column="wo_describeinfo"/>
-        <id property="paymentMethod" column="wo_payment_method"/>
-        <id property="thirdPaymentStatus" column="wo_third_payment_status"/>
+<!--        <id property="paymentMethod" column="wo_payment_method"/>-->
+<!--        <id property="thirdPaymentStatus" column="wo_third_payment_status"/>-->
         <id property="destinationType" column="wo_destination_type"></id>
         <id property="sourceType" column="wo_source_type"></id>
-        <id property="thirdResponsiblePerson" column="wo_third_responsible_person"></id>
+<!--        <id property="thirdResponsiblePerson" column="wo_third_responsible_person"></id>-->
         <id property="productInfo" column="wo_product_info"></id>
         <id property="auditStatus" column="wo_audit_status"/>
         <id property="auditRemarks" column="wo_audit_remarks"/>
         <id property="commissionerId" column="wo_commissioner_id"/>
-        <collection property="workOrderServerList"
-                    select="com.xiliulou.afterserver.mapper.WorkOrderServerMapper.queryByWorkOrderId"
-                    column="wo_id">
-        </collection>
     </resultMap>
 
     <resultMap id="userMap" type="com.xiliulou.afterserver.web.vo.WorkOrderAssignmentVo">
@@ -98,11 +94,11 @@
         wo.type as wo_type,
         wo.point_id as wo_point_id,
         wo.info as wo_info,
-        wo.fee as wo_fee,
-        wo.third_company_type as wo_third_company_type,
-        wo.third_company_id as wo_third_company_id,
-        wo.third_company_pay as wo_third_company_pay,
-        wo.third_reason as wo_third_reason,
+--         wo.fee as wo_fee,
+--         wo.third_company_type as wo_third_company_type,
+--         wo.third_company_id as wo_third_company_id,
+--         wo.third_company_pay as wo_third_company_pay,
+--         wo.third_reason as wo_third_reason,
         wo.work_order_reason_id as wo_work_order_reason_id,
         wo.processor as wo_processor,
         wo.creater_id as wo_creater_id,
@@ -110,19 +106,19 @@
         wo.status as wo_status,
         wo.order_no as wo_order_no,
         wo.create_time as wo_create_time,
-        wo.server_id as wo_server_id,
-        wo.third_company_name as wo_third_company_name,
-        wo.server_name as wo_server_name,
+--         wo.server_id as wo_server_id,
+--         wo.third_company_name as wo_third_company_name,
+--         wo.server_name as wo_server_name,
         wo.transfer_source_point_id as wo_transfer_source_point_id,
         wo.transfer_destination_point_id as wo_transfer_destination_point_id,
         wo.product as wo_product,
         wo.code as wo_code,
         wo.reason as wo_reason,
         wo.describeinfo as wo_describeinfo,
-        wo.payment_method as wo_payment_method,
-        wo.third_payment_status as wo_third_payment_status,
+--         wo.payment_method as wo_payment_method,
+--         wo.third_payment_status as wo_third_payment_status,
         wo.destination_type as wo_destination_type,
-        wo.third_responsible_person as wo_third_responsible_person,
+--         wo.third_responsible_person as wo_third_responsible_person,
         wo.audit_status as wo_audit_status,
         wo.audit_remarks as wo_audit_remarks,
         wo.source_type as wo_source_type,
