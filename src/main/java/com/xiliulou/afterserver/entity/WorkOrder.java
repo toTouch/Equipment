@@ -77,7 +77,7 @@ public class WorkOrder implements Serializable {
     /**
      * 第三方责任人
      */
-    private String thirdResponsiblePerson;
+   // private String thirdResponsiblePerson;
     private Integer auditStatus;
     private String auditRemarks;
     /**
