@@ -66,7 +66,7 @@ public interface WorkOrderService extends IService<WorkOrder> {
 
     List<AfterOrderVo> installWorkOrderList(Long pointId, Integer cityId, Long startTime,Long endTime);
 
-    R updateWorkorderProcessTime(Long id);
+    R updateWorkorderProcessTime(Long id, Long serverId);
 
     R updateAuditStatus(WorkOrderAuditStatusQuery workOrderAuditStatusQuery);
 

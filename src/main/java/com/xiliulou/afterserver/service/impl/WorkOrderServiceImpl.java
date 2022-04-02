@@ -1493,7 +1493,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("数据库保存出错");
         }
 
-        if (!workOrder.getFileList().isEmpty()) {
+        /*if (!workOrder.getFileList().isEmpty()) {
             workOrder.getFileList().forEach(item -> {
                 File file = new File();
                 file.setType(File.TYPE_WORK_ORDER);
@@ -1503,7 +1503,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 file.setFileType(Integer.parseInt(workOrder.getType()));
                 fileService.save(file);
             });
-        }
+        }*/
 
         if (!CollectionUtils.isEmpty(workOrder.getWorkOrderServerList())) {
             workOrder.getWorkOrderServerList().forEach(item -> {
@@ -1720,15 +1720,18 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     @Override
-    public R updateWorkorderProcessTime(Long id) {
-        WorkOrder workOrder = baseMapper.selectById(id);
+    public R updateWorkorderProcessTime(Long id, Long serverId) {
+       /* List<WorkOrderServerQuery>  workOrderServers = workOrderServerService.queryByWorkOrderIdAndServerId(id, serverId);
+        if(CollectionUtils.isEmpty(workOrderServers)||workOrderServers.size() > 1){
+
+        }
 
         if (Objects.isNull(workOrder)) {
             return R.fail("id不存在");
         }
         workOrder.setProcessTime(System.currentTimeMillis());
         baseMapper.updateById(workOrder);
-        return R.ok();
+        return R.ok();*/
     }
 
     @Override
