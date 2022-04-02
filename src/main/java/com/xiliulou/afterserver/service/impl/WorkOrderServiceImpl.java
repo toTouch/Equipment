@@ -156,13 +156,24 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 item.setProductInfoList(productInfo);
             }
 
+            List<WorkOrderServerQuery> workOrderServers = workOrderServerService.queryByWorkOrderIdAndServerId(item.getId(), null);
+            item.setWorkOrderServerList(workOrderServers);
+
+            //凭证
             LambdaQueryWrapper<File> eq = new LambdaQueryWrapper<File>()
                     .eq(File::getType, File.TYPE_WORK_ORDER)
-                    .eq(Objects.nonNull(workOrder.getWorkOrderType()), File::getFileType, workOrder.getWorkOrderType())
+                    .eq(File::getFileType, 0)
                     .eq(File::getBindId, item.getId());
             List<File> fileList = fileService.getBaseMapper().selectList(eq);
-            item.setFileList(fileList);
-            item.setFileCount(CollectionUtil.isEmpty(fileList) ? 0 : fileList.size());
+            item.setVoucherImgFile(fileList);
+
+            //视频
+            eq.clear();
+            eq.eq(File::getType, File.TYPE_WORK_ORDER)
+                    .eq(File::getFileType, 90000)
+                    .eq(File::getBindId, item.getId());
+            File files = fileService.getBaseMapper().selectOne(eq);
+            item.setVoucherVideoFile(files);
 
             item.setParentWorkOrderReason(this.getParentWorkOrderReason(item.getWorkOrderReasonId()));
         });
@@ -1787,6 +1798,22 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     List<WorkOrderServerQuery> workOrderServerList = workOrderServerService.queryByWorkOrderIdAndServerId(item.getId(), serverId);
                     item.setWorkOrderServerList(workOrderServerList);
                 }
+
+                //凭证
+                LambdaQueryWrapper<File> eq = new LambdaQueryWrapper<File>()
+                        .eq(File::getType, File.TYPE_WORK_ORDER)
+                        .eq(File::getFileType, 0)
+                        .eq(File::getBindId, item.getId());
+                List<File> fileList = fileService.getBaseMapper().selectList(eq);
+                item.setVoucherImgFile(fileList);
+
+                //视频
+                eq.clear();
+                eq.eq(File::getType, File.TYPE_WORK_ORDER)
+                        .eq(File::getFileType, 90000)
+                        .eq(File::getBindId, item.getId());
+                File files = fileService.getBaseMapper().selectOne(eq);
+                item.setVoucherVideoFile(files);
             }
         }
 
@@ -1817,9 +1844,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("审核通过的工单不允许修改");
         }
 
-        if(Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_FINISHED) && !Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_FINISHED)){
+        /*if(Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_FINISHED) && !Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_FINISHED)){
             return R.fail("已完结状态不能修改状态");
-        }
+        }*/
 
         if(Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_SUSPEND)){
             if(!Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_INIT)

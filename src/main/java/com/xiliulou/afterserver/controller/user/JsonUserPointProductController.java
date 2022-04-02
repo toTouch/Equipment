@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.controller.user;
 
+import com.alibaba.excel.util.CollectionUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
@@ -66,22 +67,27 @@ public class JsonUserPointProductController {
             }
         }
 
-        if(Objects.equals(File.TYPE_WORK_ORDER, file.getFileType())){
+        if(Objects.equals(File.TYPE_WORK_ORDER, file.getType())){
             QueryWrapper<File> wrapper = new QueryWrapper<>();
             wrapper.eq("type", File.TYPE_WORK_ORDER);
             wrapper.eq("bind_id", file.getBindId());
             if(Objects.equals(0, file.getFileType())){
                 wrapper.eq("file_type", 0);
-            }else{
-                wrapper.ge("file_type", 1);
+            }else if(file.getFileType() < 90000){
+                wrapper.ge("file_type", 1).lt("file_type", 90000);
+            }else if(file.getFileType() == 90000){
+                wrapper.eq("file_type", 90000);
             }
 
-            Integer count = fileService.getBaseMapper().selectCount(wrapper);
+            List<File> list = fileService.getBaseMapper().selectList(wrapper);
+            Integer count = CollectionUtils.isEmpty(list) ? 0 : list.size();
 
             if(Objects.equals(0, file.getFileType()) && count >= 6){
                 return R.fail("该类其他图片已达上限，请删除图片后继续上传！");
-            }else if (count >= 10){
+            }else if (Objects.equals(0, file.getFileType()) && count >= 10){
                 return R.fail("该类其他图片已达上限，请删除图片后继续上传！");
+            }else if(){
+                fileService.getBaseMapper()
             }
         }
 

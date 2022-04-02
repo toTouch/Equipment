@@ -86,4 +86,12 @@ public class WorkOrderVo {
     private Long commissionerId;
     private String commissionerName;
     private List<WorkOrderServerQuery> workOrderServerList;
+    /**
+     * 凭证
+     */
+    private List<File> voucherImgFile;
+    /**
+     * 视频
+     */
+    private File voucherVideoFile;
 }
