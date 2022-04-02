@@ -1010,7 +1010,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         workOrder.setStatus(WorkOrder.STATUS_FINISHED);
         workOrder.setOrderNo(RandomUtil.randomString(10));
         baseMapper.insert(workOrder);
-        if (ObjectUtil.isNotEmpty(workOrder.getFileList())) {
+        /*if (ObjectUtil.isNotEmpty(workOrder.getFileList())) {
             List<File> filList = new ArrayList();
             for (String name : workOrder.getFileList()) {
                 File file = new File();
@@ -1021,7 +1021,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 filList.add(file);
             }
             fileService.saveBatch(filList);
-        }
+        }*/
 
         return R.ok();
     }
@@ -1435,7 +1435,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.failMsg("未找到点位信息!");
         }
         if (ObjectUtil.isNotEmpty(workOrderQuery.getProductSerialNumberIdAndSetNoMap())) {
-            BigDecimal totalAmount = Objects.isNull(workOrder.getFee()) ? BigDecimal.ZERO : workOrder.getFee();
+            //BigDecimal totalAmount = Objects.isNull(workOrder.getFee()) ? BigDecimal.ZERO : workOrder.getFee();
             for (Map.Entry<Long, Integer> entry : workOrderQuery.getProductSerialNumberIdAndSetNoMap().entrySet()) {
                 ProductSerialNumber productSerialNumber = productSerialNumberMapper.selectById(entry.getKey());
                 if (Objects.isNull(productSerialNumber)) {
@@ -1445,11 +1445,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 productSerialNumber.setPointId(workOrder.getId());
                 productSerialNumber.setSetNo(entry.getValue());
                 productSerialNumberMapper.updateById(productSerialNumber);
-                totalAmount = totalAmount.add(productSerialNumber.getPrice());
+                //totalAmount = totalAmount.add(productSerialNumber.getPrice());
             }
             WorkOrder workOrderUpdate = new WorkOrder();
             workOrderUpdate.setId(workOrderUpdate.getId());
-            workOrder.setFee(totalAmount);
+            //workOrder.setFee(totalAmount);
             baseMapper.updateById(workOrderUpdate);
         }
         return R.ok();
