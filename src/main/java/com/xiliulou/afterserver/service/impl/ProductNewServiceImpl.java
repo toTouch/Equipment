@@ -228,13 +228,13 @@ public class ProductNewServiceImpl implements ProductNewService {
                 return R.fail("未查询到摄像头序列号");
             }
 
-            ProductNew productNew = productNewMapper.selectOne(new QueryWrapper<ProductNew>()
+           /* ProductNew productNew = productNewMapper.selectOne(new QueryWrapper<ProductNew>()
                     .eq("camera_id", camera.getId())
                     .eq("del_flag", ProductNew.DEL_NORMAL));
 
             if(Objects.nonNull(productNew)){
                 return R.fail("序列号已绑定到其他产品");
-            }
+            }*/
         }
 
 
