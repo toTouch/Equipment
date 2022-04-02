@@ -33,11 +33,11 @@ public class WorkOrder implements Serializable {
      */
     private String info;
     
-    private BigDecimal fee;
-    private Long thirdCompanyId;
-    private Integer thirdCompanyType;
-    private BigDecimal thirdCompanyPay;
-    private String thirdReason;
+   // private BigDecimal fee;
+   // private Long thirdCompanyId;
+  //  private Integer thirdCompanyType;
+  //  private BigDecimal thirdCompanyPay;
+  //  private String thirdReason;
     private Long workOrderReasonId;
     //服务商id
     private Long serverId;
@@ -48,8 +48,8 @@ public class WorkOrder implements Serializable {
     private String orderNo;  //工单编号·
     private Long createrId;
     private Long createTime;
-    private String thirdCompanyName;
-    private String serverName;
+   // private String thirdCompanyName;
+   // private String serverName;
     private String product;
     private String code;
     //private Integer boxNumber;
@@ -68,11 +68,11 @@ public class WorkOrder implements Serializable {
     /**
      * 结算方式 1--月结 2--现结
      */
-    private Integer paymentMethod;
+    //private Integer paymentMethod;
     /**
      * 第三方结算状态 无需结算 1，未结算 2，已结算 3
      */
-    private Integer thirdPaymentStatus;
+   // private Integer thirdPaymentStatus;
 
     /**
      * 第三方责任人
