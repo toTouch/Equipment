@@ -80,14 +80,16 @@ public class JsonUserPointProductController {
             }
 
             List<File> list = fileService.getBaseMapper().selectList(wrapper);
-            Integer count = CollectionUtils.isEmpty(list) ? 0 : list.size();
+            int count = CollectionUtils.isEmpty(list) ? 0 : list.size();
 
             if(Objects.equals(0, file.getFileType()) && count >= 6){
                 return R.fail("该类其他图片已达上限，请删除图片后继续上传！");
-            }else if (Objects.equals(0, file.getFileType()) && count >= 10){
+            }else if (file.getFileType() < 90000 && count >= 10){
                 return R.fail("该类其他图片已达上限，请删除图片后继续上传！");
-            }else if(){
-                fileService.getBaseMapper()
+            }else if(file.getFileType() == 90000 && count >= 1){
+                list.stream().forEach(item -> {
+                    fileService.getBaseMapper().deleteById(item.getId());
+                });
             }
         }
 
