@@ -1730,8 +1730,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("id不存在");
         }
         workOrder.setProcessTime(System.currentTimeMillis());
-        baseMapper.updateById(workOrder);
-        return R.ok();*/
+        baseMapper.updateById(workOrder);*/
+        return R.ok();
     }
 
     @Override
