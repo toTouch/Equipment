@@ -79,4 +79,6 @@ public interface WorkOrderService extends IService<WorkOrder> {
     R updateServer(String solution, Long workOrderId);
 
     R submitReview(Long id, Integer status);
+
+    String getParentWorkOrderReason(Long id);
 }

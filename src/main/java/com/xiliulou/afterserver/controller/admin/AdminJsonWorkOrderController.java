@@ -79,17 +79,12 @@ public class AdminJsonWorkOrderController {
         workOrder.setProcessor(uid.toString());
         workOrder.setCreaterId(uid);
         workOrder.setCreateTime(System.currentTimeMillis());
-        workOrder.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
+        workOrder.setAuditStatus(WorkOrder.AUDIT_STATUS_NOT);
         return workOrderService.saveWorkerOrder(workOrder);
     }
 
     @PutMapping("admin/update/workorder/status")
     public R updateWorkOrderStatus(@RequestBody WorkerOrderUpdateStatusQuery query,HttpServletRequest request){
-//        Long uid = (Long) request.getAttribute("uid");
-//        if (Objects.isNull(uid)){
-//            return R.fail("请传入uid");
-//        }
-//        query.setUid(uid);
         return workOrderService.updateWorkOrderStatus(query);
     }
 
@@ -136,25 +131,25 @@ public class AdminJsonWorkOrderController {
         workOrderService.reconciliationExportExcel(workOrder, response);
     }
 
-    @GetMapping("admin/workOrder/staffFuzzy")
+    @GetMapping("admin/workOrder/staffFuzzy")//
     public R staffFuzzy(@RequestParam("accessToken") String accessToken ){
        List<WorkOrder> workOrders = workOrderService.staffFuzzy(accessToken);
        return R.ok(workOrders);
     }
 
-    @PostMapping("admin/workOrder/serialNumber")
+    @PostMapping("admin/workOrder/serialNumber")//
     public R insertSerialNumber(@RequestBody ProductSerialNumberQuery productSerialNumberQuery) {
 
         return workOrderService.insertSerialNumber(productSerialNumberQuery);
     }
 
-    @GetMapping("admin/workOrder/serialNumber/page")
+    @GetMapping("admin/workOrder/serialNumber/page")//
     public R getSerialNumberPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size,
                                  ProductSerialNumberQuery productSerialNumber) {
         return R.ok(workOrderService.getSerialNumberPage(offset, size, productSerialNumber));
     }
 
-    @PostMapping("admin/workOrder/bindSerialNumber")
+    @PostMapping("admin/workOrder/bindSerialNumber")//
     public R pointBindSerialNumber(@RequestBody WorkOrderQuery workOrderQuery) {
         return workOrderService.pointBindSerialNumber(workOrderQuery);
     }
