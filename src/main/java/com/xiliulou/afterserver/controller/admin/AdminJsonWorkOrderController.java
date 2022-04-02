@@ -93,9 +93,9 @@ public class AdminJsonWorkOrderController {
         return workOrderService.updateWorkOrderStatus(query);
     }
 
-    @PutMapping("admin/update/workorder/processTime/{id}")
-    public R updateWorkorderProcessTime(@PathVariable("id") Long id){
-        return workOrderService.updateWorkorderProcessTime(id);
+    @PutMapping("admin/update/workorder/processTime/{id}/{serverId}")
+    public R updateWorkorderProcessTime(@PathVariable("id") Long id, @PathVariable("serverId") Long serverId){
+        return workOrderService.updateWorkorderProcessTime(id, serverId);
     }
 
     @PutMapping("admin/workOrder")

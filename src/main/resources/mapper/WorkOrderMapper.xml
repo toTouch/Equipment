@@ -35,7 +35,7 @@
         <id property="workOrderReasonId" column="wo_work_order_reason_id"/>
         <id property="processor" column="wo_processor"/>
         <id property="createrId" column="wo_creater_id"/>
-        <id property="processTime" column="wo_process_time"/>
+<!--        <id property="processTime" column="wo_process_time"/>-->
         <id property="status" column="wo_status"/>
         <id property="orderNo" column="wo_order_no"/>
         <id property="createTime" column="wo_create_time"/>
@@ -102,7 +102,7 @@
         wo.work_order_reason_id as wo_work_order_reason_id,
         wo.processor as wo_processor,
         wo.creater_id as wo_creater_id,
-        wo.process_time as wo_process_time,
+--         wo.process_time as wo_process_time,
         wo.status as wo_status,
         wo.order_no as wo_order_no,
         wo.create_time as wo_create_time,
