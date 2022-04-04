@@ -49,7 +49,6 @@ public class JsonUserPointProductController {
     @PostMapping("/user/file")
     public R adminPrductFile(@RequestBody File file){
 
-
         if(Objects.equals(File.TYPE_POINTNEW, file.getFileType())){
             QueryWrapper<File> wrapper = new QueryWrapper<>();
             wrapper.eq("type", File.TYPE_POINTNEW);
@@ -74,7 +73,7 @@ public class JsonUserPointProductController {
             if(Objects.equals(0, file.getFileType())){
                 wrapper.eq("file_type", 0);
             }else if(file.getFileType() < 90000){
-                wrapper.ge("file_type", 1).lt("file_type", 90000);
+                wrapper.ge("file_type", 1).lt("file_type", 90000).eq("server_id", file.getServerId());
             }else if(file.getFileType() == 90000){
                 wrapper.eq("file_type", 90000);
             }

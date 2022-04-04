@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.listener;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
+import com.alibaba.excel.util.CollectionUtils;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -80,123 +81,22 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
     private void saveData() {
         log.info("{}条数据，开始存储数据库！", list.size());
 
-        List<WorkOrder> workOrderList = new ArrayList<>();
+
         this.list.forEach(item -> {
             WorkOrder workOrder = new WorkOrder();
-            //BeanUtils.copyProperties(item, workOrder);
 
-            PointNew pointNew = pointNewService.getOne(new QueryWrapper<PointNew>().eq("name",item.getPointName()).eq("del_flag", PointNew.DEL_NORMAL));
-            if(Objects.nonNull(pointNew)){
-                workOrder.setPointId(pointNew.getId());
-            }
-
-            if(Objects.nonNull(item.getFee())){
-                workOrder.setFee(new BigDecimal(item.getFee()));
-            }
-
-            /**
-             * 第三方公司
-             */
-            if(Objects.nonNull(item.getThirdCompanyType())){
-                Integer thirdCompanyType = this.getThirdCompanyType(item.getThirdCompanyType());
-                if(Objects.nonNull(thirdCompanyType)){
-                    workOrder.setThirdCompanyType(thirdCompanyType);
-                    if(thirdCompanyType == 1){
-                        Customer customer = customerService.getOne(new QueryWrapper<Customer>().eq("name", item.getThirdCompanyName()));
-                        if(Objects.nonNull(customer)){
-                            workOrder.setThirdCompanyName(customer.getName());
-                            workOrder.setThirdCompanyId(customer.getId());
-                        }
-                    }
-                    if(thirdCompanyType == 2){
-                        Supplier supplier = supplierService.getOne(new QueryWrapper<Supplier>().eq("name", item.getThirdCompanyName()));
-                        if(Objects.nonNull(supplier)){
-                            workOrder.setThirdCompanyName(supplier.getName());
-                            workOrder.setThirdCompanyId(supplier.getId());
-                        }
-                    }
-                    if(thirdCompanyType == 3){
-                        Server server = serverService.getOne(new QueryWrapper<Server>().eq("name", item.getThirdCompanyName()));
-                        if(Objects.nonNull(server)){
-                            workOrder.setThirdCompanyName(server.getName());
-                            workOrder.setThirdCompanyId(server.getId());
-                        }
-                    }
-                }
-            }
-
-
-
-            workOrder.setThirdResponsiblePerson(item.getThirdResponsiblePerson());
-
-            Server server = serverService.getOne(new QueryWrapper<Server>().eq("name", item.getServerName()));
-            if(Objects.nonNull(server)){
-                workOrder.setServerName(server.getName());
-                workOrder.setServerId(server.getId());
-            }
-
-            if(Objects.nonNull(item.getProcessTime())){
-                long processTime = dateToStamp(item.getProcessTime());
-                if(processTime != 0){
-                    workOrder.setProcessTime(processTime);
-                }
-            }
-
-
-            workOrder.setOrderNo(RandomUtil.randomString(10));
-
-            workOrder.setCreaterId(SecurityUtils.getUid());
-
-
-            if(Objects.nonNull(item.getDescribeinfo())){
-                workOrder.setDescribeinfo(item.getDescribeinfo());
-            }
-
-            if(Objects.nonNull(item.getPaymentMethod())){
-                if("月结".equals(item.getPaymentMethod()) || String.valueOf(WorkOrder.PAYMENT_METHOD_MONTHLY).equals(item.getPaymentMethod())){
-                    workOrder.setPaymentMethod(WorkOrder.PAYMENT_METHOD_MONTHLY);
-                }
-                if("现结".equals(item.getPaymentMethod()) || String.valueOf(WorkOrder.PAYMENT_METHOD_NOW).equals(item.getPaymentMethod())){
-                    workOrder.setPaymentMethod(WorkOrder.PAYMENT_METHOD_NOW);
-                }
-            }
-
-            if(Objects.nonNull(item.getThirdPaymentStatus())){
-                if("无需结算".equals(item.getThirdPaymentStatus()) || String.valueOf(WorkOrder.THIRD_PAYMENT_UNWANTED).equals(item.getThirdPaymentStatus())){
-                    workOrder.setThirdPaymentStatus(WorkOrder.THIRD_PAYMENT_UNWANTED);
-                }
-                if("未结算".equals(item.getThirdPaymentStatus()) || String.valueOf(WorkOrder.THIRD_PAYMENT_UNFINISHED).equals(item.getThirdPaymentStatus())){
-                    workOrder.setThirdPaymentStatus(WorkOrder.THIRD_PAYMENT_UNFINISHED);
-                }
-                if("已结算".equals(item.getThirdPaymentStatus()) || String.valueOf(WorkOrder.THIRD_PAYMENT_FINISHED).equals(item.getThirdPaymentStatus())){
-                    workOrder.setThirdPaymentStatus(WorkOrder.THIRD_PAYMENT_FINISHED);
-                }
-            }
-
-            workOrder.setCreateTime(System.currentTimeMillis());
+            workOrder.setAuditStatus(WorkOrder.AUDIT_STATUS_NOT);
+            //工单类型
             Integer type = getWorkOrderType(item.getType());
             if(Objects.nonNull(item.getType())){
                 workOrder.setType(type + "");
             }
-
-            if(Objects.nonNull(item.getThirdCompanyPay())){
-                workOrder.setThirdCompanyPay(new BigDecimal(item.getThirdCompanyPay()));
+            //點位
+            PointNew pointNew = pointNewService.getOne(new QueryWrapper<PointNew>().eq("name",item.getPointName()).eq("del_flag", PointNew.DEL_NORMAL));
+            if(Objects.nonNull(pointNew)){
+                workOrder.setPointId(pointNew.getId());
             }
-
-            if(Objects.nonNull(item.getWorkOrderReasonId())){
-                workOrder.setWorkOrderReasonId(Long.valueOf(item.getWorkOrderReasonId()));
-            }
-
-            if(Objects.nonNull(item.getStatus())){
-                workOrder.setStatus(this.getStatus(item.getStatus()));
-            }
-
-            if(Objects.nonNull(item.getInfo())){
-                workOrder.setInfo(item.getInfo());
-            }
-
-
-
+            //起点终点
             if(Objects.equals(type, WorkOrder.TYPE_MOBLIE)){
                 Integer sourceType = getSourceType(item.getSourceType());
                 workOrder.setSourceType(sourceType);
@@ -235,12 +135,123 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
 
             }
 
-            workOrder.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
-            workOrder.setThirdReason(item.getThirdReason());
-            workOrderList.add(workOrder);
+            //狀態
+            if(Objects.nonNull(item.getStatus())){
+                workOrder.setStatus(this.getStatus(item.getStatus()));
+            }
+            //描述
+            if(Objects.nonNull(item.getDescribeinfo())){
+                workOrder.setDescribeinfo(item.getDescribeinfo());
+            }
+
+            //備註
+            if(Objects.nonNull(item.getInfo())){
+                workOrder.setInfo(item.getInfo());
+            }
+
+            //工單原因
+            if(Objects.nonNull(item.getWorkOrderReasonId())){
+                workOrder.setWorkOrderReasonId(Long.valueOf(item.getWorkOrderReasonId()));
+            }
+
+            workOrder.setCreateTime(System.currentTimeMillis());
+
+            workOrder.setOrderNo(RandomUtil.randomString(10));
+
+            workOrder.setCreaterId(SecurityUtils.getUid());
+
+            workOrderService.save(workOrder);
+
+
+            if(StringUtils.isNotBlank(item.getServerName())){
+                WorkOrderServer workOrderServer = new WorkOrderServer();
+                workOrderServer.setWorkOrderId(workOrder.getId());
+
+                Server server = serverService.getOne(new QueryWrapper<Server>().eq("name", item.getServerName()));
+                if(Objects.nonNull(server)){
+                    workOrderServer.setServerName(server.getName());
+                    workOrderServer.setServerId(server.getId());
+                }
+
+                if(Objects.nonNull(item.getFee())){
+                    workOrderServer.setFee(new BigDecimal(item.getFee()));
+                }
+
+                if(Objects.nonNull(item.getPaymentMethod())){
+                    if("月结".equals(item.getPaymentMethod()) || String.valueOf(WorkOrder.PAYMENT_METHOD_MONTHLY).equals(item.getPaymentMethod())){
+                        workOrderServer.setPaymentMethod(WorkOrder.PAYMENT_METHOD_MONTHLY);
+                    }
+                    if("现结".equals(item.getPaymentMethod()) || String.valueOf(WorkOrder.PAYMENT_METHOD_NOW).equals(item.getPaymentMethod())){
+                        workOrderServer.setPaymentMethod(WorkOrder.PAYMENT_METHOD_NOW);
+                    }
+                }
+
+                workOrderServer.setSolution(item.getSolution());
+
+                //0--不要 1--需要
+                if(Objects.nonNull(item.getIsUseThird())){
+                    if("需要".equals(item.getIsUseThird()) || String.valueOf(WorkOrderServer.USE_THIRD).equals(item.getIsUseThird())){
+                        workOrderServer.setIsUseThird(1);
+                    }
+                    if("不需要".equals(item.getIsUseThird()) || String.valueOf(WorkOrderServer.NOT_USE_THIRD).equals(item.getIsUseThird())){
+                        workOrderServer.setIsUseThird(0);
+                    }
+                }
+
+                if(Objects.equals(workOrderServer.getIsUseThird(), WorkOrderServer.NOT_USE_THIRD)) {
+                    if(Objects.nonNull(item.getThirdCompanyType())){
+                        Integer thirdCompanyType = this.getThirdCompanyType(item.getThirdCompanyType());
+                        if(Objects.nonNull(thirdCompanyType)){
+                            workOrderServer.setThirdCompanyType(thirdCompanyType);
+                            if(thirdCompanyType == 1){
+                                Customer customer = customerService.getOne(new QueryWrapper<Customer>().eq("name", item.getThirdCompanyName()));
+                                if(Objects.nonNull(customer)){
+                                    workOrderServer.setThirdCompanyName(customer.getName());
+                                    workOrderServer.setThirdCompanyId(customer.getId() + "");
+                                }
+                            }
+                            if(thirdCompanyType == 2){
+                                Supplier supplier = supplierService.getOne(new QueryWrapper<Supplier>().eq("name", item.getThirdCompanyName()));
+                                if(Objects.nonNull(supplier)){
+                                    workOrderServer.setThirdCompanyName(supplier.getName());
+                                    workOrderServer.setThirdCompanyId(supplier.getId() + "");
+                                }
+                            }
+                            if(thirdCompanyType == 3){
+                                Server serverOne = serverService.getOne(new QueryWrapper<Server>().eq("name", item.getThirdCompanyName()));
+                                if(Objects.nonNull(serverOne)){
+                                    workOrderServer.setThirdCompanyName(serverOne.getName());
+                                    workOrderServer.setThirdCompanyId(serverOne.getId() + "");
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                if(Objects.nonNull(item.getThirdCompanyPay())){
+                    workOrderServer.setThirdCompanyPay(new BigDecimal(item.getThirdCompanyPay()));
+                }
+
+                if(Objects.nonNull(item.getThirdPaymentStatus())){
+                    if("无需结算".equals(item.getThirdPaymentStatus()) || String.valueOf(WorkOrder.THIRD_PAYMENT_UNWANTED).equals(item.getThirdPaymentStatus())){
+                        workOrderServer.setThirdPaymentStatus(WorkOrder.THIRD_PAYMENT_UNWANTED);
+                    }
+                    if("未结算".equals(item.getThirdPaymentStatus()) || String.valueOf(WorkOrder.THIRD_PAYMENT_UNFINISHED).equals(item.getThirdPaymentStatus())){
+                        workOrderServer.setThirdPaymentStatus(WorkOrder.THIRD_PAYMENT_UNFINISHED);
+                    }
+                    if("已结算".equals(item.getThirdPaymentStatus()) || String.valueOf(WorkOrder.THIRD_PAYMENT_FINISHED).equals(item.getThirdPaymentStatus())){
+                        workOrderServer.setThirdPaymentStatus(WorkOrder.THIRD_PAYMENT_FINISHED);
+                    }
+                }
+
+                workOrderServer.setThirdReason(item.getThirdReason());
+
+                workOrderServer.setThirdResponsiblePerson(item.getThirdResponsiblePerson());
+            }
+
         });
-        workOrderService.saveBatch(workOrderList);
-        log.info("存储数据库成功！");
+
     }
 
 
@@ -391,9 +402,17 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
             throw new RuntimeException("请填写工单状态");
         }
 
-        if(Objects.isNull(workOrderInfo.getProcessTime())){
-            throw new RuntimeException("请填写处理时间");
+        if(!Objects.equals(status,  WorkOrder.STATUS_INIT)
+                || !Objects.equals(status, WorkOrder.STATUS_ASSIGNMENT)){
+            throw new RuntimeException("状态请选择为待派单或待处理状态");
         }
+
+        if(Objects.equals(status, WorkOrder.STATUS_INIT)){
+            if(StringUtils.isBlank(workOrderInfo.getServerName())){
+                throw new RuntimeException("待派单工单必须有服务商");
+            }
+        }
+
 
         if(Objects.equals(type, WorkOrder.TYPE_MOBLIE)){
             Integer sourceType = getSourceType(workOrderInfo.getSourceType());
