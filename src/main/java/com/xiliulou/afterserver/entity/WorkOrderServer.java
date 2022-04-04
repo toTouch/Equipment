@@ -73,4 +73,7 @@ public class WorkOrderServer {
      * 第三方对接人
      */
     private String thirdResponsiblePerson;
+
+    public static final Integer USE_THIRD = 1;
+    public static final Integer NOT_USE_THIRD = 0;
 }

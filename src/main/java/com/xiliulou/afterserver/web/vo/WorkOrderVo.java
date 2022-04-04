@@ -94,4 +94,8 @@ public class WorkOrderVo {
      * 视频
      */
     private File voucherVideoFile;
+    /**
+     * 费用
+     */
+    private BigDecimal totalFee;
 }
