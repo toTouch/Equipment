@@ -78,4 +78,8 @@ public class WorkOrderServerQuery {
      * 文件内容
      */
     private List<File> fileList;
+    /**
+     * 文件个数
+     */
+    private Integer fileCount;
 }
