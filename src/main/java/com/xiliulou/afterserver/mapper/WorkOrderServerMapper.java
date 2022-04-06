@@ -23,4 +23,7 @@ public interface WorkOrderServerMapper extends BaseMapper<WorkOrderServer> {
 
     @Update("update t_work_order_server set solution = #{solution} where work_order_id = #{workOrderId} and server_id = #{thirdId}")
     Boolean updateSolutionByWorkOrderAndServerId(@Param("workOrderId") Long workOrderId, @Param("thirdId")Long thirdId, @Param("solution")String solution);
+
+    @Select("select avg(prescription) from t_work_order_server where create_time >= #{curtMonthTime} ")
+    Long queryPrescriptionAvgByServerId(@Param("curtMonthTime") Long curtMonthTime, @Param("id")Long id);
 }
