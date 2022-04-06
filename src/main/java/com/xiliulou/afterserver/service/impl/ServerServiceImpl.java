@@ -10,6 +10,9 @@ import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.mapper.ServerMapper;
 import com.xiliulou.afterserver.service.ServerService;
 import com.xiliulou.afterserver.service.UserService;
+import com.xiliulou.afterserver.service.WorkOrderServerService;
+import com.xiliulou.afterserver.service.WorkOrderService;
+import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.PageUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,8 @@ public class ServerServiceImpl extends ServiceImpl<ServerMapper, Server> impleme
 
     @Autowired
     UserService userService;
+    @Autowired
+    WorkOrderServerService workOrderServerService;
 
     @Override
     public IPage getPage(Long offset, Long size, Server server) {
@@ -50,6 +55,8 @@ public class ServerServiceImpl extends ServiceImpl<ServerMapper, Server> impleme
                 if(Objects.nonNull(user)){
                     item.setCreateUname(user.getUserName());
                 }
+                Long curtMonthTime = DateUtils.getMonthStartTime(System.currentTimeMillis());
+                //workOrderServerService.queryPrescriptionAvg(curtMonthTime);
             });
         }
         return page;
