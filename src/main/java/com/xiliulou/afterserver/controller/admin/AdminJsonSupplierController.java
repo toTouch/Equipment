@@ -3,6 +3,8 @@ package com.xiliulou.afterserver.controller.admin;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.read.metadata.ReadSheet;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xiliulou.afterserver.controller.BaseController;
@@ -45,6 +47,12 @@ public class AdminJsonSupplierController extends BaseController {
         if(StringUtils.isBlank(supplier.getArea())){
             return R.fail("请添加城市");
         }
+        BaseMapper<Supplier> baseMapper = supplierService.getBaseMapper();
+        Supplier supplierOld = baseMapper.selectOne(new QueryWrapper<Supplier>().eq("name", supplier.getName()));
+        if(Objects.nonNull(supplierOld)){
+            return R.fail("供应商列表已存在【" + supplier.getName()  + "】");
+        }
+
         supplier.setCreateTime(System.currentTimeMillis());
         return R.ok(supplierService.save(supplier));
     }
@@ -54,6 +62,12 @@ public class AdminJsonSupplierController extends BaseController {
         if(StringUtils.isBlank(supplier.getArea())){
             return R.fail("请添加城市");
         }
+        BaseMapper<Supplier> baseMapper = supplierService.getBaseMapper();
+        Supplier supplierOld = baseMapper.selectOne(new QueryWrapper<Supplier>().eq("name", supplier.getName()));
+        if(Objects.nonNull(supplierOld) && !Objects.equals(supplier.getId(), supplierOld.getId())){
+            return R.fail("供应商列表已存在【" + supplier.getName()  + "】");
+        }
+
         return R.ok(supplierService.updateById(supplier));
     }
 

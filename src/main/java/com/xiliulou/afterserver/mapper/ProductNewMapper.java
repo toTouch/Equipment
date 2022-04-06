@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 /**
  * (ProductNew)表数据库访问层
@@ -36,7 +37,8 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
                                      @Param("modelId") Long modelId,
                                      @Param("startTime") Long startTime,
                                      @Param("endTime") Long endTime,
-                                     @Param("pointId") Long pointId);
+                                     @Param("pointId") Long pointId,
+                                     @Param("pointType") Integer pointType);
 
 
     /**
@@ -84,4 +86,7 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
 
     @Select("select id, no from t_product_new where del_flag = 0")
     List<ProductNew> selectNoPull();
+
+    @Update("update t_product_new set test_file = #{testFile}, test_result = #{testResult}, status = #{status}, iot_card_id = #{iotCardId} where no = #{no}")
+    Integer updateByNo(ProductNew productNew);
 }

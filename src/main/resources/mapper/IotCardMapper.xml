@@ -3,16 +3,108 @@
 <mapper namespace="com.xiliulou.afterserver.mapper.IotCardMapper">
 
     <resultMap id="getPageMap" type="com.xiliulou.afterserver.entity.IotCard">
-
+        <id column="id" property="id"></id>
+        <result column="sn" property="sn"></result>
+        <result column="batch_id" property="batchId"></result>
+        <result column="supplier_id" property="supplierId"></result>
+        <result column="operator" property="operator"></result>
+        <result column="activation_time" property="activationTime"></result>
+        <result column="packages" property="packages"></result>
+        <result column="term_of_alidity" property="termOfAlidity"></result>
+        <result column="expiration_time" property="expirationTime"></result>
+        <result column="create_time" property="createTime"></result>
+        <result column="update_time" property="updateTime"></result>
+        <result column="del_flag" property="delFlag"></result>
+        <result column="expiration_flag" property="expirationFlag"></result>
     </resultMap>
 
     <select id="getPage" resultMap="getPageMap">
-        select id,batch_id, supplier_id, operator, activation_time, packages, term_of_alidity, expiration_time, create_time, update_time, del_flag
+        select id,sn,batch_id, supplier_id, operator, activation_time, packages, term_of_alidity, expiration_time, create_time, update_time, del_flag, expiration_flag
+        from t_iot_card
+        <where>
+            del_flag = 0
+            <if test="iotCard.sn != null and iotCard.sn != ''">
+                and sn like concat('%',sn,'%')
+            </if>
+            <if test="iotCard.batchId != null">
+                and batch_id = #{iotCard.batchId}
+            </if>
+            <if test="iotCard.supplierId != null">
+                and supplier_id = #{iotCard.supplierId}
+            </if>
+            <if test="iotCard.operator != null">
+                and operator = #{iotCard.operator}
+            </if>
+            <if test="iotCard.operator != null">
+                and operator = #{iotCard.operator}
+            </if>
+            <if test="iotCard.activationTimeStart != null and iotCard.activationTimeEnd != null">
+                and activation_time BETWEEN AND #{iotCard.activationTimeStart}, #{iotCard.activationTimeEnd}
+            </if>
+            <if test="iotCard.packages != null and iotCard.packages != ''">
+                and packages like #{iotCard.packages}
+            </if>
+            <if test="iotCard.termOfAlidity != null" >
+                and term_of_alidity = #{iotCard.termOfAlidity}
+            </if>
+            <if test="iotCard.expirationTimeStart != null and iotCard.expirationTimeEnd != null">
+                and activation_time BETWEEN AND #{iotCard.expirationTimeStart}, #{iotCard.expirationTimeEnd}
+            </if>
+            <if test="iotCard.createTimeStart != null and iotCard.createTimeEnd != null">
+                and create_time BETWEEN AND #{iotCard.createTimeStart}, #{iotCard.createTimeEnd}
+            </if>
+            <if test="iotCard.expirationFlag != null">
+                and expiration_flag = #{iotCard.expirationFlag}
+            </if>
+        </where>
+        order by  expiration_time, id
+    </select>
+
+    <select id="iotCardList" resultMap="getPageMap">
+        select id,sn,batch_id, supplier_id, operator, activation_time, packages, term_of_alidity, expiration_time, create_time, update_time, del_flag, expiration_flag
+        from t_iot_card
+        <where>
+            del_flag = 0
+            <if test="iotCard.sn != null and iotCard.sn != ''">
+                and sn = #{iotCard.sn}
+            </if>
+            <if test="iotCard.batchId != null">
+                and batch_id = #{iotCard.batchId}
+            </if>
+            <if test="iotCard.supplierId != null">
+                and supplier_id = #{iotCard.supplierId}
+            </if>
+            <if test="iotCard.operator != null">
+                and operator = #{iotCard.operator}
+            </if>
+            <if test="iotCard.operator != null">
+                and operator = #{iotCard.operator}
+            </if>
+            <if test="iotCard.activationTimeStart != null and iotCard.activationTimeEnd != null">
+                and activation_time BETWEEN AND #{iotCard.activationTimeStart}, #{iotCard.activationTimeEnd}
+            </if>
+            <if test="iotCard.packages != null and iotCard.packages != ''">
+                and packages like #{iotCard.packages}
+            </if>
+            <if test="iotCard.termOfAlidity != null" >
+                and term_of_alidity = #{iotCard.termOfAlidity}
+            </if>
+            <if test="iotCard.expirationTimeStart != null and iotCard.expirationTimeEnd != null">
+                and activation_time BETWEEN AND #{iotCard.expirationTimeStart}, #{iotCard.expirationTimeEnd}
+            </if>
+            <if test="iotCard.createTimeStart != null and iotCard.createTimeEnd != null">
+                and create_time BETWEEN AND #{iotCard.createTimeStart}, #{iotCard.createTimeEnd}
+            </if>
+            <if test="iotCard.expirationFlag != null">
+                and expiration_flag = #{iotCard.expirationFlag}
+            </if>
+        </where>
+        order by expiration_time, id
     </select>
     
     <insert id="saveOne" keyProperty="id" useGeneratedKeys="true">
-        insert into t_iot_card(batch_id, supplier_id, operator, activation_time, packages, term_of_alidity, expiration_time, create_time, update_time, del_flag)
-        values(#{batchId}, #{supplierId}, #{operator}, #{activationTime}, #{packages}, #{termOfAlidity}, #{expirationTime}, #{createTime}, #{updateTime}, #{delFlag})
+        insert into t_iot_card(sn, batch_id, supplier_id, operator, activation_time, packages, term_of_alidity, expiration_time, create_time, update_time, del_flag, expiration_flag)
+        values(#{sn},#{batchId}, #{supplierId}, #{operator}, #{activationTime}, #{packages}, #{termOfAlidity}, #{expirationTime}, #{createTime}, #{updateTime}, #{delFlag}, #{expirationFlag})
     </insert>
 
     <update id="updateOne">
@@ -22,7 +114,7 @@
                 batch_id = #{batchId},
             </if>
             <if test="supplierId != null">
-                batch_id = #{supplierId},
+                supplier_id = #{supplierId},
             </if>
             <if test="operator != null">
                 operator = #{operator},
@@ -44,6 +136,9 @@
             </if>
             <if test="updateTime != null">
                 update_time = #{updateTime},
+            </if>
+            <if test="sn != null and sn != ''">
+                sn = #{sn},
             </if>
         </set>
         where id = #{id}

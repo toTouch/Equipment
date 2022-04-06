@@ -12,6 +12,7 @@ import com.xiliulou.afterserver.export.CustomerInfo;
 import com.xiliulou.afterserver.export.PointInfo;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -102,10 +103,6 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
                 throw new RuntimeException("点位" + pointInfo.getName() + "没有查询到客户信息");
             }
         }
-        if(Objects.nonNull(pointInfo.getWarrantyPeriod()) && Objects.isNull(pointInfo.getInstallTime())){
-            log.error("insert PointInfo error! not calculation warrantyTime pointName={}",pointInfo.getName());
-            throw new RuntimeException("点位" + pointInfo.getName() + "没有添加安装时间");
-        }
         list.add(pointInfo);
         if (list.size() >= BATCH_COUNT) {
             saveData();
@@ -142,7 +139,7 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
             }
 
             if (item.getCustomerId() != null) {
-                LambdaQueryWrapper<Customer> like = new LambdaQueryWrapper<Customer>().eq(Customer::getName, item.getCustomerId());
+                LambdaQueryWrapper<Customer> like = new LambdaQueryWrapper<Customer>().like(Customer::getName, item.getCustomerId());
                 Customer customer = customerService.getOne(like);
                 if (Objects.nonNull(customer)) {
                     point.setCustomerId(customer.getId());
@@ -150,7 +147,7 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
             }
 
             if (item.getCity()!=null){
-                LambdaQueryWrapper<City> like = new LambdaQueryWrapper<City>().eq(City::getName, item.getCity());
+                LambdaQueryWrapper<City> like = new LambdaQueryWrapper<City>().like(City::getName, item.getCity());
                 City city = cityService.getOne(like);
                 if (Objects.nonNull(city)){
                     point.setCityId(city.getId());
@@ -281,15 +278,13 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
                 point.setOrderTime(System.currentTimeMillis());
             }
 
-            Long uid = (Long) request.getAttribute("uid");
+            Long uid = SecurityUtils.getUid();
             if (Objects.nonNull(uid)){
                 point.setCreateUid(uid);
             }
 
             point.setDelFlag(PointNew.DEL_NORMAL);
             point.setRemarks(item.getRemarks());
-
-
 
             pointList.add(point);
         });

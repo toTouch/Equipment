@@ -1,7 +1,12 @@
 package com.xiliulou.afterserver.service;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.xiliulou.afterserver.entity.ProductNew;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.ApiRequestQuery;
+import com.xiliulou.afterserver.web.query.CompressionQuery;
+import com.xiliulou.afterserver.web.query.ProductNewDetailsQuery;
+import com.xiliulou.afterserver.web.query.ProductNewQuery;
 
 import java.util.List;
 
@@ -36,7 +41,7 @@ public interface ProductNewService {
      * @param limit  查询条数
      * @return 对象列表
      */
-    List<ProductNew> queryAllByLimit(int offset, int limit,String no,Long modelId,Long startTime,Long endTime, Long pointId);
+    List<ProductNew> queryAllByLimit(int offset, int limit,String no,Long modelId,Long startTime,Long endTime, Long pointId, Integer pointType);
 
     /**
      * 新增数据
@@ -64,7 +69,7 @@ public interface ProductNewService {
 
     R saveAdminProductNew(ProductNew productNew);
 
-    R putAdminProductNew(ProductNew productNew);
+    R putAdminProductNew(ProductNewQuery query);
 
     R delAdminProductNew(Long id);
 
@@ -82,5 +87,23 @@ public interface ProductNewService {
 
     R queryLikeProductByNo(String no);
 
-    R bindPoint(Long productId, Long pointId);
+    R bindPoint(Long productId, Long pointId, Integer pointType);
+
+    List<ProductNew> queryByBatch(Long id);
+
+    R checkCompression(ApiRequestQuery apiRequestQuery);
+
+    R successCompression(ApiRequestQuery apiRequestQuery);
+
+    R findIotCard(String no);
+
+    R queryByBatchAndSupplier(Long batchId,Long offset, Long size);
+
+    R queryProductNewInfoById(String no);
+
+    BaseMapper<ProductNew> getBaseMapper();
+
+    R updateProductNew(ProductNewDetailsQuery productNewDetailsQuery);
+
+    R checkProperty(String no);
 }

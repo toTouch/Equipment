@@ -25,7 +25,7 @@ public class ProductNew {
 
     private Long id;
     /**
-     * 产品编号（纯数字）
+     * 产品编号
      */
     private String no;
     /**
@@ -44,7 +44,7 @@ public class ProductNew {
      *         },
      *         {
      *           value: 1,
-     *           label: '运输中'
+     *           label: '已发货'
      *         },
      *         {
      *           value: 2,
@@ -61,7 +61,11 @@ public class ProductNew {
      *         {
      *           value: 5,
      *           label: '已报废'
-     *         }
+     *         },
+     *         {
+     *           value: 6,
+     *           label: '已测试'
+     *         }
      */
     private Integer status;
     /**
@@ -81,9 +85,21 @@ public class ProductNew {
      */
     private Long createTime;
     /**
+     * 更新时间
+     */
+    private Long updateTime;
+    /**
      * 删除状态 0正常 1 删除
      */
     private Integer delFlag;
+    /**
+     * 外观
+     */
+    private Integer surface;
+    /**
+     * 颜色
+     */
+    private Integer color;
 
     public static final Integer DEL_NORMAL = 0;
     public static final Integer DEL_DEL = 1;
@@ -94,6 +110,13 @@ public class ProductNew {
     private String type;
     private String code;
     private String remarks;
+    private Integer testResult;
+    private String testFile;
+    private Long iotCardId;
+    private Long cameraId;
+
+    public static final String TYPE_M = "M";
+    public static final String TYPE_V = "V";
 
 //    //左区间
 //    @TableField(exist = false)
@@ -117,4 +140,12 @@ public class ProductNew {
     private String pointName;
     @TableField(exist = false)
     private String supplierName;
+    @TableField(exist = false)
+    private Integer pointType;
+    @TableField(exist = false)
+    private String iotCardName;
+    @TableField(exist = false)
+    private String cameraSerialNum;
+    @TableField(exist = false)
+    private String colorName;
 }

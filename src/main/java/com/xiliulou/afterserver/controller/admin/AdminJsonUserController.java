@@ -8,6 +8,7 @@ import com.xiliulou.afterserver.service.RoleService;
 import com.xiliulou.afterserver.service.UserService;
 import com.xiliulou.afterserver.util.MinioUtil;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.util.password.PasswordUtils;
 import com.xiliulou.core.json.JsonUtil;
 import com.xiliulou.core.utils.DataUtil;
@@ -46,7 +47,7 @@ public class AdminJsonUserController extends BaseController {
 
     @GetMapping("admin/user/page")
     public R page(@RequestParam("offset") Long offset, @RequestParam("size") Long size, @RequestParam(value = "username",required = false) String username, HttpServletRequest request) {
-        Long uid = (Long) request.getAttribute("uid");
+        Long uid = SecurityUtils.getUid();
         if (uid > 3){
             return R.fail("没有权限");
         }
@@ -61,7 +62,7 @@ public class AdminJsonUserController extends BaseController {
     }
    @PutMapping("/admin/user")
     public R updateUser(@RequestBody User user,HttpServletRequest request){
-       Long uid = (Long) request.getAttribute("uid");
+       Long uid = SecurityUtils.getUid();
        if (uid > 3){
            return R.fail("没有权限");
        }
@@ -99,4 +100,5 @@ public class AdminJsonUserController extends BaseController {
 
         return returnPairResult(roleService.bindUserRole(uid, roleIds));
     }
+
 }

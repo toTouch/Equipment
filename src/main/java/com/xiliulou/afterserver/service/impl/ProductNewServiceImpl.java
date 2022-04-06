@@ -1,17 +1,33 @@
 package com.xiliulou.afterserver.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.RandomUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.PointNewMapper;
 import com.xiliulou.afterserver.mapper.PointProductBindMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DataUtil;
+import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
+import com.xiliulou.afterserver.web.query.ApiRequestQuery;
+import com.xiliulou.afterserver.web.query.CompressionQuery;
+import com.xiliulou.afterserver.web.query.ProductNewDetailsQuery;
+import com.xiliulou.afterserver.web.query.ProductNewQuery;
+import com.xiliulou.afterserver.web.vo.BatchProductNewVo;
+import com.xiliulou.afterserver.web.vo.DeliverProductNewInfoVo;
+import com.xiliulou.afterserver.web.vo.ProductNewDetailsVo;
+import com.xiliulou.core.json.JsonUtil;
+import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +35,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +63,20 @@ public class ProductNewServiceImpl implements ProductNewService {
     private PointNewMapper pointNewMapper;
     @Autowired
     private SupplierService supplierService;
-
+    @Autowired
+    private IotCardService iotCardService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private CameraService cameraService;
+    @Autowired
+    private DeliverLogService deliverLogService;
+    @Autowired
+    private DeliverService deliverService;
+    @Autowired
+    private WarehouseService warehouseService;
+    @Autowired
+    private ColorCardService colorCardService;
     /**
      * 通过ID查询单条数据从DB
      *
@@ -78,8 +108,8 @@ public class ProductNewServiceImpl implements ProductNewService {
      * @return 对象列表
      */
     @Override
-    public List<ProductNew> queryAllByLimit(int offset, int limit,String no,Long modelId,Long startTime,Long endTime, Long pointId) {
-        return this.productNewMapper.queryAllByLimit(offset, limit,no,modelId,startTime,endTime, pointId);
+    public List<ProductNew> queryAllByLimit(int offset, int limit,String no,Long modelId,Long startTime,Long endTime, Long pointId, Integer pointType) {
+        return this.productNewMapper.queryAllByLimit(offset, limit,no,modelId,startTime,endTime, pointId, pointType);
     }
 
     /**
@@ -186,8 +216,74 @@ public class ProductNewServiceImpl implements ProductNewService {
 
 
     @Override
-    public R putAdminProductNew(ProductNew productNew) {
-        Integer update = this.update(productNew);
+    public R putAdminProductNew(ProductNewQuery query) {
+        ProductNew productNewOld = this.productNewMapper.queryById(query.getId());
+        if(Objects.isNull(productNewOld)){
+            return R.fail("未查询到相关柜机信息");
+        }
+
+        if(Objects.nonNull(query.getCameraCardId())){
+            Camera camera =  cameraService.getById(query.getCameraCardId());
+            if(Objects.isNull(camera)){
+                return R.fail("未查询到摄像头序列号");
+            }
+
+           /* ProductNew productNew = productNewMapper.selectOne(new QueryWrapper<ProductNew>()
+                    .eq("camera_id", camera.getId())
+                    .eq("del_flag", ProductNew.DEL_NORMAL));
+
+            if(Objects.nonNull(productNew)){
+                return R.fail("序列号已绑定到其他产品");
+            }*/
+        }
+
+
+        ProductNew updateProductNew = new ProductNew();
+        updateProductNew.setId(query.getId());
+        updateProductNew.setExpirationStartTime(query.getExpirationStartTime());
+        updateProductNew.setYears(query.getYears());
+        updateProductNew.setExpirationEndTime(query.getExpirationEndTime());
+        updateProductNew.setStatus(query.getStatus());
+        updateProductNew.setUpdateTime(System.currentTimeMillis());
+        //这里状态改成已收货 位置要发生改变 利用发货日志表查询
+        if(Objects.equals(3, query.getStatus())){
+            DeliverLog deliverLog = deliverLogService.getBaseMapper().selectOne(
+                    new QueryWrapper<DeliverLog>().eq("product_id", query.getId()));
+
+            if(Objects.nonNull(deliverLog)){
+                Deliver deliver = deliverService.getById(deliverLog.getId());
+                if(Objects.nonNull(deliver)){
+                    Integer destinationType = deliver.getDestinationType();
+                    if(Objects.equals(destinationType, 1)){
+                        PointNew pointNew = pointNewMapper.selectOne(
+                                new QueryWrapper<PointNew>().eq("name", deliver.getDestination()));
+                        if(Objects.nonNull(pointNew)){
+                            this.bindPoint(query.getId(), pointNew.getId(), 1);
+                        }
+                    }
+                    if(Objects.equals(destinationType, 2)){
+                        WareHouse wareHouse = warehouseService.getBaseMapper().selectOne(
+                                new QueryWrapper<WareHouse>().eq("ware_houses", deliver.getDestination()));
+                        if(Objects.nonNull(wareHouse)){
+                            this.bindPoint(query.getId(), new Long(wareHouse.getId()), 2);
+                        }
+                    }
+                    if(Objects.equals(destinationType, 3)){
+                        Supplier supplier = supplierService.querySupplierName(deliver.getDestination());
+                        if(Objects.nonNull(supplier)){
+                            this.bindPoint(query.getId(), supplier.getId(), 3);
+                        }
+                    }
+                }
+            }
+        }
+        updateProductNew.setIotCardId(query.getIotCardId());
+        updateProductNew.setCameraId(query.getCameraCardId());
+        updateProductNew.setColor(query.getColor());
+        updateProductNew.setSurface(query.getSurface());
+        updateProductNew.setRemarks(query.getRemarks());
+
+        Integer update = this.update(updateProductNew);
         if (update > 0){
             return R.ok();
         }
@@ -332,16 +428,13 @@ public class ProductNewServiceImpl implements ProductNewService {
 
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public R bindPoint(Long productId, Long pointId) {
-        /*PointProductBind pointProductBind = pointProductBindMapper
-                .selectOne(new QueryWrapper<PointProductBind>().eq("product_id", productId));
-
-        if(ObjectUtils.isNotNull(pointProductBind)){
-            PointNew pointNew = pointNewMapper.selectById(pointProductBind.getPointId());
-            if(ObjectUtils.isNotNull(pointNew)){
-                return R.fail("您选择的产品已绑定到【" + pointNew.getName() + "】点位,请解绑！");
-            }
-        }*/
+    public R bindPoint(Long productId, Long pointId, Integer pointType) {
+        ProductNew productNew = this.queryByIdFromDB(productId);
+        if(Objects.isNull(productNew)){
+            return R.fail("未查询到相关柜机");
+        }
+        productNew.setUpdateTime(System.currentTimeMillis());
+        this.update(productNew);
 
         PointProductBind pointProductBind = pointProductBindMapper
                     .selectOne(new QueryWrapper<PointProductBind>()
@@ -351,11 +444,412 @@ public class ProductNewServiceImpl implements ProductNewService {
             pointProductBindMapper.deleteById(pointProductBind.getId());
         }
 
+        if(Objects.isNull(pointType)){
+            return R.fail("请输入位置类型");
+        }
+
         PointProductBind bind = new PointProductBind();
         bind.setPointId(pointId);
         bind.setProductId(productId);
+        bind.setPointType(pointType);
         pointProductBindMapper.insert(bind);
 
         return R.ok();
+    }
+
+    @Override
+    public List<ProductNew> queryByBatch(Long id) {
+        QueryWrapper<ProductNew> wrapper = new QueryWrapper<>();
+        wrapper.eq("batch_id", id);
+        List<ProductNew> productNewList = productNewMapper.selectList(wrapper);
+        return productNewList;
+    }
+
+    @Override
+    public R checkCompression(ApiRequestQuery apiRequestQuery) {
+        CompressionQuery compression = null;
+        try{
+            compression = JSON.parseObject(apiRequestQuery.getData(), CompressionQuery.class);
+        }catch (Exception e){
+            log.error("COMPRESSION PROPERTY CAST ERROR! check error", e);
+            return R.fail(null, null, "参数解析错误");
+        }
+
+        List<String> errorNos = new ArrayList<>();
+
+        String mainProductNo = "";
+
+        if(Objects.isNull(compression.getIotCard())){
+            return R.fail(null, null, "未上报主柜物联网卡号");
+        }
+
+        IotCard iotCard = iotCardService.queryBySn(compression.getIotCard());
+        if(Objects.isNull(iotCard)){
+            return R.fail(null, null, "物联网卡号【"+compression.getIotCard()+"】不存在，请核对");
+        }
+
+        ArrayList<ProductNew> mainProducts = new ArrayList(1);
+
+        if(CollectionUtils.isNotEmpty(compression.getNoList())){
+            for(String no : compression.getNoList()){
+                ProductNew product = this.queryByNo(no);
+                if(Objects.isNull(product)){
+                    errorNos.add(no);
+                } else {
+                    if(Objects.equals(product.getType(), ProductNew.TYPE_M)){
+                        mainProducts.add(product);
+                    }
+                }
+            }
+
+            if(CollectionUtils.isNotEmpty(errorNos)){
+                return R.fail(errorNos, null, "资产编码不存在，请核对");
+            }
+
+            if(!(mainProducts.size() == 1) || Objects.isNull(mainProducts.get(0))){
+                return R.fail(mainProducts, null, "主柜不存在或存在多个，请核对");
+            }
+
+            ProductNew mainProduct = mainProducts.get(0);
+            mainProductNo = mainProduct.getNo();
+            if(!Objects.equals(mainProduct.getIotCardId(), iotCard.getId())){
+                ProductNew updateMainProduct = new ProductNew();
+                updateMainProduct.setId(mainProduct.getId());
+                updateMainProduct.setIotCardId(iotCard.getId());
+                this.update(updateMainProduct);
+            }
+        }
+
+        return R.ok(Arrays.asList(mainProductNo));
+    }
+
+
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    public R successCompression(ApiRequestQuery apiRequestQuery) {
+        CompressionQuery compression = null;
+        try{
+            compression = JSON.parseObject(apiRequestQuery.getData(), CompressionQuery.class);
+        }catch (Exception e){
+            log.error("COMPRESSION PROPERTY CAST ERROR! success error", e);
+            return R.fail(null, null, "参数解析错误");
+        }
+
+        if(StringUtils.isBlank(compression.getCompressionFile())){
+            return R.fail(null, null, "测试文件为空");
+        }
+
+        IotCard iotCard = iotCardService.queryBySn(compression.getIotCard());
+        if(Objects.isNull(iotCard)){
+            return R.fail(null, null, "未查询到物联网卡信息");
+        }
+
+        ArrayList<ProductNew> mainProducts = new ArrayList(1);
+        if(CollectionUtils.isNotEmpty(compression.getNoList())){
+            for(String no : compression.getNoList()){
+                ProductNew product = this.queryByNo(no);
+                if(Objects.equals(product.getType(), ProductNew.TYPE_M)){
+                    mainProducts.add(product);
+                }
+
+            }
+        }
+
+        if(!(mainProducts.size() == 1) || Objects.isNull(mainProducts.get(0))){
+            return R.fail(mainProducts, null, "主柜不存在或存在多个，请核对");
+        }
+
+        if(CollectionUtils.isNotEmpty(compression.getNoList())){
+            for(String no : compression.getNoList()){
+                ProductNew productOld = this.queryByNo(no);
+                if(Objects.nonNull(productOld)){
+                    ProductNew product = new ProductNew();
+                    product.setNo(no);
+                    product.setTestFile(compression.getCompressionFile());
+                    product.setTestResult(1);
+                    product.setStatus(6);
+                    product.setIotCardId(iotCard.getId());
+                    productNewMapper.updateByNo(product);
+                }
+            }
+        }
+
+        return R.ok();
+    }
+
+    @Override
+    public R findIotCard(String no) {
+        ProductNew productNew = this.productNewMapper.selectOne(new QueryWrapper<ProductNew>().eq("no", no));
+        if(Objects.isNull(productNew)){
+            return R.fail(null, null, "未查询到柜机信息，请检查资产编码是否正确");
+        }
+
+        if(Objects.equals(productNew.getType(), ProductNew.TYPE_M)){
+            return R.fail(null, null, "资产编码不是主柜类型，请检查");
+        }
+
+        if(Objects.isNull(productNew.getIotCardId())){
+            return R.fail(null, null, "柜机未录入物联网卡号");
+        }
+        Map<String, Object> result = new HashMap<>();
+        result.put("data", productNew.getIotCardId());
+        return  R.ok(result);
+    }
+
+    @Override
+    public R queryByBatchAndSupplier(Long batchId, Long offset, Long size) {
+        Long uid = SecurityUtils.getUid();
+        if(Objects.isNull(uid)){
+            return R.fail("未查询到相关用户");
+        }
+
+        User user = userService.getUserById(uid);
+        if(Objects.isNull(user)){
+            return R.fail("未查询到相关用户");
+        }
+
+        Supplier supplier = supplierService.getById(user.getThirdId());
+        if(Objects.isNull(supplier)){
+            return R.fail("用户未绑定工厂，请联系管理员");
+        }
+
+        Page page = PageUtil.getPage(offset, size);
+        page = productNewMapper.selectPage(page, new QueryWrapper<ProductNew>().eq("batch_id", batchId)
+                .eq("supplier_id", user.getThirdId())
+                .eq("del_flag", ProductNew.DEL_NORMAL));
+
+        List<ProductNew> list = page.getRecords();
+        if(CollectionUtils.isEmpty(list)){
+            return R.fail(null, "查询产品信息为空");
+        }
+
+        List<BatchProductNewVo> data = new ArrayList<>();
+        list.stream().forEach(item -> {
+            BatchProductNewVo batchProductNewVo = new BatchProductNewVo();
+            batchProductNewVo.setId(item.getId());
+            batchProductNewVo.setNo(item.getNo());
+            batchProductNewVo.setStatus(this.getStatusName(item.getStatus()));
+
+            data.add(batchProductNewVo);
+        });
+
+
+        Map result = new HashMap(2);
+        result.put("data", data);
+        result.put("total",  page.getTotal());
+        return R.ok(result);
+    }
+
+    @Override
+    public R queryProductNewInfoById(String no) {
+        ProductNew productNew = this.queryByNo(no);
+
+        Long uid = SecurityUtils.getUid();
+        if(Objects.isNull(uid)){
+            return R.fail("未查询到相关用户");
+        }
+
+        User user = userService.getUserById(uid);
+        if(Objects.isNull(user)){
+            return R.fail("未查询到相关用户");
+        }
+
+        if(!Objects.equals(productNew.getSupplierId(), user.getThirdId())){
+            return R.fail(null,"柜机厂家与登录厂家不一致，请重新登陆");
+        }
+
+        ProductNewDetailsVo vo = new ProductNewDetailsVo();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        if(!Objects.isNull(productNew)){
+            vo.setId(productNew.getId());
+            Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
+            if(Objects.nonNull(batch)){
+                vo.setBatchId(productNew.getBatchId());
+                vo.setBatchNo(batch.getBatchNo());
+            }
+            vo.setNo(productNew.getNo());
+            vo.setStatus(productNew.getStatus());
+            vo.setStatusName(this.getStatusName(productNew.getStatus()));
+
+            if(Objects.nonNull(productNew.getCameraId())){
+                Camera camera = cameraService.getById(productNew.getCameraId());
+                if(Objects.nonNull(camera)){
+                    vo.setCameraId(camera.getId());
+                    vo.setSerialNum(camera.getSerialNum());
+
+                    IotCard iotCard = iotCardService.getById(camera.getIotCardId());
+                    if(Objects.nonNull(iotCard)){
+                        vo.setCameraCardId(iotCard.getId());
+                        vo.setCameraCard(iotCard.getSn());
+                    }
+                }
+            }
+
+            IotCard iotCard = iotCardService.getById(productNew.getIotCardId());
+            if(Objects.nonNull(iotCard)){
+                vo.setIotCardId(iotCard.getId());
+                vo.setIotCardNo(iotCard.getSn());
+            }
+            ColorCard colorCard = colorCardService.getById(productNew.getColor());
+            if(Objects.nonNull(colorCard)){
+                vo.setColorName(colorCard.getName());
+            }
+
+            vo.setColor(productNew.getColor());
+            vo.setSurface(productNew.getSurface());
+            vo.setCreateTime(sdf.format(new Date(productNew.getCreateTime())));
+        }
+
+        return R.ok(vo);
+    }
+
+    @Override
+    public BaseMapper<ProductNew> getBaseMapper() {
+        return this.productNewMapper;
+    }
+
+    @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    public R updateProductNew(ProductNewDetailsQuery query) {
+        ProductNew productNewOld = this.productNewMapper.queryById(query.getId());
+        if(Objects.isNull(productNewOld)){
+            return R.fail(null, null, "未查询到相关柜机信息");
+        }
+
+        Camera camera = new Camera();
+        if(StringUtils.isNotBlank(query.getSerialNum())){
+            camera =  cameraService.queryBySerialNum(query.getSerialNum());
+            if(Objects.isNull(camera)){
+                return R.fail(null, null, "未查询到摄像头序列号");
+            }
+
+           /* ProductNew productNew = productNewMapper.selectOne(new QueryWrapper<ProductNew>()
+                    .eq("camera_id", camera.getId())
+                    .eq("del_flag", ProductNew.DEL_NORMAL));
+
+            if(Objects.nonNull(productNew) && !Objects.equals(productNew.getId(), query.getId())){
+                return R.fail(null, null, "序列号已绑定到其他产品");
+            }*/
+        }
+
+
+        ProductNew updateProductNew = new ProductNew();
+        updateProductNew.setId(query.getId());
+        updateProductNew.setCameraId(camera.getId());
+        updateProductNew.setIotCardId(query.getIotCardId());
+        updateProductNew.setColor(query.getColor());
+        updateProductNew.setSurface(query.getSurface());
+        this.productNewMapper.updateById(updateProductNew);
+
+        if(Objects.nonNull(camera.getId())){
+            Camera updateCamera = new Camera();
+            updateCamera.setId(camera.getId());
+            updateCamera.setIotCardId(query.getCameraCardId());
+            cameraService.updateById(updateCamera);
+        }
+
+        return R.ok();
+    }
+
+    @Override
+    public R checkProperty(String no) {
+        ProductNew productNew = this.queryByNo(no);
+        if(Objects.isNull(productNew)){
+            return R.fail(null,"10001","柜机资产编码不存在，请核对");
+        }
+
+        if(!Objects.equals(productNew.getStatus(), 6) && !Objects.equals(productNew.getTestResult(), 1)){
+            return R.fail(null,"10001","柜机非已测试状态，请录入已测试柜机");
+        }
+
+        if(Objects.isNull(productNew.getIotCardId())){
+            return R.fail(null,null,"物联卡号未绑定，请录入");
+        }
+
+        IotCard iotCard = iotCardService.getById(productNew.getIotCardId());
+        if(Objects.isNull(iotCard)){
+            return R.fail(null,null,"未查询到物联网卡信息，请核对");
+        }
+
+        Batch productBatch = batchService.queryByIdFromDB(productNew.getBatchId());
+        if(Objects.isNull(productBatch)){
+            return R.fail(null,null,"未查询到柜机批次，请联系管理员");
+        }
+
+        Batch iotBatch = batchService.queryByIdFromDB(iotCard.getBatchId());
+        if(Objects.isNull(iotBatch)){
+            return R.fail(null,null,"未查询到物联网卡批次，请录入");
+        }
+
+        if(Objects.isNull(productNew.getCameraId())){
+            return R.fail(null,null,"摄像头序列号未绑定，请录入");
+        }
+
+        Camera camera = cameraService.getById(productNew.getCameraId());
+        if(Objects.isNull(camera)){
+            return R.fail(null,null,"未查询到摄像序列号，请核对");
+        }
+
+        if(Objects.isNull(camera.getIotCardId())){
+            return R.fail(null,null,"摄像头物联网卡号未绑定，请录入");
+        }
+
+        IotCard cameraCard = iotCardService.getById(camera.getIotCardId());
+        if(Objects.isNull(cameraCard)){
+            return R.fail(null,null,"未查询到摄像头物联网卡信息，请核对");
+        }
+
+        if(Objects.isNull(productNew.getColor())){
+            return R.fail(null,null,"柜机颜色未填写，请录入");
+        }
+
+        if(Objects.isNull(productNew.getColor())){
+            return R.fail(null,null,"柜机颜色未填写，请录入");
+        }
+
+        if(Objects.isNull(productNew.getSurface())){
+            return R.fail(null,null,"柜机外观未填写，请录入");
+        }
+
+        Product product = productService.getById(productNew.getModelId());
+        if(Objects.isNull(product)){
+            return R.fail(null,"10001","未查询到柜机类型，请联系管理员");
+        }
+
+        SimpleDateFormat sim = new SimpleDateFormat("hh:mm");
+
+        DeliverProductNewInfoVo vo = new DeliverProductNewInfoVo();
+        vo.setId(productNew.getId());
+        vo.setBatchId(productNew.getBatchId());
+        vo.setBatchNo(productBatch.getBatchNo());
+        vo.setModelName(product.getName());
+        vo.setNo(productNew.getNo());
+        vo.setStatusName(getStatusName(productNew.getStatus()));
+        vo.setInsertTime(sim.format(new Date()));
+        return R.fail(vo);
+    }
+
+
+    private ProductNew queryByNo(String no){
+        if(Objects.isNull(no)){
+            return null;
+        }
+        return this.productNewMapper.selectOne(new QueryWrapper<ProductNew>().eq("no", no));
+    }
+
+    private String getStatusName(Integer status){
+        String statusName = "";
+        switch (status){
+            case 0: statusName = "生产中"; break;
+            case 1: statusName = "运输中"; break;
+            case 2: statusName = "已收货"; break;
+            case 3: statusName = "使用中"; break;
+            case 4: statusName = "拆机柜"; break;
+            case 5: statusName = "已报废"; break;
+            case 6: statusName = "已测试"; break;
+        }
+        return statusName;
     }
 }

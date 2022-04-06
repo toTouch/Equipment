@@ -178,6 +178,10 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             String cameraInfo = JSON.toJSONString(pointNew.getCameraInfoList());
             pointNew.setCameraInfo(cameraInfo);
         }
+        PointNew pointNewOld = queryByName(pointNew.getName());
+        if(Objects.nonNull(pointNewOld)){
+            return R.fail("该点位已存在");
+        }
         if(Objects.isNull(pointNew.getInstallTime()) || Objects.isNull(pointNew.getWarrantyPeriod())){
             pointNew.setWarrantyTime(null);
         }
@@ -186,6 +190,11 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         pointNew.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
         this.insert(pointNew);
         return R.ok();
+    }
+
+    public PointNew queryByName(String name){
+        if(StringUtils.isBlank(name)) return null;
+        return this.getBaseMapper().selectOne(new QueryWrapper<PointNew>().eq("name", name).eq("del_flag", 0));
     }
 
     @Override
@@ -303,6 +312,10 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         }
         if(Objects.isNull(pointNew.getInstallTime()) || Objects.isNull(pointNew.getWarrantyPeriod())){
             pointNew.setWarrantyTime(null);
+        }
+        PointNew pointNewOld = queryByName(pointNew.getName());
+        if(Objects.nonNull(pointNewOld) && !Objects.equals(pointNew.getId(), pointNewOld.getId())){
+            return R.fail("该点位已存在");
         }
         int update = this.pointNewMapper.update(pointNew);
         pointNew.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
@@ -549,6 +562,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
                 PointProductBind bind = new PointProductBind();
                 bind.setPointId(pointQuery.getId());
                 bind.setProductId(k);
+                bind.setPointType(PointProductBind.TYPE_POINT);
                 pointProductBindMapper.insert(bind);
             });
         }

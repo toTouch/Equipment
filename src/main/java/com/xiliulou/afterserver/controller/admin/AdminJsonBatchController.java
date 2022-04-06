@@ -1,11 +1,16 @@
 package com.xiliulou.afterserver.controller.admin;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.xiliulou.afterserver.entity.Batch;
-import com.xiliulou.afterserver.entity.ProductFile;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
+import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.service.BatchService;
+import com.xiliulou.afterserver.service.ProductService;
+import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
+import org.apache.poi.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -31,6 +36,12 @@ public class AdminJsonBatchController {
     private BatchService batchService;
     @Autowired
     private ProductFileMapper productFileMapper;
+    @Autowired
+    SupplierService supplierService;
+    @Autowired
+    ProductNewMapper productNewMapper;
+    @Autowired
+    ProductService productService;
 
 
     /**
@@ -48,17 +59,8 @@ public class AdminJsonBatchController {
      * 保存
      */
     @PostMapping("/admin/batch")
-    @Transactional(rollbackFor = Exception.class)
     public R saveBatch(@RequestBody Batch batch){
-        Batch insert = this.batchService.insert(batch);
-
-        ProductFile productFile = new ProductFile();
-        productFile.setProductId(insert.getId());
-        productFile.setFileStr(batch.getFileStr());
-        productFile.setProductFileName(batch.getProductFileName());
-        productFileMapper.insert(productFile);
-
-        return R.ok();
+        return batchService.saveBatch(batch);
     }
 
     /**
@@ -66,13 +68,25 @@ public class AdminJsonBatchController {
      */
     @PutMapping("/admin/batch")
     public R updateBatch(@RequestBody Batch batch){
+        if(Objects.isNull(batch.getType())){
+            return R.fail("请输入批次类型");
+        }
+        Batch batchOld = batchService.queryByName(batch.getBatchNo());
+        if(Objects.nonNull(batchOld) && !Objects.equals(batchOld.getId(), batch.getId())){
+            return R.fail("批次号已存在");
+        }
+
         this.batchService.update(batch);
 
-        ProductFile productFile = new ProductFile();
-        productFile.setId(batch.getFileId());
-        productFile.setFileStr(batch.getFileStr());
-        productFile.setProductFileName(batch.getProductFileName());
-        productFileMapper.updateById(productFile);
+        if(Objects.nonNull(batch.getFileId()) 
+                && StringUtils.isNotBlank(batch.getFileStr())
+                && StringUtils.isNotBlank(batch.getProductFileName())){
+            ProductFile productFile = new ProductFile();
+            productFile.setId(batch.getFileId());
+            productFile.setFileStr(batch.getFileStr());
+            productFile.setProductFileName(batch.getProductFileName());
+            productFileMapper.updateById(productFile);
+        }
         return R.ok();
     }
 
@@ -81,19 +95,31 @@ public class AdminJsonBatchController {
      */
     @GetMapping("/admin/batch/list")
     public R selectOne(@RequestParam(value = "batchNo",required = false) String batchNo,
+                       @RequestParam(value = "modelId",required = false)Long modelId,
+                       @RequestParam(value = "supplierId",required = false)Long supplierId,
                        @RequestParam(value = "offset") int offset,
                        @RequestParam(value = "limit") int limit) {
 
-        List<Batch> batches = this.batchService.queryAllByLimit(batchNo, offset, limit);
+        List<Batch> batches = this.batchService.queryAllByLimit(batchNo, offset, limit, modelId, supplierId);
         if (Objects.nonNull(batches)){
             batches.forEach(item -> {
                 List<ProductFile> productFiles = productFileMapper.selectList(new LambdaQueryWrapper<ProductFile>().eq(ProductFile::getProductId, item.getId()));
                 item.setProductFileList(productFiles);
+
+                Product product = productService.getById(item.getModelId());
+                if(Objects.nonNull(product)){
+                    item.setModelName(product.getName());
+                }
+
+                Supplier supplier = supplierService.getById(item.getSupplierId());
+                if(Objects.nonNull(supplier)){
+                    item.setSupplierName(supplier.getName());
+                }
             });
         }
 
 
-        Long count = this.batchService.count(batchNo);
+        Long count = this.batchService.count(batchNo, modelId, supplierId);
 
         HashMap<String, Object> stringObjectHashMap = new HashMap<>(2);
         stringObjectHashMap.put("data",batches);
@@ -104,6 +130,7 @@ public class AdminJsonBatchController {
 
     @DeleteMapping("/admin/batch/{id}")
     public R delOne(@PathVariable("id") Long id){
-        return R.ok(batchService.deleteById(id));
+        return batchService.delOne(id);
     }
+
 }

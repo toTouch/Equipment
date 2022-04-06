@@ -2,9 +2,11 @@ package com.xiliulou.afterserver.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.xiliulou.afterserver.web.vo.DeliverInfoVo;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -61,11 +63,18 @@ public class Deliver {
      * 结算方式 1 月结 2 现结
      */
     private Integer paymentMethod;
+    private String no;
+    private Integer cityType;
+    private Integer destinationType;
 
-    public static final String CITY_TYPE_POINT = "1";
-    public static final String CITY_TYPE_WAREHOUSE = "2";
-    public static final String DESTINATION_TYPE_POINT = "1";
-    public static final String DESTINATION_TYPE_WAREHOUSE = "2";
+
+
+    public static final Integer CITY_TYPE_POINT = 1;
+    public static final Integer CITY_TYPE_WAREHOUSE = 2;
+    public static final Integer CITY_TYPE_FACTORY = 3;
+    public static final Integer DESTINATION_TYPE_POINT = 1;
+    public static final Integer DESTINATION_TYPE_WAREHOUSE = 2;
+    public static final Integer DESTINATION_TYPE_FACTORY = 3;
 
 
     public static final Integer PAYMENT_METHOD_MONTHLY = 1;
@@ -88,7 +97,5 @@ public class Deliver {
     @TableField(exist = false)
     private String paymentMethodName;
     @TableField(exist = false)
-    private String cityType;
-    @TableField(exist = false)
-    private String destinationType;
+    private Map<String, List<DeliverInfoVo>> deliverInfoVoMap;
 }
