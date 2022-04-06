@@ -4,6 +4,7 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.read.metadata.ReadSheet;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xiliulou.afterserver.controller.BaseController;
 import com.xiliulou.afterserver.entity.Customer;
@@ -22,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.sql.Wrapper;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @program: XILIULOU
@@ -38,9 +40,13 @@ public class AdminJsonCustomerController extends BaseController {
 
     @PostMapping("admin/customer")
     public R insert(@RequestBody Customer customer) {
+        BaseMapper<Customer> baseMapper = customerService.getBaseMapper();
+        Customer customerOld = baseMapper.selectOne(new QueryWrapper<Customer>().eq("name", customer.getName()));
+        if(Objects.nonNull(customerOld)){
+            return R.fail("客户列表中已存在【"+ customer.getName() + "】");
+        }
         customer.setCreateTime(System.currentTimeMillis());
         return R.ok(customerService.save(customer));
-
     }
 
 
@@ -53,6 +59,12 @@ public class AdminJsonCustomerController extends BaseController {
 
     @PutMapping("admin/customer")
     public R update(@RequestBody Customer customer) {
+        BaseMapper<Customer> baseMapper = customerService.getBaseMapper();
+        Customer customerOld = baseMapper.selectOne(new QueryWrapper<Customer>().eq("name", customer.getName()));
+        if(Objects.nonNull(customerOld) && !Objects.equals(customer.getId(), customerOld.getId())){
+            return R.fail("客户列表中已存在【"+ customer.getName() + "】");
+        }
+
         return R.ok(customerService.updateById(customer));
     }
 

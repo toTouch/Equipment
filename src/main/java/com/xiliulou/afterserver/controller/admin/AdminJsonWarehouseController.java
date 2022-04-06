@@ -13,6 +13,8 @@ import com.xiliulou.afterserver.listener.ClientListener;
 import com.xiliulou.afterserver.listener.WareHouseListener;
 import com.xiliulou.afterserver.service.WarehouseService;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.PointQuery;
+import com.xiliulou.afterserver.web.query.WareHouseQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -91,4 +93,14 @@ public class AdminJsonWarehouseController extends BaseController {
         return R.ok();
     }
 
+    @PostMapping("admin/warehouse/bindSerialNumber")
+    public R pointBindSerialNumber(@RequestBody WareHouseQuery wareHouseQuery) {
+
+        return warehouseService.pointBindSerialNumber(wareHouseQuery);
+    }
+
+    @GetMapping("admin/warehouse/pull")
+    public R queryWarehousePull(){
+        return warehouseService.queryWarehousePull();
+    }
 }

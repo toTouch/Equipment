@@ -29,9 +29,33 @@ public class Batch {
      */
     private String batchNo;
     /**
-     * 点位ID
+     * 备注
      */
     private String remarks;
+    /**
+     * 批次类型
+     */
+    private Integer type;
+    /**
+     * 产品型号
+     */
+    private Long modelId;
+    /**
+     * 产品类型 M主柜 V副柜
+     */
+    private String productType;
+    /**
+     * 产品数量
+     */
+    private Integer productNum;
+    /**
+     * 工厂
+     */
+    private Long supplierId;
+    /**
+     * 更新时间
+     */
+    private Long updateTime;
     /**
      * 创建时间
      */
@@ -39,6 +63,9 @@ public class Batch {
 
     public static final Integer DEL_NORMAL = 0;
     public static final Integer DEL_DEL = 1;
+
+    public static  final Integer TYPE_STOCK = 1;
+    public static  final Integer TYPE_ORDER = 2;
 
 
     @TableField(exist = false)
@@ -49,5 +76,8 @@ public class Batch {
     private List<ProductFile> productFileList;
     @TableField(exist = false)
     private Long fileId;
-
+    @TableField(exist = false)
+    private String modelName;
+    @TableField(exist = false)
+    private String supplierName;
 }

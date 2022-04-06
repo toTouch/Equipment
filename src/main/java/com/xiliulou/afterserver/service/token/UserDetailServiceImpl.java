@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Objects;
 
 @Service
 public class UserDetailServiceImpl implements UserDetailsService {
@@ -29,8 +30,8 @@ public class UserDetailServiceImpl implements UserDetailsService {
         if (user==null){
             throw new UsernameNotFoundException("用户名不存在!");
         }
-        Collection<? extends GrantedAuthority> authorities=authorizationService.acquireAllAuthorities(user.getId(),0);
+        Collection<? extends GrantedAuthority> authorities=authorizationService.acquireAllAuthorities(user.getId(), user.getUserType());
 
-        return new SecurityUser(user.getUserName(),null,user.getId(),1,user.getPassWord(),false,authorities);
+        return new SecurityUser(user.getUserName(),null,user.getId(),user.getUserType() ,user.getPassWord(),user.getThirdId(), false,authorities);
     }
 }

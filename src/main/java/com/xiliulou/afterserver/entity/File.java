@@ -3,6 +3,9 @@ package com.xiliulou.afterserver.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @program: XILIULOU
  * @description:文件

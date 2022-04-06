@@ -48,7 +48,8 @@
         d.remark,
         d.product,
         d.quantity,
-        d.third_company_type
+        d.third_company_type,
+        d.no
         from
         deliver AS d
         <where>

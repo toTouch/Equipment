@@ -19,14 +19,14 @@ import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
-@Configuration
-public class AuthInterceptorAdapter extends HandlerInterceptorAdapter {
-    private final AntPathMatcher antPathMatcher = new AntPathMatcher();
+//@Configuration
+public class AuthInterceptorAdapter  {//extends HandlerInterceptorAdapter
+    //private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
     /**
      * 不拦截的urls
      */
-    private static List<String> urls;
+    /*private static List<String> urls;
     @Autowired
     JwtHelper jwtHelper;
     @Autowired
@@ -95,7 +95,7 @@ public class AuthInterceptorAdapter extends HandlerInterceptorAdapter {
         urls.add("/auth/**");
         urls.add("/error**");
         urls.add(RIDER_URL);
-    }
+    }*/
 
 
 }

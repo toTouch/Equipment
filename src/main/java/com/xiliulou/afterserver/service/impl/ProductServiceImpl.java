@@ -5,6 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -317,6 +318,14 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         return R.ok(productNewMapper.selectList(productNew));
     }
 
+    @Override
+    public Product getByName(String name) {
+        if(StringUtils.isBlank(name)){
+            return null;
+        }
+        LambdaQueryWrapper<Product> wrapper = new LambdaQueryWrapper<Product>().eq(Product::getName,name);
+        return this.baseMapper.selectOne(wrapper);
+    }
 
 
 }

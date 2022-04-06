@@ -9,14 +9,16 @@ import com.alibaba.excel.metadata.CellData;
 import com.alibaba.excel.read.metadata.ReadSheet;
 import com.alibaba.fastjson.JSON;
 import com.xiliulou.afterserver.entity.Deliver;
+import com.xiliulou.afterserver.entity.PointNew;
+import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.export.DeliverInfo;
 import com.xiliulou.afterserver.export.PointInfo;
 import com.xiliulou.afterserver.listener.DeliverListener;
 import com.xiliulou.afterserver.listener.PointListener;
-import com.xiliulou.afterserver.service.CustomerService;
-import com.xiliulou.afterserver.service.DeliverService;
-import com.xiliulou.afterserver.service.SupplierService;
+import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
+import com.xiliulou.afterserver.web.query.DeliverFactoryQuery;
 import com.xiliulou.afterserver.web.query.DeliverQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,10 @@ public class AdminJsonDeliverController {
     SupplierService supplierService;
     @Autowired
     CustomerService customerService;
+    @Autowired
+    WarehouseService warehouseService;
+    @Autowired
+    PointNewService pointNewService;
 
 
     @GetMapping("admin/deliver/page")
@@ -55,7 +61,7 @@ public class AdminJsonDeliverController {
 
     @PostMapping("admin/deliver")
     public R insert(@RequestBody  Deliver deliver, HttpServletRequest request) {
-        Long uid = (Long) request.getAttribute("uid");
+        Long uid = SecurityUtils.getUid();
         if (Objects.isNull(uid)){
             return R.fail("用户为空");
         }
@@ -98,13 +104,9 @@ public class AdminJsonDeliverController {
 
         ExcelReader excelReader = null;
         try {
-            try {
-                excelReader = EasyExcel.read(file.getInputStream(), DeliverInfo.class,new DeliverListener(deliverService,customerService,supplierService,request)).build();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (ExcelAnalysisException e) {
-            e.printStackTrace();
+            excelReader = EasyExcel.read(file.getInputStream(), DeliverInfo.class,new DeliverListener(deliverService,customerService,supplierService,pointNewService, warehouseService, request)).build();
+        } catch (Exception e) {
+            log.error("insert deliver error", e);
             if (e.getCause() instanceof ExcelDataConvertException) {
                 ExcelDataConvertException excelDataConvertException = (ExcelDataConvertException) e.getCause();
                 String cellMsg = "";
@@ -127,4 +129,5 @@ public class AdminJsonDeliverController {
         excelReader.finish();
         return R.ok();
     }
+
 }

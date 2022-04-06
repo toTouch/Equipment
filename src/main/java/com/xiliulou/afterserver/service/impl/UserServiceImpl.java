@@ -6,18 +6,22 @@ import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.config.RolePermissionConfig;
 import com.xiliulou.afterserver.entity.Deliver;
+import com.xiliulou.afterserver.entity.Supplier;
 import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.entity.UserRole;
 import com.xiliulou.afterserver.mapper.UserMapper;
+import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.service.UserRoleService;
 import com.xiliulou.afterserver.service.UserService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.util.password.PasswordUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -45,6 +49,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     RolePermissionConfig rolePermissionConfig;
     @Autowired
     UserRoleService userRoleService;
+    @Autowired
+    SupplierService supplierService;
 
     @Override
     public Pair<Boolean, Object> register(User user) {
@@ -52,7 +58,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (Objects.nonNull(userDb)) {
             return Pair.of(false, "用户名已存在!");
         }
+        if(Objects.isNull(user.getUserType())){
+            return Pair.of(false, "请填写用户类型!");
+        }
+        if(StringUtils.isBlank(user.getPassWord())){
+            return Pair.of(false, "请填写合法密码");
+        }
+        if(Objects.equals(User.TYPE_FACTORY, user.getUserType())){
+            Supplier supplier = supplierService.getById(user.getThirdId());
+            if(Objects.isNull(supplier)){
+                return Pair.of(false, "未查询到工厂，请检查");
+            }
+        }
         user.setRoleId(User.AFTER_USER_ROLE);
+        user.setPicture("1.npg");
         user.setCreateTime(System.currentTimeMillis());
         user.setPassWord(PasswordUtils.encode(user.getPassWord()));
         baseMapper.insert(user);

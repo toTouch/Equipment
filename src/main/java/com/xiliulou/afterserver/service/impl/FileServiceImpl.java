@@ -38,7 +38,6 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     @Autowired
     MinioUtil minioUtil;
 
-
     @Override
     public R uploadFile(MultipartFile file) {
         String fileName = IdUtil.simpleUUID() + StrUtil.DOT + FileUtil.extName(file.getOriginalFilename());

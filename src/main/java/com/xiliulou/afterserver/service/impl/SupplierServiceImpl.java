@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -8,10 +9,15 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.City;
 import com.xiliulou.afterserver.entity.Supplier;
+import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.mapper.SupplierMapper;
 import com.xiliulou.afterserver.service.CityService;
 import com.xiliulou.afterserver.service.SupplierService;
+import com.xiliulou.afterserver.service.UserService;
 import com.xiliulou.afterserver.util.PageUtil;
+import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
+import com.xiliulou.afterserver.web.query.FactoryUserInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +37,8 @@ public class SupplierServiceImpl extends ServiceImpl<SupplierMapper, Supplier> i
 
     @Autowired
     CityService cityService;
-
+    @Autowired
+    UserService userService;
     @Override
     public IPage getPage(Long offset, Long size, Supplier supplier) {
         Page page = PageUtil.getPage(offset, size);
@@ -56,5 +63,28 @@ public class SupplierServiceImpl extends ServiceImpl<SupplierMapper, Supplier> i
         });
         page1.setRecords(records);
         return page1;
+    }
+
+    @Override
+    public Supplier querySupplierName(String supplierName) {
+        return baseMapper.selectOne(new QueryWrapper<Supplier>().eq("name", supplierName));
+    }
+
+    @Override
+    public R getUserInfo() {
+        Long uid = SecurityUtils.getUid();
+        User user = userService.getUserById(uid);
+        if(Objects.isNull(user)){
+            return R.fail(null, "未查询到相关用户信息");
+        }
+
+        Supplier supplier = this.getById(user.getThirdId());
+        if(Objects.isNull(supplier)){
+            return R.fail(null, "未查询到相关工厂信息");
+        }
+
+        FactoryUserInfoVo vo = new FactoryUserInfoVo();
+        vo.setSupplierName(supplier.getName());
+        return R.ok(vo);
     }
 }

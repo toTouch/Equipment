@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.config;
 
+import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.service.token.LoginSuccessPostProcessor;
 import com.xiliulou.afterserver.service.token.WxProThirdAuthenticationServiceImpl;
 import com.xiliulou.cache.redis.RedisService;
@@ -55,6 +56,8 @@ public class TokenWebSecurityConfig extends WebSecurityConfigurerAdapter {
     AuthorizationService authorizationService;
     @Autowired
     LoginSuccessPostProcessor loginSuccessPostProcessor;
+    @Autowired
+    SupplierService supplierService;
 
     @Bean
     public JwtTokenManager jwtTokenManager() {
