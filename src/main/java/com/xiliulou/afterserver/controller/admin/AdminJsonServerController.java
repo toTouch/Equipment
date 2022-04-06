@@ -77,6 +77,11 @@ public class AdminJsonServerController {
         return R.ok(serverService.list(Wrappers.<Server>lambdaQuery().orderByDesc(Server::getCreateTime)));
     }
 
+    @GetMapping("admin/server/like/list")
+    public R likeList(@RequestParam(value = "name", required = false) String name) {
+        return R.ok(serverService.list(Wrappers.<Server>lambdaQuery().like(Server::getName, name).orderByDesc(Server::getCreateTime).last("limit 0, 20")));
+    }
+
     /**
      * 导入
      */
