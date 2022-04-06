@@ -41,4 +41,6 @@ public class Server {
 
     @TableField(exist = false)
     private String createUname;
+    @TableField(exist = false)
+    private Long prescriptionAvg;
 }
