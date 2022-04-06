@@ -62,5 +62,10 @@ public class WorkOrderServerServiceImpl extends ServiceImpl<WorkOrderServerMappe
         return baseMapper.updateSolutionByWorkOrderAndServerId(workOrderId, thirdId ,solution);
     }
 
+    @Override
+    public Long queryPrescriptionAvgByServerId(Long curtMonthTime, Long id) {
+        return baseMapper.queryPrescriptionAvgByServerId(curtMonthTime, id);
+    }
+
 
 }

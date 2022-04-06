@@ -20,4 +20,6 @@ public interface WorkOrderServerService extends IService<WorkOrderServer> {
     List<Long> queryWorkOrderIds(Long serverId);
 
     Boolean updateSolutionByWorkOrderAndServerId(Long workOrderId, Long thirdId, String solution);
+
+    Long queryPrescriptionAvgByServerId(Long curtMonthTime, Long id);
 }
