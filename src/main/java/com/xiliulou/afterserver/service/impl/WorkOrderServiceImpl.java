@@ -1812,7 +1812,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         //除了暂停状态不可往之前的状态修改
         Integer status =  WorkOrder.STATUS_ASSIGNMENT.equals(workOrder.getStatus()) ? -1 :  workOrder.getStatus();
-        if(status < workOrder.getStatus() && Objects.equals(WorkOrder.STATUS_SUSPEND, status)){
+        if(status < workOrder.getStatus() && !Objects.equals(WorkOrder.STATUS_SUSPEND, status)){
             return R.fail("状态不可往前修改");
         }
 
@@ -1879,7 +1879,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         //除了暂停状态不可往之前的状态修改
         Integer status =  WorkOrder.STATUS_ASSIGNMENT.equals(workOrder.getStatus()) ? -1 :  workOrder.getStatus();
-        if(status < workOrder.getStatus() && Objects.equals(WorkOrder.STATUS_SUSPEND, status)){
+        if(status < workOrder.getStatus() && !Objects.equals(WorkOrder.STATUS_SUSPEND, status)){
             return R.fail("状态不可往前修改");
         }
 
@@ -2181,7 +2181,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         //除了暂停状态不可往之前的状态修改
         Integer status =  WorkOrder.STATUS_ASSIGNMENT.equals(workOrderAssignmentQuery.getStatus()) ? -1 :  workOrderAssignmentQuery.getStatus();
-        if(status < workOrderOld.getStatus() && Objects.equals(WorkOrder.STATUS_SUSPEND, status)){
+        if(status < workOrderOld.getStatus() && !Objects.equals(WorkOrder.STATUS_SUSPEND, status)){
             return R.fail("状态不可往前修改");
         }
 
