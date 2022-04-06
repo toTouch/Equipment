@@ -1024,6 +1024,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }*/
 
     private String getPrescriptionStr(Long prescription){
+        if(Objects.isNull(prescription)){
+           return null;
+        }
         long day = prescription / (24L * 3600 * 1000);
         long hour = prescription % (24L * 3600 * 1000) / 3600 / 1000;
         long minute = prescription % (24L * 3600 * 1000) % (3600 * 1000) / 60000;
