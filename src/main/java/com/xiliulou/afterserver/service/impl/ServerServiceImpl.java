@@ -56,7 +56,8 @@ public class ServerServiceImpl extends ServiceImpl<ServerMapper, Server> impleme
                     item.setCreateUname(user.getUserName());
                 }
                 Long curtMonthTime = DateUtils.getMonthStartTime(System.currentTimeMillis());
-                workOrderServerService.queryPrescriptionAvgByServerId(curtMonthTime, item.getId());
+                Long prescriptionAvg = workOrderServerService.queryPrescriptionAvgByServerId(curtMonthTime, item.getId());
+                item.setPrescriptionAvg(prescriptionAvg);
             });
         }
         return page;
