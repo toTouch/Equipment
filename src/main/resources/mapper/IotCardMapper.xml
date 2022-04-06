@@ -24,7 +24,7 @@
         <where>
             del_flag = 0
             <if test="iotCard.sn != null and iotCard.sn != ''">
-                and sn like concat('%',sn,'%')
+                and sn like concat('%',iotCard.sn,'%')
             </if>
             <if test="iotCard.batchId != null">
                 and batch_id = #{iotCard.batchId}
