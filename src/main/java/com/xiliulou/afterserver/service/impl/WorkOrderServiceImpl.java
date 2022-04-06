@@ -1209,7 +1209,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if(!CollectionUtils.isEmpty(workOrderServerQueryList)){
                 BigDecimal totalFee = new BigDecimal("0");
                 for(WorkOrderServerQuery item : workOrderServerQueryList){
-                    totalFee = totalFee.add(item.getFee());
+                    totalFee = totalFee.add(Optional.ofNullable(item.getFee()).orElse(new BigDecimal("0")));
                 }
                 o.setTotalFee(totalFee);
             }
