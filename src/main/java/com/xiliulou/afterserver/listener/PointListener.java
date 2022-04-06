@@ -139,7 +139,7 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
             }
 
             if (item.getCustomerId() != null) {
-                LambdaQueryWrapper<Customer> like = new LambdaQueryWrapper<Customer>().like(Customer::getName, item.getCustomerId());
+                LambdaQueryWrapper<Customer> like = new LambdaQueryWrapper<Customer>().eq(Customer::getName, item.getCustomerId());
                 Customer customer = customerService.getOne(like);
                 if (Objects.nonNull(customer)) {
                     point.setCustomerId(customer.getId());
