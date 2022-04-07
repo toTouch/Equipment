@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.web.vo.UserPull;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * @program: XILIULOU
@@ -12,5 +13,5 @@ import com.xiliulou.afterserver.web.vo.UserPull;
  **/
 public interface UserMapper extends BaseMapper<User> {
 
-    UserPull typePull(String username, Integer type);
+    UserPull typePull(@Param("username") String username, @Param("type") Integer type);
 }

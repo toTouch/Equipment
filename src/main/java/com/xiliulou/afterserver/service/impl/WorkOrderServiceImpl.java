@@ -261,6 +261,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         Integer codeMaxSize = 0;
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Map<Integer, Boolean> serverHeaderMap = new HashMap<>();
         for (WorkOrderVo o : workOrderVoList) {
             List<Object> row = new ArrayList<>();
             //审核状态
@@ -456,15 +457,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
             //服务商信息
             List<WorkOrderServerQuery> workOrderServerQueryList = workOrderServerService.queryByWorkOrderIdAndServerId(o.getId(), null);
+
             if(!CollectionUtils.isEmpty(workOrderServerQueryList)){
+                for(int i = 0; i < workOrderServerQueryList.size(); i++){
+                    serverHeaderMap.put(i, serverHeaderMap.containsKey(i) ? serverHeaderMap.get(i) : false);
+                }
                 int i = 0;
                 for(WorkOrderServerQuery item :workOrderServerQueryList){
-                    i++;
-                    for(String headerItem : serverHeader) {
-                        List<String> headTitle = new ArrayList<String>();
-                        headTitle.add(headerItem + i);
-                        headList.add(headTitle);
-                    };
 
                     //服务商",
                     Server server = serverService.getById(item.getServerId());
@@ -500,11 +499,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     row.add(fileCount);
 
                     if(item.getIsUseThird()){
-                        for(String headerItem : thirdHeader) {
-                            List<String> headTitle = new ArrayList<String>();
-                            headTitle.add(headerItem + i);
-                            headList.add(headTitle);
-                        };
+                        serverHeaderMap.put(i , true);
                         //" 第三方类型",
                         row.add(this.getThirdCompanyType(item.getThirdCompanyType()));
                         // "第三方公司",
@@ -518,8 +513,30 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         // "第三方对接人"
                         row.add(item.getThirdResponsiblePerson() == null ? "" : item.getThirdResponsiblePerson());
                     }
+
+                    ++i;
                 }
             }
+
+           if(!serverHeaderMap.isEmpty()){
+               int i = 0;
+               for(Map.Entry<Integer, Boolean> entry : serverHeaderMap.entrySet()){
+                   ++i;
+                   for (String item : serverHeader) {
+                       List<String> headTitle = new ArrayList<>();
+                       headTitle.add(item + i);
+                       headList.add(headTitle);
+                   }
+
+                   if(entry.getValue()){
+                       for (String item : thirdHeader) {
+                           List<String> headTitle = new ArrayList<>();
+                           headTitle.add(item + i);
+                           headList.add(headTitle);
+                       }
+                   }
+               }
+           }
 
             //产品个数
             if (productAll != null && !productAll.isEmpty()) {
@@ -549,6 +566,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
             }
 
+
+
             List<String> codes = JSON.parseArray(o.getCode(), String.class);
             if (!CollectionUtils.isEmpty(codes)) {
                 codeMaxSize = codeMaxSize > codes.size() ? codeMaxSize : codes.size();
@@ -559,6 +578,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
             data.add(row);
         }
+
 
         if (productAll != null && !productAll.isEmpty()) {
             for (Product p : productAll) {
