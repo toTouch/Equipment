@@ -5,6 +5,8 @@ import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.web.vo.UserPull;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * @program: XILIULOU
  * @description:
@@ -13,5 +15,5 @@ import org.apache.ibatis.annotations.Param;
  **/
 public interface UserMapper extends BaseMapper<User> {
 
-    UserPull typePull(@Param("username") String username, @Param("type") Integer type);
+    List<UserPull> typePull(@Param("username") String username, @Param("type") Integer type);
 }
