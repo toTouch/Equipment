@@ -518,27 +518,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
             }
 
-            log.error("服务桑头 ---->"+ JsonUtil.toJson(serverHeaderMap));
-
-           if(!serverHeaderMap.isEmpty()){
-               int i = 0;
-               for(Map.Entry<Integer, Boolean> entry : serverHeaderMap.entrySet()){
-                   ++i;
-                   for (String item : serverHeader) {
-                       List<String> headTitle = new ArrayList<>();
-                       headTitle.add(item + i);
-                       headList.add(headTitle);
-                   }
-
-                   if(entry.getValue()){
-                       for (String item : thirdHeader) {
-                           List<String> headTitle = new ArrayList<>();
-                           headTitle.add(item + i);
-                           headList.add(headTitle);
-                       }
-                   }
-               }
-           }
 
             //产品个数
             if (productAll != null && !productAll.isEmpty()) {
@@ -581,6 +560,27 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             data.add(row);
         }
 
+        log.error("服务桑头 ---->"+ JsonUtil.toJson(serverHeaderMap));
+
+        if(!serverHeaderMap.isEmpty()){
+            int i = 0;
+            for(Map.Entry<Integer, Boolean> entry : serverHeaderMap.entrySet()){
+                ++i;
+                for (String item : serverHeader) {
+                    List<String> headTitle = new ArrayList<>();
+                    headTitle.add(item + i);
+                    headList.add(headTitle);
+                }
+
+                if(entry.getValue()){
+                    for (String item : thirdHeader) {
+                        List<String> headTitle = new ArrayList<>();
+                        headTitle.add(item + i);
+                        headList.add(headTitle);
+                    }
+                }
+            }
+        }
 
         if (productAll != null && !productAll.isEmpty()) {
             for (Product p : productAll) {
