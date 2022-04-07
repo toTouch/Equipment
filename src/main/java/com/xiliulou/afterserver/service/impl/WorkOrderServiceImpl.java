@@ -1385,6 +1385,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         // "第三方费用",
                         row.add(item.getThirdCompanyPay() == null ? "" : item.getThirdCompanyPay());
                     }
+
+
                 }
 
                 List<String> headTitle = new ArrayList<String>();
@@ -1394,6 +1396,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 o.setTotalFee(totalFee);
             }
 
+            data.add(row);
         });
 
         String fileName = "工单列表.xlsx";
@@ -1772,6 +1775,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                             workOrderServer.setThirdCompanyName(server.getName());
                         }
                     }
+
+                    workOrderServer.setCreateTime(System.currentTimeMillis());
                 }
                 workOrderServerService.save(workOrderServer);
             });
@@ -1969,6 +1974,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                             }
                         }
                     }
+
+                    workOrderServer.setCreateTime(System.currentTimeMillis());
 
                     workOrderServerService.save(workOrderServer);
                 });
@@ -2512,6 +2519,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         return null;
     }
 
+    @Override
     public String getParentWorkOrderReason(Long id) {
         Long workOrderReasonId = id;
         for(int i = 0; i < 10; i++){
