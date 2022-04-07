@@ -46,6 +46,7 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
     private WorkOrderTypeService workOrderTypeService;
     private UserService userService;
     private WarehouseService warehouseService;
+    private WorkOrderServerService workOrderServerService;
 
     public WorkOrderLisener(PointNewService pointNewService,
                             CustomerService customerService,
@@ -54,7 +55,8 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
                             SupplierService supplierService,
                             WorkOrderTypeService workOrderTypeService,
                             UserService userService,
-                            WarehouseService warehouseService){
+                            WarehouseService warehouseService,
+                            WorkOrderServerService workOrderServerService){
 
         this.pointNewService = pointNewService;
         this.customerService = customerService;
@@ -64,6 +66,7 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
         this.workOrderTypeService = workOrderTypeService;
         this.userService = userService;
         this.warehouseService = warehouseService;
+        this.workOrderServerService = workOrderServerService;
     }
 
 
@@ -248,6 +251,10 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
                 workOrderServer.setThirdReason(item.getThirdReason());
 
                 workOrderServer.setThirdResponsiblePerson(item.getThirdResponsiblePerson());
+
+                workOrderServer.setCreateTime(System.currentTimeMillis());
+
+                workOrderServerService.save(workOrderServer);
             }
 
         });

@@ -74,6 +74,8 @@ public class WorkOrderServer {
      */
     private String thirdResponsiblePerson;
 
+    private Long createTime;
+
     public static final Integer USE_THIRD = 1;
     public static final Integer NOT_USE_THIRD = 0;
 }
