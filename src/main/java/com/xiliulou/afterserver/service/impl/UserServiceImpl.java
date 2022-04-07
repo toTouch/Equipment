@@ -137,6 +137,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public R typePull(String username, Integer type) {
-        return R.ok(baseMapper.selectList(Wrappers.<User>lambdaQuery().like(Objects.nonNull(username),User::getUserName, username).eq(Objects.nonNull(type),User::getUserType, type)));
+        return R.ok(baseMapper.typePull(username, type));
     }
 }
