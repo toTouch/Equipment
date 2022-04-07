@@ -1876,7 +1876,30 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         List<WorkOrderServerQuery> list = workOrderServerService.queryByWorkOrderIdAndServerId(workOrder.getId(), null);
         if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)) {
             if (CollectionUtils.isEmpty(list)) {
-                return R.fail("待派单工单必须有服务商");
+                return R.fail("工单必须有服务商");
+            }
+        }
+
+        if(workOrder.getStatus() >= WorkOrder.STATUS_PROCESSING && workOrder.getStatus() <= WorkOrder.STATUS_FINISHED){
+            if (CollectionUtils.isEmpty(list)) {
+                return R.fail("工单必须有服务商");
+            }
+
+            for(WorkOrderServerQuery item : list){
+                if(StringUtils.isBlank(item.getSolution())){
+                    return R.fail("服务商"+item.getServerName()+"没填写解决方案");
+                }
+
+                QueryWrapper<File> wrapper = new QueryWrapper<>();
+                wrapper.eq("type", File.TYPE_WORK_ORDER);
+                wrapper.eq("bind_id", item.getWorkOrderId());
+                wrapper.ge("file_type", 1).lt("file_type", 90000);
+                wrapper.eq("server_id", item.getServerId());
+
+                int fileCount = fileService.count(wrapper);
+                if (fileCount == 0) {
+                   return R.fail("服务商"+item.getServerName()+"没上传处理图片");
+                }
             }
         }
 
@@ -1907,6 +1930,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         if (Objects.nonNull(r)) {
             return r;
         }
+
+        List<WorkOrderServerQuery> workOrderServerList = workOrder.getWorkOrderServerList();
 
         if (!Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT) && !Objects.equals(oldWorkOrder.getCommissionerId(), workOrder.getCommissionerId())) {
             return R.fail("非待派单状态，不可修改专员信息");
@@ -1991,6 +2016,38 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
             workOrder.setAssignmentTime(workOrder.getCreateTime());
         }
+
+        /*/*//**/
+
+        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)) {
+            if (CollectionUtils.isEmpty(workOrderServerList)) {
+                return R.fail("工单必须有服务商");
+            }
+        }
+
+        if(workOrder.getStatus() >= WorkOrder.STATUS_PROCESSING && workOrder.getStatus() <= WorkOrder.STATUS_FINISHED){
+            if (CollectionUtils.isEmpty(workOrderServerList)) {
+                return R.fail("工单必须有服务商");
+            }
+
+            for(WorkOrderServerQuery item : workOrderServerList){
+                if(StringUtils.isBlank(item.getSolution())){
+                    return R.fail("服务商"+item.getServerName()+"没填写解决方案");
+                }
+
+                QueryWrapper<File> wrapper = new QueryWrapper<>();
+                wrapper.eq("type", File.TYPE_WORK_ORDER);
+                wrapper.eq("bind_id", item.getWorkOrderId());
+                wrapper.ge("file_type", 1).lt("file_type", 90000);
+                wrapper.eq("server_id", item.getServerId());
+
+                int fileCount = fileService.count(wrapper);
+                if (fileCount == 0) {
+                    return R.fail("服务商"+item.getServerName()+"没上传处理图片");
+                }
+            }
+        }
+
 
         //非待派发状态 不可修改服务商
         if (!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
@@ -2196,6 +2253,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         WorkOrder workOrder = this.getById(workOrderAuditStatusQuery.getId());
         if (Objects.isNull(workOrder)) {
             return R.fail("未查询到相关工单");
+        }
+
+        if(!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
+            return R.fail("工单未完结");
         }
 
         if (!Objects.equals(workOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_WAIT)
