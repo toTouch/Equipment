@@ -110,18 +110,6 @@ public class AdminJsonWorkOrderController {
     public void exportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
         workOrderService.exportExcel(workOrder, response);
     }
-//
-//    @Deprecated
-//    @GetMapping("admin/workOrder/reconciliationSummary")
-//    public R reconciliationSummary(WorkOrderQuery workOrder) {
-//        return workOrderService.reconciliationSummary(workOrder);
-//    }
-//
-//    @Deprecated
-//    @GetMapping("admin/workOrder/reconciliationPreview")
-//    public R reconciliationPreview(WorkOrderQuery workOrder) {
-//        return workOrderService.reconciliationPreview(workOrder);
-//    }
 
     @GetMapping("admin/workOrder/reconciliation")
     public R reconciliation(WorkOrderQuery workOrder) {
@@ -133,19 +121,19 @@ public class AdminJsonWorkOrderController {
         workOrderService.reconciliationExportExcel(workOrder, response);
     }
 
-    @GetMapping("admin/workOrder/staffFuzzy")//
+    @GetMapping("admin/workOrder/staffFuzzy")
     public R staffFuzzy(@RequestParam("accessToken") String accessToken ){
        List<WorkOrder> workOrders = workOrderService.staffFuzzy(accessToken);
        return R.ok(workOrders);
     }
 
-    @PostMapping("admin/workOrder/serialNumber")//
+    @PostMapping("admin/workOrder/serialNumber")
     public R insertSerialNumber(@RequestBody ProductSerialNumberQuery productSerialNumberQuery) {
 
         return workOrderService.insertSerialNumber(productSerialNumberQuery);
     }
 
-    @GetMapping("admin/workOrder/serialNumber/page")//
+    @GetMapping("admin/workOrder/serialNumber/page")
     public R getSerialNumberPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size,
                                  ProductSerialNumberQuery productSerialNumber) {
         return R.ok(workOrderService.getSerialNumberPage(offset, size, productSerialNumber));
