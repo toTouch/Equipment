@@ -194,14 +194,14 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
                 //0--不要 1--需要
                 if(Objects.nonNull(item.getIsUseThird())){
                     if("需要".equals(item.getIsUseThird()) || String.valueOf(WorkOrderServer.USE_THIRD).equals(item.getIsUseThird())){
-                        workOrderServer.setIsUseThird(1);
+                        workOrderServer.setIsUseThird(true);
                     }
                     if("不需要".equals(item.getIsUseThird()) || String.valueOf(WorkOrderServer.NOT_USE_THIRD).equals(item.getIsUseThird())){
-                        workOrderServer.setIsUseThird(0);
+                        workOrderServer.setIsUseThird(false);
                     }
                 }
 
-                if(Objects.equals(workOrderServer.getIsUseThird(), WorkOrderServer.NOT_USE_THIRD)) {
+                if(workOrderServer.getIsUseThird()) {
                     if(Objects.nonNull(item.getThirdCompanyType())){
                         Integer thirdCompanyType = this.getThirdCompanyType(item.getThirdCompanyType());
                         if(Objects.nonNull(thirdCompanyType)){

@@ -499,7 +499,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
                     row.add(fileCount);
 
-                    if(Objects.equals(item.getIsUseThird(), 1)){
+                    if(item.getIsUseThird()){
                         for(String headerItem : thirdHeader) {
                             List<String> headTitle = new ArrayList<String>();
                             headTitle.add(headerItem + i);
@@ -820,7 +820,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
                     row.add(fileCount);
 
-                    if(Objects.equals(item.getIsUseThird(), 1)){
+                    if(item.getIsUseThird()){
                         for(String headerItem : thirdHeader) {
                             List<String> headTitle = new ArrayList<String>();
                             headTitle.add(headerItem + i);
@@ -1372,7 +1372,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     // "处理时长
                     row.add(getPrescriptionStr(item.getPrescription()));
 
-                    if(Objects.equals(item.getIsUseThird(), 1)){
+                    if(item.getIsUseThird()){
                         for(String headerItem : thirdHeader) {
                             List<String> headTitle = new ArrayList<String>();
                             headTitle.add(headerItem + i);

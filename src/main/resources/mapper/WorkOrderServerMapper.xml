@@ -12,7 +12,7 @@
         <result column="solution" property="solution" jdbcType="VARCHAR"></result>
         <result column="solution_time" property="solutionTime" jdbcType="INTEGER"></result>
         <result column="prescription" property="prescription" jdbcType="INTEGER"></result>
-        <result column="is_use_third" property="isUseThird" jdbcType="INTEGER"></result>
+        <result column="is_use_third" property="isUseThird" jdbcType="VARCHAR"></result>
         <result column="third_company_type" property="thirdCompanyType" jdbcType="INTEGER"></result>
         <result column="third_company_id" property="thirdCompanyId" jdbcType="VARCHAR"></result>
         <result column="third_company_name" property="thirdCompanyName" jdbcType="VARCHAR"></result>

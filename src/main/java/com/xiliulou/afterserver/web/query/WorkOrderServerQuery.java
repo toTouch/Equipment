@@ -43,9 +43,9 @@ public class WorkOrderServerQuery {
      */
     private Long prescription;
     /**
-     * 是否需要第三方 0--不要 1--需要
+     * 是否需要第三方
      */
-    private Integer isUseThird;
+    private Boolean isUseThird;
     /**
      * 第三方类型 1：客户 2：供应商 3:服务商
      */
