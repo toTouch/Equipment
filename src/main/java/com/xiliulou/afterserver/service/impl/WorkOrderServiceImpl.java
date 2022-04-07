@@ -243,7 +243,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         String[] header = {"审核状态", "工单类型", "点位", "点位状态", "移机起点", "移机终点", "创建人",
                 "状态",  "描述", "备注", "工单原因", "创建时间", "工单编号",  "sn码", "审核内容"};
 
-        String[] serverHeader = {"服务商", "费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数"};
+        String[] serverHeader = {"服务商", "费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数ces"};
         String[] thirdHeader = {" 第三方类型", "第三方公司", "第三方费用", "支付状态", "第三方原因", "第三方对接人"};
 
         List<Product> productAll = productService.list();
