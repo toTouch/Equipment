@@ -31,6 +31,7 @@ import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.*;
 import com.xiliulou.afterserver.web.vo.*;
+import com.xiliulou.core.json.JsonUtil;
 import io.micrometer.core.instrument.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -247,7 +248,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         String[] thirdHeader = {" 第三方类型", "第三方公司", "第三方费用", "支付状态", "第三方原因", "第三方对接人"};
 
         List<Product> productAll = productService.list();
-
 
         for (String s : header) {
             List<String> headTitle = new ArrayList<String>();
@@ -517,6 +517,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     ++i;
                 }
             }
+
+            log.debug("服务桑头 ---->"+ JsonUtil.toJson(serverHeaderMap));
 
            if(!serverHeaderMap.isEmpty()){
                int i = 0;
@@ -1727,7 +1729,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         if(!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)
-                || !Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)){
+                && !Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)){
             return R.fail("状态请选择为待派单或待处理状态");
         }
 
