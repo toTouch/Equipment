@@ -1290,7 +1290,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         String[] header = {"工单类型", "点位", "工单原因", "创建时间"};
 
         String[] serverHeader = {"服务商", "费用", "解决时间", "处理时长", " 第三方类型", "第三方公司", "第三方费用"};
-        String totalFeeHeader = "工单总费用";
+        //String totalFeeHeader = "工单总费用";
 
         for (String s : header) {
             List<String> headTitle = new ArrayList<String>();
@@ -1351,12 +1351,12 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if (!CollectionUtils.isEmpty(workOrderServerQueryList)) {
 
 
-                BigDecimal totalFee = new BigDecimal("0");
+                //BigDecimal totalFee = new BigDecimal("0");
                 serverMaxLen = workOrderServerQueryList.size() > serverMaxLen ? workOrderServerQueryList.size() : serverMaxLen;
 
                 for (WorkOrderServerQuery item : workOrderServerQueryList) {
 
-                    totalFee = totalFee.add(Optional.ofNullable(item.getFee()).orElse(new BigDecimal("0")));
+                   // totalFee = totalFee.add(Optional.ofNullable(item.getFee()).orElse(new BigDecimal("0")));
 
                     //服务商",
                     Server server = serverService.getById(item.getServerId());
@@ -1390,7 +1390,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         row.add("");
                     }
                 }
-                row.add(totalFee);
+                //row.add(totalFee);
             }
 
             data.add(row);
@@ -1405,9 +1405,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         //工单总费用
-        List<String> headTitle = new ArrayList<String>();
+        /*List<String> headTitle = new ArrayList<String>();
         headTitle.add(totalFeeHeader);
-        headList.add(headTitle);
+        headList.add(headTitle);*/
 
         String fileName = "工单列表.xlsx";
         try {
