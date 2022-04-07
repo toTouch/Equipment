@@ -60,6 +60,13 @@ public class AdminJsonUserController extends BaseController {
         return userService.list(offset,size,username);
 
     }
+
+    @GetMapping("admin/user/type/pull")
+    public R typePull(@RequestParam(value = "username",required = false) String username, @RequestParam(value = "type",required = false) Integer type) {
+        return userService.typePull(username, type);
+
+    }
+
    @PutMapping("/admin/user")
     public R updateUser(@RequestBody User user,HttpServletRequest request){
        Long uid = SecurityUtils.getUid();
