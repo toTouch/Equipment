@@ -2469,11 +2469,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         if (Objects.isNull(workOrderQuery.getCreateTime())) {
             return R.fail("请填写创建时间");
         }
-
-        if (Objects.isNull(workOrderQuery.getProcessTime())) {
-            return R.fail("请填写处理时间");
-        }
-
         if (Objects.equals(workOrderQuery.getType(), String.valueOf(WorkOrder.TYPE_MOBLIE))) {
             if (Objects.isNull(workOrderQuery.getSourceType())) {
                 return R.fail("请填写起点类型");
