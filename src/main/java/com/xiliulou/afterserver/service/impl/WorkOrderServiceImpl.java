@@ -1423,11 +1423,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
                     i++;
                 }
-
-                List<String> headTitle = new ArrayList<String>();
-                headTitle.add(totalFeeHeader);
-                headList.add(headTitle);
-
                 o.setTotalFee(totalFee);
             }
 
@@ -1453,6 +1448,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
             }
         }
+
+        //工单总费用
+        List<String> headTitle = new ArrayList<String>();
+        headTitle.add(totalFeeHeader);
+        headList.add(headTitle);
 
         String fileName = "工单列表.xlsx";
         try {
