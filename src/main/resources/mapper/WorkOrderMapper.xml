@@ -428,7 +428,7 @@
     </select>
     <select id="installWorkOrderByCity" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
         SELECT
-            p.name as pointName,p.city_id as city,count(1) as numCount,
+            ANY_VALUE(p.name) as pointName, ANY_VALUE(p.city_id) as city,count(1) as numCount,
             ( CASE
             WHEN ANY_VALUE(wos.third_company_pay) IS NOT NULL THEN
             sum( wos.fee - wos.third_company_pay ) ELSE sum( wos.fee )
