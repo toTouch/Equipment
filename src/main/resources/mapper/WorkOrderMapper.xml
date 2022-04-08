@@ -324,8 +324,8 @@
 
     <select id="qualityCountList" resultType="com.xiliulou.afterserver.web.vo.AfterCountListVo">
         SELECT
-            FROM_UNIXTIME( a.create_time / 1000, '%Y-%m-%d' ) as dateTime,
-            DATE_FORMAT(FROM_UNIXTIME( a.create_time / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
+            FROM_UNIXTIME( ANY_VALUE(a.create_time) / 1000, '%Y-%m-%d' ) as dateTime,
+            DATE_FORMAT(FROM_UNIXTIME( ANY_VALUE(a.create_time) / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
             count( a.work_order_reason_id ) AS count,
             a.work_order_reason_id as reasonId
         FROM
@@ -347,7 +347,7 @@
             b.city_id,
             count( 1 ) AS numCount,
                 ( CASE
-                WHEN wos.third_company_pay IS NOT NULL THEN
+                WHEN ANY_VALUE(wos.third_company_pay) IS NOT NULL THEN
                 sum( wos.fee - wos.third_company_pay ) ELSE sum( wos.fee )
                 END )
             AS sumCount
@@ -374,7 +374,8 @@
 
     <select id="afterWorkOrderByPoint" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
         SELECT
-            b.name as pointName, count(1) as numCount,
+            ANY_VALUE( b.name ) as pointName,
+            count(1) as numCount,
             ( CASE
             WHEN ANY_VALUE(wos.third_company_pay) IS NOT NULL THEN
             sum( wos.fee - wos.third_company_pay ) ELSE sum( wos.fee )
@@ -401,13 +402,13 @@
     <select id="afterWorkOrderList" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
 
         SELECT
-            FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ) as dateTime,
-            DATE_FORMAT(FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
+            FROM_UNIXTIME( ANY_VALUE(o.create_time) / 1000, '%Y-%m-%d' ) as dateTime,
+            DATE_FORMAT(FROM_UNIXTIME( ANY_VALUE(o.create_time) / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
 --         count( a.work_order_reason_id ) AS count,
 --             FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ) AS date,
             sum( wos.fee ) AS sumCount,
             count(1) as numCount,
-            b.city_id as city
+            ANY_VALUE(b.city_id) as city
         FROM
             work_order o
             LEFT JOIN t_point_new b ON o.point_id = b.id
@@ -429,7 +430,7 @@
         SELECT
             p.name as pointName,p.city_id as city,count(1) as numCount,
             ( CASE
-            WHEN wos.third_company_pay IS NOT NULL THEN
+            WHEN ANY_VALUE(wos.third_company_pay) IS NOT NULL THEN
             sum( wos.fee - wos.third_company_pay ) ELSE sum( wos.fee )
             END )
             AS sumCount
@@ -453,13 +454,13 @@
     </select>
     <select id="installWorkOrderByPoint" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
         SELECT
-        p.NAME AS pointName,
-        p.city_id,
+        ANY_VALUE(p.NAME) AS pointName,
+        ANY_VALUE(p.city_id),
         p.id as pointId,
         count(o.type) AS numCount,
         o.type,
         ( CASE
-        WHEN wos.third_company_pay IS NOT NULL THEN
+        WHEN ANY_VALUE(wos.third_company_pay) IS NOT NULL THEN
         sum( wos.fee - wos.third_company_pay ) ELSE sum( wos.fee )
         END )
         AS sumCount
@@ -484,13 +485,13 @@
     </select>
     <select id="installWorkOrderList" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
         SELECT
-            p.NAME AS pointName,
-            p.city_id as city,
+            ANY_VALUE(p.NAME) AS pointName,
+            ANY_VALUE(p.city_id) as city,
             count( 1 ) AS numCount,
-            FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ) as dateTime,
-            DATE_FORMAT(FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
+            FROM_UNIXTIME(  ANY_VALUE(o.create_time) / 1000, '%Y-%m-%d' ) as dateTime,
+            DATE_FORMAT(FROM_UNIXTIME(  ANY_VALUE(o.create_time) / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
             ( CASE
-            WHEN wos.third_company_pay IS NOT NULL THEN
+            WHEN  ANY_VALUE(wos.third_company_pay) IS NOT NULL THEN
             sum( wos.fee - wos.third_company_pay ) ELSE sum( wos.fee )
             END )
             AS sumCount
