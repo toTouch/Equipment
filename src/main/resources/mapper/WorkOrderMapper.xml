@@ -344,7 +344,7 @@
 
     <select id="afterWorkOrderByCity" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
         SELECT
-            b.city,
+            b.city_id,
             count( 1 ) AS numCount,
                 ( CASE
                 WHEN wos.third_company_pay IS NOT NULL THEN
@@ -353,18 +353,18 @@
             AS sumCount
         FROM
             work_order o
-        LEFT JOIN point b ON o.point_id = b.id
+        LEFT JOIN t_point_new b ON o.point_id = b.id
         LEFT JOIN t_work_order_server wos ON wos.work_order_id = o.id
         WHERE
             o.type = 5
         <if test="cityId != null">
-            and b.city = #{cityId}
+            and b.city_id = #{cityId}
         </if>
         <if test="startTime != null and endTime != null ">
             and o.create_time BETWEEN #{startTime} and #{endTime}
         </if>
         GROUP BY
-            b.city
+            b.city_id
         ORDER BY
             sumCount DESC
         LIMIT 20
@@ -382,12 +382,12 @@
             AS sumCount
         FROM
         work_order o
-        LEFT JOIN point b ON o.point_id = b.id
+        LEFT JOIN t_point_new b ON o.point_id = b.id
         LEFT JOIN t_work_order_server wos ON wos.work_order_id = o.id
         WHERE
         o.type = 5
         <if test="cityId != null">
-            and b.city = #{cityId}
+            and b.city_id = #{cityId}
         </if>
         <if test="startTime != null and endTime != null ">
             and o.create_time BETWEEN #{startTime} and #{endTime}
@@ -407,10 +407,10 @@
 --             FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ) AS date,
             sum( wos.fee ) AS sumCount,
             count(1) as numCount,
-            b.city
+            b.city_id as city
         FROM
             work_order o
-            LEFT JOIN point b ON o.point_id = b.id
+            LEFT JOIN t_point_new b ON o.point_id = b.id
             LEFT JOIN t_work_order_server wos ON wos.work_order_id = o.id
         WHERE
             o.type = 5
@@ -418,7 +418,7 @@
             and o.create_time BETWEEN #{startTime} and #{endTime}
         </if>
         <if test="cityId != null">
-            and b.city = #{cityId}
+            and b.city_id = #{cityId}
         </if>
         GROUP BY
             date
@@ -427,7 +427,7 @@
     </select>
     <select id="installWorkOrderByCity" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
         SELECT
-            p.name as pointName,p.city,count(1) as numCount,
+            p.name as pointName,p.city_id as city,count(1) as numCount,
             ( CASE
             WHEN wos.third_company_pay IS NOT NULL THEN
             sum( wos.fee - wos.third_company_pay ) ELSE sum( wos.fee )
@@ -435,7 +435,7 @@
             AS sumCount
         FROM
             work_order o
-            LEFT JOIN point p ON o.point_id = p.id
+            LEFT JOIN t_point_new p ON o.point_id = p.id
             LEFT JOIN t_work_order_server wos ON wos.work_order_id = o.id
         WHERE
             o.type IN ( 1, 2, 3 )
@@ -443,10 +443,10 @@
             and o.create_time BETWEEN #{startTime} and #{endTime}
         </if>
         <if test="cityId != null">
-            and p.city = #{cityId}
+            and p.city_id = #{cityId}
         </if>
         GROUP BY
-            p.city
+            p.city_id
         ORDER BY
             sumCount DESC
             LIMIT 20
@@ -485,7 +485,7 @@
     <select id="installWorkOrderList" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
         SELECT
             p.NAME AS pointName,
-            p.city,
+            p.city_id as city,
             count( 1 ) AS numCount,
             FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ) as dateTime,
             DATE_FORMAT(FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
@@ -496,7 +496,7 @@
             AS sumCount
         FROM
             work_order o
-            LEFT JOIN point p ON o.point_id = p.id
+            LEFT JOIN t_point_new p ON o.point_id = p.id
             LEFT JOIN t_work_order_server wos ON wos.work_order_id = o.id
         WHERE
             o.type IN ( 1, 2, 3 )
@@ -504,7 +504,7 @@
             and o.create_time BETWEEN #{startTime} and #{endTime}
         </if>
         <if test="cityId != null">
-            and p.city = #{cityId}
+            and p.city_id = #{cityId}
         </if>
         GROUP BY
             date
@@ -518,7 +518,7 @@
         LEFT JOIN work_order_type as wot on wot.id = wo.id
         LEFT JOIN work_order_reason as wor on wor.id = wo.work_order_reason_id
         LEFT JOIN user u on u.id =wo.creater_id
-        LEFT JOIN point as p on p.id = wo.point_id
+        LEFT JOIN t_point_new as p on p.id = wo.point_id
         <where>
             <if test="query.pointId != null">
                 and wo.point_id = #{query.pointId}
