@@ -2817,7 +2817,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
     @Override
     public R queryServerPull(String name) {
-        return serverService.queryServerPull(name);;
+        return serverService.queryServerPull(name);
     }
 
     @Override
