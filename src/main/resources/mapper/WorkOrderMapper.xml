@@ -231,6 +231,8 @@
         wo.audit_remarks as wo_audit_remarks,
         wo.source_type as wo_source_type,
         wo.product_info as wo_product_info,
+        wo.assignment_time as wo_assignment_time,
+        wo.commissioner_id as wo_commissioner_id,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
