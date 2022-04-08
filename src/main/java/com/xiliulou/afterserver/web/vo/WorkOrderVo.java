@@ -98,4 +98,8 @@ public class WorkOrderVo {
      * 费用
      */
     private BigDecimal totalFee;
+    /**
+     * 派单时间
+     */
+    private Long assignmentTime;
 }

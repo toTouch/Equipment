@@ -2114,8 +2114,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             saveWorkAuditNotify(oldWorkOrder);
         }
 
-
-        workOrder.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
         this.baseMapper.updateOne(workOrder);
 
         if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)) {
@@ -2165,6 +2163,12 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
         } else {
             updateWorkOrderServer(workOrder.getWorkOrderServerList());
+        }
+
+        if(Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
+            workOrder.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
+            baseMapper.updateById(workOrder);
+            return R.ok("状态成功修改为已完结，审核状态已更新为待审核");
         }
         return R.ok();
     }
