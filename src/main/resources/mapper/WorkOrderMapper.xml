@@ -655,6 +655,12 @@
                     #{item}
                 </foreach>
             </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="createTimeStart != null">
+                and between #{createTimeStart} and #{createTimeEnd}
+            </if>
         </where>
         ORDER BY wo.create_time DESC
     </select>
