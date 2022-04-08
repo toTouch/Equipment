@@ -1102,6 +1102,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             case 5:
                 statusStr = "已暂停";
                 break;
+            case 6:
+                statusStr = "待排单";
+                break;
         }
         return statusStr;
     }
@@ -1720,6 +1723,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 && !Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
             return R.fail("状态请选择为待派单或待处理状态");
         }
+
 
         if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)) {
             if (CollectionUtils.isEmpty(workOrder.getWorkOrderServerList())) {
@@ -2688,6 +2692,15 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             String status = this.getStatusStr(workOrderQuery.getStatus());
             if (Objects.equals("", status)) {
                 return R.fail("请填写正确的工单状态");
+            }
+        }
+
+        if(Objects.isNull(workOrderQuery.getCommissionerId())){
+            return R.fail("请填写专员");
+        }else {
+            User user = userService.getUserById(workOrderQuery.getCommissionerId());
+            if(Objects.isNull(user) || !Objects.equals(user.getUserType(), User.TYPE_COMMISSIONER)){
+                return R.fail("未查询到相关专员");
             }
         }
 
