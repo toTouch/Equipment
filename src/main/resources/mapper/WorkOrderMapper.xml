@@ -347,13 +347,14 @@
             b.city,
             count( 1 ) AS numCount,
                 ( CASE
-                WHEN o.third_company_pay IS NOT NULL THEN
-                sum( o.fee - o.third_company_pay ) ELSE sum( o.fee )
+                WHEN wos.third_company_pay IS NOT NULL THEN
+                sum( wos.fee - wos.third_company_pay ) ELSE sum( wos.fee )
                 END )
             AS sumCount
         FROM
             work_order o
         LEFT JOIN point b ON o.point_id = b.id
+        LEFT JOIN t_work_order_server wos ON wos.work_order_id = o.id
         WHERE
             o.type = 5
         <if test="cityId != null">
@@ -375,13 +376,14 @@
         SELECT
             b.name as pointName, count(1) as numCount,
             ( CASE
-            WHEN o.third_company_pay IS NOT NULL THEN
-            sum( o.fee - o.third_company_pay ) ELSE sum( o.fee )
+            WHEN ANY_VALUE(wos.third_company_pay) IS NOT NULL THEN
+            sum( wos.fee - wos.third_company_pay ) ELSE sum( wos.fee )
             END )
             AS sumCount
         FROM
         work_order o
         LEFT JOIN point b ON o.point_id = b.id
+        LEFT JOIN t_work_order_server wos ON wos.work_order_id = o.id
         WHERE
         o.type = 5
         <if test="cityId != null">
@@ -403,12 +405,13 @@
             DATE_FORMAT(FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
 --         count( a.work_order_reason_id ) AS count,
 --             FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ) AS date,
-            sum( o.fee ) AS sumCount,
+            sum( wos.fee ) AS sumCount,
             count(1) as numCount,
             b.city
         FROM
             work_order o
             LEFT JOIN point b ON o.point_id = b.id
+            LEFT JOIN t_work_order_server wos ON wos.work_order_id = o.id
         WHERE
             o.type = 5
         <if test="startTime != null and endTime != null ">
@@ -426,13 +429,14 @@
         SELECT
             p.name as pointName,p.city,count(1) as numCount,
             ( CASE
-            WHEN o.third_company_pay IS NOT NULL THEN
-            sum( o.fee - o.third_company_pay ) ELSE sum( o.fee )
+            WHEN wos.third_company_pay IS NOT NULL THEN
+            sum( wos.fee - wos.third_company_pay ) ELSE sum( wos.fee )
             END )
             AS sumCount
         FROM
             work_order o
             LEFT JOIN point p ON o.point_id = p.id
+            LEFT JOIN t_work_order_server wos ON wos.work_order_id = o.id
         WHERE
             o.type IN ( 1, 2, 3 )
         <if test="startTime != null and endTime != null ">
@@ -455,13 +459,14 @@
         count(o.type) AS numCount,
         o.type,
         ( CASE
-        WHEN o.third_company_pay IS NOT NULL THEN
-        sum( o.fee - o.third_company_pay ) ELSE sum( o.fee )
+        WHEN wos.third_company_pay IS NOT NULL THEN
+        sum( wos.fee - wos.third_company_pay ) ELSE sum( wos.fee )
         END )
         AS sumCount
         FROM
         work_order o
         LEFT JOIN t_point_new p ON o.point_id = p.id
+        LEFT JOIN t_work_order_server wos ON wos.work_order_id = o.id
         WHERE
         o.type IN ( 1, 2, 3 )
         <if test="startTime != null and endTime != null ">
@@ -485,13 +490,14 @@
             FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ) as dateTime,
             DATE_FORMAT(FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
             ( CASE
-            WHEN o.third_company_pay IS NOT NULL THEN
-            sum( o.fee - o.third_company_pay ) ELSE sum( o.fee )
+            WHEN wos.third_company_pay IS NOT NULL THEN
+            sum( wos.fee - wos.third_company_pay ) ELSE sum( wos.fee )
             END )
             AS sumCount
         FROM
             work_order o
             LEFT JOIN point p ON o.point_id = p.id
+            LEFT JOIN t_work_order_server wos ON wos.work_order_id = o.id
         WHERE
             o.type IN ( 1, 2, 3 )
         <if test="startTime != null and endTime != null ">
