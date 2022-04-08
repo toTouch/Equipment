@@ -54,4 +54,6 @@ public interface ProductService extends IService<Product> {
     R getProductSerialNumListByPid(Long id);
 
     Product getByName(String name);
+
+    R queryProductModelPull(String name);
 }

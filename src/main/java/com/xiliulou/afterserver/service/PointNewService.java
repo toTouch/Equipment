@@ -6,6 +6,7 @@ import com.xiliulou.afterserver.mapper.PointNewMapper;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.PointAuditStatusQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
+import com.xiliulou.afterserver.web.vo.PointNewPullVo;
 
 import java.util.List;
 
@@ -95,4 +96,6 @@ public interface PointNewService extends IService<PointNew> {
     //R deleteProduct(Long pointId, Long producutId);
 
     void updatePastWarrantyStatus();
+
+    List<PointNewPullVo> queryPointNewPull(String name);
 }

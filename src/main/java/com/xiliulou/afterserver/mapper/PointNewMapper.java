@@ -4,8 +4,10 @@ import com.xiliulou.afterserver.entity.PointNew;
 
 import java.util.List;
 
+import com.xiliulou.afterserver.web.vo.PointNewPullVo;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 /**
@@ -104,4 +106,7 @@ public interface PointNewMapper extends BaseMapper<PointNew> {
 
     @Update("update t_point_new set status = 11 where warranty_time < #{curTime}")
     void updatePastWarrantyStatus(@Param("curTime")Long curTime);
+
+    @Select("select id, name from t_point_new where name like concat('%', #{name}, '%') limit 0, 20")
+    List<PointNewPullVo> queryPointNewPull(String name);
 }

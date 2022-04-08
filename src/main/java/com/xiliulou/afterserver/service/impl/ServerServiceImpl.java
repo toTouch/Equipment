@@ -14,11 +14,14 @@ import com.xiliulou.afterserver.service.WorkOrderServerService;
 import com.xiliulou.afterserver.service.WorkOrderService;
 import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.PageUtil;
+import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.vo.ServerPullVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -61,5 +64,10 @@ public class ServerServiceImpl extends ServiceImpl<ServerMapper, Server> impleme
             });
         }
         return page;
+    }
+
+    @Override
+    public R queryServerPull(String name) {
+        return R.ok(baseMapper.queryServerPull(name));
     }
 }

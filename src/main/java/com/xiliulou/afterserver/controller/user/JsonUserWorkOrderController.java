@@ -65,4 +65,40 @@ public class JsonUserWorkOrderController {
     public R submitReview(@RequestParam("id") Long id, @RequestParam("status")Integer status){
         return workOrderService.submitReview(id, status);
     }
+
+    @GetMapping("/admin/wechat/productModel/pull")
+    public R queryProductModelPull(@RequestParam(value = "name", required = false) String name){
+        return workOrderService.queryProductModelPull(name);
+    }
+
+    @GetMapping("/admin/wechat/workOrderReason/pull")
+    public R queryWorkOrderReasonPull(){
+        return workOrderService.queryWorkOrderReasonPull();
+    }
+
+    @GetMapping("/admin/wechat/server/pull")
+    public R queryServerPull(@RequestParam(value = "name", required = false) String name){
+        return workOrderService.queryServerPull(name);
+    }
+
+    @GetMapping("/admin/wechat/supplier/pull")
+    public R querySupplierPull(@RequestParam(value = "name", required = false) String name){
+        return workOrderService.querySupplierPull(name);
+    }
+
+    @GetMapping("/admin/wechat/customer/pull")
+    public R queryCustomerPull(@RequestParam(value = "name", required = false) String name){
+        return workOrderService.queryCustomerPull(name);
+    }
+
+    @GetMapping("/admin/wechat/pointNew/pull")
+    public R queryPointNewPull(@RequestParam(value = "name", required = false) String name){
+        return workOrderService.queryPointNewPull(name);
+    }
+
+    @GetMapping("/admin/wechat/warehouse/pull")
+    public R queryWarehousePull(@RequestParam(value = "name", required = false) String name){
+        return workOrderService.queryWarehousePull(name);
+    }
+
 }
