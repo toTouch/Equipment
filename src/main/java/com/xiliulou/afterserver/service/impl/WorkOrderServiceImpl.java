@@ -2329,7 +2329,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         List<WorkOrderAssignmentVo> data = page.getRecords();
 
 
-        if (CollectionUtils.isEmpty(data)) {
+        if (!CollectionUtils.isEmpty(data)) {
             for (WorkOrderAssignmentVo item : data) {
                 item.setParentWorkOrderReason(this.getParentWorkOrderReason(item.getWorkOrderReasonId()));
 
