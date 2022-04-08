@@ -29,9 +29,11 @@ public class JsonUserWorkOrderController {
     public R queryAssignmentStatusList(@RequestParam(value = "offset", required = false, defaultValue = "0") Long offset,
                                        @RequestParam(value = "size",required = false, defaultValue = "20") Long size,
                                        @RequestParam(value = "auditStatus", required = false) Integer auditStatus,
-                                       @RequestParam("status")Integer status){
+                                       @RequestParam(value = "type", required = false) Integer type,
+                                       @RequestParam(value = "createTimeStart", required = false) Long createTimeStart,
+                                       @RequestParam(value = "status", required = false)Integer status){
 
-        return workOrderService.queryAssignmentStatusList(offset, size,auditStatus, status);
+        return workOrderService.queryAssignmentStatusList(offset, size,auditStatus, status, type, createTimeStart);
     }
 
 

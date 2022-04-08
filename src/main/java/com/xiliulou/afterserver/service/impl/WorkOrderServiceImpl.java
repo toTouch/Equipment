@@ -1901,6 +1901,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                    return R.fail("服务商"+item.getServerName()+"没上传处理图片");
                 }
             }
+
         }
 
         if (!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)
@@ -1912,6 +1913,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         workOrder.setStatus(query.getStatus());
         workOrder.setWorkOrderReasonId(query.getWorkOrderReasonId());
         baseMapper.updateById(workOrder);
+        if(Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
+            workOrder.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
+            baseMapper.updateById(workOrder);
+            return R.ok("状态成功修改为已完结，审核状态已更新为待审核");
+        }
         return R.ok();
     }
 
@@ -2294,10 +2300,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     @Override
-    public R queryAssignmentStatusList(Long offset, Long size, Integer auditStatus, Integer status) {
+    public R queryAssignmentStatusList(Long offset, Long size, Integer auditStatus, Integer status, Integer type, Long createTimeStart) {
         Long uid = null;
         Long serverId = null;
         List<Long> workOrderServerIds = null;
+        Long createTimeEnd = null;
         if (Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_COMMISSIONER)) {
             uid = SecurityUtils.getUid();
         } else if (Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_PATROL_APPLET)) {
@@ -2305,8 +2312,12 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             workOrderServerIds = workOrderServerService.queryWorkOrderIds(serverId);
         }
 
+        if(Objects.nonNull(createTimeStart)){
+            createTimeEnd = createTimeStart + 24 * 3600000;
+        }
+
         Page<WorkOrderAssignmentVo> page = PageUtil.getPage(offset, size);
-        page = baseMapper.queryAssignmentStatusList(page, uid, workOrderServerIds, auditStatus, status);
+        page = baseMapper.queryAssignmentStatusList(page, uid, workOrderServerIds, auditStatus, status, type, createTimeStart, createTimeEnd);
         List<WorkOrderAssignmentVo> data = page.getRecords();
 
 

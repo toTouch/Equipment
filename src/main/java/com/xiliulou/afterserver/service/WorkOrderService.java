@@ -72,7 +72,7 @@ public interface WorkOrderService extends IService<WorkOrder> {
 
     R putAdminPointNewCreateUser(Long id, Long createrId);
 
-    R queryAssignmentStatusList(Long offset, Long size,Integer auditStatus, Integer status);
+    R queryAssignmentStatusList(Long offset, Long size,Integer auditStatus, Integer status, Integer type, Long createTimeStart);
 
     R updateAssignment(WorkOrderAssignmentQuery workOrderAssignmentQuery);
 
