@@ -30,10 +30,10 @@ public class JsonUserWorkOrderController {
                                        @RequestParam(value = "size",required = false, defaultValue = "20") Long size,
                                        @RequestParam(value = "auditStatus", required = false) Integer auditStatus,
                                        @RequestParam(value = "type", required = false) Integer type,
-                                       @RequestParam(value = "createTimeStart", required = false) Long createTimeStart,
+                                       @RequestParam(value = "startTime", required = false) Long startTime,
                                        @RequestParam(value = "status", required = false)Integer status){
 
-        return workOrderService.queryAssignmentStatusList(offset, size,auditStatus, status, type, createTimeStart);
+        return workOrderService.queryAssignmentStatusList(offset, size,auditStatus, status, type, startTime);
     }
 
 

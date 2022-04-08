@@ -634,7 +634,7 @@
         wo.code as wo_code,
         wo.work_order_reason_id as wo_work_order_reason_id,
         wo.reason as wo_reason,
-        wor.name as wor_name,
+        wor.name as wor_name
         FROM work_order as wo
         LEFT JOIN work_order_type as wot on wot.id = wo.id
         LEFT JOIN t_point_new as p on p.id = wo.point_id
@@ -659,7 +659,7 @@
                 and type = #{type}
             </if>
             <if test="createTimeStart != null">
-                and between #{createTimeStart} and #{createTimeEnd}
+                and create_time between #{createTimeStart} and #{createTimeEnd}
             </if>
         </where>
         ORDER BY wo.create_time DESC
