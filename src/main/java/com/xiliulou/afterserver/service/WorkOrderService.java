@@ -81,4 +81,18 @@ public interface WorkOrderService extends IService<WorkOrder> {
     R submitReview(Long id, Integer status);
 
     String getParentWorkOrderReason(Long id);
+
+    R queryProductModelPull(String name);
+
+    R queryWorkOrderReasonPull();
+
+    R queryServerPull(String name);
+
+    R querySupplierPull(String name);
+
+    R queryCustomerPull(String name);
+
+    R queryPointNewPull(String name);
+
+    R queryWarehousePull(String name);
 }

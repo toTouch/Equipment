@@ -21,6 +21,7 @@ import com.xiliulou.afterserver.web.query.CameraInfoQuery;
 import com.xiliulou.afterserver.web.query.PointAuditStatusQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
 import com.xiliulou.afterserver.web.query.ProductInfoQuery;
+import com.xiliulou.afterserver.web.vo.PointNewPullVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -456,6 +457,11 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     @Override
     public void updatePastWarrantyStatus(){
         pointNewMapper.updatePastWarrantyStatus(System.currentTimeMillis());
+    }
+
+    @Override
+    public List<PointNewPullVo> queryPointNewPull(String name) {
+        return pointNewMapper.queryPointNewPull(name);
     }
 
     /*@Override

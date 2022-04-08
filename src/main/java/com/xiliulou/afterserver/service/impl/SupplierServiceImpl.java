@@ -18,6 +18,7 @@ import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.FactoryUserInfoVo;
+import com.xiliulou.afterserver.web.vo.SupplierPullVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,5 +87,10 @@ public class SupplierServiceImpl extends ServiceImpl<SupplierMapper, Supplier> i
         FactoryUserInfoVo vo = new FactoryUserInfoVo();
         vo.setSupplierName(supplier.getName());
         return R.ok(vo);
+    }
+
+    @Override
+    public List<SupplierPullVo> querySupplierPull(String name) {
+        return this.baseMapper.querySupplierPull(name);
     }
 }

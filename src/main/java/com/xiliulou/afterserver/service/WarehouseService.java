@@ -19,4 +19,6 @@ public interface WarehouseService extends IService<WareHouse> {
     R pointBindSerialNumber(WareHouseQuery wareHouseQuery);
 
     R queryWarehousePull();
+
+    R queryWarehouseLikeNamePull(String name);
 }

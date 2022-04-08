@@ -2804,4 +2804,39 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
         return null;
     }
+
+    @Override
+    public R queryProductModelPull(String name) {
+        return productService.queryProductModelPull(name) ;
+    }
+
+    @Override
+    public R queryWorkOrderReasonPull() {
+        return R.ok(workOrderReasonService.list());
+    }
+
+    @Override
+    public R queryServerPull(String name) {
+        return serverService.queryServerPull(name);;
+    }
+
+    @Override
+    public R querySupplierPull(String name) {
+        return R.ok(supplierService.querySupplierPull(name));
+    }
+
+    @Override
+    public R queryCustomerPull(String name) {
+        return R.ok(customerService.queryCustomerPull(name));
+    }
+
+    @Override
+    public R queryPointNewPull(String name) {
+        return R.ok(pointNewService.queryPointNewPull(name));
+    }
+
+    @Override
+    public R queryWarehousePull(String name) {
+        return R.ok(warehouseService.queryWarehouseLikeNamePull(name));
+    }
 }
