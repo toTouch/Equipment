@@ -344,7 +344,7 @@
 
     <select id="afterWorkOrderByCity" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
         SELECT
-            b.city_id,
+            b.city_id as city,
             count( 1 ) AS numCount,
                 ( CASE
                 WHEN ANY_VALUE(wos.third_company_pay) IS NOT NULL THEN
@@ -456,7 +456,7 @@
         SELECT
         ANY_VALUE(p.NAME) AS pointName,
         ANY_VALUE(p.city_id),
-        p.id as pointId,
+        ANY_VALUE(p.id) as pointId,
         count(o.type) AS numCount,
         o.type,
         ( CASE
