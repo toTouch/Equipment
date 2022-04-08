@@ -454,7 +454,24 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             //审核备注
             row.add(o.getAuditRemarks() == null ? "" : o.getAuditRemarks());
 
-            //zhuyuan1
+            //专员
+            if (Objects.nonNull(o.getCommissionerId())) {
+                User user = userService.getUserById(o.getCommissionerId());
+                if (Objects.nonNull(user)) {
+                    row.add(user.getUserName());
+                } else {
+                    row.add("");
+                }
+            } else {
+                row.add("");
+            }
+
+            //派单时间
+            if (Objects.nonNull(o.getAssignmentTime())) {
+                row.add(simpleDateFormat.format(new Date(o.getAssignmentTime())));
+            } else {
+                row.add("");
+            }
 
             //服务商信息
             List<WorkOrderServerQuery> workOrderServerQueryList = workOrderServerService.queryByWorkOrderIdAndServerId(o.getId(), null);
@@ -611,7 +628,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         List<List<String>> headList = new ArrayList<List<String>>();
 
         String[] header = {"审核状态", "工单类型", "点位", "点位状态", "创建人",
-                "状态", "描述", "备注", "工单原因", "创建时间", "工单编号", "sn码", "审核内容"};
+                "状态", "描述", "备注", "工单原因", "创建时间", "工单编号", "sn码", "审核内容", "专员", "派单时间"};
 
         String[] serverHeader = {"服务商", "费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数", " 第三方类型", "第三方公司", "第三方费用", "支付状态", "第三方原因", "第三方对接人"};
 
@@ -780,6 +797,25 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
             //审核备注
             row.add(o.getAuditRemarks() == null ? "" : o.getAuditRemarks());
+
+            //专员
+            if (Objects.nonNull(o.getCommissionerId())) {
+                User user = userService.getUserById(o.getCommissionerId());
+                if (Objects.nonNull(user)) {
+                    row.add(user.getUserName());
+                } else {
+                    row.add("");
+                }
+            } else {
+                row.add("");
+            }
+
+            //派单时间
+            if (Objects.nonNull(o.getAssignmentTime())) {
+                row.add(simpleDateFormat.format(new Date(o.getAssignmentTime())));
+            } else {
+                row.add("");
+            }
 
 
             List<WorkOrderServerQuery> workOrderServerQueryList = workOrderServerService.queryByWorkOrderIdAndServerId(o.getId(), null);
