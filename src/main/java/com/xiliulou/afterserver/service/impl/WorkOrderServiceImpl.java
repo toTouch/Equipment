@@ -2069,12 +2069,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         /*/*//**/
 
-        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)) {
-            if (CollectionUtils.isEmpty(workOrderServerList)) {
-                return R.fail("工单必须有服务商");
-            }
-        }
-
         if(workOrder.getStatus() >= WorkOrder.STATUS_PROCESSING && workOrder.getStatus() <= WorkOrder.STATUS_FINISHED){
             if (CollectionUtils.isEmpty(workOrderServerList)) {
                 return R.fail("工单必须有服务商");
@@ -2477,6 +2471,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         WorkOrder workOrder = new WorkOrder();
         BeanUtils.copyProperties(workOrderAssignmentQuery, workOrder);
+        String productInfo = JSON.toJSONString(workOrderAssignmentQuery.getProductInfoList());
+        workOrder.setProductInfo(productInfo);
+
 
         if (Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_ASSIGNMENT)
                 && Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_INIT)) {
