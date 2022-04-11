@@ -2369,6 +2369,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
                 if (Objects.nonNull(item.getProductInfo())) {
                     List<ProductInfoQuery> productInfo = JSON.parseArray(item.getProductInfo(), ProductInfoQuery.class);
+                    if(!CollectionUtils.isEmpty(productInfo)) {
+                        productInfo.forEach(productItem -> {
+                            Product product = productService.getById(productItem.getProductId());
+                            if(Objects.nonNull(product)){
+                                productItem.setProductName(product.getName());
+                            }
+                        });
+                    }
                     item.setProductInfoList(productInfo);
                 }
 
