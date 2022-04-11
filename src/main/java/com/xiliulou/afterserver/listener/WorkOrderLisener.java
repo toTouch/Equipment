@@ -163,6 +163,13 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
 
             workOrder.setCreaterId(SecurityUtils.getUid());
 
+            if(StringUtils.isNotBlank(item.getCommissioner())) {
+                User user = userService.findByUserName(item.getCommissioner());
+                if(Objects.nonNull(user)) {
+                    workOrder.setCommissionerId(user.getId());
+                }
+            }
+
             workOrderService.save(workOrder);
 
 
@@ -417,10 +424,13 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
             throw new RuntimeException("状态请选择为待派单或待处理状态");
         }
 
-        if(Objects.equals(status,  WorkOrder.STATUS_INIT)){
+        if(StringUtils.isNotBlank(workOrderInfo.getCommissioner())){
             User user = userService.findByUserName(workOrderInfo.getCommissioner());
             if(Objects.isNull(user)){
                 throw new RuntimeException("未查询到相关专员");
+            }
+            if(!Objects.equals(user.getUserType(), User.TYPE_COMMISSIONER)) {
+                throw new RuntimeException("用户不是专员，请选择专员");
             }
         }
 
