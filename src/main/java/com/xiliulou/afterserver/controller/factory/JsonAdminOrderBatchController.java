@@ -107,7 +107,7 @@ public class JsonAdminOrderBatchController {
     }
 
     @GetMapping("/iotCard/snLike")
-    public R iotCardSnLike(@RequestParam("sn") String sn,
+    public R iotCardSnLike(@RequestParam(value = "sn", required = false) String sn,
                     @RequestParam(value = "offset", required = false) Long offset,
                     @RequestParam(value = "size", required = false) Long size) {
 
@@ -122,12 +122,12 @@ public class JsonAdminOrderBatchController {
         //分页 手持终端第一页从零开始
         offset = offset  * size;
 
-        log.info("物联网卡模糊搜索 -----> sn = {}", sn);
+        //log.info("物联网卡模糊搜索 -----> sn = {}", sn);
         return iotCardService.pageIotcardLikeSn(offset, size, sn);
     }
 
     @GetMapping("camera/snLike")
-    public R cameraSnLike(@RequestParam(value = "sn") String sn,
+    public R cameraSnLike(@RequestParam(value = "sn", required = false) String sn,
                                    @RequestParam(value = "offset", required = false) Long offset,
                                    @RequestParam(value = "size", required = false) Long size){
 
@@ -152,7 +152,7 @@ public class JsonAdminOrderBatchController {
     }
 
     @GetMapping("colorCard/pull")
-    public R queryPull(@RequestParam("name") String name){
+    public R queryPull(@RequestParam(value = "name", required = false) String name){
         return  colorCardService.queryPull(name);
     }
 }
