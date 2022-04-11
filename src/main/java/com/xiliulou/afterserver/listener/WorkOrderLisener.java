@@ -413,7 +413,7 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
         }
 
         if(!Objects.equals(status,  WorkOrder.STATUS_INIT)
-                || !Objects.equals(status, WorkOrder.STATUS_ASSIGNMENT)){
+                && !Objects.equals(status, WorkOrder.STATUS_ASSIGNMENT)){
             throw new RuntimeException("状态请选择为待派单或待处理状态");
         }
 
