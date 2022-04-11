@@ -2110,8 +2110,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if (!Objects.equals(workOrderServerOldCount, workOrderServerCount)) {
                 return R.fail("非待派发模式不可添加或删除服务商");
             }
-            List workOrderServerOldIds = workOrder.getWorkOrderServerList().stream().map(item -> item.getId()).collect(Collectors.toList());
-            List workOrderServerIds = workOrder.getWorkOrderServerList().stream().map(item -> item.getId()).collect(Collectors.toList());
+            List workOrderServerOldIds = workOrder.getWorkOrderServerList().stream().map(item -> item.getServerId()).collect(Collectors.toList());
+            List workOrderServerIds = workOrder.getWorkOrderServerList().stream().map(item -> item.getServerId()).collect(Collectors.toList());
             if (!workOrderServerOldIds.equals(workOrderServerIds)) {
                 return R.fail("非待派发模式不可修改服务商");
             }
@@ -2308,7 +2308,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         if(!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
-            return R.fail("工单未完结");
+            return R.fail("工单未完结，只能审核完结订单");
         }
 
         if (!Objects.equals(workOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_WAIT)
