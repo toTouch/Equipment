@@ -39,7 +39,7 @@ public class JsonUserWorkOrderController {
 
     @PutMapping("/admin/wechat/assignment/workOrder")
     public R updateAssignment(@RequestBody WorkOrderAssignmentQuery workOrderAssignmentQuery){
-        if(Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_COMMISSIONER)){
+        if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_COMMISSIONER)){
             return R.fail("请使用专员账号进行登录");
         }
         return workOrderService.updateAssignment(workOrderAssignmentQuery);
@@ -47,7 +47,7 @@ public class JsonUserWorkOrderController {
 
     @PutMapping("/admin/wechat/server/workOrder")
     public R updateServer(@RequestParam("solution") String solution, @RequestParam("workOrderId") Long workOrderId){
-        if(Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_PATROL_APPLET)){
+        if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_PATROL_APPLET)){
             return R.fail("请使用服务商账号进行登录");
         }
         return workOrderService.updateServer(solution, workOrderId);
@@ -55,7 +55,7 @@ public class JsonUserWorkOrderController {
 
     @PutMapping("/admin/wechat/workOrder/assignment/status")
     public R updateWorkOrderStatus(@RequestBody WorkerOrderUpdateStatusQuery query, HttpServletRequest request){
-        if(Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_COMMISSIONER)){
+        if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_COMMISSIONER)){
             return R.fail("请使用专员账号进行登录");
         }
         return workOrderService.updateWorkOrderStatus(query);
