@@ -12,8 +12,8 @@ import com.xiliulou.afterserver.export.CustomerInfo;
 import com.xiliulou.afterserver.export.PointInfo;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
-import lombok.Data;
 import com.xiliulou.afterserver.util.SecurityUtils;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpRequest;
@@ -289,8 +289,6 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
 
             point.setDelFlag(PointNew.DEL_NORMAL);
             point.setRemarks(item.getRemarks());
-
-
 
             pointList.add(point);
         });

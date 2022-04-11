@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.controller.admin;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
@@ -9,6 +10,7 @@ import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
+import org.apache.poi.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -76,7 +78,9 @@ public class AdminJsonBatchController {
 
         this.batchService.update(batch);
 
-        if(Objects.nonNull(batch.getFileId())){
+        if(Objects.nonNull(batch.getFileId()) 
+                && StringUtils.isNotBlank(batch.getFileStr())
+                && StringUtils.isNotBlank(batch.getProductFileName())){
             ProductFile productFile = new ProductFile();
             productFile.setId(batch.getFileId());
             productFile.setFileStr(batch.getFileStr());

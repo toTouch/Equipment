@@ -16,7 +16,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @EnableStorage
 public class AfterServerApplication {
 
-
     public static void main(String[] args) {
 
         SpringApplication.run(AfterServerApplication.class, args);

@@ -228,13 +228,13 @@ public class ProductNewServiceImpl implements ProductNewService {
                 return R.fail("未查询到摄像头序列号");
             }
 
-            ProductNew productNew = productNewMapper.selectOne(new QueryWrapper<ProductNew>()
+           /* ProductNew productNew = productNewMapper.selectOne(new QueryWrapper<ProductNew>()
                     .eq("camera_id", camera.getId())
                     .eq("del_flag", ProductNew.DEL_NORMAL));
 
             if(Objects.nonNull(productNew)){
                 return R.fail("序列号已绑定到其他产品");
-            }
+            }*/
         }
 
 
@@ -713,7 +713,6 @@ public class ProductNewServiceImpl implements ProductNewService {
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public R updateProductNew(ProductNewDetailsQuery query) {
-        log.error("手持终端更新批次订单-------->" + JsonUtil.toJson(query));
         ProductNew productNewOld = this.productNewMapper.queryById(query.getId());
         if(Objects.isNull(productNewOld)){
             return R.fail(null, null, "未查询到相关柜机信息");
@@ -726,13 +725,13 @@ public class ProductNewServiceImpl implements ProductNewService {
                 return R.fail(null, null, "未查询到摄像头序列号");
             }
 
-            ProductNew productNew = productNewMapper.selectOne(new QueryWrapper<ProductNew>()
+           /* ProductNew productNew = productNewMapper.selectOne(new QueryWrapper<ProductNew>()
                     .eq("camera_id", camera.getId())
                     .eq("del_flag", ProductNew.DEL_NORMAL));
 
             if(Objects.nonNull(productNew) && !Objects.equals(productNew.getId(), query.getId())){
                 return R.fail(null, null, "序列号已绑定到其他产品");
-            }
+            }*/
         }
 
 
@@ -758,11 +757,11 @@ public class ProductNewServiceImpl implements ProductNewService {
     public R checkProperty(String no) {
         ProductNew productNew = this.queryByNo(no);
         if(Objects.isNull(productNew)){
-            return R.fail(null,null,"柜机资产编码不存在，请核对");
+            return R.fail(null,"10001","柜机资产编码不存在，请核对");
         }
 
         if(!Objects.equals(productNew.getStatus(), 6) && !Objects.equals(productNew.getTestResult(), 1)){
-            return R.fail(null,null,"柜机非已测试状态，请录入已测试柜机");
+            return R.fail(null,"10001","柜机非已测试状态，请录入已测试柜机");
         }
 
         if(Objects.isNull(productNew.getIotCardId())){
@@ -816,7 +815,7 @@ public class ProductNewServiceImpl implements ProductNewService {
 
         Product product = productService.getById(productNew.getModelId());
         if(Objects.isNull(product)){
-            return R.fail(null,null,"未查询到柜机类型，请联系管理员");
+            return R.fail(null,"10001","未查询到柜机类型，请联系管理员");
         }
 
         SimpleDateFormat sim = new SimpleDateFormat("hh:mm");
