@@ -414,9 +414,10 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
             throw new RuntimeException("状态请选择为待派单或待处理状态");
         }
 
-        if(Objects.equals(status, WorkOrder.STATUS_INIT)){
-            if(StringUtils.isBlank(workOrderInfo.getServerName())){
-                throw new RuntimeException("待派单工单必须有服务商");
+        if(Objects.equals(status,  WorkOrder.STATUS_INIT)){
+            User user = userService.findByUserName(workOrderInfo.getCommissioner());
+            if(Objects.isNull(user)){
+                throw new RuntimeException("未查询到相关专员");
             }
         }
 
