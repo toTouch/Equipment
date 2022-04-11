@@ -14,6 +14,6 @@ public interface WareHouseMapper extends BaseMapper<WareHouse> {
     @Select("select id, ware_houses from ware_house")
     WarehousePullVo queryWarehousePull();
 
-    @Select("select id, ware_houses from ware_house where ware_houses like concat('%', '', '%') limit 0, 20;")
+    @Select("select id, ware_houses from ware_house where ware_houses like concat('%', #{name}, '%') limit 0, 20;")
     List<WarehousePullVo> queryWarehouseLikeNamePull(String name);
 }
