@@ -2154,7 +2154,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         this.baseMapper.updateOne(workOrder);
 
-        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)) {
+        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
             //服务商第三方信息
             workOrderServerService.removeByWorkOrderId(workOrder.getId());
             if (!CollectionUtils.isEmpty(workOrder.getWorkOrderServerList())) {
@@ -2489,7 +2489,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
 
-        if (Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_INIT)) {
+        if (Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
             createWorkOrderServer(workOrderOld, workOrderAssignmentQuery);
         } else {
             updateWorkOrderServer(workOrderServerList);
