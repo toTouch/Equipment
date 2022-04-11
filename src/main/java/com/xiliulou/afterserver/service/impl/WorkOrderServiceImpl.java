@@ -2347,11 +2347,15 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         Long serverId = null;
         List<Long> workOrderServerIds = null;
         Long createTimeEnd = null;
+
         if (Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_COMMISSIONER)) {
             uid = SecurityUtils.getUid();
         } else if (Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_PATROL_APPLET)) {
-            serverId = SecurityUtils.getUid();
-            workOrderServerIds = workOrderServerService.queryWorkOrderIds(serverId);
+            User user = userService.getUserById(SecurityUtils.getUid());
+            if(Objects.isNull(user)) {
+                return R.fail("未查询到相关服务商账号");
+            }
+            workOrderServerIds = workOrderServerService.queryWorkOrderIds(user.getThirdId());
         }
 
         if(Objects.nonNull(createTimeStart)){
