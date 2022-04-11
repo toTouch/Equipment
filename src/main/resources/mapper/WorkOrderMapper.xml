@@ -101,7 +101,7 @@
 --         wo.third_company_pay as wo_third_company_pay,
 --         wo.third_reason as wo_third_reason,
         wo.work_order_reason_id as wo_work_order_reason_id,
-        wo.processor as wo_processor,
+--         wo.processor as wo_processor,
         wo.creater_id as wo_creater_id,
 --         wo.process_time as wo_process_time,
         wo.status as wo_status,
