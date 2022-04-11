@@ -324,6 +324,9 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
         if("5".equals(status) || "已暂停".equals(status)){
             return 5;
         }
+        if("6".equals(status) || "待派单".equals(status)) {
+            return 6;
+        }
         return null;
     }
 

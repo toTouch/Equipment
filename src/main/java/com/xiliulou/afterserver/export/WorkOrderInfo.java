@@ -60,17 +60,18 @@ public class WorkOrderInfo {
      */
     @ExcelProperty(index = 9)
     private Integer workOrderReasonId;
+    /**
+     * 专员
+     */
+    @ExcelProperty(index = 10)
+    private String commissioner;
 
     /**
      * 服務商
      */
-    @ExcelProperty(index = 10)
-    private String serverName;
-    /**
-     * 专员
-     */
     @ExcelProperty(index = 11)
-    private String commissioner;
+    private String serverName;
+
     /**
      * 費用
      */
