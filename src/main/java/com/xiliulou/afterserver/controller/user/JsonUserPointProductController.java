@@ -54,7 +54,7 @@ public class JsonUserPointProductController {
      * @return
      */
     @GetMapping("/oss/getPolicy")
-    public Map<String, String> policy(String moduleName) {
+    public Map<String, String> policy(@RequestParam("moduleName")String moduleName) {
         String name = moduleName + "/";
         Map<String, String> ossUploadSign = aliyunOssService.getOssUploadSign(name);
         return ossUploadSign;
