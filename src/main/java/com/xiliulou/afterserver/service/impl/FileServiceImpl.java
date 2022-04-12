@@ -6,6 +6,7 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.server.HttpServerResponse;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.constant.FileConstant;
@@ -112,8 +113,12 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
                 log.error("aliyunOss down File Error!", e);
                 return R.fail("oss获取url失败，请联系管理员");
             }
+            File file = this.getBaseMapper().selectOne(new QueryWrapper<File>().eq("file_name", fileName));
 
-            return R.ok(url);
+            Map<String, Object> result = new HashMap<>(2);
+            result.put("url", url);
+            result.put("id", file == null ? null : file.getId());
+            return R.ok(result);
         } else if(Objects.equals(StorageConfig.IS_USE_MINIO, storageConfig.getIsUseOSS())){
 
             int separator = fileName.lastIndexOf(StrUtil.DASHED);
