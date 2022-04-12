@@ -6,6 +6,7 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.server.HttpServerResponse;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.constant.FileConstant;
@@ -97,7 +98,12 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
                 return R.fail("oss获取url失败，请联系管理员");
             }
 
-            return R.ok(url);
+            File file = this.getBaseMapper().selectOne(new QueryWrapper<File>().eq("file_name", fileName));
+
+            Map<String, Object> result = new HashMap<>(2);
+            result.put("url", url);
+            result.put("id", file == null ? null : file.getId());
+            return R.ok(result);
         } else if(Objects.equals(StorageConfig.IS_USE_MINIO, storageConfig.getIsUseOSS())){
 
             int separator = fileName.lastIndexOf(StrUtil.DASHED);
@@ -138,14 +144,25 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     public R removeFile(Long fileId) {
         File file = this.baseMapper.selectOne(new LambdaQueryWrapper<File>().eq(File::getId, fileId));
         if(Objects.nonNull(file)){
-            try{
-                minioUtil.removeObject(FileConstant.BUCKET_NAME,file.getFileName());
-                this.baseMapper.delete(new LambdaUpdateWrapper<File>().eq(File::getId, fileId));
-                return R.ok();
-            }catch (Exception e){
-                log.error("文件删除异常", e);
+            if(Objects.equals(StorageConfig.IS_USE_OSS, storageConfig.getIsUseOSS())){
+                try{
+                    aliyunOssService.removeOssFile(storageConfig.getBucketName(), storageConfig.getDir() + file.getFileName());
+                }catch (Exception e){
+                    log.error("aliyunOss delete File Error!", e);
+                    return R.fail("oss删除图片失败，请联系管理员");
+                }
+            }else if(Objects.equals(StorageConfig.IS_USE_MINIO, storageConfig.getIsUseOSS())) {
+                try{
+                    minioUtil.removeObject(FileConstant.BUCKET_NAME,file.getFileName());
+                    return R.ok();
+                }catch (Exception e){
+                    log.error("文件删除异常", e);
+                }
             }
+
+            this.removeById(fileId);
         }
+
         return R.fail("文件删除失败");
     }
 }
