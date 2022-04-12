@@ -159,14 +159,25 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     public R removeFile(Long fileId) {
         File file = this.baseMapper.selectOne(new LambdaQueryWrapper<File>().eq(File::getId, fileId));
         if(Objects.nonNull(file)){
-            try{
-                minioUtil.removeObject(FileConstant.BUCKET_NAME,file.getFileName());
-                this.baseMapper.delete(new LambdaUpdateWrapper<File>().eq(File::getId, fileId));
-                return R.ok();
-            }catch (Exception e){
-                log.error("文件删除异常", e);
+            if(Objects.equals(StorageConfig.IS_USE_OSS, storageConfig.getIsUseOSS())){
+                try{
+                    aliyunOssService.removeOssFile(storageConfig.getBucketName(), storageConfig.getDir() + file.getFileName());
+                }catch (Exception e){
+                    log.error("aliyunOss delete File Error!", e);
+                    return R.fail("oss删除图片失败，请联系管理员");
+                }
+            }else if(Objects.equals(StorageConfig.IS_USE_MINIO, storageConfig.getIsUseOSS())) {
+                try{
+                    minioUtil.removeObject(FileConstant.BUCKET_NAME,file.getFileName());
+                    return R.ok();
+                }catch (Exception e){
+                    log.error("文件删除异常", e);
+                }
             }
+
+            this.removeById(fileId);
         }
+
         return R.fail("文件删除失败");
     }
 }
