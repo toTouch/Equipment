@@ -21,5 +21,5 @@ public interface FileService extends IService<File> {
 
     List<File> queryByProductNewId(Long productId);
 
-    R removeFile(Long fileId);
+    R removeFile(Long fileId, Integer fileType);
 }

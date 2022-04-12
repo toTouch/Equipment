@@ -97,17 +97,24 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     public R downLoadFile(String fileName,Integer fileType, HttpServletResponse response) {
         String url = "";
         String dirName = "";
+
         if(Objects.equals(StorageConfig.IS_USE_OSS, storageConfig.getIsUseOSS())){
             Long expiration = Optional.ofNullable(storageConfig.getExpiration()).orElse(1000L * 60L * 3L) + System.currentTimeMillis();
-            try{
-                if(fileType.equals(0)){
-                    dirName = storageConfig.getDir();
-                }
+            String bucketName = "";
 
-                if(fileType.equals(1)){
-                    dirName = storageConfig.getVidioDir();
-                }
-                url = aliyunOssService.getOssFileUrl(storageConfig.getBucketName(),
+            if(fileType.equals(0)){
+                bucketName = storageConfig.getBucketName();
+                dirName = storageConfig.getDir();
+            }
+
+            if(fileType.equals(1)){
+                bucketName = storageConfig.getOssVidioBucketName();
+                dirName = storageConfig.getVidioDir();
+            }
+
+            try{
+
+                url = aliyunOssService.getOssFileUrl(bucketName,
                         dirName + fileName, expiration);
             }catch (Exception e){
                 log.error("aliyunOss down File Error!", e);
@@ -156,16 +163,30 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     }
 
     @Override
-    public R removeFile(Long fileId) {
+    public R removeFile(Long fileId, Integer fileType) {
         File file = this.baseMapper.selectOne(new LambdaQueryWrapper<File>().eq(File::getId, fileId));
+        String bucketName = "";
+        String dirName = "";
         if(Objects.nonNull(file)){
             if(Objects.equals(StorageConfig.IS_USE_OSS, storageConfig.getIsUseOSS())){
+                if(fileType.equals(0)){
+                    bucketName = storageConfig.getBucketName();
+                    dirName = storageConfig.getDir();
+                }
+
+                if(fileType.equals(1)){
+                    bucketName = storageConfig.getOssVidioBucketName();
+                    dirName = storageConfig.getVidioDir();
+                }
+
                 try{
-                    aliyunOssService.removeOssFile(storageConfig.getBucketName(), storageConfig.getDir() + file.getFileName());
+                    aliyunOssService.removeOssFile(bucketName, dirName + file.getFileName());
                 }catch (Exception e){
                     log.error("aliyunOss delete File Error!", e);
-                    return R.fail("oss删除图片失败，请联系管理员");
+                    return R.fail("oss获取url失败，请联系管理员");
                 }
+
+
             }else if(Objects.equals(StorageConfig.IS_USE_MINIO, storageConfig.getIsUseOSS())) {
                 try{
                     minioUtil.removeObject(FileConstant.BUCKET_NAME,file.getFileName());
@@ -177,7 +198,6 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
 
             this.removeById(fileId);
         }
-
         return R.fail("文件删除失败");
     }
 }
