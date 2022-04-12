@@ -129,8 +129,8 @@ public class JsonUserPointProductController {
     }
 
     @GetMapping("/user/downLoad")
-    public void getFile(@RequestParam("fileName") String fileName, HttpServletResponse response) {
-        fileService.downLoadFile(fileName, response);
+    public R getFile(@RequestParam("fileName") String fileName, HttpServletResponse response) {
+        return fileService.downLoadFile(fileName, response);
     }
 
 }
