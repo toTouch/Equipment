@@ -114,10 +114,10 @@ storage:
   ossVidioBucketName: liubiqi
   ### oss:img.wm.xiliulou.com
   urlPrefix:
-  dir: after-service/img
+  dir: after-service/img/
   secure: false
   #testFileDir:
-  vidioDir: after-service/video
+  vidioDir: after-service/video/
 
   ### oss:0 minio:1
   isUseOSS: 1
