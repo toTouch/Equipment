@@ -6,12 +6,15 @@ import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.storage.config.StorageConfig;
+import com.xiliulou.storage.service.impl.AliyunOssService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -32,6 +35,10 @@ public class JsonUserPointProductController {
     private ProductNewService productNewService;
     @Autowired
     private FileService fileService;
+    @Autowired
+    private StorageConfig storageConfig;
+    @Autowired
+    private AliyunOssService aliyunOssService;
 
 
 
@@ -40,6 +47,19 @@ public class JsonUserPointProductController {
     public R uploadFile(@RequestParam("file") MultipartFile file, @RequestParam(value = "fileType", required = false, defaultValue = "0") Integer fileType) {
         return fileService.uploadFile(file, fileType);
     }
+
+    /**
+     * 获取oss签名
+     * @param moduleName
+     * @return
+     */
+    @RequestMapping(value = {"/admin/oss/getPolicy", "/user/oss/getPolicy"}, method = RequestMethod.GET)
+    public Map<String, String> policy(String moduleName) {
+        String name = moduleName + "/";
+        Map<String, String> ossUploadSign = aliyunOssService.getOssUploadSign(name);
+        return ossUploadSign;
+    }
+
 
     @DeleteMapping("/user/removeFile")
     public R removeFile(Long fileId){
