@@ -62,8 +62,8 @@ public class JsonUserPointProductController {
 
 
     @DeleteMapping("/user/removeFile")
-    public R removeFile(@RequestParam("fileId")Long fileId){
-        return fileService.removeFile(fileId);
+    public R removeFile(@RequestParam("fileId")Long fileId, @RequestParam(value = "fileType", required = false, defaultValue = "0")Integer fileType){
+        return fileService.removeFile(fileId, fileType);
     }
 
     @PostMapping("/user/file")
@@ -173,8 +173,8 @@ public class JsonUserPointProductController {
      * 删除文件
      */
     @DeleteMapping("/user/file/{id}")
-    public R delFile(@PathVariable("id") Long id){
-        return fileService.removeFile(id);
+    public R delFile(@PathVariable("id") Long id,  @RequestParam(value = "fileType", required = false, defaultValue = "0")Integer fileType){
+        return fileService.removeFile(id, fileType);
     }
 
     @GetMapping("/user/downLoad")
