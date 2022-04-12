@@ -1,6 +1,5 @@
 package com.xiliulou.afterserver.controller.user;
 
-import com.alibaba.excel.util.CollectionUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
@@ -178,8 +177,8 @@ public class JsonUserPointProductController {
     }
 
     @GetMapping("/user/downLoad")
-    public void getFile(@RequestParam("fileName") String fileName, @RequestParam(value = "fileType", required = false, defaultValue = "0")Integer fileType, HttpServletResponse response) {
-        fileService.downLoadFile(fileName,fileType, response);
+    public R getFile(@RequestParam("fileName") String fileName, @RequestParam(value = "fileType", required = false, defaultValue = "0")Integer fileType, HttpServletResponse response) {
+        return fileService.downLoadFile(fileName,fileType, response);
     }
 
 }
