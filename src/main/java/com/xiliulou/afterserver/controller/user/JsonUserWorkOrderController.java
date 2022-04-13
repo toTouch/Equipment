@@ -1,17 +1,21 @@
 package com.xiliulou.afterserver.controller.user;
 
+import com.alibaba.excel.util.CollectionUtils;
 import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.entity.WorkOrder;
 import com.xiliulou.afterserver.service.WorkOrderService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.WorkOrderAssignmentQuery;
+import com.xiliulou.afterserver.web.query.WorkOrderServerQuery;
 import com.xiliulou.afterserver.web.query.WorkerOrderUpdateStatusQuery;
+import feign.Body;
 import org.bouncycastle.jcajce.provider.util.SecretKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -46,11 +50,16 @@ public class JsonUserWorkOrderController {
     }
 
     @PutMapping("/admin/wechat/server/workOrder")
-    public R updateServer(@RequestParam("solution") String solution, @RequestParam("workOrderId") Long workOrderId){
+    public R updateServer(@RequestBody List<WorkOrderServerQuery> workOrderServerList){
+        //@RequestParam("solution") String solution, @RequestParam("workOrderId") Long workOrderId
         if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_PATROL_APPLET)){
             return R.fail("请使用服务商账号进行登录");
         }
-        return workOrderService.updateServer(solution, workOrderId);
+
+        if(CollectionUtils.isEmpty(workOrderServerList) || workOrderServerList.get(0) == null){
+            return R.fail("参数不合法");
+        }
+        return workOrderService.updateServer(workOrderServerList.get(0));
     }
 
     @PutMapping("/admin/wechat/workOrder/assignment/status")
