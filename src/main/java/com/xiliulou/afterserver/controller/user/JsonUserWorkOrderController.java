@@ -6,9 +6,7 @@ import com.xiliulou.afterserver.entity.WorkOrder;
 import com.xiliulou.afterserver.service.WorkOrderService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
-import com.xiliulou.afterserver.web.query.WorkOrderAssignmentQuery;
-import com.xiliulou.afterserver.web.query.WorkOrderServerQuery;
-import com.xiliulou.afterserver.web.query.WorkerOrderUpdateStatusQuery;
+import com.xiliulou.afterserver.web.query.*;
 import feign.Body;
 import org.bouncycastle.jcajce.provider.util.SecretKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,10 +48,13 @@ public class JsonUserWorkOrderController {
     }
 
     @PutMapping("/admin/wechat/server/workOrder")
-    public R updateServer(@RequestParam("solution") String solution, @RequestParam("workOrderId") Long workOrderId){
+    public R updateServer(@RequestBody ServerWorkOrderQuery serverWorkOrderQuery){
         if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_PATROL_APPLET)){
             return R.fail("请使用服务商账号进行登录");
         }
+
+        String solution = serverWorkOrderQuery.getSolution();
+        Long workOrderId = serverWorkOrderQuery.getWorkOrderId();
         return workOrderService.updateServer(solution, workOrderId);
     }
 
@@ -66,7 +67,9 @@ public class JsonUserWorkOrderController {
     }
 
     @PutMapping("/admin/wechat/workOrder/submit/review")
-    public R submitReview(@RequestParam("id") Long id, @RequestParam("status")Integer status){
+    public R submitReview(@RequestBody WorkOrderSubmitReviewQuery workOrderSubmitReviewQuery){
+        Long id = workOrderSubmitReviewQuery.getId();
+        Integer status = workOrderSubmitReviewQuery.getStatus();
         return workOrderService.submitReview(id, status);
     }
 
