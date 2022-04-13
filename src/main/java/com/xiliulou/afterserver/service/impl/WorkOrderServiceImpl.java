@@ -2505,7 +2505,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     @Override
-    public R updateServer(String solution, Long workOrderId) {
+    public R updateServer(WorkOrderServerQuery workOrderServerQuery) {
         Long uid = SecurityUtils.getUid();
 
         if (Objects.isNull(uid)) {
@@ -2517,7 +2517,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("未查询到相关用户");
         }
 
-        WorkOrder workOrderOld = this.getById(workOrderId);
+        if(!Objects.equals(user.getThirdId(), workOrderServerQuery.getServerId())) {
+            return R.fail("登录账号与提交帐号不一致");
+        }
+
+        WorkOrder workOrderOld = this.getById(workOrderServerQuery.getWorkOrderId());
         if (Objects.isNull(workOrderOld)) {
             return R.fail("未查询到工单相关信息");
         }
@@ -2526,7 +2530,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("工单已暂停，不可上传");
         }
 
-        List<WorkOrderServerQuery> workOrderServer = workOrderServerService.queryByWorkOrderIdAndServerId(workOrderId, user.getThirdId());
+        List<WorkOrderServerQuery> workOrderServer = workOrderServerService.queryByWorkOrderIdAndServerId(workOrderServerQuery.getWorkOrderId(), user.getThirdId());
         if (CollectionUtils.isEmpty(workOrderServer) || workOrderServer.size() > 1) {
             return R.fail("未查询出或查询出多条服务商工单信息");
         }
@@ -2535,13 +2539,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("服务商工单已提交，不可修改");
         }
 
-        if (StringUtils.isBlank(solution)) {
+        if (StringUtils.isBlank(workOrderServerQuery.getSolution())) {
             return R.fail("请填写解决方案");
         }
 
         QueryWrapper<File> wrapper = new QueryWrapper<>();
         wrapper.eq("type", File.TYPE_WORK_ORDER);
-        wrapper.eq("bind_id", workOrderId);
+        wrapper.eq("bind_id", workOrderServerQuery.getWorkOrderId());
         wrapper.ge("file_type", 1)
                 .lt("file_type", 90000)
                 .eq("server_id", user.getThirdId());
@@ -2555,7 +2559,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         WorkOrderServer updateWorkOrderServer = new WorkOrderServer();
         updateWorkOrderServer.setId(workOrderServer.get(0).getId());
-        updateWorkOrderServer.setSolution(solution);
+        updateWorkOrderServer.setSolution(workOrderServerQuery.getSolution());
         updateWorkOrderServer.setSolutionTime(System.currentTimeMillis());
         updateWorkOrderServer.setPrescription(updateWorkOrderServer.getSolutionTime() - workOrderOld.getAssignmentTime());
         workOrderServerService.updateById(updateWorkOrderServer);
