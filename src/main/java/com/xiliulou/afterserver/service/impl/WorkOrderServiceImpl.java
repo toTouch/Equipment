@@ -513,7 +513,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
                     row.add(fileCount);
 
-                    if (item.getIsUseThird()) {
+                   // if (item.getIsUseThird()) {
                         //" 第三方类型",
                         row.add(this.getThirdCompanyType(item.getThirdCompanyType()));
                         // "第三方公司",
@@ -526,14 +526,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         row.add(item.getThirdReason() == null ? "" : item.getThirdReason());
                         // "第三方对接人"
                         row.add(item.getThirdResponsiblePerson() == null ? "" : item.getThirdResponsiblePerson());
-                    } else {
-                        row.add("");
-                        row.add("");
-                        row.add("");
-                        row.add("");
-                        row.add("");
-                        row.add("");
-                    }
+                   // } else {
+//                        row.add("");
+//                        row.add("");
+//                        row.add("");
+//                        row.add("");
+//                        row.add("");
+//                        row.add("");
+                    //}
 
 
                 }
