@@ -9,6 +9,7 @@ import com.xiliulou.afterserver.web.vo.AfterCountListVo;
 import com.xiliulou.afterserver.web.vo.AfterCountVo;
 import com.xiliulou.afterserver.web.vo.AfterOrderVo;
 import com.xiliulou.afterserver.web.vo.WorkOrderVo;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -76,7 +77,7 @@ public interface WorkOrderService extends IService<WorkOrder> {
 
     R updateAssignment(WorkOrderAssignmentQuery workOrderAssignmentQuery);
 
-    R updateServer(WorkOrderServerQuery workOrderServerQuery);
+    R updateServer(String solution, Long workOrderId);
 
     R submitReview(Long id, Integer status);
 
