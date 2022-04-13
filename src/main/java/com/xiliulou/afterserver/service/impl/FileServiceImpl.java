@@ -147,6 +147,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
             if(Objects.equals(StorageConfig.IS_USE_OSS, storageConfig.getIsUseOSS())){
                 try{
                     aliyunOssService.removeOssFile(storageConfig.getBucketName(), storageConfig.getDir() + file.getFileName());
+                    return R.ok();
                 }catch (Exception e){
                     log.error("aliyunOss delete File Error!", e);
                     return R.fail("oss删除图片失败，请联系管理员");
