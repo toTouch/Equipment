@@ -181,6 +181,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
 
                 try{
                     aliyunOssService.removeOssFile(bucketName, dirName + file.getFileName());
+                    return R.ok();
                 }catch (Exception e){
                     log.error("aliyunOss delete File Error!", e);
                     return R.fail("oss获取url失败，请联系管理员");
