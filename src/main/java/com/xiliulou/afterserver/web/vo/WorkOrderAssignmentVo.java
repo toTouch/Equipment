@@ -31,6 +31,7 @@ public class WorkOrderAssignmentVo {
     //终点
     private Long transferDestinationPointId;
     private String transferDestinationPointName;
+    private Long processTime;
     /**
      * 起点 1点位 2仓库
      */
