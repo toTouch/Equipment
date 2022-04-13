@@ -181,23 +181,21 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
 
                 try{
                     aliyunOssService.removeOssFile(bucketName, dirName + file.getFileName());
-                    return R.ok();
                 }catch (Exception e){
                     log.error("aliyunOss delete File Error!", e);
-                    return R.fail("oss获取url失败，请联系管理员");
+                    return R.fail("删除文件失败，请联系管理员");
                 }
-
-
             }else if(Objects.equals(StorageConfig.IS_USE_MINIO, storageConfig.getIsUseOSS())) {
                 try{
                     minioUtil.removeObject(FileConstant.BUCKET_NAME,file.getFileName());
-                    return R.ok();
                 }catch (Exception e){
-                    log.error("文件删除异常", e);
+                    log.error("minio delete File Error", e);
+                    return R.fail("删除文件失败，请联系管理员");
                 }
             }
 
             this.removeById(fileId);
+            return R.ok();
         }
         return R.fail("文件删除失败");
     }
