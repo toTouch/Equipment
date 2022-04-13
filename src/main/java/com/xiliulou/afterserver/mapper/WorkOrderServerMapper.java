@@ -26,4 +26,6 @@ public interface WorkOrderServerMapper extends BaseMapper<WorkOrderServer> {
 
     @Select("select avg(prescription) from t_work_order_server where create_time >= #{curtMonthTime} and server_id = #{id}")
     Long queryPrescriptionAvgByServerId(@Param("curtMonthTime") Long curtMonthTime, @Param("id")Long id);
+
+    Integer queryMaxCountByWorkOrderId(@Param("workOrderIds") List<Long> workOrderIds);
 }

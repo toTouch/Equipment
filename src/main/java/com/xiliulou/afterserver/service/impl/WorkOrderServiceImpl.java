@@ -260,7 +260,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         Integer codeMaxSize = 0;
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Integer serverMaxLen = 0;
+
+        List<Long> workOrderIds = new ArrayList<>();
+        workOrderVoList.forEach(item -> {
+            workOrderIds.add(item.getId());
+        });
+
+        Integer serverMaxLen = workOrderServerService.queryMaxCountByWorkOrderId(workOrderIds);;
         for (WorkOrderVo o : workOrderVoList) {
             List<Object> row = new ArrayList<>();
             //审核状态
@@ -477,7 +483,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             List<WorkOrderServerQuery> workOrderServerQueryList = workOrderServerService.queryByWorkOrderIdAndServerId(o.getId(), null);
 
             if (!CollectionUtils.isEmpty(workOrderServerQueryList)) {
-                serverMaxLen = serverMaxLen < workOrderServerQueryList.size() ? workOrderServerQueryList.size() : serverMaxLen;
                 for (WorkOrderServerQuery item : workOrderServerQueryList) {
 
                     //服务商",
@@ -513,29 +518,28 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
                     row.add(fileCount);
 
-                   // if (item.getIsUseThird()) {
-                        //" 第三方类型",
-                        row.add(this.getThirdCompanyType(item.getThirdCompanyType()));
-                        // "第三方公司",
-                        row.add(item.getThirdCompanyName() == null ? "" : item.getThirdCompanyName());
-                        // "第三方费用",
-                        row.add(item.getThirdCompanyPay() == null ? "" : item.getThirdCompanyPay());
-                        // "支付状态",
-                        row.add(this.getThirdPaymentStatus(item.getThirdPaymentStatus()));
-                        // "第三方原因",
-                        row.add(item.getThirdReason() == null ? "" : item.getThirdReason());
-                        // "第三方对接人"
-                        row.add(item.getThirdResponsiblePerson() == null ? "" : item.getThirdResponsiblePerson());
-                   // } else {
-//                        row.add("");
-//                        row.add("");
-//                        row.add("");
-//                        row.add("");
-//                        row.add("");
-//                        row.add("");
-                    //}
 
+                    //" 第三方类型",
+                    row.add(this.getThirdCompanyType(item.getThirdCompanyType()));
+                    // "第三方公司",
+                    row.add(item.getThirdCompanyName() == null ? "" : item.getThirdCompanyName());
+                    // "第三方费用",
+                    row.add(item.getThirdCompanyPay() == null ? "" : item.getThirdCompanyPay());
+                    // "支付状态",
+                    row.add(this.getThirdPaymentStatus(item.getThirdPaymentStatus()));
+                    // "第三方原因",
+                    row.add(item.getThirdReason() == null ? "" : item.getThirdReason());
+                    // "第三方对接人"
+                    row.add(item.getThirdResponsiblePerson() == null ? "" : item.getThirdResponsiblePerson());
 
+                }
+
+                //给服务商不够最大服务商个数的的补充空白
+                int supplementCell = serverMaxLen - workOrderServerQueryList.size();
+                for(int i = 0; i < supplementCell; i++) {
+                    for(String item : serverHeader) {
+                        row.add("");
+                    }
                 }
             }
 

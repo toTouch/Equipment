@@ -67,5 +67,10 @@ public class WorkOrderServerServiceImpl extends ServiceImpl<WorkOrderServerMappe
         return baseMapper.queryPrescriptionAvgByServerId(curtMonthTime, id);
     }
 
+    @Override
+    public Integer queryMaxCountByWorkOrderId(List<Long> workOrderIds) {
+        return baseMapper.queryMaxCountByWorkOrderId(workOrderIds);
+    }
+
 
 }
