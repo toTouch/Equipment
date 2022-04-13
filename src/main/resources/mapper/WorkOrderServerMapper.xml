@@ -35,4 +35,18 @@
             </if>
         </where>
     </select>
+
+    <select id="queryMaxCountByWorkOrderId" resultType="integer">
+        select max(c.count)
+        from (
+          select count(*) as `count` from t_work_order_server
+          <where>
+              work_order_id in
+              <foreach collection="workOrderIds" item="item" open="(" separator="," close=")">
+                  #{item}
+              </foreach>
+          </where>
+          group by work_order_id
+        ) c
+    </select>
 </mapper>
