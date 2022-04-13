@@ -30,7 +30,7 @@ public class WorkOrderVo {
     //private Long serverId;
     //服务商接单人
     private String processor;
-    //private Long processTime;
+    private Long processTime;
     private Integer status;
     private String orderNo;
     private Long createrId;

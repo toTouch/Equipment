@@ -35,7 +35,7 @@
         <id property="workOrderReasonId" column="wo_work_order_reason_id"/>
         <id property="processor" column="wo_processor"/>
         <id property="createrId" column="wo_creater_id"/>
-<!--        <id property="processTime" column="wo_process_time"/>-->
+        <id property="processTime" column="wo_process_time"/>
         <id property="status" column="wo_status"/>
         <id property="orderNo" column="wo_order_no"/>
         <id property="createTime" column="wo_create_time"/>
@@ -82,6 +82,7 @@
         <id property="pointName" column="p_name"/>
         <id property="pointStatus" column="p_status"/>
         <id property="describeinfo" column="wo_describeinfo"/>
+        <id property="processTime" column="wo_process_time"/>
         <id property="destinationType" column="wo_destination_type"></id>
         <id property="sourceType" column="wo_source_type"></id>
         <id property="productInfo" column="wo_product_info"></id>
@@ -103,7 +104,7 @@
         wo.work_order_reason_id as wo_work_order_reason_id,
 --         wo.processor as wo_processor,
         wo.creater_id as wo_creater_id,
---         wo.process_time as wo_process_time,
+        wo.process_time as wo_process_time,
         wo.status as wo_status,
         wo.order_no as wo_order_no,
         wo.create_time as wo_create_time,
@@ -171,9 +172,9 @@
 <!--            <if test="query.paymentMethod != null">-->
 <!--                and wo.payment_method = #{query.paymentMethod}-->
 <!--            </if>-->
-<!--            <if test="query.processTimeStart != null and query.processTimeEnd != null">-->
-<!--                and wo.process_time BETWEEN #{query.processTimeStart} and #{query.processTimeEnd}-->
-<!--            </if>-->
+            <if test="query.processTimeStart != null and query.processTimeEnd != null">
+                and wo.process_time BETWEEN #{query.processTimeStart} and #{query.processTimeEnd}
+            </if>
             <if test="query.createTimeStart != null and query.createTimeEnd != null">
                 and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
             </if>
@@ -211,7 +212,7 @@
         wo.work_order_reason_id as wo_work_order_reason_id,
         wo.processor as wo_processor,
         wo.creater_id as wo_creater_id,
---         wo.process_time as wo_process_time,
+        wo.process_time as wo_process_time,
         wo.status as wo_status,
         wo.order_no as wo_order_no,
         wo.create_time as wo_create_time,
@@ -273,9 +274,9 @@
 <!--            <if test="query.paymentMethod != null">-->
 <!--                and wo.payment_method = #{query.paymentMethod}-->
 <!--            </if>-->
-<!--            <if test="query.processTimeStart != null and query.processTimeEnd != null">-->
-<!--                and wo.process_time BETWEEN #{query.processTimeStart} and #{query.processTimeEnd}-->
-<!--            </if>-->
+            <if test="query.processTimeStart != null and query.processTimeEnd != null">
+                and wo.process_time BETWEEN #{query.processTimeStart} and #{query.processTimeEnd}
+            </if>
             <if test="query.createTimeStart != null and query.createTimeEnd != null">
                 and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
             </if>
@@ -575,9 +576,9 @@
             <if test="processor != null and processor != ''">
                 processor = #{processor},
             </if>
-<!--            <if test="processTime != null">-->
-<!--                process_time = #{processTime},-->
-<!--            </if>-->
+            <if test="processTime != null">
+                process_time = #{processTime},
+            </if>
             <if test="status != null">
                 status = #{status},
             </if>
@@ -635,6 +636,7 @@
         wo.create_time as wo_create_time,
         wo.product_info as wo_product_info,
         wo.info as wo_info,
+        wo.process_time as wo_process_time,
         wo.transfer_source_point_id as wo_transfer_source_point_id,
         wo.transfer_destination_point_id as wo_transfer_destination_point_id,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,

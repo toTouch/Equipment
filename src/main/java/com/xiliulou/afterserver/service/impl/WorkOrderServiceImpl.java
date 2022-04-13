@@ -2565,6 +2565,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             WorkOrder workOrder = new WorkOrder();
             workOrder.setId(workOrderOld.getId());
             workOrder.setStatus(WorkOrder.STATUS_PROCESSING);
+            workOrder.setProcessTime(System.currentTimeMillis());
             this.updateById(workOrder);
         }
 
