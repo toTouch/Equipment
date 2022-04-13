@@ -266,7 +266,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             workOrderIds.add(item.getId());
         });
 
-        Integer serverMaxLen = workOrderServerService.queryMaxCountByWorkOrderId(workOrderIds);;
+        Integer serverMaxLen = workOrderServerService.queryMaxCountByWorkOrderId(workOrderIds);
         for (WorkOrderVo o : workOrderVoList) {
             List<Object> row = new ArrayList<>();
             //审核状态
@@ -648,7 +648,12 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         table.setHead(headList);
 
         List<List<Object>> data = new ArrayList<>();
-        Integer serverMaxLen = 0;
+
+        List<Long> workOrderIds = new ArrayList<>();
+        workOrderVoList.forEach(item -> {
+            workOrderIds.add(item.getId());
+        });
+        Integer serverMaxLen = workOrderServerService.queryMaxCountByWorkOrderId(workOrderIds);
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (WorkOrderVo o : workOrderVoList) {
@@ -859,25 +864,24 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
                     row.add(fileCount);
 
-                    if (item.getIsUseThird()) {
-                        //" 第三方类型",
-                        row.add(this.getThirdCompanyType(item.getThirdCompanyType()));
-                        // "第三方公司",
-                        row.add(item.getThirdCompanyName() == null ? "" : item.getThirdCompanyName());
-                        // "第三方费用",
-                        row.add(item.getThirdCompanyPay() == null ? "" : item.getThirdCompanyPay());
-                        // "支付状态",
-                        row.add(this.getThirdPaymentStatus(item.getThirdPaymentStatus()));
-                        // "第三方原因",
-                        row.add(item.getThirdReason() == null ? "" : item.getThirdReason());
-                        // "第三方对接人"
-                        row.add(item.getThirdResponsiblePerson() == null ? "" : item.getThirdResponsiblePerson());
-                    }else{
-                        row.add("");
-                        row.add("");
-                        row.add("");
-                        row.add("");
-                        row.add("");
+                    //" 第三方类型",
+                    row.add(this.getThirdCompanyType(item.getThirdCompanyType()));
+                    // "第三方公司",
+                    row.add(item.getThirdCompanyName() == null ? "" : item.getThirdCompanyName());
+                    // "第三方费用",
+                    row.add(item.getThirdCompanyPay() == null ? "" : item.getThirdCompanyPay());
+                    // "支付状态",
+                    row.add(this.getThirdPaymentStatus(item.getThirdPaymentStatus()));
+                    // "第三方原因",
+                    row.add(item.getThirdReason() == null ? "" : item.getThirdReason());
+                    // "第三方对接人"
+                    row.add(item.getThirdResponsiblePerson() == null ? "" : item.getThirdResponsiblePerson());
+                }
+
+                //给服务商不够最大服务商个数的的补充空白
+                int supplementCell = serverMaxLen - workOrderServerQueryList.size();
+                for(int i = 0; i < supplementCell; i++) {
+                    for(String item : serverHeader) {
                         row.add("");
                     }
                 }
@@ -1323,7 +1327,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Integer serverMaxLen = 0;
+        List<Long> workOrderIds = new ArrayList<>();
+        workOrderVoList.forEach(item -> {
+            workOrderIds.add(item.getId());
+        });
+        Integer serverMaxLen = workOrderServerService.queryMaxCountByWorkOrderId(workOrderIds);
 
         //headerSet
         Sheet sheet = new Sheet(1, 0);
@@ -1335,7 +1343,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         String[] header = {"工单类型", "点位", "工单原因", "创建时间"};
 
         String[] serverHeader = {"服务商", "费用", "解决时间", "处理时长", " 第三方类型", "第三方公司", "第三方费用"};
-        //String totalFeeHeader = "工单总费用";
+        String totalFeeHeader = "工单总费用";
 
         for (String s : header) {
             List<String> headTitle = new ArrayList<String>();
@@ -1396,7 +1404,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if (!CollectionUtils.isEmpty(workOrderServerQueryList)) {
 
 
-                //BigDecimal totalFee = new BigDecimal("0");
+                BigDecimal totalFee = new BigDecimal("0");
                 serverMaxLen = workOrderServerQueryList.size() > serverMaxLen ? workOrderServerQueryList.size() : serverMaxLen;
 
                 for (WorkOrderServerQuery item : workOrderServerQueryList) {
@@ -1422,20 +1430,23 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     // "处理时长
                     row.add(getPrescriptionStr(item.getPrescription()));
 
-                    if (item.getIsUseThird()) {
-                        //" 第三方类型",
-                        row.add(this.getThirdCompanyType(item.getThirdCompanyType()));
-                        // "第三方公司",
-                        row.add(item.getThirdCompanyName() == null ? "" : item.getThirdCompanyName());
-                        // "第三方费用",
-                        row.add(item.getThirdCompanyPay() == null ? "" : item.getThirdCompanyPay());
-                    } else {
-                        row.add("");
-                        row.add("");
+                    //" 第三方类型",
+                    row.add(this.getThirdCompanyType(item.getThirdCompanyType()));
+                    // "第三方公司",
+                    row.add(item.getThirdCompanyName() == null ? "" : item.getThirdCompanyName());
+                    // "第三方费用",
+                    row.add(item.getThirdCompanyPay() == null ? "" : item.getThirdCompanyPay());
+
+                }
+
+                //给服务商不够最大服务商个数的的补充空白
+                int supplementCell = serverMaxLen - workOrderServerQueryList.size();
+                for(int i = 0; i < supplementCell; i++) {
+                    for(String item : serverHeader) {
                         row.add("");
                     }
                 }
-                //row.add(totalFee);
+                row.add(totalFee);
             }
 
             data.add(row);
@@ -1450,9 +1461,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         //工单总费用
-        /*List<String> headTitle = new ArrayList<String>();
+        List<String> headTitle = new ArrayList<String>();
         headTitle.add(totalFeeHeader);
-        headList.add(headTitle);*/
+        headList.add(headTitle);
 
         String fileName = "工单列表.xlsx";
         try {
