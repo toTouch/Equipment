@@ -147,7 +147,6 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
             if(Objects.equals(StorageConfig.IS_USE_OSS, storageConfig.getIsUseOSS())){
                 try{
                     aliyunOssService.removeOssFile(storageConfig.getBucketName(), storageConfig.getDir() + file.getFileName());
-                    return R.ok();
                 }catch (Exception e){
                     log.error("aliyunOss delete File Error!", e);
                     return R.fail("oss删除图片失败，请联系管理员");
@@ -155,13 +154,13 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
             }else if(Objects.equals(StorageConfig.IS_USE_MINIO, storageConfig.getIsUseOSS())) {
                 try{
                     minioUtil.removeObject(FileConstant.BUCKET_NAME,file.getFileName());
-                    return R.ok();
                 }catch (Exception e){
-                    log.error("文件删除异常", e);
+                    log.error("minio delete File Error!", e);
+                    return R.fail("minio删除图片失败，请联系管理员");
                 }
             }
-
             this.removeById(fileId);
+            return R.ok();
         }
 
         return R.fail("文件删除失败");
