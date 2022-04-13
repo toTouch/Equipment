@@ -50,16 +50,11 @@ public class JsonUserWorkOrderController {
     }
 
     @PutMapping("/admin/wechat/server/workOrder")
-    public R updateServer(@RequestBody List<WorkOrderServerQuery> workOrderServerList){
-        //@RequestParam("solution") String solution, @RequestParam("workOrderId") Long workOrderId
+    public R updateServer(@RequestParam("solution") String solution, @RequestParam("workOrderId") Long workOrderId){
         if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_PATROL_APPLET)){
             return R.fail("请使用服务商账号进行登录");
         }
-
-        if(CollectionUtils.isEmpty(workOrderServerList) || workOrderServerList.get(0) == null){
-            return R.fail("参数不合法");
-        }
-        return workOrderService.updateServer(workOrderServerList.get(0));
+        return workOrderService.updateServer(solution, workOrderId);
     }
 
     @PutMapping("/admin/wechat/workOrder/assignment/status")
