@@ -1408,8 +1408,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 serverMaxLen = workOrderServerQueryList.size() > serverMaxLen ? workOrderServerQueryList.size() : serverMaxLen;
 
                 for (WorkOrderServerQuery item : workOrderServerQueryList) {
-
-                   // totalFee = totalFee.add(Optional.ofNullable(item.getFee()).orElse(new BigDecimal("0")));
+                    //计算总费用
+                    totalFee = totalFee.add(Optional.ofNullable(item.getFee()).orElse(new BigDecimal("0")));
 
                     //服务商",
                     Server server = serverService.getById(item.getServerId());
