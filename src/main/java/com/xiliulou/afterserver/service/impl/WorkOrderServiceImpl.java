@@ -2600,7 +2600,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         if (!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_PROCESSING)
-                || !Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ANALYSE)) {
+                && !Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ANALYSE)) {
             return R.fail("工单未处理");
         }
 
