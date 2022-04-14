@@ -108,6 +108,7 @@ public class JsonUserPointProductController {
             }else if(file.getFileType() == 90000 && count >= 1){
                 list.stream().forEach(item -> {
                     fileService.getBaseMapper().deleteById(item.getId());
+                    this.removeFile(item.getId(), 1);//1为视频
                 });
             }
         }
