@@ -2599,9 +2599,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("请修改状态为已完结");
         }
 
-        if (!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_PROCESSING)
-                && !Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ANALYSE)) {
-            return R.fail("工单未处理");
+        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)
+                || Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
+            return R.fail("工单还未处理，请处理后提交审核");
+        }
+
+        if(Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_SUSPEND )){
+            return R.fail("工单已暂停");
         }
 
         WorkOrder update = new WorkOrder();
