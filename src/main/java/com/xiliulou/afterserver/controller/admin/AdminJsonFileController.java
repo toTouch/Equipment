@@ -10,12 +10,14 @@ import com.xiliulou.afterserver.service.FileService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.FileQuery;
+import com.xiliulou.storage.service.impl.AliyunOssService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * @program: XILIULOU
@@ -31,6 +33,8 @@ public class AdminJsonFileController {
     FileService fileService;
     @Autowired
     ProductFileMapper productFileMapper;
+    @Autowired
+    AliyunOssService aliyunOssService;
 
 
     @GetMapping("/admin/file/info/{id}")
@@ -42,6 +46,18 @@ public class AdminJsonFileController {
     public R saveFile(@RequestBody File file){
         file.setCreateTime(System.currentTimeMillis());
         return R.ok(fileService.save(file));
+    }
+
+    /**
+     * 获取oss签名
+     * @param moduleName
+     * @return
+     */
+    @GetMapping("/admin/oss/getPolicy")
+    public Map<String, String> policy(@RequestParam("moduleName")String moduleName) {
+        String name = moduleName + "/";
+        Map<String, String> ossUploadSign = aliyunOssService.getOssUploadSign(name);
+        return ossUploadSign;
     }
 
     @DeleteMapping("/admin/file/{id}")
