@@ -6,6 +6,7 @@ import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -126,7 +127,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public R list(Long offset, Long size, String username) {
         Page page = PageUtil.getPage(offset, size);
         Page selectPage = baseMapper.selectPage(page,Wrappers.<User>lambdaQuery().like(Objects.nonNull(username),User::getUserName, username));
+        if(CollectionUtils.isNotEmpty(selectPage.getRecords())) {
+            selectPage.getRecords().forEach(item -> {
+                User user = (User)item;
+                if(Objects.equals(user.getUserType(), User.TYPE_FACTORY)) {
+                    Supplier supplier = supplierService.getById(user.getThirdId());
+                    if(Objects.nonNull(supplier)) {
+                        user.setThirdName(supplier.getName());
+                    }
+                }
 
+                if(Objects.equals(user.getUserType(), User.TYPE_PATROL_APPLET)) {
+                    Server server = serverService.getById(user.getThirdId());
+                    if(Objects.nonNull(server)) {
+                        user.setThirdName(server.getName());
+                    }
+                }
+            });
+        }
         return R.ok(selectPage);
     }
 
