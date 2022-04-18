@@ -555,16 +555,18 @@
         <set>
             info = #{info},
             work_order_reason_id = #{workOrderReasonId},
---             server_id = #{serverId},
---             server_name = #{serverName},
---             payment_method = #{paymentMethod},
---             third_company_id = #{thirdCompanyId},
---             third_company_type = #{thirdCompanyType},
---             third_company_pay = #{thirdCompanyPay},
---             third_reason = #{thirdReason},
---             third_company_name = #{thirdCompanyName},
---             third_payment_status = #{thirdPaymentStatus},
---             third_responsible_person = #{thirdResponsiblePerson},
+
+<!--         server_id = #{serverId},
+             fee = #{fee},
+             server_name = #{serverName},
+             payment_method = #{paymentMethod},
+             third_company_id = #{thirdCompanyId},
+             third_company_type = #{thirdCompanyType},
+             third_company_pay = #{thirdCompanyPay},
+             third_reason = #{thirdReason},
+             third_company_name = #{thirdCompanyName},
+             third_payment_status = #{thirdPaymentStatus},
+             third_responsible_person = #{thirdResponsiblePerson}, -->
             describeinfo = #{describeinfo},
             <if test="type != null and type != ''">
                 type = #{type},
