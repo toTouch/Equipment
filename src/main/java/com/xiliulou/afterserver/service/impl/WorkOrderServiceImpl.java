@@ -1989,6 +1989,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         workOrder.setCreaterId(oldWorkOrder.getCreaterId());
         workOrder.setCreateTime(oldWorkOrder.getCreateTime());
+        workOrder.getWorkOrderType()
 
         R r = checkProperties(workOrder);
         if (Objects.nonNull(r)) {
@@ -2182,6 +2183,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     WorkOrderServer workOrderServer = new WorkOrderServer();
                     BeanUtils.copyProperties(item, workOrderServer);
 
+                    workOrderServer.setSolutionTime(null);
+                    workOrderServer.setPrescription(null);
                     workOrderServer.setWorkOrderId(workOrder.getId());
                     //服务商名称
                     if (item.getServerId() != null) {
