@@ -553,7 +553,6 @@
     <update id="updateOne">
         update work_order
         <set>
---             fee = #{fee},
             info = #{info},
             work_order_reason_id = #{workOrderReasonId},
 --             server_id = #{serverId},
