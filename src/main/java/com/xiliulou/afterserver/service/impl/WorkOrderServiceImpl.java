@@ -2528,24 +2528,17 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
         }
 
-
-
-
         WorkOrder workOrder = new WorkOrder();
         BeanUtils.copyProperties(workOrderAssignmentQuery, workOrder);
         String productInfo = JSON.toJSONString(workOrderAssignmentQuery.getProductInfoList());
         workOrder.setProductInfo(productInfo);
 
-
-        if (Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_ASSIGNMENT)
-                && Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_INIT)) {
-            workOrder.setAssignmentTime(System.currentTimeMillis());
-        }
-
         if(Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
             workOrder.setStatus(WorkOrder.STATUS_INIT);
+            if(Objects.isNull(workOrderOld.getAssignmentTime())) {
+                workOrder.setAssignmentTime(System.currentTimeMillis());
+            }
         }
-
 
         if (Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
             createWorkOrderServer(workOrderOld, workOrderAssignmentQuery);

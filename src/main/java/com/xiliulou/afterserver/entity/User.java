@@ -38,4 +38,6 @@ public class User {
 
     @TableField(exist = false)
     private List<Long> rids;
+    @TableField(exist = false)
+    private String thirdName;
 }
