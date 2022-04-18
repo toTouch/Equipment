@@ -2542,6 +2542,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             workOrder.setAssignmentTime(System.currentTimeMillis());
         }
 
+        if(Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
+            workOrder.setStatus(WorkOrder.STATUS_INIT);
+        }
+
 
         if (Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
             createWorkOrderServer(workOrderOld, workOrderAssignmentQuery);
