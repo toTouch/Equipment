@@ -97,10 +97,8 @@ public class AdminJsonWorkOrderController {
     }
 
     @PutMapping("admin/workOrder")
-    public R update(@Validated @RequestBody UpdateWorkOrderQuery workOrder) {
-        WorkOrderQuery query = new WorkOrderQuery();
-        BeanUtils.copyProperties(workOrder, query);
-        return workOrderService.updateWorkOrder(query);
+    public R update(@Validated @RequestBody WorkOrderQuery workOrder) {
+        return workOrderService.updateWorkOrder(workOrder);
     }
 
     @DeleteMapping("admin/workOrder")
