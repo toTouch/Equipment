@@ -18,6 +18,7 @@ import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -96,8 +97,10 @@ public class AdminJsonWorkOrderController {
     }
 
     @PutMapping("admin/workOrder")
-    public R update(@Validated @RequestBody WorkOrderQuery workOrder) {
-        return workOrderService.updateWorkOrder(workOrder);
+    public R update(@Validated @RequestBody UpdateWorkOrderServerQuery workOrder) {
+        WorkOrderQuery query = new WorkOrderQuery();
+        BeanUtils.copyProperties(workOrder, query);
+        return workOrderService.updateWorkOrder(query);
     }
 
     @DeleteMapping("admin/workOrder")
