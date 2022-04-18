@@ -114,6 +114,8 @@ public class ProductNew {
     private String testFile;
     private Long iotCardId;
     private Long cameraId;
+    private String appVersion;
+    private String sysVersion;
 
     public static final String TYPE_M = "M";
     public static final String TYPE_V = "V";
