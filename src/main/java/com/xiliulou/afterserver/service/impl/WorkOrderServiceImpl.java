@@ -2677,7 +2677,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
                     //如果修改服务商 删除服务商上传的图片
                     if(!Objects.equals(workOrderServer.getServerId(), old.getServerId())) {
-                        fileService.remove(new QueryWrapper<File>().eq("work_order_id", old.getWorkOrderId()).eq("server_id", old.getServerId()));
+                        fileService.remove(new QueryWrapper<File>().eq("bind_id", old.getWorkOrderId()).eq("server_id", old.getServerId()));
                     }
                 }
             }
