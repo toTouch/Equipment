@@ -1902,13 +1902,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_SUSPEND)
                 && (!Objects.equals(query.getStatus(), WorkOrder.STATUS_SUSPEND)
-                || !Objects.equals(query.getStatus(), WorkOrder.STATUS_INIT))) {
+                && !Objects.equals(query.getStatus(), WorkOrder.STATUS_INIT))) {
             return R.fail("工单已暂停只能修改为待处理");
         }
 
         if (Objects.equals(query.getStatus(), WorkOrder.STATUS_SUSPEND)) {
             if (!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)
-                    || Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_SUSPEND)) {
+                    && !Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_SUSPEND)) {
 
                 return R.fail("非待处理的工单不可修改为已暂停");
             }
@@ -2457,9 +2457,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         if (Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_SUSPEND)) {
             if (!Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_INIT)
-                    || Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_SUSPEND)) {
+                    && !Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_SUSPEND)) {
 
-                return R.fail("非待处理工单不可修改为已暂停");
+                return R.fail("非待处理的工单不可修改为已暂停");
             }
         }
 
@@ -2482,6 +2482,30 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
         }
 
+        if(workOrderAssignmentQuery.getStatus() >= WorkOrder.STATUS_PROCESSING && workOrderAssignmentQuery.getStatus() <= WorkOrder.STATUS_FINISHED){
+            if (CollectionUtils.isEmpty(workOrderServerList)) {
+                return R.fail("工单必须有服务商");
+            }
+
+            for(WorkOrderServerQuery item : workOrderServerList){
+                if(StringUtils.isBlank(item.getSolution())){
+                    return R.fail("服务商"+item.getServerName()+"没填写解决方案");
+                }
+
+                QueryWrapper<File> wrapper = new QueryWrapper<>();
+                wrapper.eq("type", File.TYPE_WORK_ORDER);
+                wrapper.eq("bind_id", item.getWorkOrderId());
+                wrapper.ge("file_type", 1).lt("file_type", 90000);
+                wrapper.eq("server_id", item.getServerId());
+
+                int fileCount = fileService.count(wrapper);
+                if (fileCount == 0) {
+                    return R.fail("服务商"+item.getServerName()+"没上传处理图片");
+                }
+            }
+
+        }
+
         //待处理状态 不可修改服务商数量
         if (!Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
             int workOrderServerOldCount = 0;
@@ -2501,6 +2525,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 return R.fail("非待派发模式不可修改服务商");
             }
         }
+
+
 
 
         WorkOrder workOrder = new WorkOrder();
@@ -2641,9 +2667,17 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     private void updateWorkOrderServer(List<WorkOrderServerQuery> workOrderServerList) {
         if (!CollectionUtils.isEmpty(workOrderServerList)) {
             for (WorkOrderServerQuery item : workOrderServerList) {
-                WorkOrderServer workOrderServer = new WorkOrderServer();
-                BeanUtils.copyProperties(item, workOrderServer);
-                workOrderServerService.updateById(workOrderServer);
+                WorkOrderServer old = workOrderServerService.getById(item.getId());
+                if(Objects.nonNull(old)){
+                    WorkOrderServer workOrderServer = new WorkOrderServer();
+                    BeanUtils.copyProperties(item, workOrderServer);
+                    workOrderServerService.updateById(workOrderServer);
+
+                    //如果修改服务商 删除服务商上传的图片
+                    if(!Objects.equals(workOrderServer.getServerId(), old.getServerId())) {
+                        fileService.remove(new QueryWrapper<File>().eq("work_order_id", old.getWorkOrderId()).eq("server_id", old.getServerId()));
+                    }
+                }
             }
         }
     }
