@@ -1938,7 +1938,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
         }
 
-        if(workOrder.getStatus() >= WorkOrder.STATUS_PROCESSING && workOrder.getStatus() <= WorkOrder.STATUS_FINISHED){
+        if(query.getStatus() >= WorkOrder.STATUS_PROCESSING && query.getStatus() <= WorkOrder.STATUS_FINISHED){
             if (CollectionUtils.isEmpty(list)) {
                 return R.fail("工单必须有服务商");
             }
