@@ -2599,7 +2599,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         this.updateById(workOrder);
 
         //全部完成修改工单为已处理
-        if (checkServerProcess(workOrder.getId())) {
+        if (checkServerProcess(workOrderOld.getId())) {
+            log.info("123 --> " + "进来了");
             WorkOrder updateworkOrder = new WorkOrder();
             updateworkOrder.setId(workOrderOld.getId());
             updateworkOrder.setStatus(WorkOrder.STATUS_PROCESSING);
