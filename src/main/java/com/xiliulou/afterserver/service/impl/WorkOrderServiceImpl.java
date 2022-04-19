@@ -2222,7 +2222,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 });
             }
         } else {
-            updateWorkOrderServer(workOrder.getWorkOrderServerList());
+            updateWorkOrderServer(workOrder.getWorkOrderServerList(), workOrder.getAssignmentTime());
         }
 
         if(Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
@@ -2587,10 +2587,19 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         if (Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
             createWorkOrderServer(workOrderOld, workOrderAssignmentQuery);
         } else {
-            updateWorkOrderServer(workOrderServerList);
+            updateWorkOrderServer(workOrderServerList, workOrder.getAssignmentTime());
         }
 
         this.updateById(workOrder);
+
+        //全部完成修改工单为已处理
+        if (checkServerProcess(workOrder.getId())) {
+            WorkOrder updateworkOrder = new WorkOrder();
+            updateworkOrder.setId(workOrderOld.getId());
+            updateworkOrder.setStatus(WorkOrder.STATUS_PROCESSING);
+            updateworkOrder.setProcessTime(System.currentTimeMillis());
+            this.updateById(updateworkOrder);
+        }
 
         return R.ok();
     }
@@ -2707,13 +2716,19 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         return workAuditNotify;
     }
 
-    private void updateWorkOrderServer(List<WorkOrderServerQuery> workOrderServerList) {
+    private void updateWorkOrderServer(List<WorkOrderServerQuery> workOrderServerList, Long assignmentTime) {
         if (!CollectionUtils.isEmpty(workOrderServerList)) {
             for (WorkOrderServerQuery item : workOrderServerList) {
                 WorkOrderServer old = workOrderServerService.getById(item.getId());
                 if(Objects.nonNull(old)){
                     WorkOrderServer workOrderServer = new WorkOrderServer();
                     BeanUtils.copyProperties(item, workOrderServer);
+                    if(StringUtils.isNotBlank(item.getSolution()) && Objects.nonNull(assignmentTime)) {
+                        if(Objects.isNull(old.getSolutionTime())) {
+                            workOrderServer.setSolutionTime(System.currentTimeMillis());
+                            workOrderServer.setPrescription(workOrderServer.getSolutionTime() - assignmentTime);
+                        }
+                    }
                     workOrderServerService.updateById(workOrderServer);
 
                     //如果修改服务商 删除服务商上传的图片

@@ -25,6 +25,7 @@ public class WorkOrderAssignmentVo {
     private String productInfo;
     private List<ProductInfoQuery> productInfoList;
     private String info;
+    private Long assignmentTime;
     //起点
     private Long transferSourcePointId;
     private String transferSourcePointName;
