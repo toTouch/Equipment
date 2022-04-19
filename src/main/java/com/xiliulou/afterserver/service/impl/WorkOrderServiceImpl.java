@@ -2117,7 +2117,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if (!CollectionUtils.isEmpty(workOrder.getWorkOrderServerList())) {
                 workOrderServerCount = workOrder.getWorkOrderServerList().size();
             }
-            if (!Objects.equals(workOrderServerOldCount, workOrderServerCount)) {
+            if (! (workOrderServerOldCount == workOrderServerCount)) {
                 return R.fail("非待派发模式不可添加或删除服务商");
             }
         }
