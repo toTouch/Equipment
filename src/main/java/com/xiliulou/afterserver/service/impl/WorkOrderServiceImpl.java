@@ -2172,7 +2172,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             saveWorkAuditNotify(oldWorkOrder);
         }
 
-        this.baseMapper.updateOne(workOrder);
 
         if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
             //服务商第三方信息
@@ -2222,8 +2221,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 });
             }
         } else {
+            if(Objects.isNull(workOrder.getAssignmentTime())) {
+                workOrder.setAssignmentTime(System.currentTimeMillis());
+            }
             updateWorkOrderServer(workOrder.getWorkOrderServerList(), workOrder.getAssignmentTime());
         }
+
+        this.baseMapper.updateOne(workOrder);
 
         if(Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
             workOrder.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
@@ -2587,6 +2591,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         if (Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
             createWorkOrderServer(workOrderOld, workOrderAssignmentQuery);
         } else {
+            if(Objects.isNull(workOrder.getAssignmentTime())) {
+                workOrder.setAssignmentTime(System.currentTimeMillis());
+            }
             updateWorkOrderServer(workOrderServerList, workOrder.getAssignmentTime());
         }
 
@@ -2723,7 +2730,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 if(Objects.nonNull(old)){
                     WorkOrderServer workOrderServer = new WorkOrderServer();
                     BeanUtils.copyProperties(item, workOrderServer);
-                    if(StringUtils.isNotBlank(item.getSolution()) && Objects.nonNull(assignmentTime)) {
+                    if(StringUtils.isNotBlank(item.getSolution()) ) {
                         if(Objects.isNull(old.getSolutionTime())) {
                             workOrderServer.setSolutionTime(System.currentTimeMillis());
                             workOrderServer.setPrescription(workOrderServer.getSolutionTime() - assignmentTime);
