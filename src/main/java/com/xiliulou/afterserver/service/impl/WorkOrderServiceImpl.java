@@ -1824,8 +1824,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             workOrder.setAssignmentTime(workOrder.getCreateTime());
         }
 
-
-        workOrder.setOrderNo(RandomUtil.randomString(10));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        workOrder.setOrderNo("GD" + sdf.format(new Date()) + "-" + RandomUtil.randomInt(100000, 1000000));
 
         if (!Objects.equals(workOrder.getType(), String.valueOf(WorkOrder.TYPE_AFTER))) {
             if (Objects.nonNull(workOrder.getProductInfoList())) {
