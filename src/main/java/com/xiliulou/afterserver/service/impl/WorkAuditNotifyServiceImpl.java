@@ -13,9 +13,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author zgw
@@ -64,12 +62,17 @@ public class WorkAuditNotifyServiceImpl extends ServiceImpl<WorkAuditNotifyMappe
                 }
             });
         }
-        return R.ok(data);
+        Long count = this.queryCount(type);
+
+        Map<String, Object> result = new HashMap<>(2);
+        result.put("data", data);
+        result.put("total", count);
+        return R.ok(result);
     }
 
     @Override
-    public R queryCount(Integer type) {
-        return R.ok(workAuditNotifyMapper.queryCount(type));
+    public Long queryCount(Integer type) {
+        return workAuditNotifyMapper.queryCount(type);
     }
 
     @Override

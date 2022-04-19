@@ -58,7 +58,7 @@ public class JsonUserWorkOrderController {
         return workOrderService.updateServer(solution, workOrderId);
     }
 
-    @PutMapping("/admin/wechat/workOrder/assignment/status")
+    //@PutMapping("/admin/wechat/workOrder/assignment/status")
     public R updateWorkOrderStatus(@RequestBody WorkerOrderUpdateStatusQuery query, HttpServletRequest request){
         if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_COMMISSIONER)){
             return R.fail("请使用专员账号进行登录");
@@ -69,8 +69,7 @@ public class JsonUserWorkOrderController {
     @PutMapping("/admin/wechat/workOrder/submit/review")
     public R submitReview(@RequestBody WorkOrderSubmitReviewQuery workOrderSubmitReviewQuery){
         Long id = workOrderSubmitReviewQuery.getId();
-        Integer status = workOrderSubmitReviewQuery.getStatus();
-        return workOrderService.submitReview(id, status);
+        return workOrderService.submitReview(id);
     }
 
     @GetMapping("/admin/wechat/productModel/pull")

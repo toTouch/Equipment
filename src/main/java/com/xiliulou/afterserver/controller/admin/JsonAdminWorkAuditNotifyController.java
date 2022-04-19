@@ -23,11 +23,6 @@ public class JsonAdminWorkAuditNotifyController {
         return workAuditNotifyService.queryList(size, offset, type);
     }
 
-    @GetMapping("/admin/WorkAuditNotify/count")
-    public R queryCount(@RequestParam("type") Integer type){
-        return workAuditNotifyService.queryCount(type);
-    }
-
     @GetMapping("/admin/WorkAuditNotify/read/notify/{id}")
     public R readNotify(@PathVariable("id") Long id){
         return workAuditNotifyService.readNotify(id);
