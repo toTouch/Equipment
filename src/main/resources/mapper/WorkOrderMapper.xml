@@ -677,6 +677,12 @@
             <if test="createTimeStart != null">
                 and wo.create_time between #{createTimeStart} and #{createTimeEnd}
             </if>
+            <if test="serverName != null and serverName != ''">
+                and wo.id in(select work_order_id from t_work_order_server where `server_name` like concat('%', #{serverName}, '%'))
+            </if>
+            <if test="pointName != null and pointName != ''">
+                and p.name like  concat('%', #{pointName}, '%')
+            </if>
         </where>
         ORDER BY wo.create_time DESC
     </select>

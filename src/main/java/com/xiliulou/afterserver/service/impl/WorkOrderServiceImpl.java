@@ -2333,7 +2333,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     @Override
-    public R queryAssignmentStatusList(Long offset, Long size, Integer auditStatus, Integer status, Integer type, Long createTimeStart) {
+    public R queryAssignmentStatusList(Long offset, Long size, Integer auditStatus, Integer status, Integer type, Long createTimeStart, String serverName, String pointName) {
         Long uid = null;
         Long serverId = null;
         List<Long> workOrderServerIds = null;
@@ -2354,7 +2354,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         Page<WorkOrderAssignmentVo> page = PageUtil.getPage(offset, size);
-        page = baseMapper.queryAssignmentStatusList(page, uid, workOrderServerIds, auditStatus, status, type, createTimeStart, createTimeEnd);
+        page = baseMapper.queryAssignmentStatusList(page, uid, workOrderServerIds, auditStatus, status, type, createTimeStart, createTimeEnd, serverName, pointName);
         List<WorkOrderAssignmentVo> data = page.getRecords();
 
 
