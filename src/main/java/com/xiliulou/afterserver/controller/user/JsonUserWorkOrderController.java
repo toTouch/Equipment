@@ -33,9 +33,11 @@ public class JsonUserWorkOrderController {
                                        @RequestParam(value = "auditStatus", required = false) Integer auditStatus,
                                        @RequestParam(value = "type", required = false) Integer type,
                                        @RequestParam(value = "startTime", required = false) Long startTime,
-                                       @RequestParam(value = "status", required = false)Integer status){
+                                       @RequestParam(value = "status", required = false)Integer status,
+                                       @RequestParam(value = "serverName", required = false) String serverName,
+                                       @RequestParam(value = "pointName", required = false) String pointName){
 
-        return workOrderService.queryAssignmentStatusList(offset, size,auditStatus, status, type, startTime);
+        return workOrderService.queryAssignmentStatusList(offset, size,auditStatus, status, type, startTime, serverName, pointName);
     }
 
 

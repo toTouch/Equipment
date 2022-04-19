@@ -55,5 +55,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
                                                           @Param("status")Integer status,
                                                           @Param("type")Integer type,
                                                           @Param("createTimeStart")Long createTimeStart,
-                                                          @Param("createTimeEnd")Long createTimeEnd);
+                                                          @Param("createTimeEnd")Long createTimeEnd,
+                                                          @Param("serverName")String serverName,
+                                                          @Param("pointName")String pointName);
 }
