@@ -179,12 +179,25 @@
             <if test="query.createTimeStart != null and query.createTimeEnd != null">
                 and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
             </if>
-<!--            <if test="query.thirdCompanyName != null and query.thirdCompanyName != ''">-->
-<!--                and wo.third_company_name like concat('%',#{query.thirdCompanyName},'%')-->
-<!--            </if>-->
-<!--            <if test="query.serverName != null and query.serverName != ''">-->
-<!--                and wo.server_name like concat('%',#{query.serverName},'%')-->
-<!--            </if>-->
+            <if test="(query.thirdCompanyName != null and query.thirdCompanyName != '')
+                   or (query.thirdResponsiblePerson != null and query.thirdResponsiblePerson != '')
+                   or (query.serverName != null and query.serverName != '')">
+                and wo.id in (
+                    select work_order_id from t_work_order_server wos
+                    <where>
+                        <if test="query.thirdCompanyName != null and query.thirdCompanyName != ''">
+                           and wos.third_company_name like concat('%', #{query.thirdCompanyName}, '%')
+                        </if>
+                        <if test="query.thirdResponsiblePerson != null and query.thirdResponsiblePerson != ''">
+                            and wos.third_responsible_person like concat('%', #{query.thirdResponsiblePerson}, '%')
+                        </if>
+                        <if test="query.serverName != null and query.serverName != ''">
+                            and wos.server_name like concat('%',#{query.serverName},'%')
+                        </if>
+                    </where>
+                )
+            </if>
+
             <if test="query.workOrderReasonId != null">
                 and wo.work_order_reason_id = #{query.workOrderReasonId}
             </if>

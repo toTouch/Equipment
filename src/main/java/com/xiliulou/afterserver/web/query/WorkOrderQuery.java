@@ -45,4 +45,7 @@ public class WorkOrderQuery extends WorkOrder {
      * 工单总费用
      */
     private BigDecimal totalFee;
+    private String thirdCompanyName;
+    private String thirdResponsiblePerson;
+    private String serverName;
 }
