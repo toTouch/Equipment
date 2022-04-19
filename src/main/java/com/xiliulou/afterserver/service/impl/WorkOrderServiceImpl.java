@@ -1918,7 +1918,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("审核通过的工单不允许修改");
         }
 
-        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
+        /*if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
             if (!checkServerProcess(workOrder.getId())) {
                 return R.fail("有服务商没有处理，请等待服务商处理或后台添加处理时间");
             }
@@ -1966,16 +1966,16 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 && Objects.equals(workOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_WAIT)
                 && Objects.equals(query.getStatus(), WorkOrder.STATUS_FINISHED)) {
             saveWorkAuditNotify(workOrder);
-        }
+        }*/
 
         workOrder.setStatus(query.getStatus());
         workOrder.setWorkOrderReasonId(query.getWorkOrderReasonId());
         baseMapper.updateById(workOrder);
-        if(Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
+        /*if(Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
             workOrder.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
             baseMapper.updateById(workOrder);
             return R.ok("状态成功修改为已完结，审核状态已更新为待审核");
-        }
+        }*/
         return R.ok();
     }
 
@@ -1995,9 +1995,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return r;
         }
 
-        List<WorkOrderServerQuery> workOrderServerList = workOrder.getWorkOrderServerList();
+        //List<WorkOrderServerQuery> workOrderServerList = workOrder.getWorkOrderServerList();
 
-        if (!Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT) && !Objects.equals(oldWorkOrder.getCommissionerId(), workOrder.getCommissionerId())) {
+        if (!Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)
+                && !Objects.equals(oldWorkOrder.getCommissionerId(), workOrder.getCommissionerId())) {
             return R.fail("非待派单状态，不可修改专员信息");
         }
 
@@ -2011,15 +2012,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("工单已暂停只能修改为待处理");
         }
 
-        if (Objects.equals(oldWorkOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_PASSED)) {
-            return R.fail("审核通过的工单不允许修改");
-        }
-
-        if (!Objects.equals(oldWorkOrder.getStatus(),WorkOrder.STATUS_FINISHED)
-                && !Objects.equals(oldWorkOrder.getAuditStatus(), workOrder.getAuditStatus())) {
-            return R.fail("不能审核未完结的工单");
-        }
-
         if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_SUSPEND)) {
             if (!Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_INIT)
                     || Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_SUSPEND)) {
@@ -2028,7 +2020,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
         }
 
-        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
+        if (Objects.equals(oldWorkOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_PASSED)) {
+            return R.fail("审核通过的工单不允许修改");
+        }
+
+        /*if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
             if (!checkServerProcess(workOrder.getId())) {
                 return R.fail("有服务商没有处理，请等待服务商处理或后台添加处理时间");
             }
@@ -2039,9 +2035,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         Integer statusOld = WorkOrder.STATUS_ASSIGNMENT.equals(workOrder.getStatus()) ? -1 : workOrder.getStatus();
         if (status < statusOld && !Objects.equals(WorkOrder.STATUS_SUSPEND, status)) {
             return R.fail("状态不可往前修改");
-        }
+        }*/
 
-        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)) {
+        if (!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
             if (CollectionUtils.isEmpty(workOrder.getWorkOrderServerList())) {
                 return R.fail("待派单工单必须填写服务商相关信息");
             }
@@ -2087,9 +2083,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             workOrder.setAssignmentTime(workOrder.getCreateTime());
         }
 
-        /*/*//**/
-
-        if(workOrder.getStatus() >= WorkOrder.STATUS_PROCESSING && workOrder.getStatus() <= WorkOrder.STATUS_FINISHED){
+        /*if(workOrder.getStatus() >= WorkOrder.STATUS_PROCESSING && workOrder.getStatus() <= WorkOrder.STATUS_FINISHED){
             if (CollectionUtils.isEmpty(workOrderServerList)) {
                 return R.fail("工单必须有服务商");
             }
@@ -2110,10 +2104,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     return R.fail("服务商"+item.getServerName()+"没上传处理图片");
                 }
             }
-        }
+        }*/
 
 
-        //非待派发状态 不可修改服务商
+        //非待派发状态 不可修添加或删除服务商
         if (!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
             int workOrderServerOldCount = 0;
             int workOrderServerCount = 0;
@@ -2125,11 +2119,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
             if (!Objects.equals(workOrderServerOldCount, workOrderServerCount)) {
                 return R.fail("非待派发模式不可添加或删除服务商");
-            }
-            List workOrderServerOldIds = workOrder.getWorkOrderServerList().stream().map(item -> item.getServerId()).collect(Collectors.toList());
-            List workOrderServerIds = workOrder.getWorkOrderServerList().stream().map(item -> item.getServerId()).collect(Collectors.toList());
-            if (!workOrderServerOldIds.equals(workOrderServerIds)) {
-                return R.fail("非待派发模式不可修改服务商");
             }
         }
 
@@ -2148,29 +2137,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
         }
 
+        //后台直接派单，添加派单时间
         if (Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)
-                && Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)) {
+                && Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)
+                && Objects.isNull(oldWorkOrder.getAssignmentTime())) {
             workOrder.setAssignmentTime(System.currentTimeMillis());
         }
 
-        if (!Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_FINISHED)
-                && Objects.equals(oldWorkOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_WAIT)
-                && Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
-            saveWorkAuditNotify(oldWorkOrder);
-        }
-
-        if (!Objects.equals(oldWorkOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_WAIT)
-                && Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_FINISHED)
-                && Objects.equals(workOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_WAIT)) {
-            saveWorkAuditNotify(oldWorkOrder);
-        }
-
-        if (!Objects.equals(oldWorkOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_WAIT)
-                && !Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_FINISHED)
-                && Objects.equals(workOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_WAIT)
-                && Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
-            saveWorkAuditNotify(oldWorkOrder);
-        }
 
 
         if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
@@ -2221,19 +2194,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 });
             }
         } else {
-            if(Objects.isNull(workOrder.getAssignmentTime())) {
-                workOrder.setAssignmentTime(System.currentTimeMillis());
-            }
-            updateWorkOrderServer(workOrder.getWorkOrderServerList(), workOrder.getAssignmentTime());
+            updateWorkOrderServer(workOrder.getWorkOrderServerList());
         }
 
         this.baseMapper.updateOne(workOrder);
 
-        if(Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
-            workOrder.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
-            baseMapper.updateById(workOrder);
-            return R.ok("状态成功修改为已完结，审核状态已更新为待审核");
-        }
         return R.ok();
     }
 
@@ -2333,11 +2298,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("工单未完结，只能审核完结订单");
         }
 
-        if (!Objects.equals(workOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_WAIT)
+        /*if (!Objects.equals(workOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_WAIT)
                 && Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)
                 && Objects.equals(workOrderAuditStatusQuery.getAuditStatus(), WorkOrder.AUDIT_STATUS_WAIT)) {
             saveWorkAuditNotify(workOrder);
-        }
+        }*/
 
         WorkOrder workOrderUpdate = new WorkOrder();
         workOrderUpdate.setId(workOrderAuditStatusQuery.getId());
@@ -2446,11 +2411,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("未查询到工单相关信息");
         }
 
-
-        if (Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_PROCESSING) && !Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_FINISHED)) {
-            return R.fail("提交已处理工单必须修改工单状态为已完结");
-        }
-
         if (Objects.equals(workOrderOld.getAuditStatus(), WorkOrder.AUDIT_STATUS_PASSED)) {
             return R.fail("审核通过的工单不允许修改");
         }
@@ -2469,22 +2429,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
         }
 
-        //除了暂停状态不可往之前的状态修改
-        Integer status = WorkOrder.STATUS_ASSIGNMENT.equals(workOrderAssignmentQuery.getStatus()) ? -1 : workOrderAssignmentQuery.getStatus();
-        Integer statusOld = WorkOrder.STATUS_ASSIGNMENT.equals(workOrderOld.getStatus()) ? -1 : workOrderOld.getStatus();
-        if (status < statusOld  && !Objects.equals(WorkOrder.STATUS_SUSPEND, status)) {
-            return R.fail("状态不可往前修改");
-        }
-
-        if (Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_FINISHED)) {
+        /*if (Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_FINISHED)) {
             if (!checkServerProcess(workOrderOld.getId())) {
                 return R.fail("有服务商没有处理，请等待服务商处理或后台添加处理时间");
-            }
-        }
-
-        /*if (Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_INIT)) {
-            if (CollectionUtils.isEmpty(workOrderServerQuerys) && CollectionUtils.isEmpty(workOrderServerList)) {
-                return R.fail("待派单工单必须有服务商");
             }
         }*/
 
@@ -2533,9 +2480,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
 
-        if(workOrderAssignmentQuery.getStatus() >= WorkOrder.STATUS_PROCESSING && workOrderAssignmentQuery.getStatus() <= WorkOrder.STATUS_FINISHED){
-
-
+        /*if(workOrderAssignmentQuery.getStatus() >= WorkOrder.STATUS_PROCESSING && workOrderAssignmentQuery.getStatus() <= WorkOrder.STATUS_FINISHED){
             for(WorkOrderServerQuery item : workOrderServerList){
                 if(StringUtils.isBlank(item.getSolution())){
                     return R.fail("服务商"+item.getServerName()+"没填写解决方案");
@@ -2552,10 +2497,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     return R.fail("服务商"+item.getServerName()+"没上传处理图片");
                 }
             }
+        }*/
 
-        }
-
-        //待处理状态 不可修改服务商数量
+        //非派单，不可修改服务商数量
         if (!Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
             int workOrderServerOldCount = 0;
             int workOrderServerCount = 0;
@@ -2590,22 +2534,21 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         if (Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
             createWorkOrderServer(workOrderOld, workOrderAssignmentQuery);
         } else {
-            if(Objects.isNull(workOrder.getAssignmentTime())) {
-                workOrder.setAssignmentTime(System.currentTimeMillis());
+            //除了待派单 不允许修改除处理方案以外的信息
+            if (!CollectionUtils.isEmpty(workOrderServerList)) {
+                for (WorkOrderServerQuery item : workOrderServerList) {
+                    WorkOrderServer old = workOrderServerService.getById(item.getId());
+                    if(Objects.nonNull(old)){
+                        WorkOrderServer workOrderServer = new WorkOrderServer();
+                        workOrderServer.setId(old.getId());
+                        workOrderServer.setSolution(item.getSolution());
+                        workOrderServerService.updateById(workOrderServer);
+                    }
+                }
             }
-            updateWorkOrderServer(workOrderServerList, workOrder.getAssignmentTime());
         }
 
         this.updateById(workOrder);
-
-        //全部完成修改工单为已处理
-        if (checkServerProcess(workOrderOld.getId())) {
-            WorkOrder updateworkOrder = new WorkOrder();
-            updateworkOrder.setId(workOrderOld.getId());
-            updateworkOrder.setStatus(WorkOrder.STATUS_PROCESSING);
-            updateworkOrder.setProcessTime(System.currentTimeMillis());
-            this.updateById(updateworkOrder);
-        }
 
         return R.ok();
     }
@@ -2679,19 +2622,18 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     @Override
-    public R submitReview(Long id, Integer status) {
+    public R submitReview(Long id) {
 
         WorkOrder workOrder = this.getById(id);
         if (Objects.isNull(workOrder)) {
             return R.fail("未查询到工单相关信息");
         }
 
-        if (!Objects.equals(status, WorkOrder.STATUS_FINISHED)) {
-            return R.fail("请修改状态为已完结");
+        if(Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
+            return R.fail("工单已完结");
         }
 
-        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)
-                || Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
+        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_PROCESSING)) {
             return R.fail("工单还未处理，请处理后提交审核");
         }
 
@@ -2701,7 +2643,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         WorkOrder update = new WorkOrder();
         update.setId(id);
-        update.setStatus(status);
         update.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
         this.updateById(update);
 
@@ -2722,25 +2663,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         return workAuditNotify;
     }
 
-    private void updateWorkOrderServer(List<WorkOrderServerQuery> workOrderServerList, Long assignmentTime) {
+    private void updateWorkOrderServer(List<WorkOrderServerQuery> workOrderServerList) {
         if (!CollectionUtils.isEmpty(workOrderServerList)) {
             for (WorkOrderServerQuery item : workOrderServerList) {
                 WorkOrderServer old = workOrderServerService.getById(item.getId());
                 if(Objects.nonNull(old)){
                     WorkOrderServer workOrderServer = new WorkOrderServer();
                     BeanUtils.copyProperties(item, workOrderServer);
-                    if(StringUtils.isNotBlank(item.getSolution()) ) {
-                        if(Objects.isNull(old.getSolutionTime())) {
-                            workOrderServer.setSolutionTime(System.currentTimeMillis());
-                            workOrderServer.setPrescription(workOrderServer.getSolutionTime() - assignmentTime);
-                        }
-                    }
                     workOrderServerService.updateById(workOrderServer);
-
-                    //如果修改服务商 删除服务商上传的图片
-                    if(!Objects.equals(workOrderServer.getServerId(), old.getServerId())) {
-                        fileService.remove(new QueryWrapper<File>().eq("bind_id", old.getWorkOrderId()).eq("server_id", old.getServerId()));
-                    }
                 }
             }
         }

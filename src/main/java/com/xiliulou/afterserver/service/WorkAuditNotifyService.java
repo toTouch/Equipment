@@ -13,7 +13,7 @@ import com.xiliulou.afterserver.util.R;
 public interface WorkAuditNotifyService extends IService<WorkAuditNotify> {
     R queryList(Integer size, Integer offset, Integer type);
 
-    R queryCount(Integer type);
+    Long queryCount(Integer type);
 
     R readNotify(Long id);
 

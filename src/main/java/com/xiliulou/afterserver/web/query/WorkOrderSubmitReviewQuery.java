@@ -11,5 +11,4 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Data
 public class WorkOrderSubmitReviewQuery {
     private Long id;
-    private Integer status;
 }
