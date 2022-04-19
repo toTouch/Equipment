@@ -2240,7 +2240,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     private Boolean checkServerProcess(Long id) {
         List<WorkOrderServerQuery> workOrderServerQueries = workOrderServerService.queryByWorkOrderIdAndServerId(id, null);
         boolean flag = true;
-        if (CollectionUtils.isEmpty(workOrderServerQueries)) {
+        if (!CollectionUtils.isEmpty(workOrderServerQueries)) {
             for (WorkOrderServerQuery item : workOrderServerQueries) {
                 if (Objects.isNull(item.getSolutionTime())) {
                     flag = false;
