@@ -210,6 +210,9 @@
             <if test="query.pointStatus != null">
                 and p.status = #{query.pointStatus}
             </if>
+            <if test="query.orderNo != null and query.orderNo != ''">
+                and wo.order_no like concat('%', #{query.orderNo}, '%')
+            </if>
         </where>
         ORDER BY wo.create_time DESC
     </select>
