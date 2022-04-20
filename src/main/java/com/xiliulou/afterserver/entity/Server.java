@@ -22,6 +22,7 @@ public class Server {
     private Long createTime;
     private String remark;
     private String scope;
+    private String areaCode;
     /**
      * 满意度
      */
