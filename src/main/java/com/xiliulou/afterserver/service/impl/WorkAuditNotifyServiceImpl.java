@@ -81,7 +81,7 @@ public class WorkAuditNotifyServiceImpl extends ServiceImpl<WorkAuditNotifyMappe
     public R readNotify(Long id) {
         WorkAuditNotify workAuditNotify = this.getById(id);
         if(Objects.nonNull(workAuditNotify)){
-            workAuditNotify.setType(WorkAuditNotify.TYPE_UNFINISHED);
+            workAuditNotify.setType(WorkAuditNotify.TYPE_FINISH);
             workAuditNotify.setUpdateTime(System.currentTimeMillis());
             this.updateById(workAuditNotify);
         }
