@@ -60,6 +60,8 @@ public class WorkAuditNotifyServiceImpl extends ServiceImpl<WorkAuditNotifyMappe
                 if(Objects.nonNull(workOrderType)){
                     workAuditNotifyVo.setOrderTypeName(workOrderType.getType());
                 }
+
+                data.add(workAuditNotifyVo);
             });
         }
         Long count = this.queryCount(type);
