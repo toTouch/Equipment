@@ -2346,6 +2346,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if(Objects.isNull(user)) {
                 return R.fail("未查询到相关服务商账号");
             }
+            serverId = user.getThirdId();
             workOrderServerIds = workOrderServerService.queryWorkOrderIds(user.getThirdId());
         }
 
@@ -2633,7 +2634,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("工单已完结");
         }
 
-        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_PROCESSING)) {
+        if (!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_PROCESSING)) {
             return R.fail("工单还未处理，请处理后提交审核");
         }
 
