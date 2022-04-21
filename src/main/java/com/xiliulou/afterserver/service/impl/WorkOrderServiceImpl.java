@@ -1881,9 +1881,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                             workOrderServer.setThirdCompanyName(server.getName());
                         }
                     }
-
-                    workOrderServer.setCreateTime(System.currentTimeMillis());
                 }
+                workOrderServer.setCreateTime(System.currentTimeMillis());
                 workOrderServerService.save(workOrderServer);
             });
         }
@@ -2310,6 +2309,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         workOrderUpdate.setId(workOrderAuditStatusQuery.getId());
         workOrderUpdate.setAuditStatus(workOrderAuditStatusQuery.getAuditStatus());
         workOrderUpdate.setAuditRemarks(workOrderAuditStatusQuery.getAuditRemarks());
+        if(Objects.equals(workOrderAuditStatusQuery.getAuditStatus(), WorkOrder.AUDIT_STATUS_PASSED)) {
+            workOrderUpdate.setStatus(WorkOrder.STATUS_FINISHED);
+        }
         this.updateById(workOrderUpdate);
         return R.ok();
     }
@@ -2730,6 +2732,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrderServer.setThirdPaymentStatus(item.getThirdPaymentStatus());
                 workOrderServer.setThirdReason(item.getThirdReason());
                 workOrderServer.setThirdResponsiblePerson(item.getThirdResponsiblePerson());
+                workOrderServer.setCreateTime(System.currentTimeMillis());
 
                 workOrderServerService.save(workOrderServer);
 
