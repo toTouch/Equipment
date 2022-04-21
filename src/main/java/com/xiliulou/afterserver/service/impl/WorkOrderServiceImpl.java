@@ -2285,7 +2285,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
     @Override
     public R updateAuditStatus(WorkOrderAuditStatusQuery workOrderAuditStatusQuery) {
-        if (Objects.isNull(workOrderAuditStatusQuery.getId()) || Objects.isNull(workOrderAuditStatusQuery.getAuditStatus())) {
+        if (Objects.isNull(workOrderAuditStatusQuery.getId())
+                || Objects.isNull(workOrderAuditStatusQuery.getAuditStatus())) {
             return R.fail("参数不合法");
         }
 
@@ -2294,9 +2295,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("未查询到相关工单");
         }
 
-        /*if(!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
-            return R.fail("工单未完结，只能审核完结订单");
-        }*/
+        if(workOrder.getStatus() < WorkOrder.STATUS_PROCESSING
+                || Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
+            return R.fail("工单未处理，只能审核完结订单");
+        }
 
         /*if (!Objects.equals(workOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_WAIT)
                 && Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)
