@@ -2443,7 +2443,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         for(WorkOrderServerQuery item : workOrderServerList) {
-            log.info("专员提交数据 -- >" + JsonUtil.toJson(item));
             if (Objects.isNull(item.getServerId())) {
                 return R.fail("工单必须添加服务商");
             }
