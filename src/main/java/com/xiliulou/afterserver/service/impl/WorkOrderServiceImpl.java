@@ -2297,7 +2297,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         if(workOrder.getStatus() < WorkOrder.STATUS_PROCESSING
                 || Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
-            return R.fail("工单未处理，只能审核完结订单");
+            return R.fail("工单未处理，请处理后审核");
         }
 
         /*if (!Objects.equals(workOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_WAIT)
