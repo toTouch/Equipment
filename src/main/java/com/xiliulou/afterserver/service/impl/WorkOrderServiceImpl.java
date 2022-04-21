@@ -1998,7 +1998,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         if (!Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)
                 && !Objects.equals(oldWorkOrder.getCommissionerId(), workOrder.getCommissionerId())) {
-            return R.fail("非待派单状态，不可修改专员信息");
+            return R.fail(getStatusStr(oldWorkOrder.getStatus())+"状态，不可修改专员信息");
         }
 
         if (Objects.isNull(oldWorkOrder)) {
