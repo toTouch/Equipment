@@ -90,6 +90,8 @@
         <id property="workOrderReasonId" column="wo_work_order_reason_id"></id>
         <id property="workOrderReasonName" column="wor_name"/>
         <id property="assignmentTime" column="wo_assignment_time"/>
+        <id property="auditStatus" column="wo_audit_status"/>
+        <id property="auditRemarks" column="wo_audit_remarks"/>
     </resultMap>
 
     <select id="getPage" resultMap="pageMap">
@@ -666,6 +668,8 @@
         wo.code as wo_code,
         wo.work_order_reason_id as wo_work_order_reason_id,
         wo.reason as wo_reason,
+        wo.audit_status as wo_audit_status,
+        wo.audit_remarks as wo_audit_remarks,
         wor.name as wor_name
         FROM work_order as wo
         LEFT JOIN work_order_type as wot on wot.id = wo.id

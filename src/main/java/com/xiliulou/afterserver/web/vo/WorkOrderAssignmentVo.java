@@ -49,4 +49,6 @@ public class WorkOrderAssignmentVo {
     private List<WorkOrderServerQuery> workOrderServerList;
     private List<File> voucherImgFile;
     private File voucherVideoFile;
+    private Integer auditStatus;
+    private String auditRemarks;
 }

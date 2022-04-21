@@ -1780,44 +1780,44 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)) {
             if (CollectionUtils.isEmpty(workOrder.getWorkOrderServerList())) {
-                return R.fail("待派单工单必须填写服务商相关信息");
+                return R.fail("工单必须填写服务商相关信息");
             }
             for (WorkOrderServerQuery item : workOrder.getWorkOrderServerList()) {
                 if (Objects.isNull(item.getServerId())) {
-                    return R.fail("待派单工单必须添加服务商");
+                    return R.fail("工单必须添加服务商");
                 }
 
                 if (Objects.isNull(item.getPaymentMethod())) {
-                    return R.fail("待派单工单必须添加结算方式");
+                    return R.fail("工单必须添加结算方式");
                 }
 
                 if (Objects.isNull(item.getFee())) {
-                    return R.fail("待派单工单必须添加工单费用");
+                    return R.fail("工单必须添加工单费用");
                 }
 
                 if (item.getIsUseThird()) {
                     if (Objects.isNull(item.getThirdCompanyType())) {
-                        return R.fail("待派单工单必须添加第三方公司类型");
+                        return R.fail("工单必须添加第三方公司类型");
                     }
 
                     if (Objects.isNull(item.getThirdCompanyId())) {
-                        return R.fail("待派单工单必须添加第三方公司");
+                        return R.fail("工单必须添加第三方公司");
                     }
 
                     if (Objects.isNull(item.getThirdCompanyPay())) {
-                        return R.fail("待派单工单必须添加第三方支付金额");
+                        return R.fail("工单必须添加第三方支付金额");
                     }
 
                     if (Objects.isNull(item.getThirdPaymentStatus())) {
-                        return R.fail("待派单工单必须添加第三方支付状态");
+                        return R.fail("工单必须添加第三方支付状态");
                     }
 
                     if (Objects.isNull(item.getThirdReason())) {
-                        return R.fail("待派单工单必须添加第三方原因");
+                        return R.fail("工单必须添加第三方原因");
                     }
 
                     if (Objects.isNull(item.getThirdResponsiblePerson())) {
-                        return R.fail("待派单工单必须添加第三方责任人");
+                        return R.fail("工单必须添加第三方责任人");
                     }
                 }
             }
@@ -2039,44 +2039,44 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         if (!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
             if (CollectionUtils.isEmpty(workOrder.getWorkOrderServerList())) {
-                return R.fail("待派单工单必须填写服务商相关信息");
+                return R.fail("工单必须填写服务商相关信息");
             }
             for (WorkOrderServerQuery item : workOrder.getWorkOrderServerList()) {
                 if (Objects.isNull(item.getServerId())) {
-                    return R.fail("待派单工单必须添加服务商");
+                    return R.fail("工单必须添加服务商");
                 }
 
                 if (Objects.isNull(item.getPaymentMethod())) {
-                    return R.fail("待派单工单必须添加结算方式");
+                    return R.fail("工单必须添加结算方式");
                 }
 
                 if (Objects.isNull(item.getFee())) {
-                    return R.fail("待派单工单必须添加工单费用");
+                    return R.fail("工单必须添加工单费用");
                 }
 
                 if (item.getIsUseThird()) {
                     if (Objects.isNull(item.getThirdCompanyType())) {
-                        return R.fail("待派单工单必须添加第三方公司类型");
+                        return R.fail("工单必须添加第三方公司类型");
                     }
 
                     if (Objects.isNull(item.getThirdCompanyId())) {
-                        return R.fail("待派单工单必须添加第三方公司");
+                        return R.fail("工单必须添加第三方公司");
                     }
 
                     if (Objects.isNull(item.getThirdCompanyPay())) {
-                        return R.fail("待派单工单必须添加第三方支付金额");
+                        return R.fail("工单必须添加第三方支付金额");
                     }
 
                     if (Objects.isNull(item.getThirdPaymentStatus())) {
-                        return R.fail("待派单工单必须添加第三方支付状态");
+                        return R.fail("工单必须添加第三方支付状态");
                     }
 
                     if (Objects.isNull(item.getThirdReason())) {
-                        return R.fail("待派单工单必须添加第三方原因");
+                        return R.fail("工单必须添加第三方原因");
                     }
 
                     if (Objects.isNull(item.getThirdResponsiblePerson())) {
-                        return R.fail("待派单工单必须添加第三方责任人");
+                        return R.fail("工单必须添加第三方责任人");
                     }
                 }
             }
@@ -2444,40 +2444,40 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         for(WorkOrderServerQuery item : workOrderServerList) {
             if (Objects.isNull(item.getServerId())) {
-                return R.fail("待派单工单必须添加服务商");
+                return R.fail("工单必须添加服务商");
             }
 
             if (Objects.isNull(item.getPaymentMethod())) {
-                return R.fail("待派单工单必须添加结算方式");
+                return R.fail("工单必须添加结算方式");
             }
 
             if (Objects.isNull(item.getFee())) {
-                return R.fail("待派单工单必须添加工单费用");
+                return R.fail("工单必须添加工单费用");
             }
 
             if (item.getIsUseThird()) {
                 if (Objects.isNull(item.getThirdCompanyType())) {
-                    return R.fail("待派单工单必须添加第三方公司类型");
+                    return R.fail("工单必须添加第三方公司类型");
                 }
 
                 if (Objects.isNull(item.getThirdCompanyId())) {
-                    return R.fail("待派单工单必须添加第三方公司");
+                    return R.fail("工单必须添加第三方公司");
                 }
 
                 if (Objects.isNull(item.getThirdCompanyPay())) {
-                    return R.fail("待派单工单必须添加第三方支付金额");
+                    return R.fail("工单必须添加第三方支付金额");
                 }
 
                 if (Objects.isNull(item.getThirdPaymentStatus())) {
-                    return R.fail("待派单工单必须添加第三方支付状态");
+                    return R.fail("工单必须添加第三方支付状态");
                 }
 
                 if (Objects.isNull(item.getThirdReason())) {
-                    return R.fail("待派单工单必须添加第三方原因");
+                    return R.fail("工单必须添加第三方原因");
                 }
 
                 if (Objects.isNull(item.getThirdResponsiblePerson())) {
-                    return R.fail("待派单工单必须添加第三方责任人");
+                    return R.fail("工单必须添加第三方责任人");
                 }
             }
         }
