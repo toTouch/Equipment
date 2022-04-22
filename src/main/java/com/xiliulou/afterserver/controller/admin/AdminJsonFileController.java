@@ -2,6 +2,8 @@ package com.xiliulou.afterserver.controller.admin;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.server.HttpServerResponse;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.xiliulou.afterserver.constant.FileConstant;
 import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.entity.ProductFile;
@@ -17,7 +19,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @program: XILIULOU
@@ -44,6 +48,50 @@ public class AdminJsonFileController {
 
     @PostMapping("/admin/file")
     public R saveFile(@RequestBody File file){
+        if(Objects.equals(File.TYPE_POINTNEW, file.getFileType())){
+            QueryWrapper<File> wrapper = new QueryWrapper<>();
+            wrapper.eq("type", File.TYPE_POINTNEW);
+            wrapper.eq("file_type", file.getFileType());
+            wrapper.eq("bind_id", file.getBindId());
+            if(file.getFileType() % 100 == 0){
+                Integer count = fileService.getBaseMapper().selectCount(wrapper);
+                if(count >= 2){
+                    return R.fail("该类其他图片已达上限，请删除图片后继续上传！");
+                }
+            }
+
+            if(!(file.getFileType() % 100 == 0)){
+                fileService.getBaseMapper().delete(wrapper);
+            }
+        }
+
+        if(Objects.equals(File.TYPE_WORK_ORDER, file.getType())){
+            QueryWrapper<File> wrapper = new QueryWrapper<>();
+            wrapper.eq("type", File.TYPE_WORK_ORDER);
+            wrapper.eq("bind_id", file.getBindId());
+            if(Objects.equals(0, file.getFileType())){
+                wrapper.eq("file_type", 0);
+            }else if(file.getFileType() < 90000){
+                wrapper.ge("file_type", 1).lt("file_type", 90000).eq("server_id", file.getServerId());
+            }else if(file.getFileType() == 90000){
+                wrapper.eq("file_type", 90000);
+            }
+
+            List<File> list = fileService.getBaseMapper().selectList(wrapper);
+            int count = CollectionUtils.isEmpty(list) ? 0 : list.size();
+
+            if(Objects.equals(0, file.getFileType()) && count >= 6){
+                return R.fail("该类其他图片已达上限，请删除图片后继续上传！");
+            }else if (file.getFileType() < 90000 && count >= 10){
+                return R.fail("该类其他图片已达上限，请删除图片后继续上传！");
+            }else if(file.getFileType() == 90000 && count >= 1){
+                list.stream().forEach(item -> {
+                    fileService.getBaseMapper().deleteById(item.getId());
+                    this.delFile(item.getId(), 1);//1为视频
+                });
+            }
+        }
+
         file.setCreateTime(System.currentTimeMillis());
         return R.ok(fileService.save(file));
     }
@@ -61,8 +109,8 @@ public class AdminJsonFileController {
     }
 
     @DeleteMapping("/admin/file/{id}")
-    public R delFile(@PathVariable("id") Long id){
-        return R.ok(fileService.removeById(id));
+    public R delFile(@PathVariable("id") Long id, @RequestParam(value = "fileType", required = false, defaultValue = "0")Integer fileType){
+        return R.ok(fileService.removeFile(id, fileType));
     }
 
     /**
