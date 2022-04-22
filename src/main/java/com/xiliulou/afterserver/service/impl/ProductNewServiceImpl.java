@@ -282,6 +282,8 @@ public class ProductNewServiceImpl implements ProductNewService {
         updateProductNew.setColor(query.getColor());
         updateProductNew.setSurface(query.getSurface());
         updateProductNew.setRemarks(query.getRemarks());
+        updateProductNew.setAppVersion(query.getAppVersion());
+        updateProductNew.setSysVersion(query.getSysVersion());
 
         Integer update = this.update(updateProductNew);
         if (update > 0){

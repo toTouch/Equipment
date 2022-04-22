@@ -112,7 +112,9 @@ public class CameraListener extends AnalysisEventListener<CameraInfo> {
             Supplier supplier = supplierService.getBaseMapper().selectOne(new QueryWrapper<Supplier>().eq("name", item.getSupplier()));
             camera.setSupplierId(supplier.getId());
             IotCard iotCard = iotCardService.queryBySn(item.getCameraCard());
-            camera.setIotCardId(iotCard.getId());
+            if(Objects.nonNull(iotCard)){
+                camera.setIotCardId(iotCard.getId());
+            }
             camera.setCreateTime(System.currentTimeMillis());
             camera.setUpdateTime(System.currentTimeMillis());
             camera.setDelFlag(Camera.DEL_NORMAL);
