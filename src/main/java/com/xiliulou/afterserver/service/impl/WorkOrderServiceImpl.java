@@ -181,6 +181,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             item.setVoucherVideoFile(files);
 
             item.setParentWorkOrderReason(this.getParentWorkOrderReason(item.getWorkOrderReasonId()));
+
+            //统计工单图片
+            eq.clear();
+            eq.eq(File::getType, File.TYPE_WORK_ORDER)
+                    .eq(File::getBindId, item.getId());
+            Integer count = fileService.getBaseMapper().selectCount(eq);
+            item.setFileCount(count);
         });
         page.setRecords(list);
         return page;
