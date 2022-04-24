@@ -461,6 +461,7 @@ public class ProductNewServiceImpl implements ProductNewService {
     public List<ProductNew> queryByBatch(Long id) {
         QueryWrapper<ProductNew> wrapper = new QueryWrapper<>();
         wrapper.eq("batch_id", id);
+        wrapper.eq("del_flag", ProductNew.DEL_NORMAL);
         List<ProductNew> productNewList = productNewMapper.selectList(wrapper);
         return productNewList;
     }
