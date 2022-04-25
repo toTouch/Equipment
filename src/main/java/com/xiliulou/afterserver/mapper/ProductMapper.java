@@ -2,7 +2,10 @@ package com.xiliulou.afterserver.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.xiliulou.afterserver.entity.Product;
+import com.xiliulou.afterserver.web.vo.productModelPullVo;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @program: XILIULOU
@@ -21,4 +24,6 @@ public interface ProductMapper extends BaseMapper<Product> {
     Integer getTotal(@Param("years") String years, @Param("mouths") String mouths);
 
     Integer getRepairCount(@Param("years") String years, @Param("mouths") String mouths);
+
+    List<productModelPullVo> queryProductModelPull(String name);
 }

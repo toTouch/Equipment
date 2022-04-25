@@ -25,6 +25,7 @@ import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
 import com.xiliulou.afterserver.web.vo.ProductExcelVo;
 import com.xiliulou.afterserver.web.vo.ProductSerialNumberExcelVo;
 import com.xiliulou.afterserver.web.vo.ProductSerialNumberVo;
+import com.xiliulou.afterserver.web.vo.productModelPullVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -325,6 +326,12 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         }
         LambdaQueryWrapper<Product> wrapper = new LambdaQueryWrapper<Product>().eq(Product::getName,name);
         return this.baseMapper.selectOne(wrapper);
+    }
+
+    @Override
+    public R queryProductModelPull(String name) {
+        List<productModelPullVo> list = this.baseMapper.queryProductModelPull(name);
+        return R.ok(list);
     }
 
 

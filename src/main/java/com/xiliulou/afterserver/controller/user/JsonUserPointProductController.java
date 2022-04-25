@@ -1,15 +1,21 @@
 package com.xiliulou.afterserver.controller.user;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.storage.config.StorageConfig;
+import com.xiliulou.storage.service.impl.AliyunOssService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Hardy
@@ -29,37 +35,82 @@ public class JsonUserPointProductController {
     private ProductNewService productNewService;
     @Autowired
     private FileService fileService;
+    @Autowired
+    private StorageConfig storageConfig;
+    @Autowired
+    private AliyunOssService aliyunOssService;
 
 
 
 
     @PostMapping("/user/upload")
-    public R uploadFile(@RequestParam("file") MultipartFile file) {
-        return fileService.uploadFile(file);
+    public R uploadFile(@RequestParam("file") MultipartFile file, @RequestParam(value = "fileType", required = false, defaultValue = "0") Integer fileType) {
+        return fileService.uploadFile(file, fileType);
     }
 
+    /**
+     * 获取oss签名
+     * @param moduleName
+     * @return
+     */
+    @GetMapping("/oss/getPolicy")
+    public Map<String, String> policy(@RequestParam("moduleName")String moduleName) {
+        String name = moduleName + "/";
+        Map<String, String> ossUploadSign = aliyunOssService.getOssUploadSign(name);
+        return ossUploadSign;
+    }
+
+
     @DeleteMapping("/user/removeFile")
-    public R removeFile(Long fileId){
-        return fileService.removeFile(fileId);
+    public R removeFile(@RequestParam("fileId")Long fileId, @RequestParam(value = "fileType", required = false, defaultValue = "0")Integer fileType){
+        return fileService.removeFile(fileId, fileType);
     }
 
     @PostMapping("/user/file")
     public R adminPrductFile(@RequestBody File file){
 
-        QueryWrapper<File> wrapper = new QueryWrapper<>();
-        wrapper.eq("type", File.TYPE_POINTNEW);
-        wrapper.eq("file_type", file.getFileType());
-        wrapper.eq("bind_id", file.getBindId());
+        if(Objects.equals(File.TYPE_POINTNEW, file.getFileType())){
+            QueryWrapper<File> wrapper = new QueryWrapper<>();
+            wrapper.eq("type", File.TYPE_POINTNEW);
+            wrapper.eq("file_type", file.getFileType());
+            wrapper.eq("bind_id", file.getBindId());
+            if(file.getFileType() % 100 == 0){
+                Integer count = fileService.getBaseMapper().selectCount(wrapper);
+                if(count >= 2){
+                    return R.fail("该类其他图片已达上限，请删除图片后继续上传！");
+                }
+            }
 
-        if(file.getFileType() % 100 == 0){
-            Integer count = fileService.getBaseMapper().selectCount(wrapper);
-            if(count >= 2){
-                return R.fail("该类其他图片已达上限，请删除图片后继续上传！");
+            if(!(file.getFileType() % 100 == 0)){
+                fileService.getBaseMapper().delete(wrapper);
             }
         }
 
-        if(!(file.getFileType() % 100 == 0)){
-            fileService.getBaseMapper().delete(wrapper);
+        if(Objects.equals(File.TYPE_WORK_ORDER, file.getType())){
+            QueryWrapper<File> wrapper = new QueryWrapper<>();
+            wrapper.eq("type", File.TYPE_WORK_ORDER);
+            wrapper.eq("bind_id", file.getBindId());
+            if(Objects.equals(0, file.getFileType())){
+                wrapper.eq("file_type", 0);
+            }else if(file.getFileType() < 90000){
+                wrapper.ge("file_type", 1).lt("file_type", 90000).eq("server_id", file.getServerId());
+            }else if(file.getFileType() == 90000){
+                wrapper.eq("file_type", 90000);
+            }
+
+            List<File> list = fileService.getBaseMapper().selectList(wrapper);
+            int count = CollectionUtils.isEmpty(list) ? 0 : list.size();
+
+            if(Objects.equals(0, file.getFileType()) && count >= 6){
+                return R.fail("该类其他图片已达上限，请删除图片后继续上传！");
+            }else if (file.getFileType() < 90000 && count >= 10){
+                return R.fail("该类其他图片已达上限，请删除图片后继续上传！");
+            }else if(file.getFileType() == 90000 && count >= 1){
+                list.stream().forEach(item -> {
+                    fileService.getBaseMapper().deleteById(item.getId());
+                    this.removeFile(item.getId(), 1);//1为视频
+                });
+            }
         }
 
 
@@ -123,8 +174,13 @@ public class JsonUserPointProductController {
      * 删除文件
      */
     @DeleteMapping("/user/file/{id}")
-    public R delFile(@PathVariable("id") Long id){
-        return R.ok(fileService.removeById(id));
+    public R delFile(@PathVariable("id") Long id,  @RequestParam(value = "fileType", required = false, defaultValue = "0")Integer fileType){
+        return fileService.removeFile(id, fileType);
+    }
+
+    @GetMapping("/user/downLoad")
+    public R getFile(@RequestParam("fileName") String fileName, @RequestParam(value = "fileType", required = false, defaultValue = "0")Integer fileType, HttpServletResponse response) {
+        return fileService.downLoadFile(fileName,fileType, response);
     }
 
 }

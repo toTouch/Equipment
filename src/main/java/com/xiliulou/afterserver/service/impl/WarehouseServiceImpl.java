@@ -98,4 +98,9 @@ public class WarehouseServiceImpl extends ServiceImpl<WareHouseMapper, WareHouse
     public R queryWarehousePull() {
         return R.ok(baseMapper.queryWarehousePull());
     }
+
+    @Override
+    public R queryWarehouseLikeNamePull(String name) {
+        return R.ok(baseMapper.queryWarehouseLikeNamePull(name));
+    }
 }

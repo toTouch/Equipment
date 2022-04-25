@@ -2,6 +2,7 @@ package com.xiliulou.afterserver.util;
 
 
 import com.xiliulou.afterserver.config.MinioConfig;
+import com.xiliulou.storage.config.StorageConfig;
 import io.minio.MinioClient;
 import io.minio.ObjectStat;
 import io.minio.PutObjectOptions;
@@ -44,14 +45,18 @@ public class MinioUtil {
     private static final int DEFAULT_EXPIRY_TIME = 7 * 24 * 3600;
     @Autowired
     MinioConfig minioConfig;
+    @Autowired
+    StorageConfig storageConfig;
 
 
 
     @PostConstruct
     public void init() {
         try {
-            this.minioClient = new MinioClient(minioConfig.getEndpoint(), minioConfig.getPort()
-                    , minioConfig.getAccessKey(), minioConfig.getSecretKey(), minioConfig.getSecure());
+            String endpoint = storageConfig.getMinioEndpoint().substring(0,storageConfig.getMinioEndpoint().lastIndexOf(":"));
+            Integer port = Integer.parseInt(storageConfig.getMinioEndpoint().substring(storageConfig.getMinioEndpoint().lastIndexOf(":")+ 1));
+
+            this.minioClient = new MinioClient(endpoint, port, storageConfig.getAccessKey(), storageConfig.getSecretKey(), storageConfig.getSecure());
         } catch (InvalidEndpointException e) {
             e.printStackTrace();
         } catch (InvalidPortException e) {

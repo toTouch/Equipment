@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiliulou.afterserver.mapper.WorkAuditNotifyMapper">
+
+    <select id="queryList" resultType="com.xiliulou.afterserver.entity.WorkAuditNotify">
+        select id, order_no, order_type, work_order_reason_id, submit_uid, type, create_time, update_time
+        from t_work_audit_notify where type = #{type} order by create_time desc limit #{offset}, #{size}
+    </select>
+</mapper>

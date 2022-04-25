@@ -88,37 +88,42 @@ jwt:
   secret: 20e5@cda38da811*27ed6fa.d226&8
   expire: 1296000
 
-minio:
-  endpoint: http://172.26.20.230
-  port: 9000
-  accessKey: by-xiliulou
-  secretKey: by123456
-  secure: false
-  bucketName: test
+#minio:
+ # endpoint: http://172.26.20.230
+ # port: 9000
+ # accessKey: by-xiliulou
+ # secretKey: by123456
+ # secure: false
+ # bucketName: test
 
 storage:
   ### oss:oss-cn-beijing.aliyuncs.com minio:http://172.26.20.230:9000
   ossEndpoint: oss-cn-beijing.aliyuncs.com
   minioEndpoint: http://172.26.20.230:9000
-  accessKeyId: SuoR5L5r9lJKzNiO
-  accessKeySecret: WsCM0f7upVDgOSLWpTr0HPLgjeCEoc
+  accessKeyId: LTAI5tJpTD5MNbV1qfZnSxzh
+  accessKeySecret: pUhONTar46FesJIEC3o9OvHn4CLsmM
   ### minio:by-xiliulou
   accessKey: by-xiliulou
   ### minio:by123456
   secretKey: by123456
   ### oss:liubiqi minio:after-service
-  bucketName: meituan-pressure
+  bucketName: liubiqi
   minioBucketName: after-service
   ### ossTestFileBucketName:ZgeTest
   ossTestFileBucketName: meituan-pressure
+  ossVidioBucketName: liubiqi
   ### oss:img.wm.xiliulou.com
   urlPrefix:
-  dir: after-service/
+  dir: after-service/img/
   secure: false
-  testFileDir:
+  #testFileDir:
+  vidioDir: after-service/video/
+
   ### oss:0 minio:1
-  isUseOSS: 1
+  isUseOSS: 0
 
 userrole:
   unShow: [1,2,3,4]
   userRole: [2]
+
+

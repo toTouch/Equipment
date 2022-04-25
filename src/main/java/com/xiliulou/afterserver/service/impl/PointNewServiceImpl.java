@@ -21,6 +21,7 @@ import com.xiliulou.afterserver.web.query.CameraInfoQuery;
 import com.xiliulou.afterserver.web.query.PointAuditStatusQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
 import com.xiliulou.afterserver.web.query.ProductInfoQuery;
+import com.xiliulou.afterserver.web.vo.PointNewPullVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -310,12 +311,12 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             String cameraInfo = JSON.toJSONString(pointNew.getCameraInfoList());
             pointNew.setCameraInfo(cameraInfo);
         }
-        if(Objects.isNull(pointNew.getInstallTime()) || Objects.isNull(pointNew.getWarrantyPeriod())){
-            pointNew.setWarrantyTime(null);
-        }
         PointNew pointNewOld = queryByName(pointNew.getName());
         if(Objects.nonNull(pointNewOld) && !Objects.equals(pointNew.getId(), pointNewOld.getId())){
             return R.fail("该点位已存在");
+        }
+        if(Objects.isNull(pointNew.getInstallTime()) || Objects.isNull(pointNew.getWarrantyPeriod())){
+            pointNew.setWarrantyTime(null);
         }
         int update = this.pointNewMapper.update(pointNew);
         pointNew.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
@@ -456,6 +457,11 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     @Override
     public void updatePastWarrantyStatus(){
         pointNewMapper.updatePastWarrantyStatus(System.currentTimeMillis());
+    }
+
+    @Override
+    public List<PointNewPullVo> queryPointNewPull(String name) {
+        return pointNewMapper.queryPointNewPull(name);
     }
 
     /*@Override

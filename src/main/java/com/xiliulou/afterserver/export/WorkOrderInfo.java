@@ -21,100 +21,110 @@ public class WorkOrderInfo {
     @ExcelProperty(index = 1)
     private String pointName;
     /**
-     * 过保
-     */
-    @ExcelProperty(index = 2)
-    private String overInsurance;
-    /**
      * 起点类型
      */
-    @ExcelProperty(index = 3)
+    @ExcelProperty(index = 2)
     private String sourceType;
     /**
      * 起点
      */
-    @ExcelProperty(index = 4)
+    @ExcelProperty(index = 3)
     private String transferSourcePoint;
     /**
      * 终点类型
      */
-    @ExcelProperty(index = 5)
+    @ExcelProperty(index = 4)
     private String destinationType;
     /**
      * 终点
      */
-    @ExcelProperty(index = 6)
+    @ExcelProperty(index = 5)
     private String transferDestinationPoint;
     /**
      * 狀態
      */
-    @ExcelProperty(index = 7)
+    @ExcelProperty(index = 6)
     private String status;
     /**
      * 描述
      */
-    @ExcelProperty(index = 8)
+    @ExcelProperty(index = 7)
     private String describeinfo;
     /**
      * 備註
      */
-    @ExcelProperty(index = 9)
+    @ExcelProperty(index = 8)
     private String info;
     /**
      * 工單原因
      */
-    @ExcelProperty(index = 10)
+    @ExcelProperty(index = 9)
     private Integer workOrderReasonId;
     /**
-     * 第三方原因
+     * 专员
+     */
+    @ExcelProperty(index = 10)
+    private String commissioner;
+
+    /**
+     * 服務商
      */
     @ExcelProperty(index = 11)
-    private String thirdReason;
+    private String serverName;
+
+    /**
+     * 費用
+     */
+    @ExcelProperty(index = 12)
+    private Double fee;
+
+    /**
+     * 结算方式
+     */
+    @ExcelProperty(index = 13)
+    private String paymentMethod;
+
+    /**
+     * 解决方案
+     */
+    @ExcelProperty(index = 14)
+    private String solution;
+
+    @ExcelProperty(index = 15)
+    private String isUseThird;
+
     /**
      * 公司类别
      */
-    @ExcelProperty(index = 12)
+    @ExcelProperty(index = 16)
     private String thirdCompanyType ;
     /**
      * 第三方公司
      */
-    @ExcelProperty(index = 13)
+    @ExcelProperty(index = 17)
     private String thirdCompanyName;
+
     /**
      * 第三方承擔費用
      */
-    @ExcelProperty(index = 14)
-    private Double thirdCompanyPay;
-    /**
-     * 費用
-     */
-    @ExcelProperty(index = 15)
-    private Double fee;
-    /**
-     * 處理時間
-     */
-    @ExcelProperty(index = 16)
-    private String processTime;
-    /**
-     * 服務商
-     */
-    @ExcelProperty(index = 17)
-    private String serverName;
-    /**
-     * 结算方式
-     */
     @ExcelProperty(index = 18)
-    private String paymentMethod;
-    /**
-     * 第三方责任对接人
-     */
-    @ExcelProperty(index = 19)
-    private String thirdResponsiblePerson;
+    private Double thirdCompanyPay;
 
     /**
      * 第三方结算状态
      */
-    @ExcelProperty(index = 20)
+    @ExcelProperty(index = 19)
     private String thirdPaymentStatus;
 
+    /**
+     * 第三方原因
+     */
+    @ExcelProperty(index = 20)
+    private String thirdReason;
+
+    /**
+     * 第三方责任对接人
+     */
+    @ExcelProperty(index = 21)
+    private String thirdResponsiblePerson;
 }

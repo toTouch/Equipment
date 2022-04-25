@@ -77,7 +77,7 @@ public class ImportTemplateServiceImpl extends ServiceImpl<ImportTemplateMapper,
                 new QueryWrapper<ImportTemplate>().eq("type", type));
 
         if(Objects.nonNull(importTemplateOld)){
-            fileService.downLoadFile(importTemplateOld.getFileName(), response);
+            fileService.downLoadFile(importTemplateOld.getFileName(),0, response);
             return R.ok();
         }
 

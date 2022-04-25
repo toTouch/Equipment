@@ -16,4 +16,5 @@ public interface UserService extends IService<User> {
 
     User findByUserName(String username);
 
+    R typePull(String username, Integer type);
 }

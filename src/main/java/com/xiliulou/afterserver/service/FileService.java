@@ -11,9 +11,9 @@ import java.util.List;
 
 public interface FileService extends IService<File> {
 
-    R uploadFile(MultipartFile file);
+    R uploadFile(MultipartFile file, Integer fileType);
 
-    void downLoadFile(String fileName, HttpServletResponse response);
+    R downLoadFile(String fileName,Integer fileType, HttpServletResponse response);
 
     R getFileList(Long pid);
 
@@ -21,5 +21,5 @@ public interface FileService extends IService<File> {
 
     List<File> queryByProductNewId(Long productId);
 
-    R removeFile(Long fileId);
+    R removeFile(Long fileId, Integer fileType);
 }

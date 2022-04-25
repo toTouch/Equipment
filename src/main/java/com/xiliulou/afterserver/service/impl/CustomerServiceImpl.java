@@ -13,6 +13,7 @@ import com.xiliulou.afterserver.mapper.PointNewMapper;
 import com.xiliulou.afterserver.service.CustomerService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.vo.CustomerPullVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -70,5 +71,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         }else{
             return R.fail("删除失败");
         }
+    }
+
+    @Override
+    public List<CustomerPullVo> queryCustomerPull(String name) {
+        return baseMapper.queryCustomerPull(name);
     }
 }

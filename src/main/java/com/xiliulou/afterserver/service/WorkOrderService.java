@@ -9,6 +9,7 @@ import com.xiliulou.afterserver.web.vo.AfterCountListVo;
 import com.xiliulou.afterserver.web.vo.AfterCountVo;
 import com.xiliulou.afterserver.web.vo.AfterOrderVo;
 import com.xiliulou.afterserver.web.vo.WorkOrderVo;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -66,9 +67,33 @@ public interface WorkOrderService extends IService<WorkOrder> {
 
     List<AfterOrderVo> installWorkOrderList(Long pointId, Integer cityId, Long startTime,Long endTime);
 
-    R updateWorkorderProcessTime(Long id);
+    R updateWorkorderProcessTime(Long id, Long serverId);
 
     R updateAuditStatus(WorkOrderAuditStatusQuery workOrderAuditStatusQuery);
 
     R putAdminPointNewCreateUser(Long id, Long createrId);
+
+    R queryAssignmentStatusList(Long offset, Long size,Integer auditStatus, Integer status, Integer type, Long createTimeStart, String serverName, String pointName);
+
+    R updateAssignment(WorkOrderAssignmentQuery workOrderAssignmentQuery);
+
+    R updateServer(String solution, Long workOrderId);
+
+    R submitReview(Long id);
+
+    String getParentWorkOrderReason(Long id);
+
+    R queryProductModelPull(String name);
+
+    R queryWorkOrderReasonPull();
+
+    R queryServerPull(String name);
+
+    R querySupplierPull(String name);
+
+    R queryCustomerPull(String name);
+
+    R queryPointNewPull(String name);
+
+    R queryWarehousePull(String name);
 }
