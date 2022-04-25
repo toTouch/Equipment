@@ -130,6 +130,9 @@
             <if test="endTime != null">
                 and p.create_time &lt;= #{endTime}
             </if>
+            <if test="pointType != null">
+                and b.point_type = #{pointType}
+            </if>
             <if test="pointId != null">
                 and b.point_id = #{pointId}
             </if>
