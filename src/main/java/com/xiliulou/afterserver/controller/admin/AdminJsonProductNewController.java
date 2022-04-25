@@ -78,8 +78,7 @@ public class AdminJsonProductNewController {
             productIds = pointProductBindService.queryProductIdsByPidAndPtype(pointId, pointType);
         }
 
-        List<ProductNew> productNews = null;
-        //productNewService.queryAllByLimit(offset,limit,no,modelId,startTime,endTime,productIds);
+        List<ProductNew> productNews = productNewService.queryAllByLimit(offset,limit,no,modelId,startTime,endTime,productIds);
 
         productNews.parallelStream().forEach(item -> {
 
