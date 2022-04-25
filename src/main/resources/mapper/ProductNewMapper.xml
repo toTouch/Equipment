@@ -34,7 +34,7 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="ProductNewMap">
         select
-          p.id, p.no, p.model_id, p.batch_id, p.status, p.expiration_start_time, p.years, p.expiration_end_time, p.create_time,p.update_time, p.del_flag, p.serial_num, p.type, p.supplier_id,p.remarks,p.iot_card_id,p.camera_id,p.surface,p.color, p.test_result, p.test_file
+          p.id, p.no, p.model_id, p.batch_id, p.status, p.expiration_start_time, p.years, p.expiration_end_time, p.create_time,p.update_time, p.del_flag, p.serial_num, p.type, p.supplier_id,p.remarks,p.iot_card_id,p.camera_id,p.surface,p.color, p.test_result, p.test_file, p.app_version, p.sys_version
         from t_product_new p left join t_point_product_bind b
         on p.id = b.product_id
         <where>
@@ -178,6 +178,12 @@
             </if>
             <if test="color != null">
                 color = #{color},
+            </if>
+            <if test="appVersion != null and appVersion != ''">
+                app_version = #{appVersion},
+            </if>
+            <if test="sysVersion != null and sysVersion != ''">
+                sys_version = #{sysVersion},
             </if>
         </set>
         where id = #{id}
