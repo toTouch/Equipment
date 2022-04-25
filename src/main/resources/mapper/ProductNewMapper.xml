@@ -52,6 +52,9 @@
     <where>
         and p.del_flag = 0
         and p.cache is null
+        <if test="pointType != null or pointId != null">
+
+        </if>
         <if test="no != null and no != '' ">
             and p.no like concat('%', #{no},'%')
         </if>
