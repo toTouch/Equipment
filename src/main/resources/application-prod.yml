@@ -29,7 +29,7 @@ spring:
   servlet:
     multipart:
       # 文件最大限制
-      max-file-size: 5MB
+      max-file-size: 100MB
       # 请求最大限制
       max-request-size: 100MB
       enabled: true
