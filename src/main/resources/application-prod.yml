@@ -111,17 +111,17 @@ storage:
   ### minio:by123456
   secretKey: by123456
   ### oss:liubiqi minio:after-service
-  bucketName: after-service
+  bucketName: xiliulou-strawberry
   minioBucketName: after-service
   ### ossTestFileBucketName:ZgeTest
   ossTestFileBucketName: meituan-pressure
-  ossVidioBucketName: after-service
+  ossVidioBucketName: xiliulou-strawberry
   ### oss:img.wm.xiliulou.com
   urlPrefix:
-  dir: after-service/img/
+  dir: img/
   secure: false
   #testFileDir:
-  vidioDir: after-service/video/
+  vidioDir: video/
   ### oss:0 minio:1
   isUseOSS: 0
 
