@@ -104,8 +104,8 @@ storage:
   ### oss:oss-cn-beijing.aliyuncs.com minio:http://172.26.20.230:9000
   ossEndpoint: oss-cn-beijing.aliyuncs.com
   minioEndpoint: http://172.26.20.230:9000
-  accessKeyId: LTAI5tJpTD5MNbV1qfZnSxzh
-  accessKeySecret: pUhONTar46FesJIEC3o9OvHn4CLsmM
+  accessKeyId:
+  accessKeySecret:
   ### minio:by-xiliulou
   accessKey: by-xiliulou
   ### minio:by123456
