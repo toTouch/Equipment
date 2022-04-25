@@ -105,45 +105,45 @@ public class AdminJsonProductNewController {
                 }
             }
 
-            /*if (Objects.nonNull(item.getModelId())){
+            if (Objects.nonNull(item.getModelId())){
                 Product product = productService.getBaseMapper().selectById(item.getModelId());
                 if (Objects.nonNull(product)){
                     item.setModelName(product.getName());
                 }
-            }*/
+            }
 
-            /*if (Objects.nonNull(item.getBatchId())){
+            if (Objects.nonNull(item.getBatchId())){
                 Batch batch = batchService.queryByIdFromDB(item.getBatchId());
                 if (Objects.nonNull(batch)){
                     item.setBatchName(batch.getBatchNo());
                 }
-            }*/
+            }
 
-            /*if(Objects.nonNull(item.getSupplierId())){
+            if(Objects.nonNull(item.getSupplierId())){
                 Supplier supplier = supplierService.getById(item.getSupplierId());
                 if(Objects.nonNull(supplier)){
                     item.setSupplierName(supplier.getName());
                 }
-            }*/
+            }
 
-            /*if(Objects.nonNull(item.getIotCardId())){
+            if(Objects.nonNull(item.getIotCardId())){
                 IotCard iotCard = iotCardService.getById(item.getIotCardId());
                 if(Objects.nonNull(iotCard)){
                     item.setIotCardName(iotCard.getSn());
                 }
-            }*/
+            }
 
-            /*if(Objects.nonNull(item.getCameraId())){
+            if(Objects.nonNull(item.getCameraId())){
                 Camera camera = cameraService.getById(item.getCameraId());
                 if(Objects.nonNull(camera)){
                     item.setCameraSerialNum(camera.getSerialNum());
                 }
-            }*/
+            }
 
-            /*ColorCard colorCard = colorCardService.getById(item.getColor());
+            ColorCard colorCard = colorCardService.getById(item.getColor());
             if(Objects.nonNull(colorCard)){
                 item.setColorName(colorCard.getName());
-            }*/
+            }
         });
 
 
