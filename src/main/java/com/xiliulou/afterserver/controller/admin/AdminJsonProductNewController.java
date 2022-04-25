@@ -147,7 +147,7 @@ public class AdminJsonProductNewController {
         });
 
 
-        Integer count = productNewService.count(no,modelId,startTime,endTime,pointId);
+        Integer count = productNewService.count(no,modelId,startTime,endTime,pointId,pointType);
 
         HashMap<String, Object> stringObjectHashMap = new HashMap<>();
         stringObjectHashMap.put("data",productNews);
