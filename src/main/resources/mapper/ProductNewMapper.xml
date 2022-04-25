@@ -34,9 +34,19 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="ProductNewMap">
         select
-          p.id, p.no, p.model_id, p.batch_id, p.status, p.expiration_start_time, p.years, p.expiration_end_time, p.create_time,p.update_time, p.del_flag, p.serial_num, p.type, p.supplier_id,p.remarks,p.iot_card_id,p.camera_id,p.surface,p.color, p.test_result, p.test_file, p.app_version, p.sys_version
-        from t_product_new p left join t_point_product_bind b
-        on p.id = b.product_id
+          p.id, p.no, p.model_id, p.batch_id, p.status, p.expiration_start_time, p.years, p.expiration_end_time,
+          p.create_time,p.update_time, p.del_flag, p.serial_num, p.type, p.supplier_id,p.remarks,p.iot_card_id,
+          p.camera_id,p.surface,p.color, p.test_result, p.test_file, p.app_version, p.sys_version, m.name as model_name,
+          tb.batch_no, s.name as supplier_name, tic.sn as iot_card_name, tc.serial_num as camera_serial_num,
+          tcc.name as color_name
+        from t_product_new p
+        left join t_point_product_bind b on p.id = b.product_id
+        left join product m on p.model_id = m.id
+        left join t_batch tb on tb.id = p.batch_id
+        left join supplier s on s.id = p.supplier_id
+        left join t_iot_card tic on tic.id = p.iot_card_id
+        left join t_camera tc on tc.id = p.camera_id
+        left join t_color_card tcc on tcc.id = p.color
         <where>
             and p.del_flag = 0
             and p.cache is null
