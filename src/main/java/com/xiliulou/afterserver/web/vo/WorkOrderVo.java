@@ -2,6 +2,7 @@ package com.xiliulou.afterserver.web.vo;
 
 import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.web.query.ProductInfoQuery;
+import com.xiliulou.afterserver.web.query.WorkOrderServerQuery;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -19,14 +20,14 @@ public class WorkOrderVo {
     private Integer type;
     private Long pointId;
     private String info;
-    private BigDecimal fee;
-    private Long thirdCompanyId;
-    private Integer thirdCompanyType;
-    private BigDecimal thirdCompanyPay;
-    private String thirdReason;
+    //private BigDecimal fee;
+    //private Long thirdCompanyId;
+    //private Integer thirdCompanyType;
+    //private BigDecimal thirdCompanyPay;
+    //private String thirdReason;
     private Long workOrderReasonId;
     //服务商id
-    private Long serverId;
+    //private Long serverId;
     //服务商接单人
     private String processor;
     private Long processTime;
@@ -34,8 +35,8 @@ public class WorkOrderVo {
     private String orderNo;
     private Long createrId;
     private Long createTime;
-    private String thirdCompanyName;
-    private String serverName;
+    //private String thirdCompanyName;
+    //private String serverName;
     private String workOrderReasonName;
     private String workOrderType;
     private String creater;
@@ -59,11 +60,11 @@ public class WorkOrderVo {
 
     private String describeinfo;
 
-    private Integer paymentMethod;
+   // private Integer paymentMethod;
 
-    private String paymentMethodName;
+   // private String paymentMethodName;
 
-    private Integer thirdPaymentStatus;
+   // private Integer thirdPaymentStatus;
 
     private String destinationType;
 
@@ -71,15 +72,34 @@ public class WorkOrderVo {
 
     //private String thirdPaymentStatusName;
     //第三方责任对接人
-    private String thirdResponsiblePerson;
+    //private String thirdResponsiblePerson;
     //时效
-    private String prescription;
+    //private String prescription;
     private Integer auditStatus;
     private String auditRemarks;
     private Integer fileCount;
-    private Long prescriptionMillis;
+    //private Long prescriptionMillis;
     private String parentWorkOrderReason;
     private String productInfo;
     private List<ProductInfoQuery> productInfoList;
     private Integer pointStatus;
+    private Long commissionerId;
+    private String commissionerName;
+    private List<WorkOrderServerQuery> workOrderServerList;
+    /**
+     * 凭证
+     */
+    private List<File> voucherImgFile;
+    /**
+     * 视频
+     */
+    private File voucherVideoFile;
+    /**
+     * 费用
+     */
+    private BigDecimal totalFee;
+    /**
+     * 派单时间
+     */
+    private Long assignmentTime;
 }

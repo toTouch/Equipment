@@ -13,6 +13,7 @@ import com.xiliulou.afterserver.listener.ClientListener;
 import com.xiliulou.afterserver.listener.ServiceListener;
 import com.xiliulou.afterserver.service.ServerService;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -49,6 +50,7 @@ public class AdminJsonServerController {
             return R.fail("服务商列表已存在【" + server.getName() + "】");
         }
 
+        server.setCreateUid(SecurityUtils.getUid());
         server.setCreateTime(System.currentTimeMillis());
         return R.ok(serverService.save(server));
     }
@@ -73,6 +75,11 @@ public class AdminJsonServerController {
     @GetMapping("admin/server/list")
     public R list() {
         return R.ok(serverService.list(Wrappers.<Server>lambdaQuery().orderByDesc(Server::getCreateTime)));
+    }
+
+    @GetMapping("admin/server/like/list")
+    public R likeList(@RequestParam(value = "name", required = false) String name) {
+        return R.ok(serverService.list(Wrappers.<Server>lambdaQuery().like(Server::getName, name).orderByDesc(Server::getCreateTime).last("limit 0, 20")));
     }
 
     /**

@@ -33,14 +33,14 @@ public class WorkOrder implements Serializable {
      */
     private String info;
     
-    private BigDecimal fee;
-    private Long thirdCompanyId;
-    private Integer thirdCompanyType;
-    private BigDecimal thirdCompanyPay;
-    private String thirdReason;
+   // private BigDecimal fee;
+   // private Long thirdCompanyId;
+  //  private Integer thirdCompanyType;
+  //  private BigDecimal thirdCompanyPay;
+  //  private String thirdReason;
     private Long workOrderReasonId;
     //服务商id
-    private Long serverId;
+    //private Long serverId;
     //服务商接单人
     private String processor;
     private Long processTime;
@@ -48,8 +48,8 @@ public class WorkOrder implements Serializable {
     private String orderNo;  //工单编号·
     private Long createrId;
     private Long createTime;
-    private String thirdCompanyName;
-    private String serverName;
+   // private String thirdCompanyName;
+   // private String serverName;
     private String product;
     private String code;
     //private Integer boxNumber;
@@ -68,16 +68,16 @@ public class WorkOrder implements Serializable {
     /**
      * 结算方式 1--月结 2--现结
      */
-    private Integer paymentMethod;
+    //private Integer paymentMethod;
     /**
      * 第三方结算状态 无需结算 1，未结算 2，已结算 3
      */
-    private Integer thirdPaymentStatus;
+   // private Integer thirdPaymentStatus;
 
     /**
      * 第三方责任人
      */
-    private String thirdResponsiblePerson;
+   // private String thirdResponsiblePerson;
     private Integer auditStatus;
     private String auditRemarks;
     /**
@@ -92,6 +92,10 @@ public class WorkOrder implements Serializable {
     private Long transferDestinationPointId;
 
     private String describeinfo;
+
+    private Long commissionerId;
+    //派单时间
+    private Long assignmentTime;
 
 
     /**
@@ -114,13 +118,14 @@ public class WorkOrder implements Serializable {
     public static final Integer COMPANY_TYPE_SUPPLIER = 2;
     public static final Integer COMPANY_TYPE_SERVER = 3;
 
-    // 0：未完成1;待处理2:已处理3:待分析4：已完结5：已完成
+    // 0：未完成1;待处理2:已处理3:待分析4：已完结5：已暂停6:待派单
     public static final Integer STATUS_UNFINISHED = 0;
     public static final Integer STATUS_INIT = 1;
     public static final Integer STATUS_PROCESSING = 2;
     public static final Integer STATUS_ANALYSE = 3;
     public static final Integer STATUS_FINISHED = 4;
     public static final Integer STATUS_SUSPEND = 5;
+    public static final Integer STATUS_ASSIGNMENT = 6;
 
 
     //工单类型
@@ -139,6 +144,8 @@ public class WorkOrder implements Serializable {
     //7.派送安装
     public static final Integer TYPE_SEND_INSERT = 7;
 
+    //审核状态 0未审核 1待审核 2未通过 3已通过
+    public static final Integer AUDIT_STATUS_NOT = 0;
     public static final Integer AUDIT_STATUS_WAIT = 1;
     public static final Integer AUDIT_STATUS_FAIL = 2;
     public static final Integer AUDIT_STATUS_PASSED = 3;
@@ -149,4 +156,7 @@ public class WorkOrder implements Serializable {
 
     @TableField(exist = false)
     private String userName;
+
+    @TableField(exist = false)
+    private WorkOrderServer workOrderServer;
 }

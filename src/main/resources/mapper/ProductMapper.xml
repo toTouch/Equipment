@@ -76,4 +76,8 @@
 
     </select>
 
+    <select id="queryProductModelPull" resultType="com.xiliulou.afterserver.web.vo.productModelPullVo">
+        select id, `name` from `product` where `name` like concat('%', #{name}, '%')
+    </select>
+
 </mapper>

@@ -46,4 +46,12 @@ public class ProductNewQuery {
      * 备注
      */
     private String remarks;
+    /**
+     * app版本
+     */
+    private String appVersion;
+    /**
+     * 系统版本
+     */
+    private String sysVersion;
 }

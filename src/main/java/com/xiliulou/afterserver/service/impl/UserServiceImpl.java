@@ -6,16 +6,15 @@ import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.config.RolePermissionConfig;
-import com.xiliulou.afterserver.entity.Deliver;
-import com.xiliulou.afterserver.entity.Supplier;
-import com.xiliulou.afterserver.entity.User;
-import com.xiliulou.afterserver.entity.UserRole;
+import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.UserMapper;
+import com.xiliulou.afterserver.service.ServerService;
 import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.service.UserRoleService;
 import com.xiliulou.afterserver.service.UserService;
@@ -51,6 +50,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     UserRoleService userRoleService;
     @Autowired
     SupplierService supplierService;
+    @Autowired
+    ServerService serverService;
 
     @Override
     public Pair<Boolean, Object> register(User user) {
@@ -68,6 +69,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             Supplier supplier = supplierService.getById(user.getThirdId());
             if(Objects.isNull(supplier)){
                 return Pair.of(false, "未查询到工厂，请检查");
+            }
+        }
+        if(Objects.equals(User.TYPE_PATROL_APPLET, user.getUserType())) {
+            Server server = serverService.getById(user.getThirdId());
+            if(Objects.isNull(server)){
+                return Pair.of(false, "未查询到服务商，请检查");
             }
         }
         user.setRoleId(User.AFTER_USER_ROLE);
@@ -120,12 +127,34 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public R list(Long offset, Long size, String username) {
         Page page = PageUtil.getPage(offset, size);
         Page selectPage = baseMapper.selectPage(page,Wrappers.<User>lambdaQuery().like(Objects.nonNull(username),User::getUserName, username));
+        if(CollectionUtils.isNotEmpty(selectPage.getRecords())) {
+            selectPage.getRecords().forEach(item -> {
+                User user = (User)item;
+                if(Objects.equals(user.getUserType(), User.TYPE_FACTORY)) {
+                    Supplier supplier = supplierService.getById(user.getThirdId());
+                    if(Objects.nonNull(supplier)) {
+                        user.setThirdName(supplier.getName());
+                    }
+                }
 
+                if(Objects.equals(user.getUserType(), User.TYPE_PATROL_APPLET)) {
+                    Server server = serverService.getById(user.getThirdId());
+                    if(Objects.nonNull(server)) {
+                        user.setThirdName(server.getName());
+                    }
+                }
+            });
+        }
         return R.ok(selectPage);
     }
 
     @Override
     public User findByUserName(String username) {
         return baseMapper.selectOne(new QueryWrapper<User>().eq("user_name",username));
+    }
+
+    @Override
+    public R typePull(String username, Integer type) {
+        return R.ok(baseMapper.typePull(username, type));
     }
 }

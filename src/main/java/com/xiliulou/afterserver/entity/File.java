@@ -18,16 +18,19 @@ public class File {
 
     private Long id;
     /**
-     * 1.柜子  2.点位  3.工单
+     *  1.柜子  2.点位  3.工单
      */
     private Integer type;
     private String fileName;
     private Long createTime;
     private Long bindId;
     private Integer fileType;
+    private Long serverId;
 
 
     /**
+     *    0:凭证
+     *    90000：视频
      *    安装类型：
      *    1:机柜、
      *    2:序列通讯 201 SN码 202 工控机物联网卡、

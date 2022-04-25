@@ -103,6 +103,10 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
                 throw new RuntimeException("点位" + pointInfo.getName() + "没有查询到客户信息");
             }
         }
+        if(Objects.nonNull(pointInfo.getWarrantyPeriod()) && Objects.isNull(pointInfo.getInstallTime())){
+            log.error("insert PointInfo error! not calculation warrantyTime pointName={}",pointInfo.getName());
+            throw new RuntimeException("点位" + pointInfo.getName() + "没有添加安装时间");
+        }
         list.add(pointInfo);
         if (list.size() >= BATCH_COUNT) {
             saveData();
@@ -147,7 +151,7 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
             }
 
             if (item.getCity()!=null){
-                LambdaQueryWrapper<City> like = new LambdaQueryWrapper<City>().like(City::getName, item.getCity());
+                LambdaQueryWrapper<City> like = new LambdaQueryWrapper<City>().eq(City::getName, item.getCity());
                 City city = cityService.getOne(like);
                 if (Objects.nonNull(city)){
                     point.setCityId(city.getId());

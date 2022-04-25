@@ -38,7 +38,7 @@ public class DataQueryServiceImpl implements DataQueryService {
     private WorkOrderTypeService workOrderTypeService;
 
     @Override
-    public R installWorkOrder(Long pointId, Integer cityId, Long startTime, Long endTime) {
+    public R  installWorkOrder(Long pointId, Integer cityId, Long startTime, Long endTime) {
         Integer pointCount = pointService.queryPointCountFromDate(startTime, endTime);
         List<AfterOrderVo> installWorkOrderByCityList = workOrderService.installWorkOrderByCity(pointId, cityId, startTime, endTime);
         installWorkOrderByCityList.forEach(item -> {

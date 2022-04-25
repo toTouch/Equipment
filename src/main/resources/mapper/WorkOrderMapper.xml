@@ -27,11 +27,11 @@
         <id property="type" column="wo_type"/>
         <id property="pointId" column="wo_point_id"/>
         <id property="info" column="wo_info"/>
-        <id property="fee" column="wo_fee"/>
-        <id property="thirdCompanyType" column="wo_third_company_type"/>
-        <id property="thirdCompanyId" column="wo_third_company_id"/>
-        <id property="thirdCompanyPay" column="wo_third_company_pay"/>
-        <id property="thirdReason" column="wo_third_reason"/>
+<!--        <id property="fee" column="wo_fee"/>-->
+<!--        <id property="thirdCompanyType" column="wo_third_company_type"/>-->
+<!--        <id property="thirdCompanyId" column="wo_third_company_id"/>-->
+<!--        <id property="thirdCompanyPay" column="wo_third_company_pay"/>-->
+<!--        <id property="thirdReason" column="wo_third_reason"/>-->
         <id property="workOrderReasonId" column="wo_work_order_reason_id"/>
         <id property="processor" column="wo_processor"/>
         <id property="createrId" column="wo_creater_id"/>
@@ -40,35 +40,58 @@
         <id property="orderNo" column="wo_order_no"/>
         <id property="createTime" column="wo_create_time"/>
         <id property="workOrderType" column="wot_type"/>
-        <id property="thirdCompanyName" column="wo_third_company_name"/>
-        <id property="serverName" column="wo_server_name"/>
+<!--        <id property="thirdCompanyName" column="wo_third_company_name"/>-->
+<!--        <id property="serverName" column="wo_server_name"/>-->
         <id property="transferSourcePointId" column="wo_transfer_source_point_id"/>
         <id property="transferSourcePointName" column="wo_transfer_source_point_name"/>
         <id property="transferDestinationPointId" column="wo_transfer_destination_point_id"/>
         <id property="transferDestinationPointName" column="wo_transfer_destination_point_name"/>
         <id property="product" column="wo_product"/>
         <id property="code" column="wo_code"/>
-        <id property="serverId" column="wo_server_id"/>
+<!--        <id property="serverId" column="wo_server_id"/>-->
         <id property="reason" column="wo_reason"/>
         <id property="workOrderReasonName" column="wor_name"/>
         <id property="creater" column="u_user_name"/>
         <id property="pointName" column="p_name"/>
         <id property="pointStatus" column="p_status"/>
         <id property="describeinfo" column="wo_describeinfo"/>
-        <id property="paymentMethod" column="wo_payment_method"/>
-        <id property="thirdPaymentStatus" column="wo_third_payment_status"/>
+<!--        <id property="paymentMethod" column="wo_payment_method"/>-->
+<!--        <id property="thirdPaymentStatus" column="wo_third_payment_status"/>-->
         <id property="destinationType" column="wo_destination_type"></id>
         <id property="sourceType" column="wo_source_type"></id>
-        <id property="thirdResponsiblePerson" column="wo_third_responsible_person"></id>
+<!--        <id property="thirdResponsiblePerson" column="wo_third_responsible_person"></id>-->
         <id property="productInfo" column="wo_product_info"></id>
         <id property="auditStatus" column="wo_audit_status"/>
         <id property="auditRemarks" column="wo_audit_remarks"/>
-        <collection property="fileList" ofType="com.xiliulou.afterserver.entity.File">
-            <id property="id" column="f_id"/>
-            <id property="type" column="f_type"/>
-            <id property="fileName" column="f_file_name"/>
-            <id property="bindId" column="f_bind_id"/>
-        </collection>
+        <id property="commissionerId" column="wo_commissioner_id"/>
+        <id property="assignmentTime" column="wo_assignment_time"/>
+    </resultMap>
+
+    <resultMap id="userMap" type="com.xiliulou.afterserver.web.vo.WorkOrderAssignmentVo">
+        <id property="id" column="wo_id"/>
+        <id property="type" column="wo_type"/>
+        <id property="pointId" column="wo_point_id"/>
+        <id property="info" column="wo_info"/>
+        <id property="status" column="wo_status"/>
+        <id property="orderNo" column="wo_order_no"/>
+        <id property="createTime" column="wo_create_time"/>
+        <id property="transferSourcePointId" column="wo_transfer_source_point_id"/>
+        <id property="transferSourcePointName" column="wo_transfer_source_point_name"/>
+        <id property="transferDestinationPointId" column="wo_transfer_destination_point_id"/>
+        <id property="transferDestinationPointName" column="wo_transfer_destination_point_name"/>
+        <id property="pointName" column="p_name"/>
+        <id property="pointStatus" column="p_status"/>
+        <id property="describeinfo" column="wo_describeinfo"/>
+        <id property="processTime" column="wo_process_time"/>
+        <id property="destinationType" column="wo_destination_type"></id>
+        <id property="sourceType" column="wo_source_type"></id>
+        <id property="productInfo" column="wo_product_info"></id>
+        <id property="code" column="wo_code"></id>
+        <id property="workOrderReasonId" column="wo_work_order_reason_id"></id>
+        <id property="workOrderReasonName" column="wor_name"/>
+        <id property="assignmentTime" column="wo_assignment_time"/>
+        <id property="auditStatus" column="wo_audit_status"/>
+        <id property="auditRemarks" column="wo_audit_remarks"/>
     </resultMap>
 
     <select id="getPage" resultMap="pageMap">
@@ -76,35 +99,37 @@
         wo.type as wo_type,
         wo.point_id as wo_point_id,
         wo.info as wo_info,
-        wo.fee as wo_fee,
-        wo.third_company_type as wo_third_company_type,
-        wo.third_company_id as wo_third_company_id,
-        wo.third_company_pay as wo_third_company_pay,
-        wo.third_reason as wo_third_reason,
+--         wo.fee as wo_fee,
+--         wo.third_company_type as wo_third_company_type,
+--         wo.third_company_id as wo_third_company_id,
+--         wo.third_company_pay as wo_third_company_pay,
+--         wo.third_reason as wo_third_reason,
         wo.work_order_reason_id as wo_work_order_reason_id,
-        wo.processor as wo_processor,
+--         wo.processor as wo_processor,
         wo.creater_id as wo_creater_id,
         wo.process_time as wo_process_time,
         wo.status as wo_status,
         wo.order_no as wo_order_no,
         wo.create_time as wo_create_time,
-        wo.server_id as wo_server_id,
-        wo.third_company_name as wo_third_company_name,
-        wo.server_name as wo_server_name,
+--         wo.server_id as wo_server_id,
+--         wo.third_company_name as wo_third_company_name,
+--         wo.server_name as wo_server_name,
         wo.transfer_source_point_id as wo_transfer_source_point_id,
         wo.transfer_destination_point_id as wo_transfer_destination_point_id,
         wo.product as wo_product,
         wo.code as wo_code,
         wo.reason as wo_reason,
         wo.describeinfo as wo_describeinfo,
-        wo.payment_method as wo_payment_method,
-        wo.third_payment_status as wo_third_payment_status,
+--         wo.payment_method as wo_payment_method,
+--         wo.third_payment_status as wo_third_payment_status,
         wo.destination_type as wo_destination_type,
-        wo.third_responsible_person as wo_third_responsible_person,
+--         wo.third_responsible_person as wo_third_responsible_person,
         wo.audit_status as wo_audit_status,
         wo.audit_remarks as wo_audit_remarks,
         wo.source_type as wo_source_type,
         wo.product_info as wo_product_info,
+        wo.assignment_time as wo_assignment_time,
+        wo.commissioner_id as wo_commissioner_id,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
@@ -138,41 +163,57 @@
             <if test="query.createrId != null">
                 and wo.creater_id = #{query.createrId}
             </if>
-            <if test="query.orderNo != null">
-                and wo.order_no = #{query.orderNo}
-            </if>
-            <if test="query.thirdCompanyId != null">
-                and wo.third_company_id = #{query.thirdCompanyId}
-            </if>
-            <if test="query.thirdCompanyType != null">
-                and wo.third_company_type = #{query.thirdCompanyType}
-            </if>
-            <if test="query.paymentMethod != null">
-                and wo.payment_method = #{query.paymentMethod}
-            </if>
+<!--            <if test="query.orderNo != null">-->
+<!--                and wo.order_no = #{query.orderNo}-->
+<!--            </if>-->
+<!--            <if test="query.thirdCompanyId != null">-->
+<!--                and wo.third_company_id = #{query.thirdCompanyId}-->
+<!--            </if>-->
+<!--            <if test="query.thirdCompanyType != null">-->
+<!--                and wo.third_company_type = #{query.thirdCompanyType}-->
+<!--            </if>-->
+<!--            <if test="query.paymentMethod != null">-->
+<!--                and wo.payment_method = #{query.paymentMethod}-->
+<!--            </if>-->
             <if test="query.processTimeStart != null and query.processTimeEnd != null">
                 and wo.process_time BETWEEN #{query.processTimeStart} and #{query.processTimeEnd}
             </if>
             <if test="query.createTimeStart != null and query.createTimeEnd != null">
                 and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
             </if>
-            <if test="query.thirdCompanyName != null and query.thirdCompanyName != ''">
-                and wo.third_company_name like concat('%',#{query.thirdCompanyName},'%')
+            <if test="(query.thirdCompanyName != null and query.thirdCompanyName != '')
+                   or (query.thirdResponsiblePerson != null and query.thirdResponsiblePerson != '')
+                   or (query.serverName != null and query.serverName != '')">
+                and wo.id in (
+                    select work_order_id from t_work_order_server wos
+                    <where>
+                        <if test="query.thirdCompanyName != null and query.thirdCompanyName != ''">
+                           and wos.third_company_name like concat('%', #{query.thirdCompanyName}, '%')
+                        </if>
+                        <if test="query.thirdResponsiblePerson != null and query.thirdResponsiblePerson != ''">
+                            and wos.third_responsible_person like concat('%', #{query.thirdResponsiblePerson}, '%')
+                        </if>
+                        <if test="query.serverName != null and query.serverName != ''">
+                            and wos.server_name like concat('%',#{query.serverName},'%')
+                        </if>
+                    </where>
+                )
             </if>
-            <if test="query.serverName != null and query.serverName != ''">
-                and wo.server_name like concat('%',#{query.serverName},'%')
-            </if>
+
             <if test="query.workOrderReasonId != null">
                 and wo.work_order_reason_id = #{query.workOrderReasonId}
             </if>
-            <if test="query.thirdResponsiblePerson != null and query.thirdResponsiblePerson != ''">
-                and wo.third_responsible_person like concat('%', #{query.thirdResponsiblePerson}, '%')
-            </if>
+<!--            <if test="query.thirdResponsiblePerson != null and query.thirdResponsiblePerson != ''">-->
+<!--                and wo.third_responsible_person like concat('%', #{query.thirdResponsiblePerson}, '%')-->
+<!--            </if>-->
             <if test="query.auditStatus != null">
                 and wo.audit_status = #{query.auditStatus}
             </if>
             <if test="query.pointStatus != null">
                 and p.status = #{query.pointStatus}
+            </if>
+            <if test="query.orderNo != null and query.orderNo != ''">
+                and wo.order_no like concat('%', #{query.orderNo}, '%')
             </if>
         </where>
         ORDER BY wo.create_time DESC
@@ -182,11 +223,11 @@
         wo.type as wo_type,
         wo.point_id as wo_point_id,
         wo.info as wo_info,
-        wo.fee as wo_fee,
-        wo.third_company_id as wo_third_company_id,
-        wo.third_company_type as wo_third_company_type,
-        wo.third_company_pay as wo_third_company_pay,
-        wo.third_reason as wo_third_reason,
+--         wo.fee as wo_fee,
+--         wo.third_company_id as wo_third_company_id,
+--         wo.third_company_type as wo_third_company_type,
+--         wo.third_company_pay as wo_third_company_pay,
+--         wo.third_reason as wo_third_reason,
         wo.work_order_reason_id as wo_work_order_reason_id,
         wo.processor as wo_processor,
         wo.creater_id as wo_creater_id,
@@ -194,22 +235,24 @@
         wo.status as wo_status,
         wo.order_no as wo_order_no,
         wo.create_time as wo_create_time,
-        wo.server_id as wo_server_id,
-        wo.third_company_name as wo_third_company_name,
-        wo.server_name as wo_server_name,
+--         wo.server_id as wo_server_id,
+--         wo.third_company_name as wo_third_company_name,
+--         wo.server_name as wo_server_name,
         wo.transfer_source_point_id as wo_transfer_source_point_id,
         wo.transfer_destination_point_id as wo_transfer_destination_point_id,
         wo.product as wo_product,
         wo.code as wo_code,
         wo.describeinfo as wo_describeinfo,
-        wo.payment_method as wo_payment_method,
+--         wo.payment_method as wo_payment_method,
         wo.destination_type as wo_destination_type,
-        wo.third_payment_status as wo_third_payment_status,
-        wo.third_responsible_person as wo_third_responsible_person,
+--         wo.third_payment_status as wo_third_payment_status,
+--         wo.third_responsible_person as wo_third_responsible_person,
         wo.audit_status as wo_audit_status,
         wo.audit_remarks as wo_audit_remarks,
         wo.source_type as wo_source_type,
         wo.product_info as wo_product_info,
+        wo.assignment_time as wo_assignment_time,
+        wo.commissioner_id as wo_commissioner_id,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
@@ -241,33 +284,33 @@
             <if test="query.orderNo != null">
                 and wo.order_no = #{query.orderNo}
             </if>
-            <if test="query.thirdCompanyId != null">
-                and wo.third_company_id = #{query.thirdCompanyId}
-            </if>
-            <if test="query.thirdCompanyType != null">
-                and wo.third_company_type = #{query.thirdCompanyType}
-            </if>
-            <if test="query.paymentMethod != null">
-                and wo.payment_method = #{query.paymentMethod}
-            </if>
+<!--            <if test="query.thirdCompanyId != null">-->
+<!--                and wo.third_company_id = #{query.thirdCompanyId}-->
+<!--            </if>-->
+<!--            <if test="query.thirdCompanyType != null">-->
+<!--                and wo.third_company_type = #{query.thirdCompanyType}-->
+<!--            </if>-->
+<!--            <if test="query.paymentMethod != null">-->
+<!--                and wo.payment_method = #{query.paymentMethod}-->
+<!--            </if>-->
             <if test="query.processTimeStart != null and query.processTimeEnd != null">
                 and wo.process_time BETWEEN #{query.processTimeStart} and #{query.processTimeEnd}
             </if>
             <if test="query.createTimeStart != null and query.createTimeEnd != null">
                 and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
             </if>
-            <if test="query.thirdCompanyName != null and query.thirdCompanyName != ''">
-                and wo.third_company_name  like concat('%',#{query.thirdCompanyName},'%')
-            </if>
-            <if test="query.serverName != null and query.serverName != ''">
-                and wo.server_name like concat('%',#{query.serverName},'%')
-            </if>
+<!--            <if test="query.thirdCompanyName != null and query.thirdCompanyName != ''">-->
+<!--                and wo.third_company_name  like concat('%',#{query.thirdCompanyName},'%')-->
+<!--            </if>-->
+<!--            <if test="query.serverName != null and query.serverName != ''">-->
+<!--                and wo.server_name like concat('%',#{query.serverName},'%')-->
+<!--            </if>-->
             <if test="query.workOrderReasonId != null">
                 and wo.work_order_reason_id = #{query.workOrderReasonId}
             </if>
-            <if test="query.thirdResponsiblePerson != null and query.thirdResponsiblePerson != ''">
-                and wo.third_responsible_person like concat('%', #{query.thirdResponsiblePerson}, '%')
-            </if>
+<!--            <if test="query.thirdResponsiblePerson != null and query.thirdResponsiblePerson != ''">-->
+<!--                and wo.third_responsible_person like concat('%', #{query.thirdResponsiblePerson}, '%')-->
+<!--            </if>-->
             <if test="query.auditStatus != null">
                 and wo.audit_status = #{query.auditStatus}
             </if>
@@ -301,8 +344,8 @@
 
     <select id="qualityCountList" resultType="com.xiliulou.afterserver.web.vo.AfterCountListVo">
         SELECT
-            FROM_UNIXTIME( a.create_time / 1000, '%Y-%m-%d' ) as dateTime,
-            DATE_FORMAT(FROM_UNIXTIME( a.create_time / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
+            FROM_UNIXTIME( ANY_VALUE(a.create_time) / 1000, '%Y-%m-%d' ) as dateTime,
+            DATE_FORMAT(FROM_UNIXTIME( ANY_VALUE(a.create_time) / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
             count( a.work_order_reason_id ) AS count,
             a.work_order_reason_id as reasonId
         FROM
@@ -321,26 +364,27 @@
 
     <select id="afterWorkOrderByCity" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
         SELECT
-            b.city,
+            b.city_id as city,
             count( 1 ) AS numCount,
                 ( CASE
-                WHEN o.third_company_pay IS NOT NULL THEN
-                sum( o.fee - o.third_company_pay ) ELSE sum( o.fee )
+                WHEN ANY_VALUE(wos.third_company_pay) IS NOT NULL THEN
+                sum( wos.fee - wos.third_company_pay ) ELSE sum( wos.fee )
                 END )
             AS sumCount
         FROM
             work_order o
-        LEFT JOIN point b ON o.point_id = b.id
+        LEFT JOIN t_point_new b ON o.point_id = b.id
+        LEFT JOIN t_work_order_server wos ON wos.work_order_id = o.id
         WHERE
             o.type = 5
         <if test="cityId != null">
-            and b.city = #{cityId}
+            and b.city_id = #{cityId}
         </if>
         <if test="startTime != null and endTime != null ">
             and o.create_time BETWEEN #{startTime} and #{endTime}
         </if>
         GROUP BY
-            b.city
+            b.city_id
         ORDER BY
             sumCount DESC
         LIMIT 20
@@ -350,19 +394,21 @@
 
     <select id="afterWorkOrderByPoint" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
         SELECT
-            b.name as pointName, count(1) as numCount,
+            ANY_VALUE( b.name ) as pointName,
+            count(1) as numCount,
             ( CASE
-            WHEN o.third_company_pay IS NOT NULL THEN
-            sum( o.fee - o.third_company_pay ) ELSE sum( o.fee )
+            WHEN ANY_VALUE(wos.third_company_pay) IS NOT NULL THEN
+            sum( wos.fee - wos.third_company_pay ) ELSE sum( wos.fee )
             END )
             AS sumCount
         FROM
         work_order o
-        LEFT JOIN point b ON o.point_id = b.id
+        LEFT JOIN t_point_new b ON o.point_id = b.id
+        LEFT JOIN t_work_order_server wos ON wos.work_order_id = o.id
         WHERE
         o.type = 5
         <if test="cityId != null">
-            and b.city = #{cityId}
+            and b.city_id = #{cityId}
         </if>
         <if test="startTime != null and endTime != null ">
             and o.create_time BETWEEN #{startTime} and #{endTime}
@@ -376,23 +422,24 @@
     <select id="afterWorkOrderList" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
 
         SELECT
-            FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ) as dateTime,
-            DATE_FORMAT(FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
+            FROM_UNIXTIME( ANY_VALUE(o.create_time) / 1000, '%Y-%m-%d' ) as dateTime,
+            DATE_FORMAT(FROM_UNIXTIME( ANY_VALUE(o.create_time) / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
 --         count( a.work_order_reason_id ) AS count,
 --             FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ) AS date,
-            sum( o.fee ) AS sumCount,
+            sum( wos.fee ) AS sumCount,
             count(1) as numCount,
-            b.city
+            ANY_VALUE(b.city_id) as city
         FROM
             work_order o
-            LEFT JOIN point b ON o.point_id = b.id
+            LEFT JOIN t_point_new b ON o.point_id = b.id
+            LEFT JOIN t_work_order_server wos ON wos.work_order_id = o.id
         WHERE
             o.type = 5
         <if test="startTime != null and endTime != null ">
             and o.create_time BETWEEN #{startTime} and #{endTime}
         </if>
         <if test="cityId != null">
-            and b.city = #{cityId}
+            and b.city_id = #{cityId}
         </if>
         GROUP BY
             date
@@ -401,44 +448,46 @@
     </select>
     <select id="installWorkOrderByCity" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
         SELECT
-            p.name as pointName,p.city,count(1) as numCount,
+            ANY_VALUE(p.name) as pointName, ANY_VALUE(p.city_id) as city,count(1) as numCount,
             ( CASE
-            WHEN o.third_company_pay IS NOT NULL THEN
-            sum( o.fee - o.third_company_pay ) ELSE sum( o.fee )
+            WHEN ANY_VALUE(wos.third_company_pay) IS NOT NULL THEN
+            sum( wos.fee - wos.third_company_pay ) ELSE sum( wos.fee )
             END )
             AS sumCount
         FROM
             work_order o
-            LEFT JOIN point p ON o.point_id = p.id
+            LEFT JOIN t_point_new p ON o.point_id = p.id
+            LEFT JOIN t_work_order_server wos ON wos.work_order_id = o.id
         WHERE
             o.type IN ( 1, 2, 3 )
         <if test="startTime != null and endTime != null ">
             and o.create_time BETWEEN #{startTime} and #{endTime}
         </if>
         <if test="cityId != null">
-            and p.city = #{cityId}
+            and p.city_id = #{cityId}
         </if>
         GROUP BY
-            p.city
+            p.city_id
         ORDER BY
             sumCount DESC
             LIMIT 20
     </select>
     <select id="installWorkOrderByPoint" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
         SELECT
-        p.NAME AS pointName,
-        p.city_id,
-        p.id as pointId,
+        ANY_VALUE(p.NAME) AS pointName,
+        ANY_VALUE(p.city_id),
+        ANY_VALUE(p.id) as pointId,
         count(o.type) AS numCount,
         o.type,
         ( CASE
-        WHEN o.third_company_pay IS NOT NULL THEN
-        sum( o.fee - o.third_company_pay ) ELSE sum( o.fee )
+        WHEN ANY_VALUE(wos.third_company_pay) IS NOT NULL THEN
+        sum( wos.fee - wos.third_company_pay ) ELSE sum( wos.fee )
         END )
         AS sumCount
         FROM
         work_order o
         LEFT JOIN t_point_new p ON o.point_id = p.id
+        LEFT JOIN t_work_order_server wos ON wos.work_order_id = o.id
         WHERE
         o.type IN ( 1, 2, 3 )
         <if test="startTime != null and endTime != null ">
@@ -456,26 +505,27 @@
     </select>
     <select id="installWorkOrderList" resultType="com.xiliulou.afterserver.web.vo.AfterOrderVo">
         SELECT
-            p.NAME AS pointName,
-            p.city,
+            ANY_VALUE(p.NAME) AS pointName,
+            ANY_VALUE(p.city_id) as city,
             count( 1 ) AS numCount,
-            FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ) as dateTime,
-            DATE_FORMAT(FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
+            FROM_UNIXTIME(  ANY_VALUE(o.create_time) / 1000, '%Y-%m-%d' ) as dateTime,
+            DATE_FORMAT(FROM_UNIXTIME(  ANY_VALUE(o.create_time) / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
             ( CASE
-            WHEN o.third_company_pay IS NOT NULL THEN
-            sum( o.fee - o.third_company_pay ) ELSE sum( o.fee )
+            WHEN  ANY_VALUE(wos.third_company_pay) IS NOT NULL THEN
+            sum( wos.fee - wos.third_company_pay ) ELSE sum( wos.fee )
             END )
             AS sumCount
         FROM
             work_order o
-            LEFT JOIN point p ON o.point_id = p.id
+            LEFT JOIN t_point_new p ON o.point_id = p.id
+            LEFT JOIN t_work_order_server wos ON wos.work_order_id = o.id
         WHERE
             o.type IN ( 1, 2, 3 )
         <if test="startTime != null and endTime != null ">
             and o.create_time BETWEEN #{startTime} and #{endTime}
         </if>
         <if test="cityId != null">
-            and p.city = #{cityId}
+            and p.city_id = #{cityId}
         </if>
         GROUP BY
             date
@@ -489,7 +539,7 @@
         LEFT JOIN work_order_type as wot on wot.id = wo.id
         LEFT JOIN work_order_reason as wor on wor.id = wo.work_order_reason_id
         LEFT JOIN user u on u.id =wo.creater_id
-        LEFT JOIN point as p on p.id = wo.point_id
+        LEFT JOIN t_point_new as p on p.id = wo.point_id
         <where>
             <if test="query.pointId != null">
                 and wo.point_id = #{query.pointId}
@@ -503,18 +553,18 @@
             <if test="query.orderNo != null">
                 and wo.order_no = #{query.orderNo}
             </if>
-            <if test="query.thirdCompanyId != null">
+            <!--<if test="query.thirdCompanyId != null">
                 and wo.third_company_id = #{query.thirdCompanyId}
             </if>
             <if test="query.thirdCompanyType != null">
                 and wo.third_company_type = #{query.thirdCompanyType}
-            </if>
+            </if>-->
             <if test="query.createTimeStart != null and query.createTimeEnd != null">
                 and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
             </if>
-            <if test="query.processTimeStart != null and query.processTimeEnd != null">
+            <!--<if test="query.processTimeStart != null and query.processTimeEnd != null">
                 and wo.process_time BETWEEN #{query.processTimeStart} and #{query.processTimeEnd}
-            </if>
+            </if>-->
         </where>
         ORDER BY wo.create_time DESC
     </select>
@@ -522,19 +572,20 @@
     <update id="updateOne">
         update work_order
         <set>
-            fee = #{fee},
             info = #{info},
             work_order_reason_id = #{workOrderReasonId},
-            server_id = #{serverId},
-            server_name = #{serverName},
-            payment_method = #{paymentMethod},
-            third_company_id = #{thirdCompanyId},
-            third_company_type = #{thirdCompanyType},
-            third_company_pay = #{thirdCompanyPay},
-            third_reason = #{thirdReason},
-            third_company_name = #{thirdCompanyName},
-            third_payment_status = #{thirdPaymentStatus},
-            third_responsible_person = #{thirdResponsiblePerson},
+
+<!--         server_id = #{serverId},
+             fee = #{fee},
+             server_name = #{serverName},
+             payment_method = #{paymentMethod},
+             third_company_id = #{thirdCompanyId},
+             third_company_type = #{thirdCompanyType},
+             third_company_pay = #{thirdCompanyPay},
+             third_reason = #{thirdReason},
+             third_company_name = #{thirdCompanyName},
+             third_payment_status = #{thirdPaymentStatus},
+             third_responsible_person = #{thirdResponsiblePerson}, -->
             describeinfo = #{describeinfo},
             <if test="type != null and type != ''">
                 type = #{type},
@@ -591,5 +642,69 @@
         </set>
         where id = #{id}
     </update>
+
+
+
+    <select id="queryAssignmentStatusList" resultMap="userMap">
+        SELECT wo.id as wo_id,
+        wo.order_no as wo_order_no,
+        wo.status as wo_status,
+        wo.type as wo_type,
+        wo.point_id as wo_point_id,
+        p.name as p_name,
+        p.status as p_status,
+        wo.create_time as wo_create_time,
+        wo.product_info as wo_product_info,
+        wo.info as wo_info,
+        wo.process_time as wo_process_time,
+        wo.transfer_source_point_id as wo_transfer_source_point_id,
+        wo.transfer_destination_point_id as wo_transfer_destination_point_id,
+        wo.assignment_time as wo_assignment_time,
+        (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
+        (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
+        wo.destination_type as wo_destination_type,
+        wo.source_type as wo_source_type,
+        wo.describeinfo as wo_describeinfo,
+        wo.code as wo_code,
+        wo.work_order_reason_id as wo_work_order_reason_id,
+        wo.reason as wo_reason,
+        wo.audit_status as wo_audit_status,
+        wo.audit_remarks as wo_audit_remarks,
+        wor.name as wor_name
+        FROM work_order as wo
+        LEFT JOIN work_order_type as wot on wot.id = wo.id
+        LEFT JOIN t_point_new as p on p.id = wo.point_id
+        LEFT JOIN work_order_reason as wor on wor.id = wo.work_order_reason_id
+        <where>
+            <if test="status != null">
+                and wo.status = #{status}
+            </if>
+             <if test="uid != null">
+                  and wo.commissioner_id = #{uid}
+             </if>
+             <if test="auditStatus != null">
+                 and wo.audit_status = #{auditStatus}
+             </if>
+            <if test="list != null and list.size() > 0">
+                and wo.id in
+                <foreach collection="list" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="type != null">
+                and wo.type = #{type}
+            </if>
+            <if test="createTimeStart != null">
+                and wo.create_time between #{createTimeStart} and #{createTimeEnd}
+            </if>
+            <if test="serverName != null and serverName != ''">
+                and wo.id in(select work_order_id from t_work_order_server where `server_name` like concat('%', #{serverName}, '%'))
+            </if>
+            <if test="pointName != null and pointName != ''">
+                and p.name like  concat('%', #{pointName}, '%')
+            </if>
+        </where>
+        ORDER BY wo.create_time DESC
+    </select>
 </mapper>
 

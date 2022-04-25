@@ -28,13 +28,17 @@ import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.*;
 import com.xiliulou.afterserver.web.vo.*;
+import com.xiliulou.core.json.JsonUtil;
 import io.micrometer.core.instrument.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
@@ -42,6 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
@@ -85,6 +90,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     WarehouseService warehouseService;
     @Autowired
     ProductService productService;
+    @Autowired
+    WorkOrderServerService workOrderServerService;
+    @Autowired
+    WorkAuditNotifyService workAuditNotifyService;
 
 
     @Override
@@ -98,63 +107,87 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         Page page = PageUtil.getPage(offset, size);
         page = baseMapper.getPage(page, workOrder);
 
-        List<WorkOrderVo> list = (List<WorkOrderVo>)page.getRecords();
-        if (list.isEmpty()){
+        List<WorkOrderVo> list = (List<WorkOrderVo>) page.getRecords();
+        if (list.isEmpty()) {
             return page;
         }
 
         list.forEach(item -> {
 
-            item.setPaymentMethodName(getPaymentMethod(item.getPaymentMethod()));
-
-            if (Objects.nonNull(item.getCreaterId())){
+            if (Objects.nonNull(item.getCreaterId())) {
                 User userById = userService.getUserById(item.getCreaterId());
-                if (Objects.nonNull(userById)){
+                if (Objects.nonNull(userById)) {
                     item.setUserName(userById.getUserName());
                 }
             }
 
-            if (Objects.nonNull(item.getPointId())){
+            if (Objects.nonNull(item.getCommissionerId())) {
+                User userById = userService.getUserById(item.getCommissionerId());
+                if (Objects.nonNull(userById)) {
+                    item.setCommissionerName(userById.getUserName());
+                }
+            }
+
+            if (Objects.nonNull(item.getPointId())) {
                 PointNew pointNew = pointNewService.queryByIdFromDB(item.getPointId());
-                if (Objects.nonNull(pointNew)){
+                if (Objects.nonNull(pointNew)) {
                     item.setPointName(pointNew.getName());
                 }
             }
 
-            if(Objects.equals(item.getDestinationType(), "2")){
+            if (Objects.equals(item.getDestinationType(), "2")) {
                 WareHouse wareHouse = warehouseService.getById(item.getTransferDestinationPointId());
-                if (Objects.nonNull(wareHouse)){
+                if (Objects.nonNull(wareHouse)) {
                     item.setTransferDestinationPointName(wareHouse.getWareHouses());
                 }
             }
 
-            if(Objects.equals(item.getSourceType(), "2")){
+            if (Objects.equals(item.getSourceType(), "2")) {
                 WareHouse wareHouse = warehouseService.getById(item.getTransferSourcePointId());
-                if (Objects.nonNull(wareHouse)){
+                if (Objects.nonNull(wareHouse)) {
                     item.setTransferSourcePointName(wareHouse.getWareHouses());
                 }
             }
 
-            if(Objects.nonNull(item.getProcessTime())){
+            /*if(Objects.nonNull(item.getProcessTime())){
                 String prescription = DateUtils.getDatePoor(item.getProcessTime() , item.getCreateTime());
                 item.setPrescription(prescription);
                 item.setPrescriptionMillis(item.getProcessTime() - item.getCreateTime());
-            }
+            }*/
 
-            if(Objects.nonNull(item.getProductInfo())) {
+            if (Objects.nonNull(item.getProductInfo())) {
                 List<ProductInfoQuery> productInfo = JSON.parseArray(item.getProductInfo(), ProductInfoQuery.class);
                 item.setProductInfoList(productInfo);
             }
 
+            //处理图片
+            List<WorkOrderServerQuery> workOrderServers = workOrderServerService.queryByWorkOrderIdAndServerId(item.getId(), null);
+            item.setWorkOrderServerList(workOrderServers);
+
+            //凭证
             LambdaQueryWrapper<File> eq = new LambdaQueryWrapper<File>()
                     .eq(File::getType, File.TYPE_WORK_ORDER)
-                    .eq(Objects.nonNull(workOrder.getWorkOrderType()),File::getFileType, workOrder.getWorkOrderType())
+                    .eq(File::getFileType, 0)
                     .eq(File::getBindId, item.getId());
             List<File> fileList = fileService.getBaseMapper().selectList(eq);
-            item.setFileList(fileList);
-            item.setFileCount(CollectionUtil.isEmpty(fileList) ? 0 : fileList.size());
+            item.setVoucherImgFile(fileList);
+
+            //视频
+            eq.clear();
+            eq.eq(File::getType, File.TYPE_WORK_ORDER)
+                    .eq(File::getFileType, 90000)
+                    .eq(File::getBindId, item.getId());
+            File files = fileService.getBaseMapper().selectOne(eq);
+            item.setVoucherVideoFile(files);
 
             item.setParentWorkOrderReason(this.getParentWorkOrderReason(item.getWorkOrderReasonId()));
+
+            //统计工单图片
+            eq.clear();
+            eq.eq(File::getType, File.TYPE_WORK_ORDER)
+                    .eq(File::getBindId, item.getId());
+            Integer count = fileService.getBaseMapper().selectCount(eq);
+            item.setFileCount(count);
         });
         page.setRecords(list);
         return page;
@@ -187,7 +220,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     public void exportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
         workOrder.setType(String.valueOf(workOrder.getWorkOrderType()));
-        if("null".equals(workOrder.getType())){
+        if ("null".equals(workOrder.getType())) {
             workOrder.setType(null);
         }
         //扫描质保过期点位
@@ -200,41 +233,32 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             throw new CustomBusinessException("没有查询到工单!无法导出！");
         }
 
-        if(StringUtils.isBlank(workOrder.getType()) || "4".equals(workOrder.getType())){
+        if (StringUtils.isBlank(workOrder.getType()) || "4".equals(workOrder.getType())) {
             exportExcelMoveMachine(workOrder, workOrderVoList, response);
-        }else{
+        } else {
             exportExcelNotMoveMachine(workOrder, workOrderVoList, response);
         }
     }
 
-    private void exportExcelMoveMachine(WorkOrderQuery workOrder, List<WorkOrderVo> workOrderVoList, HttpServletResponse response){
+    private void exportExcelMoveMachine(WorkOrderQuery workOrder, List<WorkOrderVo> workOrderVoList, HttpServletResponse response) {
         //headerSet
-        Sheet sheet = new Sheet(1,0);
+        Sheet sheet = new Sheet(1, 0);
         sheet.setSheetName("Sheet");
         Table table = new Table(1);
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
 
-        String[] header = {"审核状态","工单类型", "点位","点位状态", "移机起点", "移机终点",  "创建人",
-                "状态", "时效", "描述",  "备注",  "工单原因", "第三方原因" , "第三方公司",
-                "第三方费用", "费用", "图片数量","处理时间","创建时间","服务商", "结算方式",
-                "第三方责任对接人", "工单编号", "第三方结算状态", "sn码","审核内容"};
+        String[] header = {"审核状态", "工单类型", "点位", "点位状态", "移机起点", "移机终点", "创建人",
+                "状态", "描述", "备注", "工单原因", "创建时间", "工单编号", "sn码", "审核内容","专员", "派单时间"};
+
+        String[] serverHeader = {"服务商", "费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数", " 第三方类型", "第三方公司", "第三方费用", "支付状态", "第三方原因", "第三方对接人"};
 
         List<Product> productAll = productService.list();
 
-
-        for(String s : header){
+        for (String s : header) {
             List<String> headTitle = new ArrayList<String>();
             headTitle.add(s);
             headList.add(headTitle);
-        }
-
-        if(productAll != null && !productAll.isEmpty()){
-            for (Product p : productAll){
-                List<String> headTitle = new ArrayList<>();
-                headTitle.add(p.getName());
-                headList.add(headTitle);
-            }
         }
 
         table.setHead(headList);
@@ -243,204 +267,294 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         Integer codeMaxSize = 0;
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        List<Long> workOrderIds = new ArrayList<>();
+        workOrderVoList.forEach(item -> {
+            workOrderIds.add(item.getId());
+        });
+
+        Integer serverMaxLen = workOrderServerService.queryMaxCountByWorkOrderId(workOrderIds);
         for (WorkOrderVo o : workOrderVoList) {
             List<Object> row = new ArrayList<>();
             //审核状态
             row.add(this.getAuditStatus(o.getAuditStatus()));
 
             //typeName
-            if(Objects.nonNull(o.getType())){
+            if (Objects.nonNull(o.getType())) {
                 WorkOrderType workOrderType = workOrderTypeService.getById(o.getType());
-                if (Objects.nonNull(workOrderType)){
+                if (Objects.nonNull(workOrderType)) {
                     row.add(workOrderType.getType());
-                }else{
+                } else {
                     row.add("");
                 }
-            }else{
+            } else {
                 row.add("");
             }
             //pointName
-            if(Objects.nonNull(o.getPointId())){
+            if (Objects.nonNull(o.getPointId())) {
                 PointNew pointNew = pointNewService.getById(o.getPointId());
-                if (Objects.nonNull(pointNew)){
+                if (Objects.nonNull(pointNew)) {
                     row.add(pointNew.getName());
                     //row.add(pointNew.getSnNo());
-                }else{
+                } else {
                     row.add("");
                     //row.add("");
                 }
-            }else{
+            } else {
                 row.add("");
                 //row.add("");
             }
 
+            //点位状态
             row.add(getPointStatusName(o.getPointStatus()));
 
-            //transferSourcePointId
-            if("1".equals(o.getSourceType())){
+            //起点
+            if ("1".equals(o.getSourceType())) {
                 PointNew pointNew = pointNewService.getById(o.getTransferSourcePointId());
-                if (Objects.nonNull(pointNew)){
+                if (Objects.nonNull(pointNew)) {
                     row.add(pointNew.getName());
-                }else{
+                } else {
                     row.add("");
                 }
-            }else if("2".equals(o.getSourceType())){
+            } else if ("2".equals(o.getSourceType())) {
                 WareHouse warehouse = warehouseService.getById(o.getTransferSourcePointId());
-                if (Objects.nonNull(warehouse)){
+                if (Objects.nonNull(warehouse)) {
                     row.add(warehouse.getWareHouses());
-                }else{
+                } else {
                     row.add("");
                 }
-            }else{
+            } else {
                 row.add("");
             }
 
-            //transfer_destination_point_id
-            if("1".equals(o.getDestinationType())){
+            //终点
+            if ("1".equals(o.getDestinationType())) {
                 PointNew pointNew = pointNewService.getById(o.getTransferDestinationPointId());
-                if (Objects.nonNull(pointNew)){
+                if (Objects.nonNull(pointNew)) {
                     row.add(pointNew.getName());
-                }else{
+                } else {
                     row.add("");
                 }
-            }else if("2".equals(o.getDestinationType())){
+            } else if ("2".equals(o.getDestinationType())) {
                 WareHouse warehouse = warehouseService.getById(o.getTransferDestinationPointId());
-                if (Objects.nonNull(warehouse)){
+                if (Objects.nonNull(warehouse)) {
                     row.add(warehouse.getWareHouses());
-                }else{
+                } else {
                     row.add("");
                 }
-            }else{
+            } else {
                 row.add("");
             }
 
             //"创建人",
-            if(Objects.nonNull(o.getCreaterId())){
+            if (Objects.nonNull(o.getCreaterId())) {
                 User user = userService.getUserById(o.getCreaterId());
-                if (Objects.nonNull(user)){
+                if (Objects.nonNull(user)) {
                     row.add(user.getUserName());
-                }else{
+                } else {
                     row.add("");
                 }
-            }else{
+            } else {
                 row.add("");
             }
 
             //"状态",
             //status  1;待处理2:已处理3:待分析4：已完结
-            if(Objects.nonNull(o.getStatus())){
+            if (Objects.nonNull(o.getStatus())) {
                 row.add(this.getStatusStr(o.getStatus()));
             }
 
             //时效
-            String prescription = DateUtils.getDatePoor(o.getProcessTime(), o.getCreateTime());
-            row.add(StringUtils.isBlank(prescription)?"":prescription);
+           /* String prescription = DateUtils.getDatePoor(o.getProcessTime(), o.getCreateTime());
+            row.add(StringUtils.isBlank(prescription) ? "" : prescription);*/
 
             //"描述", "
-            row.add(o.getDescribeinfo() == null? "" : o.getDescribeinfo());
+            row.add(o.getDescribeinfo() == null ? "" : o.getDescribeinfo());
 
             //"备注",
-            row.add(o.getInfo() == null? "" : o.getInfo());
+            row.add(o.getInfo() == null ? "" : o.getInfo());
 
             //"工单原因",
             //workOrderReasonName
-            if(Objects.nonNull(o.getWorkOrderReasonId())){
+            if (Objects.nonNull(o.getWorkOrderReasonId())) {
                 WorkOrderReason workOrderReason = workOrderReasonService.getById(o.getWorkOrderReasonId());
-                if (Objects.nonNull(workOrderReason)){
+                if (Objects.nonNull(workOrderReason)) {
                     row.add(workOrderReason.getName());
-                }else{
+                } else {
                     row.add("");
                 }
-            }else{
+            } else {
                 row.add("");
             }
 
             //第三方原因
-            row.add(o.getThirdReason() == null? "" : o.getThirdReason());
+            /*row.add(o.getThirdReason() == null ? "" : o.getThirdReason());
 
-            if (Objects.nonNull(o.getThirdCompanyType())){
+            if (Objects.nonNull(o.getThirdCompanyType())) {
                 this.setThirdCompanyNameAndServerName(o);
                 row.add(o.getThirdCompanyName());
-            }else{
+            } else {
                 row.add("");
             }
 
             //third_company_pay
             row.add(o.getThirdCompanyPay() == null ? "" : o.getThirdCompanyPay());
 
-            row.add(o.getFee() == null? "" : o.getFee());
+            row.add(o.getFee() == null ? "" : o.getFee());
 
             //图片数量
             LambdaQueryWrapper<File> eq = new LambdaQueryWrapper<File>()
                     .eq(File::getType, File.TYPE_WORK_ORDER)
-                    .eq(Objects.nonNull(workOrder.getWorkOrderType()),File::getFileType, workOrder.getWorkOrderType())
+                    .eq(Objects.nonNull(workOrder.getWorkOrderType()), File::getFileType, workOrder.getWorkOrderType())
                     .eq(File::getBindId, o.getId());
             List<File> fileList = fileService.getBaseMapper().selectList(eq);
             row.add(CollectionUtils.isEmpty(fileList) ? 0 : fileList.size());
 
             //"处理时间",
             //processTime
-            if(Objects.nonNull(o.getProcessTime())){
+            if (Objects.nonNull(o.getProcessTime())) {
                 row.add(simpleDateFormat.format(new Date(o.getProcessTime())));
-            }else{
+            } else {
                 row.add("");
-            }
+            }*/
 
             //创建时间"
-            if(Objects.nonNull(o.getCreateTime())){
+            if (Objects.nonNull(o.getCreateTime())) {
                 row.add(simpleDateFormat.format(new Date(o.getCreateTime())));
-            }else{
+            } else {
                 row.add("");
             }
             //服务商
-            row.add(o.getServerName() == null ? "" : o.getServerName());
+            //row.add(o.getServerName() == null ? "" : o.getServerName());
 
             //PaymentMethod
-            row.add(getPaymentMethod(o.getPaymentMethod()));
+            //row.add(getPaymentMethod(o.getPaymentMethod()));
 
 
             //"第三方责任对接人"
-            row.add(o.getThirdResponsiblePerson() == null? "" : o.getThirdResponsiblePerson());
+            //row.add(o.getThirdResponsiblePerson() == null ? "" : o.getThirdResponsiblePerson());
 
             //"工单编号",
-            row.add(o.getOrderNo() == null? "" : o.getOrderNo());
+            row.add(o.getOrderNo() == null ? "" : o.getOrderNo());
 
-            //thirdPaymentStatus
-            if(Objects.nonNull(o.getThirdPaymentStatus())){
-                if(o.getThirdPaymentStatus().equals(1)){
+            /*//thirdPaymentStatus
+            if (Objects.nonNull(o.getThirdPaymentStatus())) {
+                if (o.getThirdPaymentStatus().equals(1)) {
                     row.add("无需结算");
-                }else if(o.getThirdPaymentStatus().equals(2)){
+                } else if (o.getThirdPaymentStatus().equals(2)) {
                     row.add("未结算");
-                }else if(o.getThirdPaymentStatus().equals(3)){
+                } else if (o.getThirdPaymentStatus().equals(3)) {
                     row.add("已结算");
-                }else {
+                } else {
                     row.add("");
                 }
-            }else{
+            } else {
                 row.add("");
-            }
+            }*/
 
             //sn
-            if(Objects.nonNull(o.getPointId())){
+            if (Objects.nonNull(o.getPointId())) {
                 PointNew pointNew = pointNewService.getById(o.getPointId());
-                if (Objects.nonNull(pointNew)){
+                if (Objects.nonNull(pointNew)) {
                     row.add(pointNew.getSnNo());
-                }else{
+                } else {
                     row.add("");
                 }
-            }else{
+            } else {
                 row.add("");
             }
 
             //审核备注
-            row.add(o.getAuditRemarks() == null? "" : o.getAuditRemarks());
+            row.add(o.getAuditRemarks() == null ? "" : o.getAuditRemarks());
 
+            //专员
+            if (Objects.nonNull(o.getCommissionerId())) {
+                User user = userService.getUserById(o.getCommissionerId());
+                if (Objects.nonNull(user)) {
+                    row.add(user.getUserName());
+                } else {
+                    row.add("");
+                }
+            } else {
+                row.add("");
+            }
+
+            //派单时间
+            if (Objects.nonNull(o.getAssignmentTime())) {
+                row.add(simpleDateFormat.format(new Date(o.getAssignmentTime())));
+            } else {
+                row.add("");
+            }
+
+            //服务商信息
+            List<WorkOrderServerQuery> workOrderServerQueryList = workOrderServerService.queryByWorkOrderIdAndServerId(o.getId(), null);
+
+            if (!CollectionUtils.isEmpty(workOrderServerQueryList)) {
+                for (WorkOrderServerQuery item : workOrderServerQueryList) {
+
+                    //服务商",
+                    Server server = serverService.getById(item.getServerId());
+                    if (Objects.nonNull(server)) {
+                        row.add(server.getName());
+                    } else {
+                        row.add("");
+                    }
+                    // "费用",
+                    row.add(item.getFee() == null ? "" : item.getFee());
+                    // "结算方式",
+                    row.add(this.getPaymentMethod(item.getPaymentMethod()));
+                    // "解决方案",
+                    row.add(item.getSolution() == null ? "" : item.getSolution());
+                    // "解决时间",
+
+                    if (Objects.nonNull(item.getSolutionTime())) {
+                        row.add(simpleDateFormat.format(new Date(item.getSolutionTime())));
+                    } else {
+                        row.add("");
+                    }
+                    // "处理时长
+                    row.add(getPrescriptionStr(item.getPrescription()));
+                    //图片个数
+                    QueryWrapper<File> wrapper = new QueryWrapper<>();
+                    wrapper.eq("type", File.TYPE_WORK_ORDER);
+                    wrapper.eq("bind_id", o.getId());
+                    wrapper.ge("file_type", 1).lt("file_type", 90000);
+                    wrapper.eq("server_id", item.getServerId());
+
+                    int fileCount = fileService.count(wrapper);
+
+                    row.add(fileCount);
+
+
+                    //" 第三方类型",
+                    row.add(this.getThirdCompanyType(item.getThirdCompanyType()));
+                    // "第三方公司",
+                    row.add(item.getThirdCompanyName() == null ? "" : item.getThirdCompanyName());
+                    // "第三方费用",
+                    row.add(item.getThirdCompanyPay() == null ? "" : item.getThirdCompanyPay());
+                    // "支付状态",
+                    row.add(this.getThirdPaymentStatus(item.getThirdPaymentStatus()));
+                    // "第三方原因",
+                    row.add(item.getThirdReason() == null ? "" : item.getThirdReason());
+                    // "第三方对接人"
+                    row.add(item.getThirdResponsiblePerson() == null ? "" : item.getThirdResponsiblePerson());
+
+                }
+
+                //给服务商不够最大服务商个数的的补充空白
+                int supplementCell = serverMaxLen - workOrderServerQueryList.size();
+                for(int i = 0; i < supplementCell; i++) {
+                    for(String item : serverHeader) {
+                        row.add("");
+                    }
+                }
+            }
 
 
             //产品个数
-            if(productAll != null && !productAll.isEmpty()) {
+            if (productAll != null && !productAll.isEmpty()) {
                 List<ProductInfoQuery> productInfoQueries = null;
-                if(Objects.nonNull(o.getProductInfo())){
+                if (Objects.nonNull(o.getProductInfo())) {
                     productInfoQueries = JSON.parseArray(o.getProductInfo(), ProductInfoQuery.class);
                 }
                 if (!CollectionUtil.isEmpty(productInfoQueries)) {
@@ -458,17 +572,18 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                             row.add("");
                         }
                     }
-                }else{
+                } else {
                     for (Product p : productAll) {
                         row.add("");
                     }
                 }
             }
 
+
             List<String> codes = JSON.parseArray(o.getCode(), String.class);
-            if(!CollectionUtils.isEmpty(codes)){
+            if (!CollectionUtils.isEmpty(codes)) {
                 codeMaxSize = codeMaxSize > codes.size() ? codeMaxSize : codes.size();
-                for (String code : codes){
+                for (String code : codes) {
                     row.add(code);
                 }
             }
@@ -476,7 +591,23 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             data.add(row);
         }
 
-        for(int i= 1 ; i < codeMaxSize + 1; i++){
+        for (int i = 0; i < serverMaxLen; i++) {
+            for (String item : serverHeader) {
+                List<String> headTitle = new ArrayList<>();
+                headTitle.add(item + (i + 1));
+                headList.add(headTitle);
+            }
+        }
+
+        if (productAll != null && !productAll.isEmpty()) {
+            for (Product p : productAll) {
+                List<String> headTitle = new ArrayList<>();
+                headTitle.add(p.getName());
+                headList.add(headTitle);
+            }
+        }
+
+        for (int i = 1; i < codeMaxSize + 1; i++) {
             List<String> headTitle = new ArrayList<String>();
             headTitle.add("产品编码" + i);
             headList.add(headTitle);
@@ -489,7 +620,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             response.setHeader("content-Type", "application/vnd.ms-excel");
             // 下载文件的默认名称
             response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
-            EasyExcelFactory.getWriter(outputStream).write1(data,sheet,table).finish();
+            EasyExcelFactory.getWriter(outputStream).write1(data, sheet, table).finish();
             //EasyExcel.write(outputStream, DeliverExportExcelVo.class).sheet("sheet").doWrite(deliverExcelVoList);
             return;
         } catch (IOException e) {
@@ -498,41 +629,38 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         throw new CustomBusinessException("导出报表失败！请联系客服！");
     }
 
-    private void exportExcelNotMoveMachine(WorkOrderQuery workOrder, List<WorkOrderVo> workOrderVoList, HttpServletResponse response){
+    private void exportExcelNotMoveMachine(WorkOrderQuery workOrder, List<WorkOrderVo> workOrderVoList, HttpServletResponse response) {
 
         //headerSet
-        Sheet sheet = new Sheet(1,0);
+        Sheet sheet = new Sheet(1, 0);
         sheet.setSheetName("Sheet");
         Table table = new Table(1);
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
 
-        String[] header = {"审核状态","工单类型", "点位", "点位状态", "创建人",
-                "状态", "时效", "描述",  "备注",  "工单原因", "第三方原因" , "第三方公司",
-                "第三方费用", "费用", "图片数量","处理时间","创建时间","服务商", "结算方式",
-                "第三方责任对接人", "工单编号", "第三方结算状态", "sn码","审核内容"};
+        String[] header = {"审核状态", "工单类型", "点位", "点位状态", "创建人",
+                "状态", "描述", "备注", "工单原因", "创建时间", "工单编号", "sn码", "审核内容", "专员", "派单时间"};
+
+        String[] serverHeader = {"服务商", "费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数", " 第三方类型", "第三方公司", "第三方费用", "支付状态", "第三方原因", "第三方对接人"};
 
         List<Product> productAll = productService.list();
 
-
-        for(String s : header){
+        for (String s : header) {
             List<String> headTitle = new ArrayList<String>();
             headTitle.add(s);
             headList.add(headTitle);
         }
 
-        if(productAll != null && !productAll.isEmpty()){
-            for (Product p : productAll){
-                List<String> headTitle = new ArrayList<>();
-                headTitle.add(p.getName());
-                headList.add(headTitle);
-            }
-        }
 
         table.setHead(headList);
 
         List<List<Object>> data = new ArrayList<>();
-        Integer codeMaxSize = 0;
+
+        List<Long> workOrderIds = new ArrayList<>();
+        workOrderVoList.forEach(item -> {
+            workOrderIds.add(item.getId());
+        });
+        Integer serverMaxLen = workOrderServerService.queryMaxCountByWorkOrderId(workOrderIds);
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (WorkOrderVo o : workOrderVoList) {
@@ -541,158 +669,236 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             row.add(this.getAuditStatus(o.getAuditStatus()));
 
             //typeName
-            if(Objects.nonNull(o.getType())){
+            if (Objects.nonNull(o.getType())) {
                 WorkOrderType workOrderType = workOrderTypeService.getById(o.getType());
-                if (Objects.nonNull(workOrderType)){
+                if (Objects.nonNull(workOrderType)) {
                     row.add(workOrderType.getType());
-                }else{
+                } else {
                     row.add("");
                 }
-            }else{
+            } else {
                 row.add("");
             }
             //pointName
-            if(Objects.nonNull(o.getPointId())){
+            if (Objects.nonNull(o.getPointId())) {
                 PointNew pointNew = pointNewService.getById(o.getPointId());
-                if (Objects.nonNull(pointNew)){
+                if (Objects.nonNull(pointNew)) {
                     row.add(pointNew.getName());
-                    //row.add(pointNew.getSnNo());
-                }else{
+                } else {
                     row.add("");
-                    //row.add("");
                 }
-            }else{
+            } else {
                 row.add("");
-                //row.add("");
             }
 
             row.add(getPointStatusName(o.getPointStatus()));
 
             //"创建人",
-            if(Objects.nonNull(o.getCreaterId())){
+            if (Objects.nonNull(o.getCreaterId())) {
                 User user = userService.getUserById(o.getCreaterId());
-                if (Objects.nonNull(user)){
+                if (Objects.nonNull(user)) {
                     row.add(user.getUserName());
-                }else{
+                } else {
                     row.add("");
                 }
-            }else{
+            } else {
                 row.add("");
             }
 
             //"状态",
             //status  1;待处理2:已处理3:待分析4：已完结
-            if(Objects.nonNull(o.getStatus())){
+            if (Objects.nonNull(o.getStatus())) {
                 row.add(this.getStatusStr(o.getStatus()));
             }
 
             //时效
-            String prescription = DateUtils.getDatePoor(o.getProcessTime(), o.getCreateTime());
-            row.add(StringUtils.isBlank(prescription) ? "" : prescription);
+            /*String prescription = DateUtils.getDatePoor(o.getProcessTime(), o.getCreateTime());
+            row.add(StringUtils.isBlank(prescription) ? "" : prescription);*/
 
             //"描述", "
-            row.add(o.getDescribeinfo() == null? "" : o.getDescribeinfo());
+            row.add(o.getDescribeinfo() == null ? "" : o.getDescribeinfo());
 
             //"备注",
-            row.add(o.getInfo() == null? "" : o.getInfo());
+            row.add(o.getInfo() == null ? "" : o.getInfo());
 
             //"工单原因",
             //workOrderReasonName
-            if(Objects.nonNull(o.getWorkOrderReasonId())){
+            if (Objects.nonNull(o.getWorkOrderReasonId())) {
                 WorkOrderReason workOrderReason = workOrderReasonService.getById(o.getWorkOrderReasonId());
-                if (Objects.nonNull(workOrderReason)){
+                if (Objects.nonNull(workOrderReason)) {
                     row.add(workOrderReason.getName());
-                }else{
+                } else {
                     row.add("");
                 }
-            }else{
+            } else {
                 row.add("");
             }
 
             //第三方原因
-            row.add(o.getThirdReason() == null? "" : o.getThirdReason());
+            /*row.add(o.getThirdReason() == null ? "" : o.getThirdReason());
 
-            if (Objects.nonNull(o.getThirdCompanyType())){
+            if (Objects.nonNull(o.getThirdCompanyType())) {
                 this.setThirdCompanyNameAndServerName(o);
                 row.add(o.getThirdCompanyName());
-            }else{
+            } else {
                 row.add("");
             }
 
             //third_company_pay
             row.add(o.getThirdCompanyPay() == null ? "" : o.getThirdCompanyPay());
 
-            row.add(o.getFee() == null? "" : o.getFee());
+            row.add(o.getFee() == null ? "" : o.getFee());
 
             //图片数量
             LambdaQueryWrapper<File> eq = new LambdaQueryWrapper<File>()
                     .eq(File::getType, File.TYPE_WORK_ORDER)
-                    .eq(Objects.nonNull(workOrder.getWorkOrderType()),File::getFileType, workOrder.getWorkOrderType())
+                    .eq(Objects.nonNull(workOrder.getWorkOrderType()), File::getFileType, workOrder.getWorkOrderType())
                     .eq(File::getBindId, o.getId());
             List<File> fileList = fileService.getBaseMapper().selectList(eq);
             row.add(CollectionUtils.isEmpty(fileList) ? 0 : fileList.size());
 
             //"处理时间",
             //processTime
-            if(Objects.nonNull(o.getProcessTime())){
+            if (Objects.nonNull(o.getProcessTime())) {
                 row.add(simpleDateFormat.format(new Date(o.getProcessTime())));
-            }else{
+            } else {
                 row.add("");
-            }
+            }*/
 
             //创建时间"
-            if(Objects.nonNull(o.getCreateTime())){
+            if (Objects.nonNull(o.getCreateTime())) {
                 row.add(simpleDateFormat.format(new Date(o.getCreateTime())));
-            }else{
+            } else {
                 row.add("");
             }
             //服务商
-            row.add(o.getServerName() == null ? "" : o.getServerName());
+            /*row.add(o.getServerName() == null ? "" : o.getServerName());
 
             //PaymentMethod
             row.add(getPaymentMethod(o.getPaymentMethod()));
 
 
             //"第三方责任对接人"
-            row.add(o.getThirdResponsiblePerson() == null? "" : o.getThirdResponsiblePerson());
+            row.add(o.getThirdResponsiblePerson() == null ? "" : o.getThirdResponsiblePerson());*/
 
             //"工单编号",
-            row.add(o.getOrderNo() == null? "" : o.getOrderNo());
+            row.add(o.getOrderNo() == null ? "" : o.getOrderNo());
 
             //thirdPaymentStatus
-            if(Objects.nonNull(o.getThirdPaymentStatus())){
-                if(o.getThirdPaymentStatus().equals(1)){
+            /*if (Objects.nonNull(o.getThirdPaymentStatus())) {
+                if (o.getThirdPaymentStatus().equals(1)) {
                     row.add("无需结算");
-                }else if(o.getThirdPaymentStatus().equals(2)){
+                } else if (o.getThirdPaymentStatus().equals(2)) {
                     row.add("未结算");
-                }else if(o.getThirdPaymentStatus().equals(3)){
+                } else if (o.getThirdPaymentStatus().equals(3)) {
                     row.add("已结算");
-                }else {
+                } else {
                     row.add("");
                 }
-            }else{
+            } else {
                 row.add("");
-            }
+            }*/
 
             //sn
-            if(Objects.nonNull(o.getPointId())){
+            if (Objects.nonNull(o.getPointId())) {
                 PointNew pointNew = pointNewService.getById(o.getPointId());
-                if (Objects.nonNull(pointNew)){
+                if (Objects.nonNull(pointNew)) {
                     row.add(pointNew.getSnNo());
-                }else{
+                } else {
                     row.add("");
                 }
-            }else{
+            } else {
                 row.add("");
             }
 
             //审核备注
-            row.add(o.getAuditRemarks() == null? "" : o.getAuditRemarks());
+            row.add(o.getAuditRemarks() == null ? "" : o.getAuditRemarks());
+
+            //专员
+            if (Objects.nonNull(o.getCommissionerId())) {
+                User user = userService.getUserById(o.getCommissionerId());
+                if (Objects.nonNull(user)) {
+                    row.add(user.getUserName());
+                } else {
+                    row.add("");
+                }
+            } else {
+                row.add("");
+            }
+
+            //派单时间
+            if (Objects.nonNull(o.getAssignmentTime())) {
+                row.add(simpleDateFormat.format(new Date(o.getAssignmentTime())));
+            } else {
+                row.add("");
+            }
+
+
+            List<WorkOrderServerQuery> workOrderServerQueryList = workOrderServerService.queryByWorkOrderIdAndServerId(o.getId(), null);
+            if (!CollectionUtils.isEmpty(workOrderServerQueryList)) {
+                serverMaxLen = workOrderServerQueryList.size() > serverMaxLen ? workOrderServerQueryList.size() : serverMaxLen;
+                for (WorkOrderServerQuery item : workOrderServerQueryList) {
+                    //服务商",
+                    Server server = serverService.getById(item.getServerId());
+                    if (Objects.nonNull(server)) {
+                        row.add(server.getName());
+                    } else {
+                        row.add("");
+                    }
+                    // "费用",
+                    row.add(item.getFee() == null ? "" : item.getFee());
+                    // "结算方式",
+                    row.add(this.getPaymentMethod(item.getPaymentMethod()));
+                    // "解决方案",
+                    row.add(item.getSolution() == null ? "" : item.getSolution());
+                    // "解决时间",
+
+                    if (Objects.nonNull(item.getSolutionTime())) {
+                        row.add(simpleDateFormat.format(new Date(item.getSolutionTime())));
+                    } else {
+                        row.add("");
+                    }
+                    // "处理时长
+                    row.add(getPrescriptionStr(item.getPrescription()));
+                    //图片个数
+                    QueryWrapper<File> wrapper = new QueryWrapper<>();
+                    wrapper.eq("type", File.TYPE_WORK_ORDER);
+                    wrapper.eq("bind_id", o.getId());
+                    wrapper.ge("file_type", 1).lt("file_type", 90000);
+                    wrapper.eq("server_id", item.getServerId());
+
+                    int fileCount = fileService.count(wrapper);
+
+                    row.add(fileCount);
+
+                    //" 第三方类型",
+                    row.add(this.getThirdCompanyType(item.getThirdCompanyType()));
+                    // "第三方公司",
+                    row.add(item.getThirdCompanyName() == null ? "" : item.getThirdCompanyName());
+                    // "第三方费用",
+                    row.add(item.getThirdCompanyPay() == null ? "" : item.getThirdCompanyPay());
+                    // "支付状态",
+                    row.add(this.getThirdPaymentStatus(item.getThirdPaymentStatus()));
+                    // "第三方原因",
+                    row.add(item.getThirdReason() == null ? "" : item.getThirdReason());
+                    // "第三方对接人"
+                    row.add(item.getThirdResponsiblePerson() == null ? "" : item.getThirdResponsiblePerson());
+                }
+
+                //给服务商不够最大服务商个数的的补充空白
+                int supplementCell = serverMaxLen - workOrderServerQueryList.size();
+                for(int i = 0; i < supplementCell; i++) {
+                    for(String item : serverHeader) {
+                        row.add("");
+                    }
+                }
+            }
+
 
             //产品个数
-            if(productAll != null && !productAll.isEmpty()) {
+            if (productAll != null && !productAll.isEmpty()) {
                 List<ProductInfoQuery> productInfoQueries = null;
-                if(Objects.nonNull(o.getProductInfo())){
+                if (Objects.nonNull(o.getProductInfo())) {
                     productInfoQueries = JSON.parseArray(o.getProductInfo(), ProductInfoQuery.class);
                 }
                 if (!CollectionUtil.isEmpty(productInfoQueries)) {
@@ -710,7 +916,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                             row.add("");
                         }
                     }
-                }else{
+                } else {
                     for (Product p : productAll) {
                         row.add("");
                     }
@@ -720,7 +926,21 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             data.add(row);
         }
 
+        for (int i = 0; i < serverMaxLen; i++) {
+            for (String item : serverHeader) {
+                List<String> headTitle = new ArrayList<>();
+                headTitle.add(item + (i + 1));
+                headList.add(headTitle);
+            }
+        }
 
+        if (productAll != null && !productAll.isEmpty()) {
+            for (Product p : productAll) {
+                List<String> headTitle = new ArrayList<>();
+                headTitle.add(p.getName());
+                headList.add(headTitle);
+            }
+        }
 
         String fileName = "工单列表.xlsx";
         try {
@@ -729,7 +949,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             response.setHeader("content-Type", "application/vnd.ms-excel");
             // 下载文件的默认名称
             response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
-            EasyExcelFactory.getWriter(outputStream).write1(data,sheet,table).finish();
+            EasyExcelFactory.getWriter(outputStream).write1(data, sheet, table).finish();
             //EasyExcel.write(outputStream, DeliverExportExcelVo.class).sheet("sheet").doWrite(deliverExcelVoList);
             return;
         } catch (IOException e) {
@@ -738,29 +958,30 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         throw new CustomBusinessException("导出报表失败！请联系客服！");
     }
 
-    private String getPointStatusName(Integer pointStatus){
+
+    private String getPointStatusName(Integer pointStatus) {
         String pointStatusName = "";
-        if (Objects.equals(pointStatus,1)){
+        if (Objects.equals(pointStatus, 1)) {
             pointStatusName = "移机";
-        }else if (Objects.equals(pointStatus,2)){
+        } else if (Objects.equals(pointStatus, 2)) {
             pointStatusName = "运营中";
-        }else if (Objects.equals(pointStatus,3)){
+        } else if (Objects.equals(pointStatus, 3)) {
             pointStatusName = "已拆机";
-        }else if (Objects.equals(pointStatus,4)){
+        } else if (Objects.equals(pointStatus, 4)) {
             pointStatusName = "初始化";
-        }else if (Objects.equals(pointStatus,5)){
+        } else if (Objects.equals(pointStatus, 5)) {
             pointStatusName = "待安装";
-        }else if (Objects.equals(pointStatus,6)){
+        } else if (Objects.equals(pointStatus, 6)) {
             pointStatusName = "运输中";
-        }else if (Objects.equals(pointStatus,7)){
+        } else if (Objects.equals(pointStatus, 7)) {
             pointStatusName = "安装中";
-        }else if (Objects.equals(pointStatus,8)){
+        } else if (Objects.equals(pointStatus, 8)) {
             pointStatusName = "安装完成";
-        }else if (Objects.equals(pointStatus,9)){
+        } else if (Objects.equals(pointStatus, 9)) {
             pointStatusName = "已暂停";
-        }else if (Objects.equals(pointStatus,10)){
+        } else if (Objects.equals(pointStatus, 10)) {
             pointStatusName = "已取消";
-        }else if (Objects.equals(pointStatus,11)){
+        } else if (Objects.equals(pointStatus, 11)) {
             pointStatusName = "已过保";
         }
         return pointStatusName;
@@ -862,16 +1083,30 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         throw new CustomBusinessException("导出报表失败！请联系客服！");
     }*/
 
-    private String getOverInsurance(Integer overInsurance){
+    private String getPrescriptionStr(Long prescription) {
+        if (Objects.isNull(prescription)) {
+            return "";
+        }
+        long day = prescription / (24L * 3600 * 1000);
+        long hour = prescription % (24L * 3600 * 1000) / 3600 / 1000;
+        long minute = prescription % (24L * 3600 * 1000) % (3600 * 1000) / 60000;
+        return day + "天" + hour + "时" + minute + "分钟";
+    }
+
+    private String getOverInsurance(Integer overInsurance) {
         String overInsuranceStr = "";
-        switch (overInsurance){
-            case 0: overInsuranceStr = "未过保"; break;
-            case 1: overInsuranceStr = "已过保"; break;
+        switch (overInsurance) {
+            case 0:
+                overInsuranceStr = "未过保";
+                break;
+            case 1:
+                overInsuranceStr = "已过保";
+                break;
         }
         return overInsuranceStr;
     }
 
-    private String getPaymentMethod(Integer method){
+    private String getPaymentMethod(Integer method) {
         String methodStr = "";
         method = method == null ? 0 : method;
         switch (method) {
@@ -885,7 +1120,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         return methodStr;
     }
 
-    private String getThirdPaymentStatus(Integer status){
+    private String getThirdPaymentStatus(Integer status) {
         String statusStr = "";
         status = status == null ? 0 : status;
         switch (status) {
@@ -920,11 +1155,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             case 5:
                 statusStr = "已暂停";
                 break;
+            case 6:
+                statusStr = "待排单";
+                break;
         }
         return statusStr;
     }
 
-    private String getAuditStatus(Integer auditStatus){
+    private String getAuditStatus(Integer auditStatus) {
         String auditStatusStr = "";
         auditStatus = auditStatus == null ? -1 : auditStatus;
 
@@ -942,7 +1180,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         return auditStatusStr;
     }
 
-    private String getThirdCompanyType(Integer thirdCompanyType){
+    private String getThirdCompanyType(Integer thirdCompanyType) {
         String thirdCompanyTypeStr = "";
         thirdCompanyType = thirdCompanyType == null ? -1 : thirdCompanyType;
         switch (thirdCompanyType) {
@@ -987,7 +1225,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         workOrder.setStatus(WorkOrder.STATUS_FINISHED);
         workOrder.setOrderNo(RandomUtil.randomString(10));
         baseMapper.insert(workOrder);
-        if (ObjectUtil.isNotEmpty(workOrder.getFileList())) {
+        /*if (ObjectUtil.isNotEmpty(workOrder.getFileList())) {
             List<File> filList = new ArrayList();
             for (String name : workOrder.getFileList()) {
                 File file = new File();
@@ -998,7 +1236,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 filList.add(file);
             }
             fileService.saveBatch(filList);
-        }
+        }*/
 
         return R.ok();
     }
@@ -1013,15 +1251,15 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         List<WorkOrderVo> workOrderVoList = baseMapper.orderList(workOrder);
         workOrderVoList.forEach(o -> {
 
-            o.setPaymentMethodName(getPaymentMethod(o.getPaymentMethod()));
+            //o.setPaymentMethodName(getPaymentMethod(o.getPaymentMethod()));
 
             WorkOrderType workOrderType = workOrderTypeService.getById(o.getType());
-            if (Objects.nonNull(workOrderType)){
+            if (Objects.nonNull(workOrderType)) {
                 o.setWorkOrderType(workOrderType.getType());
             }
 
             PointNew point = pointNewService.getById(o.getPointId());
-            if (Objects.nonNull(point)){
+            if (Objects.nonNull(point)) {
                 o.setPointName(point.getName());
             }
             WorkOrderReason workOrderReason = workOrderReasonService.getById(o.getWorkOrderReasonId());
@@ -1029,45 +1267,48 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if (Objects.nonNull(workOrderReason)) {
                 o.setWorkOrderReasonName(workOrderReason.getName());
             }
-            o.setThirdCompanyPay(o.getThirdCompanyPay());
+            //o.setThirdCompanyPay(o.getThirdCompanyPay());
 
-            setThirdCompanyNameAndServerName(o);
+            List<WorkOrderServerQuery> workOrderServerQueryList = workOrderServerService.queryByWorkOrderIdAndServerId(o.getId(), null);
+
+            o.setWorkOrderServerList(workOrderServerQueryList);
+            if (!CollectionUtils.isEmpty(workOrderServerQueryList)) {
+                BigDecimal totalFee = new BigDecimal("0");
+                for (WorkOrderServerQuery item : workOrderServerQueryList) {
+                    totalFee = totalFee.add(Optional.ofNullable(item.getFee()).orElse(new BigDecimal("0")));
+                }
+                o.setTotalFee(totalFee);
+            }
         });
 
         HashMap<String, Object> map = new HashMap<>();
-        map.put("total",count);
-        map.put("data",workOrderVoList);
+        map.put("total", count);
+        map.put("data", workOrderVoList);
         return R.ok(map);
     }
 
-    private void setThirdCompanyNameAndServerName(WorkOrderVo o){
-        if (o.getThirdCompanyType() != null && o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)){
+    private String getThirdCompanyName(WorkOrderServer o) {
+        if (o.getThirdCompanyType() != null && o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)) {
             Customer customer = customerService.getById(o.getThirdCompanyId());
-            if (Objects.nonNull(customer)){
-                o.setThirdCompanyName(customer.getName());
+            if (Objects.nonNull(customer)) {
+                return customer.getName();
             }
         }
 
-        if (o.getThirdCompanyType() != null && o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
+        if (o.getThirdCompanyType() != null && o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)) {
             Supplier supplier = supplierService.getById(o.getThirdCompanyId());
-            if(Objects.nonNull(supplier)){
-                o.setThirdCompanyName(supplier.getName());
+            if (Objects.nonNull(supplier)) {
+                return supplier.getName();
             }
         }
 
-        if (o.getThirdCompanyType() != null && o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SERVER)){
+        if (o.getThirdCompanyType() != null && o.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SERVER)) {
             Server server = serverService.getById(o.getThirdCompanyId());
-            if(Objects.nonNull(server)){
-                o.setThirdCompanyName(server.getName());
+            if (Objects.nonNull(server)) {
+                return server.getName();
             }
         }
-
-        if (o.getServerId()!=null){
-            Server server = serverService.getById(o.getServerId());
-            if (Objects.nonNull(server)){
-                o.setServerName(server.getName());
-            }
-        }
+        return "";
     }
 
     @Override
@@ -1079,69 +1320,167 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     public List<WorkOrder> staffFuzzy(String accessToken) {
         return this.baseMapper.selectList(new QueryWrapper<WorkOrder>().like("info", accessToken));
     }
+
     @Override
     public void reconciliationExportExcel(WorkOrderQuery workOrder, HttpServletResponse response) {
-        if (workOrder.getCreateTimeStart() == null || workOrder.getCreateTimeEnd() == null){
+        if (workOrder.getCreateTimeStart() == null || workOrder.getCreateTimeEnd() == null) {
             throw new CustomBusinessException("请选择创建开始时间结束时间");
         }
 
         List<WorkOrderVo> workOrderVoList = baseMapper.orderList(workOrder);
-        log.info("workOrderVoList:{}", workOrderVoList);
+
         if (ObjectUtil.isEmpty(workOrderVoList)) {
             throw new CustomBusinessException("没有查询到工单!无法导出！");
         }
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-        List<WorkOrderExcelVo> excelVoList = new ArrayList<>(workOrderVoList.size());
-
-        workOrderVoList.stream().forEach(item -> {
-            WorkOrderExcelVo workOrderExcelVo = new WorkOrderExcelVo();
-
-            workOrderExcelVo.setThirdCompanyType(getThirdCompanyType(item.getThirdCompanyType()));
-
-//            setThirdCompanyNameAndServerName(item);
-            workOrderExcelVo.setThirdCompanyName(item.getThirdCompanyName());
-            workOrderExcelVo.setServerName(item.getServerName());
-
-            WorkOrderType workOrderType = workOrderTypeService.getById(item.getType());
-            if (Objects.nonNull(workOrderType)){
-                workOrderExcelVo.setWorkOrderType(workOrderType.getType());
-            }
-
-            PointNew point = pointNewService.getById(item.getPointId());
-            if (Objects.nonNull(point)){
-                workOrderExcelVo.setPointName(point.getName());
-            }
-
-            if (Objects.nonNull(item.getWorkOrderReasonId())){
-                WorkOrderReason workOrderReason = workOrderReasonService.getById(item.getWorkOrderReasonId());
-                if (Objects.nonNull(workOrderReason)){
-                    workOrderExcelVo.setWorkOrderReasonName(workOrderReason.getName());
-                }
-            }
-
-            workOrderExcelVo.setPaymentMethodName(getPaymentMethod(item.getPaymentMethod()));
-            workOrderExcelVo.setThirdPaymentStatus(getThirdPaymentStatus(item.getThirdPaymentStatus()));
-            workOrderExcelVo.setThirdCompanyPay(item.getThirdCompanyPay());
-            workOrderExcelVo.setRemarks(item.getInfo());
-            workOrderExcelVo.setDescribeinfo(item.getDescribeinfo());
-            workOrderExcelVo.setCreateTimeStr(simpleDateFormat.format(new Date(item.getCreateTime())));
-            if(!Objects.isNull(item.getProcessTime())){
-                workOrderExcelVo.setProcessTimeStr(simpleDateFormat.format(new Date(item.getProcessTime())));
-            }
-
-            excelVoList.add(workOrderExcelVo);
+        List<Long> workOrderIds = new ArrayList<>();
+        workOrderVoList.forEach(item -> {
+            workOrderIds.add(item.getId());
         });
+        Integer serverMaxLen = workOrderServerService.queryMaxCountByWorkOrderId(workOrderIds);
 
-        String fileName = "工单结算.xls";
+        //headerSet
+        Sheet sheet = new Sheet(1, 0);
+        sheet.setSheetName("Sheet");
+        Table table = new Table(1);
+        // 动态添加 表头 headList --> 所有表头行集合
+        List<List<String>> headList = new ArrayList<List<String>>();
+
+        String[] header = {"工单类型", "点位", "工单原因", "创建时间"};
+
+        String[] serverHeader = {"服务商", "费用", "解决时间", "处理时长", " 第三方类型", "第三方公司", "第三方费用"};
+        String totalFeeHeader = "工单总费用";
+
+        for (String s : header) {
+            List<String> headTitle = new ArrayList<String>();
+            headTitle.add(s);
+            headList.add(headTitle);
+        }
+
+        table.setHead(headList);
+
+        List<List<Object>> data = new ArrayList<>();
+
+        for(WorkOrderVo o : workOrderVoList){
+            List<Object> row = new ArrayList<>();
+
+            if (Objects.nonNull(o.getType())) {
+                WorkOrderType workOrderType = workOrderTypeService.getById(o.getType());
+                if (Objects.nonNull(workOrderType)) {
+                    row.add(workOrderType.getType());
+                } else {
+                    row.add("");
+                }
+            } else {
+                row.add("");
+            }
+            //pointName
+            if (Objects.nonNull(o.getPointId())) {
+                PointNew pointNew = pointNewService.getById(o.getPointId());
+                if (Objects.nonNull(pointNew)) {
+                    row.add(pointNew.getName());
+                } else {
+                    row.add("");
+                }
+            } else {
+                row.add("");
+            }
+
+            //"工单原因",
+            //workOrderReasonName
+            if (Objects.nonNull(o.getWorkOrderReasonId())) {
+                WorkOrderReason workOrderReason = workOrderReasonService.getById(o.getWorkOrderReasonId());
+                if (Objects.nonNull(workOrderReason)) {
+                    row.add(workOrderReason.getName());
+                } else {
+                    row.add("");
+                }
+            } else {
+                row.add("");
+            }
+
+            //创建时间"
+            if (Objects.nonNull(o.getCreateTime())) {
+                row.add(simpleDateFormat.format(new Date(o.getCreateTime())));
+            } else {
+                row.add("");
+            }
+
+            List<WorkOrderServerQuery> workOrderServerQueryList = workOrderServerService.queryByWorkOrderIdAndServerId(o.getId(), null);
+            if (!CollectionUtils.isEmpty(workOrderServerQueryList)) {
+
+
+                BigDecimal totalFee = new BigDecimal("0");
+                serverMaxLen = workOrderServerQueryList.size() > serverMaxLen ? workOrderServerQueryList.size() : serverMaxLen;
+
+                for (WorkOrderServerQuery item : workOrderServerQueryList) {
+                    //计算总费用
+                    totalFee = totalFee.add(Optional.ofNullable(item.getFee()).orElse(new BigDecimal("0")));
+
+                    //服务商",
+                    Server server = serverService.getById(item.getServerId());
+                    if (Objects.nonNull(server)) {
+                        row.add(server.getName());
+                    } else {
+                        row.add("");
+                    }
+                    // "费用",
+                    row.add(item.getFee() == null ? "" : item.getFee());
+
+                    // "解决时间",
+                    if (Objects.nonNull(item.getSolutionTime())) {
+                        row.add(simpleDateFormat.format(new Date(item.getSolutionTime())));
+                    } else {
+                        row.add("");
+                    }
+                    // "处理时长
+                    row.add(getPrescriptionStr(item.getPrescription()));
+
+                    //" 第三方类型",
+                    row.add(this.getThirdCompanyType(item.getThirdCompanyType()));
+                    // "第三方公司",
+                    row.add(item.getThirdCompanyName() == null ? "" : item.getThirdCompanyName());
+                    // "第三方费用",
+                    row.add(item.getThirdCompanyPay() == null ? "" : item.getThirdCompanyPay());
+
+                }
+
+                //给服务商不够最大服务商个数的的补充空白
+                int supplementCell = serverMaxLen - workOrderServerQueryList.size();
+                for(int i = 0; i < supplementCell; i++) {
+                    for(String item : serverHeader) {
+                        row.add("");
+                    }
+                }
+                row.add(totalFee);
+            }
+
+            data.add(row);
+        };
+
+        for (int i = 0; i < serverMaxLen; i++) {
+            for (String item : serverHeader) {
+                List<String> headTitle = new ArrayList<>();
+                headTitle.add(item + (i + 1));
+                headList.add(headTitle);
+            }
+        }
+
+        //工单总费用
+        List<String> headTitle = new ArrayList<String>();
+        headTitle.add(totalFeeHeader);
+        headList.add(headTitle);
+
+        String fileName = "工单列表.xlsx";
         try {
             ServletOutputStream outputStream = response.getOutputStream();
             // 告诉浏览器用什么软件可以打开此文件
             response.setHeader("content-Type", "application/vnd.ms-excel");
             // 下载文件的默认名称
             response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
-            EasyExcel.write(outputStream, WorkOrderExcelVo.class).sheet("sheet").doWrite(excelVoList);
+            EasyExcelFactory.getWriter(outputStream).write1(data, sheet, table).finish();
+            //EasyExcel.write(outputStream, DeliverExportExcelVo.class).sheet("sheet").doWrite(deliverExcelVoList);
             return;
         } catch (IOException e) {
             log.error("导出报表失败！", e);
@@ -1371,8 +1710,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }*/
 
 
-
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public R insertSerialNumber(ProductSerialNumberQuery productSerialNumberQuery) {
@@ -1413,7 +1750,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.failMsg("未找到点位信息!");
         }
         if (ObjectUtil.isNotEmpty(workOrderQuery.getProductSerialNumberIdAndSetNoMap())) {
-            BigDecimal totalAmount = Objects.isNull(workOrder.getFee()) ? BigDecimal.ZERO : workOrder.getFee();
+            //BigDecimal totalAmount = Objects.isNull(workOrder.getFee()) ? BigDecimal.ZERO : workOrder.getFee();
             for (Map.Entry<Long, Integer> entry : workOrderQuery.getProductSerialNumberIdAndSetNoMap().entrySet()) {
                 ProductSerialNumber productSerialNumber = productSerialNumberMapper.selectById(entry.getKey());
                 if (Objects.isNull(productSerialNumber)) {
@@ -1423,11 +1760,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 productSerialNumber.setPointId(workOrder.getId());
                 productSerialNumber.setSetNo(entry.getValue());
                 productSerialNumberMapper.updateById(productSerialNumber);
-                totalAmount = totalAmount.add(productSerialNumber.getPrice());
+                //totalAmount = totalAmount.add(productSerialNumber.getPrice());
             }
             WorkOrder workOrderUpdate = new WorkOrder();
             workOrderUpdate.setId(workOrderUpdate.getId());
-            workOrder.setFee(totalAmount);
+            //workOrder.setFee(totalAmount);
             baseMapper.updateById(workOrderUpdate);
         }
         return R.ok();
@@ -1438,47 +1775,71 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Transactional(rollbackFor = Exception.class)
     public R saveWorkerOrder(WorkOrderQuery workOrder) {
         R r = checkProperties(workOrder);
-        if(Objects.nonNull(r)){
+        if (Objects.nonNull(r)) {
             return r;
         }
 
-        workOrder.setOrderNo(RandomUtil.randomString(10));
-        if (workOrder.getThirdCompanyId() != null && workOrder.getThirdCompanyType() != null) {
-            if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)){
-                Customer customer = customerService.getById(workOrder.getThirdCompanyId());
-                if(Objects.nonNull(customer)) {
-                    workOrder.setThirdCompanyName(customer.getName());
-                }
-            }
-
-            if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
-                Supplier supplier = supplierService.getById(workOrder.getThirdCompanyId());
-                if (Objects.nonNull(supplier)){
-                    workOrder.setThirdCompanyName(supplier.getName());
-                }
-            }
-
-            if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SERVER)){
-                Server server = serverService.getById(workOrder.getThirdCompanyId());
-                if (Objects.nonNull(server)){
-                    workOrder.setThirdCompanyName(server.getName());
-                }
-            }
+        if (!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)
+                && !Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
+            return R.fail("状态请选择为待派单或待处理状态");
         }
 
-        if (workOrder.getServerId()!=null){
-            Server server = serverService.getById(workOrder.getServerId());
-            if(Objects.nonNull(server)){
-                workOrder.setServerName(server.getName());
+
+        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)) {
+            if (CollectionUtils.isEmpty(workOrder.getWorkOrderServerList())) {
+                return R.fail("工单必须填写服务商相关信息");
             }
+            for (WorkOrderServerQuery item : workOrder.getWorkOrderServerList()) {
+                if (Objects.isNull(item.getServerId())) {
+                    return R.fail("工单必须添加服务商");
+                }
+
+                if (Objects.isNull(item.getPaymentMethod())) {
+                    return R.fail("工单必须添加结算方式");
+                }
+
+                if (Objects.isNull(item.getFee())) {
+                    return R.fail("工单必须添加工单费用");
+                }
+
+                if (item.getIsUseThird()) {
+                    if (Objects.isNull(item.getThirdCompanyType())) {
+                        return R.fail("工单必须添加第三方公司类型");
+                    }
+
+                    if (Objects.isNull(item.getThirdCompanyId())) {
+                        return R.fail("工单必须添加第三方公司");
+                    }
+
+                    if (Objects.isNull(item.getThirdCompanyPay())) {
+                        return R.fail("工单必须添加第三方支付金额");
+                    }
+
+                    if (Objects.isNull(item.getThirdPaymentStatus())) {
+                        return R.fail("工单必须添加第三方支付状态");
+                    }
+
+                    if (Objects.isNull(item.getThirdReason())) {
+                        return R.fail("工单必须添加第三方原因");
+                    }
+
+                    if (Objects.isNull(item.getThirdResponsiblePerson())) {
+                        return R.fail("工单必须添加第三方责任人");
+                    }
+                }
+            }
+            workOrder.setAssignmentTime(workOrder.getCreateTime());
         }
 
-        if(!Objects.equals(workOrder.getType(), String.valueOf(WorkOrder.TYPE_AFTER))){
-            if(Objects.nonNull(workOrder.getProductInfoList())) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        workOrder.setOrderNo("GD" + sdf.format(new Date()) + "-" + RandomUtil.randomInt(100000, 1000000));
+
+        if (!Objects.equals(workOrder.getType(), String.valueOf(WorkOrder.TYPE_AFTER))) {
+            if (Objects.nonNull(workOrder.getProductInfoList())) {
                 Iterator<ProductInfoQuery> iterator = workOrder.getProductInfoList().iterator();
-                while (iterator.hasNext()){
+                while (iterator.hasNext()) {
                     ProductInfoQuery productInfoQuery = iterator.next();
-                    if(Objects.isNull(productInfoQuery.getProductId()) || Objects.isNull(productInfoQuery.getNumber())){
+                    if (Objects.isNull(productInfoQuery.getProductId()) || Objects.isNull(productInfoQuery.getNumber())) {
                         iterator.remove();
                     }
                 }
@@ -1487,24 +1848,52 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
         }
 
-
-
         int insert = this.baseMapper.insert(workOrder);
         if (insert == 0) {
             return R.fail("数据库保存出错");
         }
 
-        if (!workOrder.getFileList().isEmpty()){
-            workOrder.getFileList().forEach(item -> {
-                File file = new File();
-                file.setType(File.TYPE_WORK_ORDER);
-                file.setFileName(item);
-                file.setCreateTime(System.currentTimeMillis());
-                file.setBindId(workOrder.getId());
-                file.setFileType(Integer.parseInt(workOrder.getType()));
-                fileService.save(file);
+
+        if (!CollectionUtils.isEmpty(workOrder.getWorkOrderServerList())) {
+            workOrder.getWorkOrderServerList().forEach(item -> {
+                WorkOrderServer workOrderServer = new WorkOrderServer();
+                BeanUtils.copyProperties(item, workOrderServer);
+                workOrderServer.setWorkOrderId(workOrder.getId());
+                //服务商名称
+                if (item.getServerId() != null) {
+                    Server server = serverService.getById(item.getServerId());
+                    if (Objects.nonNull(server)) {
+                        workOrderServer.setServerName(server.getName());
+                    }
+                }
+                //第三方公司名称
+                if (item.getThirdCompanyId() != null && item.getThirdCompanyType() != null) {
+                    if (item.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)) {
+                        Customer customer = customerService.getById(item.getThirdCompanyId());
+                        if (Objects.nonNull(customer)) {
+                            workOrderServer.setThirdCompanyName(customer.getName());
+                        }
+                    }
+
+                    if (item.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)) {
+                        Supplier supplier = supplierService.getById(item.getThirdCompanyId());
+                        if (Objects.nonNull(supplier)) {
+                            workOrderServer.setThirdCompanyName(supplier.getName());
+                        }
+                    }
+
+                    if (item.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SERVER)) {
+                        Server server = serverService.getById(item.getThirdCompanyId());
+                        if (Objects.nonNull(server)) {
+                            workOrderServer.setThirdCompanyName(server.getName());
+                        }
+                    }
+                }
+                workOrderServer.setCreateTime(System.currentTimeMillis());
+                workOrderServerService.save(workOrderServer);
             });
         }
+
         return R.ok();
     }
 
@@ -1516,10 +1905,83 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         if (Objects.isNull(workOrder)) {
             return R.fail("id不存在");
         }
-        workOrder.setStatus(query.getStatus());
 
+        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_SUSPEND)
+                && (!Objects.equals(query.getStatus(), WorkOrder.STATUS_SUSPEND)
+                && !Objects.equals(query.getStatus(), WorkOrder.STATUS_INIT))) {
+            return R.fail("工单已暂停只能修改为待处理");
+        }
+
+        if (Objects.equals(query.getStatus(), WorkOrder.STATUS_SUSPEND)) {
+            if (!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)
+                    && !Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_SUSPEND)) {
+
+                return R.fail("非待处理的工单不可修改为已暂停");
+            }
+        }
+
+        if (Objects.equals(workOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_PASSED)) {
+            return R.fail("审核通过的工单不允许修改");
+        }
+
+        /*if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
+            if (!checkServerProcess(workOrder.getId())) {
+                return R.fail("有服务商没有处理，请等待服务商处理或后台添加处理时间");
+            }
+        }
+
+        //除了暂停状态不可往之前的状态修改
+        Integer status = WorkOrder.STATUS_ASSIGNMENT.equals(query.getStatus()) ? -1 : query.getStatus();
+        Integer statusOld = WorkOrder.STATUS_ASSIGNMENT.equals(workOrder.getStatus()) ? -1 : workOrder.getStatus();
+        if (status < statusOld && !Objects.equals(WorkOrder.STATUS_SUSPEND, status)) {
+            return R.fail("状态不可往前修改");
+        }
+
+        List<WorkOrderServerQuery> list = workOrderServerService.queryByWorkOrderIdAndServerId(workOrder.getId(), null);
+        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)) {
+            if (CollectionUtils.isEmpty(list)) {
+                return R.fail("工单必须有服务商");
+            }
+        }
+
+        if(query.getStatus() >= WorkOrder.STATUS_PROCESSING && query.getStatus() <= WorkOrder.STATUS_FINISHED){
+            if (CollectionUtils.isEmpty(list)) {
+                return R.fail("工单必须有服务商");
+            }
+
+            for(WorkOrderServerQuery item : list){
+                if(StringUtils.isBlank(item.getSolution())){
+                    return R.fail("服务商"+item.getServerName()+"没填写解决方案");
+                }
+
+                QueryWrapper<File> wrapper = new QueryWrapper<>();
+                wrapper.eq("type", File.TYPE_WORK_ORDER);
+                wrapper.eq("bind_id", item.getWorkOrderId());
+                wrapper.ge("file_type", 1).lt("file_type", 90000);
+                wrapper.eq("server_id", item.getServerId());
+
+                int fileCount = fileService.count(wrapper);
+                if (fileCount == 0) {
+                   return R.fail("服务商"+item.getServerName()+"没上传处理图片");
+                }
+            }
+
+        }
+
+        if (!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)
+                && Objects.equals(workOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_WAIT)
+                && Objects.equals(query.getStatus(), WorkOrder.STATUS_FINISHED)) {
+            saveWorkAuditNotify(workOrder);
+        }*/
+
+        workOrder.setStatus(query.getStatus());
         workOrder.setWorkOrderReasonId(query.getWorkOrderReasonId());
         baseMapper.updateById(workOrder);
+        /*if(Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
+            workOrder.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
+            baseMapper.updateById(workOrder);
+            return R.ok("状态成功修改为已完结，审核状态已更新为待审核");
+        }*/
         return R.ok();
     }
 
@@ -1527,7 +1989,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Transactional(rollbackFor = Exception.class)
     public R updateWorkOrder(WorkOrderQuery workOrder) {
         WorkOrder oldWorkOrder = this.getById(workOrder.getId());
-        if(Objects.isNull(oldWorkOrder)){
+        if (Objects.isNull(oldWorkOrder)) {
             return R.fail("未查询到工单");
         }
 
@@ -1535,46 +1997,144 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         workOrder.setCreateTime(oldWorkOrder.getCreateTime());
 
         R r = checkProperties(workOrder);
-        if(Objects.nonNull(r)){
+        if (Objects.nonNull(r)) {
             return r;
         }
 
-        if (workOrder.getThirdCompanyId() != null && workOrder.getThirdCompanyType() != null) {
-            if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)){
-                Customer customer = customerService.getById(workOrder.getThirdCompanyId());
-                if(Objects.nonNull(customer)) {
-                    workOrder.setThirdCompanyName(customer.getName());
-                }
-            }
+        //List<WorkOrderServerQuery> workOrderServerList = workOrder.getWorkOrderServerList();
 
-            if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)){
-                Supplier supplier = supplierService.getById(workOrder.getThirdCompanyId());
-                if (Objects.nonNull(supplier)){
-                    workOrder.setThirdCompanyName(supplier.getName());
-                }
-            }
+        if (!Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)
+                && !Objects.equals(oldWorkOrder.getCommissionerId(), workOrder.getCommissionerId())) {
+            return R.fail(getStatusStr(oldWorkOrder.getStatus())+"状态，不可修改专员信息");
+        }
 
-            if (workOrder.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SERVER)){
-                Server server = serverService.getById(workOrder.getThirdCompanyId());
-                if (Objects.nonNull(server)){
-                    workOrder.setThirdCompanyName(server.getName());
-                }
+        if (Objects.isNull(oldWorkOrder)) {
+            return R.fail("未查询到工单相关信息");
+        }
+
+        if (Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_SUSPEND)
+                && (!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_SUSPEND)
+                || !Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT))) {
+            return R.fail("工单已暂停只能修改为待处理");
+        }
+
+        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_SUSPEND)) {
+            if (!Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_INIT)
+                    || Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_SUSPEND)) {
+
+                return R.fail("非待处理的工单不可修改为已暂停");
             }
         }
 
-        if (workOrder.getServerId()!=null){
-            Server server = serverService.getById(workOrder.getServerId());
-            if(Objects.nonNull(server)){
-                workOrder.setServerName(server.getName());
+        if (Objects.equals(oldWorkOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_PASSED)) {
+            return R.fail("审核通过的工单不允许修改");
+        }
+
+        /*if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
+            if (!checkServerProcess(workOrder.getId())) {
+                return R.fail("有服务商没有处理，请等待服务商处理或后台添加处理时间");
             }
         }
 
-        if(!Objects.equals(workOrder.getType(), String.valueOf(WorkOrder.TYPE_AFTER))){
-            if(Objects.nonNull(workOrder.getProductInfoList())) {
+        //除了暂停状态不可往之前的状态修改
+        Integer status = WorkOrder.STATUS_ASSIGNMENT.equals(workOrder.getStatus()) ? -1 : workOrder.getStatus();
+        Integer statusOld = WorkOrder.STATUS_ASSIGNMENT.equals(workOrder.getStatus()) ? -1 : workOrder.getStatus();
+        if (status < statusOld && !Objects.equals(WorkOrder.STATUS_SUSPEND, status)) {
+            return R.fail("状态不可往前修改");
+        }*/
+
+        if (!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
+            if (CollectionUtils.isEmpty(workOrder.getWorkOrderServerList())) {
+                return R.fail("工单必须填写服务商相关信息");
+            }
+            for (WorkOrderServerQuery item : workOrder.getWorkOrderServerList()) {
+                if (Objects.isNull(item.getServerId())) {
+                    return R.fail("工单必须添加服务商");
+                }
+
+                if (Objects.isNull(item.getPaymentMethod())) {
+                    return R.fail("工单必须添加结算方式");
+                }
+
+                if (Objects.isNull(item.getFee())) {
+                    return R.fail("工单必须添加工单费用");
+                }
+
+                if (item.getIsUseThird()) {
+                    if (Objects.isNull(item.getThirdCompanyType())) {
+                        return R.fail("工单必须添加第三方公司类型");
+                    }
+
+                    if (Objects.isNull(item.getThirdCompanyId())) {
+                        return R.fail("工单必须添加第三方公司");
+                    }
+
+                    if (Objects.isNull(item.getThirdCompanyPay())) {
+                        return R.fail("工单必须添加第三方支付金额");
+                    }
+
+                    if (Objects.isNull(item.getThirdPaymentStatus())) {
+                        return R.fail("工单必须添加第三方支付状态");
+                    }
+
+                    if (Objects.isNull(item.getThirdReason())) {
+                        return R.fail("工单必须添加第三方原因");
+                    }
+
+                    if (Objects.isNull(item.getThirdResponsiblePerson())) {
+                        return R.fail("工单必须添加第三方责任人");
+                    }
+                }
+            }
+            workOrder.setAssignmentTime(workOrder.getCreateTime());
+        }
+
+        /*if(workOrder.getStatus() >= WorkOrder.STATUS_PROCESSING && workOrder.getStatus() <= WorkOrder.STATUS_FINISHED){
+            if (CollectionUtils.isEmpty(workOrderServerList)) {
+                return R.fail("工单必须有服务商");
+            }
+
+            for(WorkOrderServerQuery item : workOrderServerList){
+                if(StringUtils.isBlank(item.getSolution())){
+                    return R.fail("服务商"+item.getServerName()+"没填写解决方案");
+                }
+
+                QueryWrapper<File> wrapper = new QueryWrapper<>();
+                wrapper.eq("type", File.TYPE_WORK_ORDER);
+                wrapper.eq("bind_id", item.getWorkOrderId());
+                wrapper.ge("file_type", 1).lt("file_type", 90000);
+                wrapper.eq("server_id", item.getServerId());
+
+                int fileCount = fileService.count(wrapper);
+                if (fileCount == 0) {
+                    return R.fail("服务商"+item.getServerName()+"没上传处理图片");
+                }
+            }
+        }*/
+
+
+        //非待派发状态 不可修添加或删除服务商
+        if (!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
+            int workOrderServerOldCount = 0;
+            int workOrderServerCount = 0;
+            if (!CollectionUtils.isEmpty(workOrder.getWorkOrderServerList())) {
+                workOrderServerOldCount = workOrder.getWorkOrderServerList().size();
+            }
+            if (!CollectionUtils.isEmpty(workOrder.getWorkOrderServerList())) {
+                workOrderServerCount = workOrder.getWorkOrderServerList().size();
+            }
+            if (! (workOrderServerOldCount == workOrderServerCount)) {
+                return R.fail("非待派发模式不可添加或删除服务商");
+            }
+        }
+
+
+        if (!Objects.equals(workOrder.getType(), String.valueOf(WorkOrder.TYPE_AFTER))) {
+            if (Objects.nonNull(workOrder.getProductInfoList())) {
                 Iterator<ProductInfoQuery> iterator = workOrder.getProductInfoList().iterator();
-                while (iterator.hasNext()){
+                while (iterator.hasNext()) {
                     ProductInfoQuery productInfoQuery = iterator.next();
-                    if(Objects.isNull(productInfoQuery.getProductId()) || Objects.isNull(productInfoQuery.getNumber())){
+                    if (Objects.isNull(productInfoQuery.getProductId()) || Objects.isNull(productInfoQuery.getNumber())) {
                         iterator.remove();
                     }
                 }
@@ -1583,105 +2143,612 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
         }
 
+        //后台直接派单，添加派单时间
+        if (Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)
+                && Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)
+                && Objects.isNull(oldWorkOrder.getAssignmentTime())) {
+            workOrder.setAssignmentTime(System.currentTimeMillis());
+        }
 
-        workOrder.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
+
+
+        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
+            //服务商第三方信息
+            workOrderServerService.removeByWorkOrderId(workOrder.getId());
+            if (!CollectionUtils.isEmpty(workOrder.getWorkOrderServerList())) {
+                workOrder.getWorkOrderServerList().forEach(item -> {
+                    WorkOrderServer workOrderServer = new WorkOrderServer();
+                    BeanUtils.copyProperties(item, workOrderServer);
+
+                    workOrderServer.setSolutionTime(null);
+                    workOrderServer.setPrescription(null);
+                    workOrderServer.setWorkOrderId(workOrder.getId());
+                    //服务商名称
+                    if (item.getServerId() != null) {
+                        Server server = serverService.getById(item.getServerId());
+                        if (Objects.nonNull(server)) {
+                            workOrderServer.setServerName(server.getName());
+                        }
+                    }
+                    //第三方公司名称
+                    if (item.getThirdCompanyId() != null && item.getThirdCompanyType() != null) {
+                        if (item.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)) {
+                            Customer customer = customerService.getById(item.getThirdCompanyId());
+                            if (Objects.nonNull(customer)) {
+                                workOrderServer.setThirdCompanyName(customer.getName());
+                            }
+                        }
+
+                        if (item.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)) {
+                            Supplier supplier = supplierService.getById(item.getThirdCompanyId());
+                            if (Objects.nonNull(supplier)) {
+                                workOrderServer.setThirdCompanyName(supplier.getName());
+                            }
+                        }
+
+                        if (item.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SERVER)) {
+                            Server server = serverService.getById(item.getThirdCompanyId());
+                            if (Objects.nonNull(server)) {
+                                workOrderServer.setThirdCompanyName(server.getName());
+                            }
+                        }
+                    }
+
+                    workOrderServer.setCreateTime(System.currentTimeMillis());
+
+                    workOrderServerService.save(workOrderServer);
+                });
+            }
+        } else {
+            updateWorkOrderServer(workOrder.getWorkOrderServerList());
+        }
+
         this.baseMapper.updateOne(workOrder);
-        //this.baseMapper.updateById(workOrder);
+
         return R.ok();
     }
 
-    @Override
-    public List<AfterCountVo> qualityCount(Long pointId, Integer cityId,Long startTime,Long endTime) {
-
-      return this.baseMapper.qualityCount(pointId,cityId,startTime,endTime);
-    }
-
-    @Override
-    public List<AfterCountListVo> qualityCountList(Long pointId, Integer cityId,Long startTime,Long endTime) {
-
-        return this.baseMapper.qualityCountList(pointId,cityId,startTime,endTime);
-    }
-
-    @Override
-    public List<AfterOrderVo> afterWorkOrderByCity(Long pointId, Integer cityId, Long startTime,Long endTime) {
-        return this.baseMapper.afterWorkOrderByCity(pointId,cityId,startTime,endTime);
-    }
-
-    @Override
-    public List<AfterOrderVo> afterWorkOrderByPoint(Long pointId, Integer cityId,Long startTime,Long endTime) {
-        return this.baseMapper.afterWorkOrderByPoint(pointId,cityId,startTime,endTime);
-    }
-
-    @Override
-    public List<AfterOrderVo> afterWorkOrderList(Long pointId, Integer cityId, Long startTime,Long endTime) {
-        return this.baseMapper.afterWorkOrderList(pointId,cityId,startTime,endTime);
-    }
-
-    @Override
-    public List<AfterOrderVo> installWorkOrderByCity(Long pointId, Integer cityId,Long startTime,Long endTime) {
-        return this.baseMapper.installWorkOrderByCity(pointId,cityId,startTime,endTime);
-    }
-
-    @Override
-    public List<AfterOrderVo> installWorkOrderByPoint(Long pointId, Integer cityId,Long startTime,Long endTime) {
-        return this.baseMapper.installWorkOrderByPoint(pointId,cityId,startTime,endTime);
-    }
-
-    @Override
-    public List<AfterOrderVo> installWorkOrderList(Long pointId, Integer cityId,Long startTime,Long endTime) {
-        return this.baseMapper.installWorkOrderList(pointId,cityId,startTime,endTime);
-    }
-
-    @Override
-    public R updateWorkorderProcessTime(Long id) {
-        WorkOrder workOrder = baseMapper.selectById(id);
-
-        if (Objects.isNull(workOrder)) {
-            return R.fail("id不存在");
+    private Boolean checkServerProcess(Long id) {
+        List<WorkOrderServerQuery> workOrderServerQueries = workOrderServerService.queryByWorkOrderIdAndServerId(id, null);
+        boolean flag = true;
+        if (!CollectionUtils.isEmpty(workOrderServerQueries)) {
+            for (WorkOrderServerQuery item : workOrderServerQueries) {
+                if (Objects.isNull(item.getSolutionTime())) {
+                    flag = false;
+                    break;
+                }
+            }
         }
-        workOrder.setProcessTime(System.currentTimeMillis());
-        baseMapper.updateById(workOrder);
+        return flag;
+    }
+
+    @Override
+    public List<AfterCountVo> qualityCount(Long pointId, Integer cityId, Long startTime, Long endTime) {
+
+        return this.baseMapper.qualityCount(pointId, cityId, startTime, endTime);
+    }
+
+    @Override
+    public List<AfterCountListVo> qualityCountList(Long pointId, Integer cityId, Long startTime, Long endTime) {
+
+        return this.baseMapper.qualityCountList(pointId, cityId, startTime, endTime);
+    }
+
+    @Override
+    public List<AfterOrderVo> afterWorkOrderByCity(Long pointId, Integer cityId, Long startTime, Long endTime) {
+        return this.baseMapper.afterWorkOrderByCity(pointId, cityId, startTime, endTime);
+    }
+
+    @Override
+    public List<AfterOrderVo> afterWorkOrderByPoint(Long pointId, Integer cityId, Long startTime, Long endTime) {
+        return this.baseMapper.afterWorkOrderByPoint(pointId, cityId, startTime, endTime);
+    }
+
+    @Override
+    public List<AfterOrderVo> afterWorkOrderList(Long pointId, Integer cityId, Long startTime, Long endTime) {
+        return this.baseMapper.afterWorkOrderList(pointId, cityId, startTime, endTime);
+    }
+
+    @Override
+    public List<AfterOrderVo> installWorkOrderByCity(Long pointId, Integer cityId, Long startTime, Long endTime) {
+        return this.baseMapper.installWorkOrderByCity(pointId, cityId, startTime, endTime);
+    }
+
+    @Override
+    public List<AfterOrderVo> installWorkOrderByPoint(Long pointId, Integer cityId, Long startTime, Long endTime) {
+        return this.baseMapper.installWorkOrderByPoint(pointId, cityId, startTime, endTime);
+    }
+
+    @Override
+    public List<AfterOrderVo> installWorkOrderList(Long pointId, Integer cityId, Long startTime, Long endTime) {
+        return this.baseMapper.installWorkOrderList(pointId, cityId, startTime, endTime);
+    }
+
+    @Override
+    public R updateWorkorderProcessTime(Long id, Long serverId) {
+        List<WorkOrderServerQuery> workOrderServers = workOrderServerService.queryByWorkOrderIdAndServerId(id, serverId);
+        if (CollectionUtils.isEmpty(workOrderServers) || workOrderServers.size() > 1) {
+            return R.fail("未查询到工单服务商或查询出多个工单服务商");
+        }
+
+        WorkOrder workOrder = this.getById(id);
+        if (Objects.isNull(workOrder)) {
+            return R.fail("未查询到工单信息");
+        }
+
+        if (!(workOrder.getStatus() >= 1 && workOrder.getStatus() <= 4)) {
+            return R.fail("待派发或已暂停状态下不可修改");
+        }
+
+        WorkOrderServerQuery old = workOrderServers.get(0);
+        WorkOrderServer update = new WorkOrderServer();
+        update.setId(old.getId());
+        update.setSolutionTime(System.currentTimeMillis());
+        update.setPrescription(update.getSolutionTime() - workOrder.getAssignmentTime());
+        workOrderServerService.updateById(update);
         return R.ok();
     }
 
     @Override
     public R updateAuditStatus(WorkOrderAuditStatusQuery workOrderAuditStatusQuery) {
-        if(Objects.isNull(workOrderAuditStatusQuery.getId()) || Objects.isNull(workOrderAuditStatusQuery.getAuditStatus())){
+        if (Objects.isNull(workOrderAuditStatusQuery.getId())
+                || Objects.isNull(workOrderAuditStatusQuery.getAuditStatus())) {
             return R.fail("参数不合法");
         }
 
         WorkOrder workOrder = this.getById(workOrderAuditStatusQuery.getId());
-        if(Objects.isNull(workOrder)){
+        if (Objects.isNull(workOrder)) {
             return R.fail("未查询到相关工单");
         }
+
+        if(workOrder.getStatus() < WorkOrder.STATUS_PROCESSING
+                || Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
+            return R.fail("工单未处理，请处理后审核");
+        }
+
+        /*if (!Objects.equals(workOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_WAIT)
+                && Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)
+                && Objects.equals(workOrderAuditStatusQuery.getAuditStatus(), WorkOrder.AUDIT_STATUS_WAIT)) {
+            saveWorkAuditNotify(workOrder);
+        }*/
 
         WorkOrder workOrderUpdate = new WorkOrder();
         workOrderUpdate.setId(workOrderAuditStatusQuery.getId());
         workOrderUpdate.setAuditStatus(workOrderAuditStatusQuery.getAuditStatus());
         workOrderUpdate.setAuditRemarks(workOrderAuditStatusQuery.getAuditRemarks());
+        if(Objects.equals(workOrderAuditStatusQuery.getAuditStatus(), WorkOrder.AUDIT_STATUS_PASSED)) {
+            workOrderUpdate.setStatus(WorkOrder.STATUS_FINISHED);
+        }
         this.updateById(workOrderUpdate);
         return R.ok();
     }
 
     @Override
     public R putAdminPointNewCreateUser(Long id, Long createUid) {
-        if(Objects.isNull(id) || Objects.isNull(createUid)){
+        if (Objects.isNull(id) || Objects.isNull(createUid)) {
             return R.fail("参数非法，请检查");
         }
 
         User user = userService.getUserById(createUid);
-        if(Objects.isNull(user)){
+        if (Objects.isNull(user)) {
             return R.fail("没有查询到该用户");
         }
 
         Integer len = baseMapper.putAdminPointNewCreateUser(id, createUid);
 
-        if(len != null && len > 0){
+        if (len != null && len > 0) {
             return R.ok();
         }
 
         return R.fail("修改失败");
     }
+
+    @Override
+    public R queryAssignmentStatusList(Long offset, Long size, Integer auditStatus, Integer status, Integer type, Long createTimeStart, String serverName, String pointName) {
+        Long uid = null;
+        Long serverId = null;
+        List<Long> workOrderServerIds = null;
+        Long createTimeEnd = null;
+
+        if (Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_COMMISSIONER)) {
+            uid = SecurityUtils.getUid();
+        } else if (Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_PATROL_APPLET)) {
+            User user = userService.getUserById(SecurityUtils.getUid());
+            if(Objects.isNull(user)) {
+                return R.fail("未查询到相关服务商账号");
+            }
+            serverId = user.getThirdId();
+            workOrderServerIds = workOrderServerService.queryWorkOrderIds(user.getThirdId());
+        }
+
+        if(Objects.nonNull(createTimeStart)){
+            createTimeEnd = createTimeStart + 24 * 3600000;
+        }
+
+        Page<WorkOrderAssignmentVo> page = PageUtil.getPage(offset, size);
+        page = baseMapper.queryAssignmentStatusList(page, uid, workOrderServerIds, auditStatus, status, type, createTimeStart, createTimeEnd, serverName, pointName);
+        List<WorkOrderAssignmentVo> data = page.getRecords();
+
+
+        if (!CollectionUtils.isEmpty(data)) {
+            for (WorkOrderAssignmentVo item : data) {
+                item.setParentWorkOrderReason(this.getParentWorkOrderReason(item.getWorkOrderReasonId()));
+
+                if (Objects.nonNull(item.getProductInfo())) {
+                    List<ProductInfoQuery> productInfo = JSON.parseArray(item.getProductInfo(), ProductInfoQuery.class);
+                    if(!CollectionUtils.isEmpty(productInfo)) {
+                        productInfo.forEach(productItem -> {
+                            Product product = productService.getById(productItem.getProductId());
+                            if(Objects.nonNull(product)){
+                                productItem.setProductName(product.getName());
+                            }
+                        });
+                    }
+                    item.setProductInfoList(productInfo);
+                }
+
+                List<WorkOrderServerQuery> workOrderServerList = workOrderServerService.queryByWorkOrderIdAndServerId(item.getId(), serverId);
+                item.setWorkOrderServerList(workOrderServerList);
+
+                //凭证
+                LambdaQueryWrapper<File> eq = new LambdaQueryWrapper<File>()
+                        .eq(File::getType, File.TYPE_WORK_ORDER)
+                        .eq(File::getFileType, 0)
+                        .eq(File::getBindId, item.getId());
+                List<File> fileList = fileService.getBaseMapper().selectList(eq);
+                item.setVoucherImgFile(fileList);
+
+                //视频
+                eq.clear();
+                eq.eq(File::getType, File.TYPE_WORK_ORDER)
+                        .eq(File::getFileType, 90000)
+                        .eq(File::getBindId, item.getId());
+                File files = fileService.getBaseMapper().selectOne(eq);
+                item.setVoucherVideoFile(files);
+            }
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("data", data);
+        result.put("total", page.getTotal());
+        return R.ok(result);
+    }
+
+    @Override
+    public R updateAssignment(WorkOrderAssignmentQuery workOrderAssignmentQuery) {
+        WorkOrder workOrderOld = this.getById(workOrderAssignmentQuery.getId());
+        List<WorkOrderServerQuery> workOrderServerList = workOrderAssignmentQuery.getWorkOrderServerList();
+        List<WorkOrderServerQuery> workOrderServerQuerys = workOrderServerService.queryByWorkOrderIdAndServerId(workOrderOld.getId(), null);
+        if (Objects.isNull(workOrderOld)) {
+            return R.fail("未查询到工单相关信息");
+        }
+
+        if (Objects.equals(workOrderOld.getAuditStatus(), WorkOrder.AUDIT_STATUS_PASSED)) {
+            return R.fail("审核通过的工单不允许修改");
+        }
+
+        if (Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_SUSPEND)
+                && (!Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_SUSPEND)
+                && !Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_INIT))) {
+            return R.fail("工单已暂停只能修改为待处理");
+        }
+
+        if (Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_SUSPEND)) {
+            if (!Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_INIT)
+                    && !Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_SUSPEND)) {
+
+                return R.fail("非待处理的工单不可修改为已暂停");
+            }
+        }
+
+        /*if (Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_FINISHED)) {
+            if (!checkServerProcess(workOrderOld.getId())) {
+                return R.fail("有服务商没有处理，请等待服务商处理或后台添加处理时间");
+            }
+        }*/
+
+        if (CollectionUtils.isEmpty(workOrderServerList) && CollectionUtils.isEmpty(workOrderServerQuerys)) {
+            return R.fail("工单必须有服务商");
+        }
+
+        for(WorkOrderServerQuery item : workOrderServerList) {
+            if (Objects.isNull(item.getServerId())) {
+                return R.fail("工单必须添加服务商");
+            }
+
+            if (Objects.isNull(item.getPaymentMethod())) {
+                return R.fail("工单必须添加结算方式");
+            }
+
+            if (Objects.isNull(item.getFee())) {
+                return R.fail("工单必须添加工单费用");
+            }
+
+            if (item.getIsUseThird()) {
+                if (Objects.isNull(item.getThirdCompanyType())) {
+                    return R.fail("工单必须添加第三方公司类型");
+                }
+
+                if (Objects.isNull(item.getThirdCompanyId())) {
+                    return R.fail("工单必须添加第三方公司");
+                }
+
+                if (Objects.isNull(item.getThirdCompanyPay())) {
+                    return R.fail("工单必须添加第三方支付金额");
+                }
+
+                if (Objects.isNull(item.getThirdPaymentStatus())) {
+                    return R.fail("工单必须添加第三方支付状态");
+                }
+
+                if (Objects.isNull(item.getThirdReason())) {
+                    return R.fail("工单必须添加第三方原因");
+                }
+
+                if (Objects.isNull(item.getThirdResponsiblePerson())) {
+                    return R.fail("工单必须添加第三方责任人");
+                }
+            }
+        }
+
+
+        /*if(workOrderAssignmentQuery.getStatus() >= WorkOrder.STATUS_PROCESSING && workOrderAssignmentQuery.getStatus() <= WorkOrder.STATUS_FINISHED){
+            for(WorkOrderServerQuery item : workOrderServerList){
+                if(StringUtils.isBlank(item.getSolution())){
+                    return R.fail("服务商"+item.getServerName()+"没填写解决方案");
+                }
+
+                QueryWrapper<File> wrapper = new QueryWrapper<>();
+                wrapper.eq("type", File.TYPE_WORK_ORDER);
+                wrapper.eq("bind_id", item.getWorkOrderId());
+                wrapper.ge("file_type", 1).lt("file_type", 90000);
+                wrapper.eq("server_id", item.getServerId());
+
+                int fileCount = fileService.count(wrapper);
+                if (fileCount == 0) {
+                    return R.fail("服务商"+item.getServerName()+"没上传处理图片");
+                }
+            }
+        }*/
+
+        //非派单，不可修改服务商数量
+        if (!Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
+            int workOrderServerOldCount = 0;
+            int workOrderServerCount = 0;
+            if (!CollectionUtils.isEmpty(workOrderServerQuerys)) {
+                workOrderServerOldCount = workOrderServerQuerys.size();
+            }
+            if (!CollectionUtils.isEmpty(workOrderServerQuerys)) {
+                workOrderServerCount = workOrderServerList.size();
+            }
+            if (!Objects.equals(workOrderServerOldCount, workOrderServerCount)) {
+                return R.fail("非待派发模式不可添加或删除服务商");
+            }
+            List workOrderServerOldIds = workOrderServerQuerys.stream().map(item -> item.getId()).collect(Collectors.toList());
+            List workOrderServerIds = workOrderServerList.stream().map(item -> item.getId()).collect(Collectors.toList());
+            if (!workOrderServerOldIds.equals(workOrderServerIds)) {
+                return R.fail("非待派发模式不可修改服务商");
+            }
+        }
+
+        WorkOrder workOrder = new WorkOrder();
+        BeanUtils.copyProperties(workOrderAssignmentQuery, workOrder);
+        String productInfo = JSON.toJSONString(workOrderAssignmentQuery.getProductInfoList());
+        workOrder.setProductInfo(productInfo);
+
+        if(Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
+            workOrder.setStatus(WorkOrder.STATUS_INIT);
+            if(Objects.isNull(workOrderOld.getAssignmentTime())) {
+                workOrder.setAssignmentTime(System.currentTimeMillis());
+            }
+        }
+
+        if (Objects.equals(workOrderAssignmentQuery.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
+            createWorkOrderServer(workOrderOld, workOrderAssignmentQuery);
+        } else {
+            //除了待派单 不允许修改除处理方案以外的信息
+            if (!CollectionUtils.isEmpty(workOrderServerList)) {
+                for (WorkOrderServerQuery item : workOrderServerList) {
+                    WorkOrderServer old = workOrderServerService.getById(item.getId());
+                    if(Objects.nonNull(old)){
+                        WorkOrderServer workOrderServer = new WorkOrderServer();
+                        workOrderServer.setId(old.getId());
+                        workOrderServer.setSolution(item.getSolution());
+                        workOrderServerService.updateById(workOrderServer);
+                    }
+                }
+            }
+        }
+
+        this.updateById(workOrder);
+
+        return R.ok();
+    }
+
+    @Override
+    public R updateServer(String solution, Long workOrderId) {
+        Long uid = SecurityUtils.getUid();
+
+        if (Objects.isNull(uid)) {
+            return R.fail("未查询到相关用户");
+        }
+
+        User user = userService.getUserById(uid);
+        if (Objects.isNull(user)) {
+            return R.fail("未查询到相关用户");
+        }
+
+        WorkOrder workOrderOld = this.getById(workOrderId);
+        if (Objects.isNull(workOrderOld)) {
+            return R.fail("未查询到工单相关信息");
+        }
+
+        if (Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_SUSPEND)) {
+            return R.fail("工单已暂停，不可上传");
+        }
+
+        List<WorkOrderServerQuery> workOrderServer = workOrderServerService.queryByWorkOrderIdAndServerId(workOrderId, user.getThirdId());
+        if (CollectionUtils.isEmpty(workOrderServer) || workOrderServer.size() > 1) {
+            return R.fail("未查询出或查询出多条服务商工单信息");
+        }
+
+        if (Objects.nonNull(workOrderServer.get(0).getSolutionTime())) {
+            return R.fail("服务商工单已提交，不可修改");
+        }
+
+        if (StringUtils.isBlank(solution)) {
+            return R.fail("请填写解决方案");
+        }
+
+        QueryWrapper<File> wrapper = new QueryWrapper<>();
+        wrapper.eq("type", File.TYPE_WORK_ORDER);
+        wrapper.eq("bind_id", workOrderId);
+        wrapper.ge("file_type", 1)
+                .lt("file_type", 90000)
+                .eq("server_id", user.getThirdId());
+
+
+        List<File> list = fileService.getBaseMapper().selectList(wrapper);
+
+        if (CollectionUtils.isEmpty(list)) {
+            return R.fail("请上传处理图片");
+        }
+
+        WorkOrderServer updateWorkOrderServer = new WorkOrderServer();
+        updateWorkOrderServer.setId(workOrderServer.get(0).getId());
+        updateWorkOrderServer.setSolution(solution);
+        updateWorkOrderServer.setSolutionTime(System.currentTimeMillis());
+        updateWorkOrderServer.setPrescription(updateWorkOrderServer.getSolutionTime() - workOrderOld.getAssignmentTime());
+        workOrderServerService.updateById(updateWorkOrderServer);
+
+        //全部完成修改工单为已处理
+        if (checkServerProcess(workOrderId)) {
+            WorkOrder workOrder = new WorkOrder();
+            workOrder.setId(workOrderOld.getId());
+            workOrder.setStatus(WorkOrder.STATUS_PROCESSING);
+            workOrder.setProcessTime(System.currentTimeMillis());
+            this.updateById(workOrder);
+        }
+
+        return R.ok();
+    }
+
+    @Override
+    public R submitReview(Long id) {
+
+        WorkOrder workOrder = this.getById(id);
+        if (Objects.isNull(workOrder)) {
+            return R.fail("未查询到工单相关信息");
+        }
+
+        if(Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
+            return R.fail("工单已完结");
+        }
+
+        if (!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_PROCESSING)) {
+            return R.fail("工单还未处理，请处理后提交审核");
+        }
+
+        if(Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_SUSPEND )){
+            return R.fail("工单已暂停");
+        }
+
+        WorkOrder update = new WorkOrder();
+        update.setId(id);
+        update.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
+        this.updateById(update);
+
+        this.saveWorkAuditNotify(workOrder);
+        return R.ok();
+    }
+
+    private WorkAuditNotify saveWorkAuditNotify(WorkOrder workOrder) {
+        WorkAuditNotify workAuditNotify = new WorkAuditNotify();
+        workAuditNotify.setOrderNo(workOrder.getOrderNo());
+        workAuditNotify.setOrderType(workOrder.getType());
+        workAuditNotify.setWorkOrderReasonId(workOrder.getWorkOrderReasonId());
+        workAuditNotify.setSubmitUid(SecurityUtils.getUid());
+        workAuditNotify.setType(WorkAuditNotify.TYPE_UNFINISHED);
+        workAuditNotify.setCreateTime(System.currentTimeMillis());
+        workAuditNotify.setUpdateTime(System.currentTimeMillis());
+        workAuditNotifyService.save(workAuditNotify);
+        return workAuditNotify;
+    }
+
+    private void updateWorkOrderServer(List<WorkOrderServerQuery> workOrderServerList) {
+        if (!CollectionUtils.isEmpty(workOrderServerList)) {
+            for (WorkOrderServerQuery item : workOrderServerList) {
+                WorkOrderServer old = workOrderServerService.getById(item.getId());
+                if(Objects.nonNull(old)){
+                    WorkOrderServer workOrderServer = new WorkOrderServer();
+                    BeanUtils.copyProperties(item, workOrderServer);
+                    workOrderServerService.updateById(workOrderServer);
+                }
+            }
+        }
+    }
+
+    private void createWorkOrderServer(WorkOrder workOrder, WorkOrderAssignmentQuery workOrderAssignmentQuery) {
+        //服务商第三方信息
+        Boolean boo = false;
+        workOrderServerService.removeByWorkOrderId(workOrder.getId());
+        if (!CollectionUtils.isEmpty(workOrderAssignmentQuery.getWorkOrderServerList())) {
+            workOrderAssignmentQuery.getWorkOrderServerList().forEach(item -> {
+                WorkOrderServer workOrderServer = new WorkOrderServer();
+                workOrderServer.setWorkOrderId(workOrder.getId());
+                workOrderServer.setServerId(item.getServerId());
+                //服务商名称
+                if (item.getServerId() != null) {
+                    Server server = serverService.getById(item.getServerId());
+                    if (Objects.nonNull(server)) {
+                        workOrderServer.setServerName(server.getName());
+                    }
+                }
+                workOrderServer.setFee(item.getFee());
+                workOrderServer.setPaymentMethod(item.getPaymentMethod());
+                workOrderServer.setSolution(item.getSolution());
+                workOrderServer.setSolutionTime(item.getSolutionTime());
+                workOrderServer.setPrescription(item.getPrescription());
+                workOrderServer.setIsUseThird(item.getIsUseThird());
+                workOrderServer.setThirdCompanyType(item.getThirdCompanyType());
+                workOrderServer.setThirdCompanyId(item.getThirdCompanyId());
+                //第三方公司名称
+                if (item.getThirdCompanyId() != null && item.getThirdCompanyType() != null) {
+                    if (item.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_CUSTOMER)) {
+                        Customer customer = customerService.getById(item.getThirdCompanyId());
+                        if (Objects.nonNull(customer)) {
+                            workOrderServer.setThirdCompanyName(customer.getName());
+                        }
+                    }
+
+                    if (item.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SUPPLIER)) {
+                        Supplier supplier = supplierService.getById(item.getThirdCompanyId());
+                        if (Objects.nonNull(supplier)) {
+                            workOrderServer.setThirdCompanyName(supplier.getName());
+                        }
+                    }
+
+                    if (item.getThirdCompanyType().equals(WorkOrder.COMPANY_TYPE_SERVER)) {
+                        Server server = serverService.getById(item.getThirdCompanyId());
+                        if (Objects.nonNull(server)) {
+                            workOrderServer.setThirdCompanyName(server.getName());
+                        }
+                    }
+                }
+                workOrderServer.setThirdCompanyPay(item.getThirdCompanyPay());
+                workOrderServer.setThirdPaymentStatus(item.getThirdPaymentStatus());
+                workOrderServer.setThirdReason(item.getThirdReason());
+                workOrderServer.setThirdResponsiblePerson(item.getThirdResponsiblePerson());
+                workOrderServer.setCreateTime(System.currentTimeMillis());
+
+                workOrderServerService.save(workOrderServer);
+
+            });
+
+        }
+    }
+
+
     //    /**
 //     * 预览
 //     *
@@ -1705,19 +2772,19 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 //        return R.ok(baseMapper.reconciliationPage(workOrder.getThirdCompanyType(), workOrder.getThirdCompanyId(), workOrder.getCreateTimeStart(), workOrder.getCreateTimeEnd()));
 //    }
 
-    private R checkProperties(WorkOrderQuery workOrderQuery){
-        if(StringUtils.isBlank(workOrderQuery.getType())){
+    private R checkProperties(WorkOrderQuery workOrderQuery) {
+        if (StringUtils.isBlank(workOrderQuery.getType())) {
             return R.fail("请填写工单类型");
-        }else{
+        } else {
             WorkOrderType workOrderType = workOrderTypeService.getById(workOrderQuery.getType());
-            if (Objects.isNull(workOrderType)){
+            if (Objects.isNull(workOrderType)) {
                 return R.fail("请填写正确的工单类型");
             }
         }
 
-        if(Objects.isNull(workOrderQuery.getPointId())){
+        if (Objects.isNull(workOrderQuery.getPointId())) {
             return R.fail("请填写点位");
-        }else{
+        } else {
             PointNew point = pointNewService.getById(workOrderQuery.getPointId());
             if (Objects.isNull(point)) {
                 return R.fail("未查询到相关点位");
@@ -1725,69 +2792,73 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         }
 
-        if(Objects.isNull(workOrderQuery.getCreaterId())){
+        if (Objects.isNull(workOrderQuery.getCreaterId())) {
             return R.fail("创建人为空");
-        }else{
+        } else {
             User user = userService.getUserById(workOrderQuery.getCreaterId());
             if (Objects.isNull(user)) {
                 return R.fail("未查询到相关创建人");
             }
         }
 
-        if(Objects.isNull(workOrderQuery.getStatus())){
+        if (Objects.isNull(workOrderQuery.getStatus())) {
             return R.fail("请填写工单状态");
-        }else{
+        } else {
             String status = this.getStatusStr(workOrderQuery.getStatus());
-            if(Objects.equals("", status)){
+            if (Objects.equals("", status)) {
                 return R.fail("请填写正确的工单状态");
             }
         }
 
-        if(Objects.isNull(workOrderQuery.getCreateTime())){
+        if(Objects.isNull(workOrderQuery.getCommissionerId())){
+            return R.fail("请填写专员");
+        }else {
+            User user = userService.getUserById(workOrderQuery.getCommissionerId());
+            if(Objects.isNull(user) || !Objects.equals(user.getUserType(), User.TYPE_COMMISSIONER)){
+                return R.fail("未查询到相关专员");
+            }
+        }
+
+        if (Objects.isNull(workOrderQuery.getCreateTime())) {
             return R.fail("请填写创建时间");
         }
-
-        if(Objects.isNull(workOrderQuery.getProcessTime())){
-            return R.fail("请填写处理时间");
-        }
-
-        if(Objects.equals(workOrderQuery.getType(), String.valueOf(WorkOrder.TYPE_MOBLIE))){
-            if(Objects.isNull(workOrderQuery.getSourceType())){
+        if (Objects.equals(workOrderQuery.getType(), String.valueOf(WorkOrder.TYPE_MOBLIE))) {
+            if (Objects.isNull(workOrderQuery.getSourceType())) {
                 return R.fail("请填写起点类型");
             }
-            if(Objects.isNull(workOrderQuery.getTransferSourcePointId())){
+            if (Objects.isNull(workOrderQuery.getTransferSourcePointId())) {
                 return R.fail("请填写起点");
-            }else{
-                if(Objects.equals(workOrderQuery.getSourceType(), 1)){
+            } else {
+                if (Objects.equals(workOrderQuery.getSourceType(), 1)) {
                     PointNew pointNew = pointNewService.queryByIdFromDB(workOrderQuery.getTransferSourcePointId());
-                    if(Objects.isNull(pointNew)){
+                    if (Objects.isNull(pointNew)) {
                         return R.fail("未查询到相关起点");
                     }
                 }
 
-                if(Objects.equals(workOrderQuery.getSourceType(), 2)){
+                if (Objects.equals(workOrderQuery.getSourceType(), 2)) {
                     WareHouse wareHouse = warehouseService.getById(workOrderQuery.getTransferSourcePointId());
-                    if(Objects.isNull(wareHouse)){
+                    if (Objects.isNull(wareHouse)) {
                         return R.fail("未查询到相关起点");
                     }
                 }
             }
-            if(Objects.isNull(workOrderQuery.getDestinationType())){
+            if (Objects.isNull(workOrderQuery.getDestinationType())) {
                 return R.fail("请填写终点类型");
             }
-            if(Objects.isNull(workOrderQuery.getTransferDestinationPointId())){
+            if (Objects.isNull(workOrderQuery.getTransferDestinationPointId())) {
                 return R.fail("请填写终点");
-            }else{
-                if(Objects.equals(workOrderQuery.getDestinationType(), 1)){
+            } else {
+                if (Objects.equals(workOrderQuery.getDestinationType(), 1)) {
                     PointNew pointNew = pointNewService.queryByIdFromDB(workOrderQuery.getTransferDestinationPointId());
-                    if(Objects.isNull(pointNew)){
+                    if (Objects.isNull(pointNew)) {
                         return R.fail("未查询到相关终点");
                     }
                 }
 
-                if(Objects.equals(workOrderQuery.getDestinationType(), 2)){
+                if (Objects.equals(workOrderQuery.getDestinationType(), 2)) {
                     WareHouse wareHouse = warehouseService.getById(workOrderQuery.getTransferDestinationPointId());
-                    if(Objects.isNull(wareHouse)){
+                    if (Objects.isNull(wareHouse)) {
                         return R.fail("未查询到相关终点");
                     }
                 }
@@ -1796,21 +2867,53 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         return null;
     }
 
-    private String getParentWorkOrderReason(Long id){
-        Integer i = 0;
+    @Override
+    public String getParentWorkOrderReason(Long id) {
         Long workOrderReasonId = id;
-        while ( i < 10){
+        for (int i = 0; i < 10; i++) {
             WorkOrderReason workOrderReason = workOrderReasonService.getById(workOrderReasonId);
-            if(Objects.nonNull(workOrderReason)){
+            if (Objects.nonNull(workOrderReason)) {
                 workOrderReasonId = workOrderReason.getParentId();
-                if(Objects.equals(workOrderReason.getParentId(), -1L)){
+                if (Objects.equals(workOrderReason.getParentId(), -1L)) {
                     return workOrderReason.getName();
                 }
-            }else{
-                return null;
             }
-            ++i;
         }
         return null;
+    }
+
+    @Override
+    public R queryProductModelPull(String name) {
+        return productService.queryProductModelPull(name) ;
+    }
+
+    @Override
+    public R queryWorkOrderReasonPull() {
+        return R.ok(workOrderReasonService.list());
+    }
+
+    @Override
+    public R queryServerPull(String name) {
+        return serverService.queryServerPull(name);
+    }
+
+    @Override
+    public R querySupplierPull(String name) {
+        return R.ok(supplierService.querySupplierPull(name));
+    }
+
+    @Override
+    public R queryCustomerPull(String name) {
+        return R.ok(customerService.queryCustomerPull(name));
+    }
+
+    @Override
+    public R queryPointNewPull(String name) {
+        return R.ok(pointNewService.queryPointNewPull(name));
+    }
+
+    @Override
+    public R queryWarehousePull(String name) {
+        return R.ok(warehouseService.queryWarehouseLikeNamePull(name));
     }
 }
