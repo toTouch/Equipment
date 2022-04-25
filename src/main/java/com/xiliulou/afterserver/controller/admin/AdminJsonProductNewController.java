@@ -73,7 +73,13 @@ public class AdminJsonProductNewController {
                        @RequestParam(value = "pointType",required = false) Integer pointType,
                        @RequestParam(value = "startTime",required = false) Long startTime,
                        @RequestParam(value = "endTime",required = false) Long endTime){
-        List<ProductNew> productNews = productNewService.queryAllByLimit(offset,limit,no,modelId,startTime,endTime,pointId, pointType);
+        List<Long> productIds = null;
+        if(Objects.nonNull(pointId) || Objects.nonNull(pointType)){
+            productIds = pointProductBindService.queryProductIdsByPidAndPtype(pointId, pointType);
+        }
+
+        List<ProductNew> productNews = null;
+        //productNewService.queryAllByLimit(offset,limit,no,modelId,startTime,endTime,productIds);
 
         productNews.parallelStream().forEach(item -> {
 

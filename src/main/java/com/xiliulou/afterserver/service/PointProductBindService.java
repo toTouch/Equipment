@@ -67,4 +67,6 @@ public interface PointProductBindService {
     List<PointProductBind> queryByPointNewIdAndProductId(Long id, Long item);
 
     PointProductBind queryByProductId(Long productId);
+
+    List<Long> queryProductIdsByPidAndPtype(Long pointId, Integer pointType);
 }
