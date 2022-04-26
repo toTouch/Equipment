@@ -1,9 +1,8 @@
-package com.xiliulou.afterserver.controller.outer;
+package com.xiliulou.afterserver.controller.app;
 
 import com.xiliulou.afterserver.service.ProductNewService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ApiRequestQuery;
-import com.xiliulou.afterserver.web.query.CompressionQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,5 +30,4 @@ public class JsonAppCompressionController {
     public R successCompression(@RequestBody ApiRequestQuery apiRequestQuery){
         return productNewService.successCompression(apiRequestQuery);
     }
-
 }
