@@ -53,7 +53,7 @@
         and p.del_flag = 0
         and p.cache is null
         <if test="list != null and list.size() > 0">
-            p.id in
+            and p.id in
             <foreach collection="list" item="c" open="(" separator="," close=")">
                 #{c}
             </foreach>
@@ -131,7 +131,7 @@
                 and p.create_time &lt;= #{endTime}
             </if>
             <if test="list != null and list.size() > 0">
-                p.id in
+                and p.id in
                 <foreach collection="list" item="c" open="(" separator="," close=")">
                     #{c}
                 </foreach>
