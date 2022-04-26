@@ -156,7 +156,7 @@ public class AdminJsonProductNewController {
 
         HashMap<String, Object> stringObjectHashMap = new HashMap<>();
         stringObjectHashMap.put("data",productNews);
-        stringObjectHashMap.put("count",7715);
+        stringObjectHashMap.put("count",count);
         return R.ok(stringObjectHashMap);
     }
 
