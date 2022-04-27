@@ -639,6 +639,9 @@
             <if test="productInfo != null and productInfo != ''">
                 product_info = #{productInfo},
             </if>
+            <if test="commissionerId != null">
+                commissioner_id = #{commissionerId},
+            </if>
         </set>
         where id = #{id}
     </update>
