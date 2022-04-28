@@ -126,4 +126,11 @@ userrole:
   unShow: [1,2,3,4]
   userRole: [2]
 
+rocketmq:
+  name-server: xiliulou-rocketmq:9876
+  producer:
+    group: after-sales-producer
+  consumer:
+    group: after-sales-consumer
+
 

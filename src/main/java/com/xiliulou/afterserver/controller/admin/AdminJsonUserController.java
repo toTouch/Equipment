@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.controller.admin;
 
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xiliulou.afterserver.config.MinioConfig;
 import com.xiliulou.afterserver.controller.BaseController;
@@ -47,10 +48,6 @@ public class AdminJsonUserController extends BaseController {
 
     @GetMapping("admin/user/page")
     public R page(@RequestParam("offset") Long offset, @RequestParam("size") Long size, @RequestParam(value = "username",required = false) String username, HttpServletRequest request) {
-        Long uid = SecurityUtils.getUid();
-        if (uid > 3){
-            return R.fail("没有权限");
-        }
         return userService.list(offset,size,username);
 
     }
@@ -69,23 +66,8 @@ public class AdminJsonUserController extends BaseController {
 
    @PutMapping("/admin/user")
     public R updateUser(@RequestBody User user,HttpServletRequest request){
-       Long uid = SecurityUtils.getUid();
-       if (uid > 3){
-           return R.fail("没有权限");
-       }
+       return userService.updateUser(user);
 
-//       User userDb = this.userService.getBaseMapper().selectOne(Wrappers.<User>lambdaQuery().eq(User::getUserName, user.getUserName()));
-//       if (Objects.nonNull(userDb)) {
-//           return R.fail("用户名已存在");
-//       }
-        if(Objects.isNull(user)){
-            return R.fail("请传入用户信息");
-        }
-       if(Objects.isNull(user.getPassWord())){
-           return R.fail("请传入用户密码");
-       }
-       user.setPassWord(PasswordUtils.encode(user.getPassWord()));
-      return R.ok(userService.updateById(user));
    }
 
    @DeleteMapping("/admin/user/{uid}")
