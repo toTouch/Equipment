@@ -1937,64 +1937,18 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("审核通过的工单不允许修改");
         }
 
-        /*if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
-            if (!checkServerProcess(workOrder.getId())) {
-                return R.fail("有服务商没有处理，请等待服务商处理或后台添加处理时间");
-            }
-        }
-
-        //除了暂停状态不可往之前的状态修改
-        Integer status = WorkOrder.STATUS_ASSIGNMENT.equals(query.getStatus()) ? -1 : query.getStatus();
-        Integer statusOld = WorkOrder.STATUS_ASSIGNMENT.equals(workOrder.getStatus()) ? -1 : workOrder.getStatus();
-        if (status < statusOld && !Objects.equals(WorkOrder.STATUS_SUSPEND, status)) {
-            return R.fail("状态不可往前修改");
-        }
-
-        List<WorkOrderServerQuery> list = workOrderServerService.queryByWorkOrderIdAndServerId(workOrder.getId(), null);
-        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)) {
-            if (CollectionUtils.isEmpty(list)) {
-                return R.fail("工单必须有服务商");
-            }
-        }
-
-        if(query.getStatus() >= WorkOrder.STATUS_PROCESSING && query.getStatus() <= WorkOrder.STATUS_FINISHED){
-            if (CollectionUtils.isEmpty(list)) {
-                return R.fail("工单必须有服务商");
-            }
-
-            for(WorkOrderServerQuery item : list){
-                if(StringUtils.isBlank(item.getSolution())){
-                    return R.fail("服务商"+item.getServerName()+"没填写解决方案");
-                }
-
-                QueryWrapper<File> wrapper = new QueryWrapper<>();
-                wrapper.eq("type", File.TYPE_WORK_ORDER);
-                wrapper.eq("bind_id", item.getWorkOrderId());
-                wrapper.ge("file_type", 1).lt("file_type", 90000);
-                wrapper.eq("server_id", item.getServerId());
-
-                int fileCount = fileService.count(wrapper);
-                if (fileCount == 0) {
-                   return R.fail("服务商"+item.getServerName()+"没上传处理图片");
-                }
-            }
-
-        }
-
-        if (!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)
-                && Objects.equals(workOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_WAIT)
-                && Objects.equals(query.getStatus(), WorkOrder.STATUS_FINISHED)) {
-            saveWorkAuditNotify(workOrder);
-        }*/
 
         workOrder.setStatus(query.getStatus());
         workOrder.setWorkOrderReasonId(query.getWorkOrderReasonId());
         baseMapper.updateById(workOrder);
-        /*if(Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
-            workOrder.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
-            baseMapper.updateById(workOrder);
-            return R.ok("状态成功修改为已完结，审核状态已更新为待审核");
-        }*/
+
+        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)
+                && Objects.equals(query.getStatus(), WorkOrder.STATUS_INIT)
+                && Objects.isNull(workOrder.getAssignmentTime())) {
+            workOrder.setAssignmentTime(System.currentTimeMillis());
+            this.sendWorkServerNotifyMq(workOrder);
+        }
+
         return R.ok();
     }
 
