@@ -1837,7 +1837,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
             }
             workOrder.setAssignmentTime(workOrder.getCreateTime());
-            this.sendWorkServerNotifyMq(workOrder);
         }
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
@@ -1862,6 +1861,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("数据库保存出错");
         }
 
+        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)) {
+            this.sendWorkServerNotifyMq(workOrder);
+        }
 
         if (!CollectionUtils.isEmpty(workOrder.getWorkOrderServerList())) {
             workOrder.getWorkOrderServerList().forEach(item -> {
