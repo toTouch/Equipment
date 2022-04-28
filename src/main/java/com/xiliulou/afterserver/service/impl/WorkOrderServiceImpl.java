@@ -1940,15 +1940,12 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         workOrder.setStatus(query.getStatus());
         workOrder.setWorkOrderReasonId(query.getWorkOrderReasonId());
-        baseMapper.updateById(workOrder);
-
         if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)
-                && Objects.equals(query.getStatus(), WorkOrder.STATUS_INIT)
-                && Objects.isNull(workOrder.getAssignmentTime())) {
+                && Objects.equals(query.getStatus(), WorkOrder.STATUS_INIT)) {
             workOrder.setAssignmentTime(System.currentTimeMillis());
             this.sendWorkServerNotifyMq(workOrder);
         }
-
+        baseMapper.updateById(workOrder);
         return R.ok();
     }
 
