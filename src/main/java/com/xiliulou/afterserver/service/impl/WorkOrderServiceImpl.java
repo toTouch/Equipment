@@ -1861,9 +1861,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("数据库保存出错");
         }
 
-        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)) {
-            this.sendWorkServerNotifyMq(workOrder);
-        }
+
 
         if (!CollectionUtils.isEmpty(workOrder.getWorkOrderServerList())) {
             workOrder.getWorkOrderServerList().forEach(item -> {
@@ -1903,6 +1901,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrderServer.setCreateTime(System.currentTimeMillis());
                 workOrderServerService.save(workOrderServer);
             });
+        }
+
+        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)) {
+            this.sendWorkServerNotifyMq(workOrder);
         }
 
         return R.ok();
