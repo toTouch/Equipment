@@ -14,10 +14,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.config.RolePermissionConfig;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.UserMapper;
-import com.xiliulou.afterserver.service.ServerService;
-import com.xiliulou.afterserver.service.SupplierService;
-import com.xiliulou.afterserver.service.UserRoleService;
-import com.xiliulou.afterserver.service.UserService;
+import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
@@ -65,6 +62,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if(StringUtils.isBlank(user.getPassWord())){
             return Pair.of(false, "请填写合法密码");
         }
+
         if(Objects.equals(User.TYPE_FACTORY, user.getUserType())){
             Supplier supplier = supplierService.getById(user.getThirdId());
             if(Objects.isNull(supplier)){
@@ -77,6 +75,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 return Pair.of(false, "未查询到服务商，请检查");
             }
         }
+
         user.setRoleId(User.AFTER_USER_ROLE);
         user.setPicture("1.npg");
         user.setCreateTime(System.currentTimeMillis());
@@ -156,5 +155,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public R typePull(String username, Integer type) {
         return R.ok(baseMapper.typePull(username, type));
+    }
+
+    @Override
+    public R updateUser(User user) {
+        if(Objects.isNull(user)){
+            return R.fail("请传入用户信息");
+        }
+        if(Objects.isNull(user.getPassWord())){
+            return R.fail("请传入用户密码");
+        }
+
+        user.setPassWord(PasswordUtils.encode(user.getPassWord()));
+        this.updateById(user);
+
+        return R.ok();
     }
 }
