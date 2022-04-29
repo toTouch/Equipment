@@ -134,6 +134,8 @@
     <update id="update">
         update t_product_new
         <set>
+            app_version = #{appVersion},
+            sys_version = #{sysVersion},
             <if test="no != null">
                 no = #{no},
             </if>
@@ -179,12 +181,7 @@
             <if test="color != null">
                 color = #{color},
             </if>
-            <if test="appVersion != null and appVersion != ''">
-                app_version = #{appVersion},
-            </if>
-            <if test="sysVersion != null and sysVersion != ''">
-                sys_version = #{sysVersion},
-            </if>
+
         </set>
         where id = #{id}
     </update>

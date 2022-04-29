@@ -167,6 +167,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 List<ProductInfoQuery> productInfo = JSON.parseArray(item.getProductInfo(), ProductInfoQuery.class);
                 item.setProductInfoList(productInfo);
             }
+            
+            if(Objects.nonNull(item.getWorkOrderReasonId())) {
+                item.setWorkOrderReasonName(this.getWorkOrderReasonStr(item.getWorkOrderReasonId(), ""));
+            }
 
             //处理图片
             List<WorkOrderServerQuery> workOrderServers = workOrderServerService.queryByWorkOrderIdAndServerId(item.getId(), null);
@@ -1203,6 +1207,19 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 break;
         }
         return thirdCompanyTypeStr;
+    }
+
+    private String getWorkOrderReasonStr(Long id, String name) {
+        WorkOrderReason workOrderReason = workOrderReasonService.getById(id);
+        if(Objects.isNull(workOrderReason)) {
+            return name;
+        }
+
+        if(Objects.equals(workOrderReason.getParentId(), WorkOrderReason.PARENT_NODE)) {
+            return workOrderReason.getName() + "/" + name;
+        }
+
+        return getWorkOrderReasonStr(workOrderReason.getParentId(),   workOrderReason.getName() +  "/" + name);
     }
 
     @Override
