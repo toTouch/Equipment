@@ -215,7 +215,7 @@
             <if test="query.orderNo != null and query.orderNo != ''">
                 and wo.order_no like concat('%', #{query.orderNo}, '%')
             </if>
-            <if test="commissionerId != null">
+            <if test="query.commissionerId != null">
                 and wo.commissioner_id = #{query.commissionerId}
             </if>
         </where>
@@ -320,7 +320,7 @@
             <if test="query.pointStatus != null">
                 and p.status = #{query.pointStatus}
             </if>
-            <if test="commissionerId != null">
+            <if test="query.commissionerId != null">
                 and wo.commissioner_id = #{query.commissionerId}
             </if>
         </where>
