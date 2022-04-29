@@ -673,7 +673,6 @@
         wo.reason as wo_reason,
         wo.audit_status as wo_audit_status,
         wo.audit_remarks as wo_audit_remarks,
-        wor.name as wor_name
         FROM work_order as wo
         LEFT JOIN work_order_type as wot on wot.id = wo.id
         LEFT JOIN t_point_new as p on p.id = wo.point_id
