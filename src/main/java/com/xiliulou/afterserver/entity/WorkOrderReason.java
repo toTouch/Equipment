@@ -20,6 +20,9 @@ public class WorkOrderReason {
     private String name;
     private Long parentId;
 
+
+
     @TableField(exist = false)
     private List<WorkOrderReason> chird;
+    public static final Long PARENT_NODE = -1L;
 }

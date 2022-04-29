@@ -133,7 +133,7 @@
         (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
-        wor.name as wor_name,
+--         wor.name as wor_name,
         u.user_name as u_user_name,
         p.name as p_name,
         p.status as p_status

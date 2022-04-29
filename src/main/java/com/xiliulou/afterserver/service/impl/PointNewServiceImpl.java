@@ -217,11 +217,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
 
         pointNew.getProductIds().forEach(item -> {
-            //ProductNew productNew = productNewService.queryByIdFromDB(item);
-            /*List<PointProductBind> pointProductBindList = pointProductBindService.queryByPointNewIdAndProductId(pointNew.getId(),item);
-            if (pointProductBindList.size() > 0){
-                throw new NullPointerException("机柜"+productNew.getNo()+"已存在此点位了");
-            }*/
+
             PointProductBind oldPointProductBind = pointProductBindMapper
                     .selectOne(new QueryWrapper<PointProductBind>()
                             .eq("product_id", item));
@@ -235,29 +231,6 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             pointProductBind.setProductId(item);
             pointProductBindService.insert(pointProductBind);
 
-
-            /** 产品质保时间不取点位时间了
-             productNew.setExpirationStartTime(queryById.getCreateTime());
-
-            String date = DateUtils.stampToDate(queryById.getCreateTime().toString());
-            String[] split = date.split("-");
-            String s = split[0];
-            long l = Long.parseLong(s);
-            long l1 = l + productNew.getYears();
-            String s1 = l1 + split[1] + split[2];
-            long l2 = 0;
-            try {
-                l2 = DateUtils.dateToStamp(s1);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            productNew.setExpirationEndTime(l2);
-            Integer update = productNewService.update(productNew);
-            if (update == 0){
-                log.error("WX ERROR!   update ProductNew error data:{}",productNew.toString());
-                throw new NullPointerException("数据库异常，请联系管理员");
-            }*/
 
         });
 
