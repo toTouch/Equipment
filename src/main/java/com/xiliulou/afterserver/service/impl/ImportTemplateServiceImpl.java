@@ -52,6 +52,8 @@ public class ImportTemplateServiceImpl extends ServiceImpl<ImportTemplateMapper,
             importTemplate.setFileName(importTemplateQuery.getFileName());
             importTemplate.setUpdateTime(System.currentTimeMillis());
             importTemplateMapper.updateById(importTemplate);
+
+            fileService.removeOssOrMinio(importTemplateOld.getFileName(), 0);
         }
 
         return R.ok();

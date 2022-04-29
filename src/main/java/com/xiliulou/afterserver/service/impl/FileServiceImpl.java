@@ -165,38 +165,47 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     @Override
     public R removeFile(Long fileId, Integer fileType) {
         File file = this.baseMapper.selectOne(new LambdaQueryWrapper<File>().eq(File::getId, fileId));
+        R r = R.ok();
+        if(Objects.nonNull(file)){
+            this.removeById(fileId);
+            r = removeOssOrMinio(file.getFileName(), fileType);
+        }
+       return r;
+    }
+
+    @Override
+    public  R removeOssOrMinio(String name, Integer fileType){
         String bucketName = "";
         String dirName = "";
-        if(Objects.nonNull(file)){
-            if(Objects.equals(StorageConfig.IS_USE_OSS, storageConfig.getIsUseOSS())){
-                if(fileType.equals(0)){
-                    bucketName = storageConfig.getBucketName();
-                    dirName = storageConfig.getDir();
-                }
 
-                if(fileType.equals(1)){
-                    bucketName = storageConfig.getOssVidioBucketName();
-                    dirName = storageConfig.getVidioDir();
-                }
-
-                try{
-                    aliyunOssService.removeOssFile(bucketName, dirName + file.getFileName());
-                }catch (Exception e){
-                    log.error("aliyunOss delete File Error!", e);
-                    return R.fail("删除文件失败，请联系管理员");
-                }
-            }else if(Objects.equals(StorageConfig.IS_USE_MINIO, storageConfig.getIsUseOSS())) {
-                try{
-                    minioUtil.removeObject(FileConstant.BUCKET_NAME,file.getFileName());
-                }catch (Exception e){
-                    log.error("minio delete File Error", e);
-                    return R.fail("删除文件失败，请联系管理员");
-                }
+        if(Objects.equals(StorageConfig.IS_USE_OSS, storageConfig.getIsUseOSS())){
+            if(fileType.equals(0)){
+                bucketName = storageConfig.getBucketName();
+                dirName = storageConfig.getDir();
             }
 
-            this.removeById(fileId);
-            return R.ok();
+            if(fileType.equals(1)){
+                bucketName = storageConfig.getOssVidioBucketName();
+                dirName = storageConfig.getVidioDir();
+            }
+
+            try{
+                aliyunOssService.removeOssFile(bucketName, dirName + name);
+            }catch (Exception e){
+                log.error("aliyunOss delete File Error!", e);
+                return R.fail("删除文件失败，请联系管理员");
+            }
+        }else if(Objects.equals(StorageConfig.IS_USE_MINIO, storageConfig.getIsUseOSS())) {
+            try{
+                minioUtil.removeObject(FileConstant.BUCKET_NAME,name);
+            }catch (Exception e){
+                log.error("minio delete File Error", e);
+                return R.fail("删除文件失败，请联系管理员");
+            }
         }
-        return R.fail("文件删除失败");
+
+
+        return R.ok();
+
     }
 }
