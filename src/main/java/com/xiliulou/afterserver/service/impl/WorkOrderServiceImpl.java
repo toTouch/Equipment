@@ -1938,13 +1938,16 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
 
-        workOrder.setStatus(query.getStatus());
-        workOrder.setWorkOrderReasonId(query.getWorkOrderReasonId());
-        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)
-                && Objects.equals(query.getStatus(), WorkOrder.STATUS_INIT)) {
+
+        log.error("修改订单状态" + Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)  + "-" + workOrder.getStatus() + "," + Objects.equals(query.getStatus(), WorkOrder.STATUS_INIT) + "-" + query.getStatus());
+        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT) && Objects.equals(query.getStatus(), WorkOrder.STATUS_INIT)) {
+            log.error("修改订单状态 发送ma 进来了");
             workOrder.setAssignmentTime(System.currentTimeMillis());
             this.sendWorkServerNotifyMq(workOrder);
         }
+
+        workOrder.setStatus(query.getStatus());
+        workOrder.setWorkOrderReasonId(query.getWorkOrderReasonId());
         baseMapper.updateById(workOrder);
         return R.ok();
     }
