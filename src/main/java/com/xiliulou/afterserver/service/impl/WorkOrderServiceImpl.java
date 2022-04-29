@@ -2663,6 +2663,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 return;
             }
 
+            if(Objects.isNull(server.getPhone())) {
+                return;
+            }
+
             MqNotifyCommon<MqWorkOrderServerNotify> query = new MqNotifyCommon<>();
             query.setType(MqNotifyCommon.TYPE_AFTER_SALES_SERVER);
             query.setTime(System.currentTimeMillis());
