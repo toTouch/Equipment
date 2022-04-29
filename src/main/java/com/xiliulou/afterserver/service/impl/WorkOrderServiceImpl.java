@@ -389,12 +389,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             //"工单原因",
             //workOrderReasonName
             if (Objects.nonNull(o.getWorkOrderReasonId())) {
-                WorkOrderReason workOrderReason = workOrderReasonService.getById(o.getWorkOrderReasonId());
-                if (Objects.nonNull(workOrderReason)) {
-                    row.add(workOrderReason.getName());
-                } else {
-                    row.add("");
-                }
+                String name = this.getWorkOrderReasonStr(o.getWorkOrderReasonId(), "");
+                row.add(name);
             } else {
                 row.add("");
             }
@@ -736,12 +732,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             //"工单原因",
             //workOrderReasonName
             if (Objects.nonNull(o.getWorkOrderReasonId())) {
-                WorkOrderReason workOrderReason = workOrderReasonService.getById(o.getWorkOrderReasonId());
-                if (Objects.nonNull(workOrderReason)) {
-                    row.add(workOrderReason.getName());
-                } else {
-                    row.add("");
-                }
+                String name = this.getWorkOrderReasonStr(o.getWorkOrderReasonId(), "");
+                row.add(name);
             } else {
                 row.add("");
             }
@@ -2329,6 +2321,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         });
                     }
                     item.setProductInfoList(productInfo);
+                }
+
+                if(Objects.nonNull(item.getWorkOrderReasonId())) {
+                    item.setWorkOrderReasonName(this.getWorkOrderReasonStr(item.getWorkOrderReasonId(), ""));
                 }
 
                 List<WorkOrderServerQuery> workOrderServerList = workOrderServerService.queryByWorkOrderIdAndServerId(item.getId(), serverId);
