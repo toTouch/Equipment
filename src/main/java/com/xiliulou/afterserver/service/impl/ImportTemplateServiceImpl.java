@@ -39,35 +39,22 @@ public class ImportTemplateServiceImpl extends ServiceImpl<ImportTemplateMapper,
     public R upload(ImportTemplateQuery importTemplateQuery) {
         ImportTemplate importTemplateOld = importTemplateMapper.selectOne(
                 new QueryWrapper<ImportTemplate>().eq("type", importTemplateQuery.getType()));
-        int len = 0;
         if(Objects.isNull(importTemplateOld)){
             ImportTemplate importTemplate = new ImportTemplate();
             importTemplate.setFileName(importTemplateQuery.getFileName());
             importTemplate.setType(importTemplateQuery.getType());
             importTemplate.setCreateTime(System.currentTimeMillis());
             importTemplate.setUpdateTime(System.currentTimeMillis());
-            len = importTemplateMapper.insert(importTemplate);
+            importTemplateMapper.insert(importTemplate);
         }else{
             ImportTemplate importTemplate = new ImportTemplate();
             importTemplate.setId(importTemplateOld.getId());
             importTemplate.setFileName(importTemplateQuery.getFileName());
             importTemplate.setUpdateTime(System.currentTimeMillis());
-            len = importTemplateMapper.updateById(importTemplate);
-
-            if(len > 0){
-                String fileName = importTemplateOld.getFileName();
-                int separator = fileName.lastIndexOf(StrUtil.DASHED);
-                String bucketName = fileName.substring(0, separator);
-
-                minioUtil.removeObject(bucketName, fileName);
-            }
+            importTemplateMapper.updateById(importTemplate);
         }
 
-        if(len > 0){
-            return R.ok();
-        }
-
-        return R.fail("保存失败");
+        return R.ok();
     }
 
     @Override
@@ -77,8 +64,7 @@ public class ImportTemplateServiceImpl extends ServiceImpl<ImportTemplateMapper,
                 new QueryWrapper<ImportTemplate>().eq("type", type));
 
         if(Objects.nonNull(importTemplateOld)){
-            fileService.downLoadFile(importTemplateOld.getFileName(),0, response);
-            return R.ok();
+            return fileService.downLoadFile(importTemplateOld.getFileName(),0, response);
         }
 
        return R.fail("请联系管理员上传模板");
