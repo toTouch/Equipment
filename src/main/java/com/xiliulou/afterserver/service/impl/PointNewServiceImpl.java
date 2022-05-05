@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.Query;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -15,12 +16,10 @@ import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.*;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DateUtils;
+import com.xiliulou.afterserver.util.GaoDeMapUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.vo.PointNewInfoVo;
-import com.xiliulou.afterserver.web.query.CameraInfoQuery;
-import com.xiliulou.afterserver.web.query.PointAuditStatusQuery;
-import com.xiliulou.afterserver.web.query.PointQuery;
-import com.xiliulou.afterserver.web.query.ProductInfoQuery;
+import com.xiliulou.afterserver.web.query.*;
 import com.xiliulou.afterserver.web.vo.PointNewPullVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -466,7 +465,36 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
     @Override
     public R updateLatitudeAndLongitude() {
-        return null;
+        int offset = 0;
+        int size = 10;
+        while(true) {
+            List<PointNew> list = pointNewMapper.selectList(new QueryWrapper<PointNew>().last("limit " + offset + ", " + size));
+            if(CollectionUtils.isEmpty(list)) {
+                break;
+            }
+
+            list.parallelStream().forEach(item -> {
+                GeoCodeResultQuery geoCodeResultQuery = GaoDeMapUtil.getLonLat(item.getAddress());
+                if(Objects.isNull(geoCodeResultQuery)) {
+                    return;
+                }
+
+                if(Objects.equals(geoCodeResultQuery, GeoCodeResultQuery.STATUS_FAIL)) {
+                    return;
+                }
+
+                if(CollectionUtils.isEmpty(geoCodeResultQuery.getGeocodes())) {
+                    return;
+                }
+
+                GeoCodeQuery geoCodeQuery = geoCodeResultQuery.getGeocodes().get(0);
+                String[] lonlat = geoCodeQuery.getLocation().split(",");
+                item.setCoordY(new BigDecimal(lonlat[0]));
+                item.setCoordY(new BigDecimal(lonlat[1]));
+                this.updateById(item);
+            });
+        }
+        return R.ok();
     }
 
     /*@Override
