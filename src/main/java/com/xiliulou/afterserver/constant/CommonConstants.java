@@ -16,6 +16,6 @@ public interface CommonConstants {
 	 */
 	Integer FAIL = 1;
 
-
+	String GEOCODE_URL = "http://restapi.amap.com/v3/geocode/geo?key=%s&address=%s";
 
 }

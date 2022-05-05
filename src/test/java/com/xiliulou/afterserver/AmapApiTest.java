@@ -40,16 +40,18 @@ public class AmapApiTest {
 
         try {
             // 返回输入地址address的经纬度信息, 格式是 经度,纬度
-            String queryUrl = "http://restapi.amap.com/v3/geocode/geo?key=" + GAO_DE_KEY + "&address=" + "北京市海淀区中关村街道中国邮政储蓄银行(中关村东路支行)金五星科技文化园区";
+            String queryLonLatUrl = "http://restapi.amap.com/v3/geocode/geo?key=%s&address=%s";
+            String queryUrl = String.format(queryLonLatUrl, GAO_DE_KEY, "北京市海淀区中关村街道中关村东路金五星科技文化园区");
             // 高德接口返回的是JSON格式的字符串
             String queryResult = getResponse(queryUrl);
+            System.out.println(queryResult);
             JSONObject job = JSONObject.parseObject(queryResult);
             JSONObject jobJSON = JSONObject
                     .parseObject(
                             job.get("geocodes").toString().substring(1, job.get("geocodes").toString().length() - 1));
             String LngAndLat = jobJSON.get("location").toString();
 
-            System.out.println(queryResult);
+
             System.out.println(LngAndLat);
         } catch (Exception e) {
 
