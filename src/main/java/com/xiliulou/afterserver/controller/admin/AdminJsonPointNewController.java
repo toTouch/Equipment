@@ -634,4 +634,9 @@ public class AdminJsonPointNewController {
     public R updateAuditStatus(@RequestBody PointAuditStatusQuery pointAuditStatusQuery) {
         return pointNewService.updateAuditStatus(pointAuditStatusQuery);
     }
+
+    @GetMapping("admin/pointNew/update/latitude/longitude")
+    public R updateLatitudeAndLongitude(){
+        return pointNewService.updateLatitudeAndLongitude();
+    }
 }

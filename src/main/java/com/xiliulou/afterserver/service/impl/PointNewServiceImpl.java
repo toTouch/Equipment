@@ -319,7 +319,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             pointNew.setWarrantyTime(null);
         }
         int update = this.pointNewMapper.update(pointNew);
-        pointNew.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
+        //pointNew.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
         if (update>0){
             return R.ok();
         }
@@ -462,6 +462,11 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     @Override
     public List<PointNewPullVo> queryPointNewPull(String name) {
         return pointNewMapper.queryPointNewPull(name);
+    }
+
+    @Override
+    public R updateLatitudeAndLongitude() {
+        return null;
     }
 
     /*@Override

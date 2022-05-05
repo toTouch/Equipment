@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.baomidou.mybatisplus.annotation.TableName;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -143,6 +144,14 @@ public class PointNew {
      * 质保结束时间
      */
     private Long warrantyTime;
+    /**
+     * 纬度
+     */
+    private BigDecimal coordX;
+    /**
+     * 经度
+     */
+    private BigDecimal coordY;
 
 
     public static final Integer DEL_NORMAL = 0;

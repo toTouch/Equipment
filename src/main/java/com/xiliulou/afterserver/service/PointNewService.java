@@ -98,4 +98,6 @@ public interface PointNewService extends IService<PointNew> {
     void updatePastWarrantyStatus();
 
     List<PointNewPullVo> queryPointNewPull(String name);
+
+    R updateLatitudeAndLongitude();
 }
