@@ -32,6 +32,8 @@
         <result property="auditRemarks" column="audit_remarks" jdbcType="VARCHAR"/>
         <result property="warrantyPeriod" column="warranty_period" jdbcType="INTEGER"/>
         <result property="warrantyTime" column="warranty_time" jdbcType="INTEGER"/>
+        <result property="coordX" column="coord_x" jdbcType="DECIMAL"/>
+        <result property="coordY" column="coord_y" jdbcType="DECIMAL"/>
     </resultMap>
 
     <!--查询单个-->
@@ -51,7 +53,7 @@
         id, name , customer_id, status, city_id, install_type, address, camera_count, canopy_count, sn_no, card_number,
         remarks,create_uid,create_time, del_flag, card_supplier, completion_time, is_entry, is_acceptance, product_series,
         order_time, operator, logistics_info, product_info, camera_info, install_time, audit_status, audit_remarks,
-        warranty_period, warranty_time
+        warranty_period, warranty_time, coord_x, coord_y
         from t_point_new
         <where>
         and del_flag = 0
@@ -226,11 +228,11 @@
         insert into t_point_new(name,customer_id, status, city_id, install_type, address, camera_count, canopy_count,
          sn_no, card_number, remarks,create_uid,create_time, del_flag, card_supplier, completion_time, is_entry, is_acceptance,
           product_series, order_time, operator, logistics_info, product_info, camera_info, install_time, audit_status, audit_remarks,
-          warranty_period, warranty_time)
+          warranty_period, warranty_time, coord_x, coord_y)
         values (#{name},#{customerId}, #{status}, #{cityId}, #{installType}, #{address}, #{cameraCount}, #{canopyCount},
          #{snNo}, #{cardNumber},#{remarks},#{createUid},#{createTime}, #{delFlag}, #{cardSupplier}, #{completionTime},
          #{isEntry}, #{isAcceptance},#{productSeries},#{orderTime},#{operator}, #{logisticsInfo},#{productInfo},
-         #{cameraInfo},#{installTime},#{auditStatus},#{auditRemarks},#{warrantyPeriod},#{warrantyTime})
+         #{cameraInfo},#{installTime},#{auditStatus},#{auditRemarks},#{warrantyPeriod},#{warrantyTime}, #{coordX}, #{coordY})
     </insert>
 
     <!--通过主键修改数据-->
@@ -290,6 +292,12 @@
             </if>
             <if test="auditStatus != null">
                 audit_status = #{auditStatus},
+            </if>
+            <if test="coordX != null">
+                coord_x = #{coordX},
+            </if>
+            <if test="coordY != null">
+                coord_y = #{coordY},
             </if>
         </set>
         where id = #{id}
