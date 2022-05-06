@@ -468,7 +468,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         int offset = 0;
         int size = 10;
         while(true) {
-            List<PointNew> list = pointNewMapper.selectList(new QueryWrapper<PointNew>().orderByAsc("id").last("limit " + offset + ", " + size));
+            List<PointNew> list = pointNewMapper.selectList(new QueryWrapper<PointNew>().isNotNull("address").orderByAsc("id").last("limit " + offset + ", " + size));
             if(CollectionUtils.isEmpty(list)) {
                 break;
             }
@@ -490,7 +490,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
                 GeoCodeQuery geoCodeQuery = geoCodeResultQuery.getGeocodes().get(0);
                 String[] lonlat = geoCodeQuery.getLocation().split(",");
                 item.setCoordY(new BigDecimal(lonlat[0]));
-                item.setCoordY(new BigDecimal(lonlat[1]));
+                item.setCoordX(new BigDecimal(lonlat[1]));
                 this.updateById(item);
             });
 
