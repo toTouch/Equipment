@@ -40,7 +40,7 @@ public class AmapApiTest {
 
         try {
             // 返回输入地址address的经纬度信息, 格式是 经度,纬度
-            String queryLonLatUrl = "http://restapi.amap.com/v3/geocode/geo?key=%s&address=%s";
+            String queryLonLatUrl = "http://restapi.amap.com/v3/geocode/geo?key=%s&address=%s&batch=true";
             String queryUrl = String.format(queryLonLatUrl, GAO_DE_KEY, "北京市海淀区中关村街道中关村东路金五星科技文化园区");
             // 高德接口返回的是JSON格式的字符串
             String queryResult = getResponse(queryUrl);

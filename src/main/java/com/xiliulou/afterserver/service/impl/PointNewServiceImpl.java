@@ -468,7 +468,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         int offset = 0;
         int size = 10;
         while(true) {
-            List<PointNew> list = pointNewMapper.selectList(new QueryWrapper<PointNew>().last("limit " + offset + ", " + size));
+            List<PointNew> list = pointNewMapper.selectList(new QueryWrapper<PointNew>().orderByAsc("id").last("limit " + offset + ", " + size));
             if(CollectionUtils.isEmpty(list)) {
                 break;
             }
@@ -493,6 +493,8 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
                 item.setCoordY(new BigDecimal(lonlat[1]));
                 this.updateById(item);
             });
+
+            offset += size;
         }
         return R.ok();
     }

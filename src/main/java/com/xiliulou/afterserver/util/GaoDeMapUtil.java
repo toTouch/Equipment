@@ -18,7 +18,7 @@ import java.net.URLConnection;
  * @mood
  */
 public class GaoDeMapUtil {
-    private static final String GAO_DE_KEY = "75f594346e35dced0bf957474ea5ae89";
+    private static final String GAO_DE_KEY = "38dd4fe518ef94b2247f31229f22bf38";
 
     /**
      * 功能描述: 地址转换为经纬度
