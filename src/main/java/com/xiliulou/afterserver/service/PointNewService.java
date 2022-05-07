@@ -99,5 +99,5 @@ public interface PointNewService extends IService<PointNew> {
 
     List<PointNewPullVo> queryPointNewPull(String name);
 
-    R updateLatitudeAndLongitude();
+    R pointNewMapStatistics(List<String> coordXList, List<String> coordYList, Long cityId, Long provinceId, Integer productSeries);
 }

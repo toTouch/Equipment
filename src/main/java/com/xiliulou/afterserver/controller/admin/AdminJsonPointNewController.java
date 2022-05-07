@@ -635,8 +635,13 @@ public class AdminJsonPointNewController {
         return pointNewService.updateAuditStatus(pointAuditStatusQuery);
     }
 
-    @GetMapping("admin/pointNew/update/latitude/longitude")
-    public R updateLatitudeAndLongitude(){
-        return pointNewService.updateLatitudeAndLongitude();
+    @GetMapping("admin/pointNew/map/statistics")
+    public R pointNewMapStatistics(@RequestParam(value = "cityId",required = false) Long cityId,
+                                   @RequestParam(value = "provinceId", required = false) Long provinceId,
+                                   @RequestParam(value = "productSeries", required = false)Integer productSeries,
+                                   @RequestParam(value = "coordXs")List<String> coordXList,
+                                   @RequestParam(value = "coordYs")List<String> coordYList) {
+
+       return pointNewService.pointNewMapStatistics(coordXList, coordYList, cityId, provinceId,productSeries);
     }
 }
