@@ -5,6 +5,7 @@ import com.xiliulou.afterserver.entity.PointNew;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.xiliulou.afterserver.web.vo.PointNewMapCountVo;
 import com.xiliulou.afterserver.web.vo.PointNewMapStatisticsVo;
 import com.xiliulou.afterserver.web.vo.PointNewPullVo;
 import org.apache.ibatis.annotations.Param;
@@ -119,4 +120,6 @@ public interface PointNewMapper extends BaseMapper<PointNew> {
                                                 @Param("cityId")Long cityId,
                                                 @Param("provinceId")Long provinceId,
                                                 @Param("productSeries")Integer productSeries);
+
+    PointNewMapCountVo pointNewMapCount();
 }

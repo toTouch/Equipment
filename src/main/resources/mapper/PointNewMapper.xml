@@ -373,5 +373,9 @@
             </if>
         </where>
     </select>
+    
+    <select id="pointNewMapCount">
+
+    </select>
 
 </mapper>

@@ -648,4 +648,10 @@ public class AdminJsonPointNewController {
         List<BigDecimal> coordYList = JsonUtil.fromJsonArray(coordYs, BigDecimal.class);
        return pointNewService.pointNewMapStatistics(coordXList, coordYList, cityId, provinceId,productSeries);
     }
+
+    @GetMapping("admin/pointNew/map/count")
+    public R pointNewMapCount() {
+
+        return pointNewService.pointNewMapCount();
+    }
 }

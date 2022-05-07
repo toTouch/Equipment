@@ -470,6 +470,11 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         return R.ok(pointNewMapStatisticsVo);
     }
 
+    @Override
+    public R pointNewMapCount() {
+        return R.ok(pointNewMapper.pointNewMapCount());
+    }
+
     /*@Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public R saveCache(Long pointId, Long modelId, String no, Long batch) {

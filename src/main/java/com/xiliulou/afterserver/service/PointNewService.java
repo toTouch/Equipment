@@ -101,4 +101,6 @@ public interface PointNewService extends IService<PointNew> {
     List<PointNewPullVo> queryPointNewPull(String name);
 
     R pointNewMapStatistics(List<BigDecimal> coordXList, List<BigDecimal> coordYList, Long cityId, Long provinceId, Integer productSeries);
+
+    R pointNewMapCount();
 }
