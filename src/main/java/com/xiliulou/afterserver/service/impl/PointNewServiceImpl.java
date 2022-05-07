@@ -471,8 +471,13 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     }
 
     @Override
-    public R pointNewMapCount() {
-        return R.ok(pointNewMapper.pointNewMapCount());
+    public R pointNewMapProvinceCount() {
+        return R.ok(pointNewMapper.pointNewMapProvinceCount());
+    }
+
+    @Override
+    public R pointNewMapCityCount(Long pid) {
+        return R.ok(pointNewMapper.pointNewMapCityCount(pid));
     }
 
     /*@Override

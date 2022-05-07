@@ -374,8 +374,25 @@
         </where>
     </select>
     
-    <select id="pointNewMapCount">
+    <select id="pointNewMapProvinceCount" resultType="com.xiliulou.afterserver.web.vo.PointNewMapCountVo">
+        select `name`, count(*) as count from (
+             select p.name
+             from t_point_new pn
+             left join  t_city c on pn.city_id = c.id
+             left join  t_province p on c.pid = p.id
+        ) t
+        group by `name`
+    </select>
 
+    <select id="pointNewMapCityCount" resultType="com.xiliulou.afterserver.web.vo.PointNewMapCountVo">
+        select `name`, count(*) as count from (
+             select c.name
+             from t_point_new pn
+             left join  t_city c on pn.city_id = c.id
+             left join  t_province p on c.pid = p.id
+             where p.id = #{pid}
+        ) t
+        group by `name`
     </select>
 
 </mapper>
