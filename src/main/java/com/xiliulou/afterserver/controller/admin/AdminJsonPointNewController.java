@@ -649,9 +649,13 @@ public class AdminJsonPointNewController {
        return pointNewService.pointNewMapStatistics(coordXList, coordYList, cityId, provinceId,productSeries);
     }
 
-    @GetMapping("admin/pointNew/map/count")
-    public R pointNewMapCount() {
+    @GetMapping("admin/pointNew/map/province/count")
+    public R pointNewMapProvinceCount() {
+        return pointNewService.pointNewMapProvinceCount();
+    }
 
-        return pointNewService.pointNewMapCount();
+    @GetMapping("admin/pointNew/map/city/count")
+    public R pointNewMapCityCount(@RequestParam("pid")Long pid) {
+        return pointNewService.pointNewMapCityCount(pid);
     }
 }

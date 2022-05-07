@@ -102,5 +102,7 @@ public interface PointNewService extends IService<PointNew> {
 
     R pointNewMapStatistics(List<BigDecimal> coordXList, List<BigDecimal> coordYList, Long cityId, Long provinceId, Integer productSeries);
 
-    R pointNewMapCount();
+    R pointNewMapProvinceCount();
+
+    R pointNewMapCityCount(Long pid);
 }

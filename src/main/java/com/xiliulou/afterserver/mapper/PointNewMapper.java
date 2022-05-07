@@ -121,5 +121,7 @@ public interface PointNewMapper extends BaseMapper<PointNew> {
                                                 @Param("provinceId")Long provinceId,
                                                 @Param("productSeries")Integer productSeries);
 
-    PointNewMapCountVo pointNewMapCount();
+    List<PointNewMapCountVo> pointNewMapProvinceCount();
+
+    List<PointNewMapCountVo> pointNewMapCityCount(@Param("pid") Long pid);
 }
