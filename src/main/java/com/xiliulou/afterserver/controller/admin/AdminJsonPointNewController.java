@@ -32,6 +32,7 @@ import com.xiliulou.afterserver.web.query.CameraInfoQuery;
 import com.xiliulou.afterserver.web.query.PointAuditStatusQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
 import com.xiliulou.afterserver.web.query.ProductInfoQuery;
+import com.xiliulou.core.json.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -640,9 +641,11 @@ public class AdminJsonPointNewController {
     public R pointNewMapStatistics(@RequestParam(value = "cityId",required = false) Long cityId,
                                    @RequestParam(value = "provinceId", required = false) Long provinceId,
                                    @RequestParam(value = "productSeries", required = false)Integer productSeries,
-                                   @RequestParam(value = "coordXs")List<BigDecimal> coordXList,
-                                   @RequestParam(value = "coordYs")List<BigDecimal> coordYList) {
+                                   @RequestParam(value = "coordXs") String coordXs,
+                                   @RequestParam(value = "coordYs") String coordYs) {
 
+        List<BigDecimal> coordXList = JsonUtil.fromJsonArray(coordXs, BigDecimal.class);
+        List<BigDecimal> coordYList = JsonUtil.fromJsonArray(coordYs, BigDecimal.class);
        return pointNewService.pointNewMapStatistics(coordXList, coordYList, cityId, provinceId,productSeries);
     }
 }
