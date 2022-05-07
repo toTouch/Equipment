@@ -111,5 +111,11 @@ public interface PointNewMapper extends BaseMapper<PointNew> {
     @Select("select id, name from t_point_new where name like concat('%', #{name}, '%') limit 0, 20")
     List<PointNewPullVo> queryPointNewPull(String name);
 
-    List<PointNewMapStatisticsVo> mapStatistics(String coordXStart, String coordXEnd, String coordYStart, String coordYEnd, Long cityId, Long provinceId, Integer productSeries);
+    List<PointNewMapStatisticsVo> mapStatistics(@Param("coordXStart")String coordXStart,
+                                                @Param("coordXEnd")String coordXEnd,
+                                                @Param("coordYStart")String coordYStart,
+                                                @Param("coordYEnd")String coordYEnd,
+                                                @Param("cityId")Long cityId,
+                                                @Param("provinceId")Long provinceId,
+                                                @Param("productSeries")Integer productSeries);
 }
