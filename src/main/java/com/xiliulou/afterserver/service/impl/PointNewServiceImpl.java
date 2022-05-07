@@ -457,7 +457,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     }
 
     @Override
-    public R pointNewMapStatistics(List<String> coordXList, List<String> coordYList, Long cityId, Long provinceId, Integer productSeries) {
+    public R pointNewMapStatistics(List<BigDecimal> coordXList, List<BigDecimal> coordYList, Long cityId, Long provinceId, Integer productSeries) {
         if(CollectionUtils.isEmpty(coordXList) || coordXList.size() != 2) {
             return R.ok("纬度范围不合法,请传入正确范围");
         }

@@ -44,6 +44,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -639,8 +640,8 @@ public class AdminJsonPointNewController {
     public R pointNewMapStatistics(@RequestParam(value = "cityId",required = false) Long cityId,
                                    @RequestParam(value = "provinceId", required = false) Long provinceId,
                                    @RequestParam(value = "productSeries", required = false)Integer productSeries,
-                                   @RequestParam(value = "coordXs")List<String> coordXList,
-                                   @RequestParam(value = "coordYs")List<String> coordYList) {
+                                   @RequestParam(value = "coordXs")List<BigDecimal> coordXList,
+                                   @RequestParam(value = "coordYs")List<BigDecimal> coordYList) {
 
        return pointNewService.pointNewMapStatistics(coordXList, coordYList, cityId, provinceId,productSeries);
     }
