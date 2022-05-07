@@ -4,6 +4,7 @@ import com.xiliulou.afterserver.config.AppConfig;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ApiRequestQuery;
 import com.xiliulou.security.utils.EncryptUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,7 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/outer/compression")
+@Slf4j
 public class JsonOuterCompressionController {
 
     @Autowired
@@ -25,6 +27,7 @@ public class JsonOuterCompressionController {
 
     @PostMapping("/login")
     public R checkCompression(@RequestParam("username")String username, @RequestParam("password")String password){
+        log.error("压测 ------" + appConfig.getPassword() + " : " + (appConfig.getPassword() != null ? appConfig.getPassword().getBytes().length : 0));
         String decryptPassword = EncryptUtil.decryptPassword(appConfig.getPassword());
         if(!Objects.equals(username, appConfig.getUsername()) || Objects.equals(decryptPassword, password)) {
             return R.fail(null, "用户名或密码错误");
