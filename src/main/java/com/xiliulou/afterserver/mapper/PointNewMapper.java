@@ -4,6 +4,7 @@ import com.xiliulou.afterserver.entity.PointNew;
 
 import java.util.List;
 
+import com.xiliulou.afterserver.web.vo.PointNewMapStatisticsVo;
 import com.xiliulou.afterserver.web.vo.PointNewPullVo;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -109,4 +110,6 @@ public interface PointNewMapper extends BaseMapper<PointNew> {
 
     @Select("select id, name from t_point_new where name like concat('%', #{name}, '%') limit 0, 20")
     List<PointNewPullVo> queryPointNewPull(String name);
+
+    List<PointNewMapStatisticsVo> mapStatistics(String coordXStart, String coordXEnd, String coordYStart, String coordYEnd, Long cityId, Long provinceId, Integer productSeries);
 }
