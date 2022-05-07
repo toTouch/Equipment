@@ -27,8 +27,7 @@ public class JsonOuterCompressionController {
 
     @PostMapping("/login")
     public R checkCompression(@RequestParam("username")String username, @RequestParam("password")String password){
-        log.error("压测 ------" + appConfig.getPassword() + " : " + (appConfig.getPassword() != null ? appConfig.getPassword().getBytes().length : 0));
-        String decryptPassword = EncryptUtil.decryptPassword(appConfig.getPassword());
+        String decryptPassword = appConfig.getPassword();
         if(!Objects.equals(username, appConfig.getUsername()) || Objects.equals(decryptPassword, password)) {
             return R.fail(null, "用户名或密码错误");
         }
