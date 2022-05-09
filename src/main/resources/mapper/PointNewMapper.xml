@@ -380,6 +380,7 @@
              from t_point_new pn
              left join  t_city c on pn.city_id = c.id
              left join  t_province p on c.pid = p.id
+             where  pn.del_flag = 0
         ) t
         group by `name`
     </select>
@@ -390,7 +391,7 @@
              from t_point_new pn
              left join  t_city c on pn.city_id = c.id
              left join  t_province p on c.pid = p.id
-             where p.id = #{pid}
+             where p.id = #{pid} and pn.del_flag = 0
         ) t
         group by `name`
     </select>
