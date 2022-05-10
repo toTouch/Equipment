@@ -120,5 +120,10 @@ public class PointProductBindServiceImpl implements PointProductBindService {
         return pointProductBindMapper.selectOne(wrapper);
     }
 
+    @Override
+    public List<Long> queryProductIdsByPidAndPtype(Long pointId, Integer pointType) {
+        return pointProductBindMapper.queryProductIdsByPidAndPtype(pointId, pointType);
+    }
+
 
 }

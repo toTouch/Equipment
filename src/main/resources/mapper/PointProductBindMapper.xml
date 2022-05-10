@@ -67,4 +67,16 @@
         delete from t_point_product_bind where id = #{id}
     </delete>
 
+    <select id="queryProductIdsByPidAndPtype" resultType="long">
+        select product_id from t_point_product_bind
+        <where>
+            <if test="pointId != null">
+                and point_id = #{pointId}
+            </if>
+            <if test="pointType != null">
+                and point_type = #{pointType}
+            </if>
+        </where>
+    </select>
+
 </mapper>

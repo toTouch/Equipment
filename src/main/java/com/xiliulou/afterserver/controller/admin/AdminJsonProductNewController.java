@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.controller.admin;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
@@ -73,9 +74,19 @@ public class AdminJsonProductNewController {
                        @RequestParam(value = "pointType",required = false) Integer pointType,
                        @RequestParam(value = "startTime",required = false) Long startTime,
                        @RequestParam(value = "endTime",required = false) Long endTime){
-        List<ProductNew> productNews = productNewService.queryAllByLimit(offset,limit,no,modelId,startTime,endTime,pointId, pointType);
+        List<Long> productIds = null;
+        if(Objects.nonNull(pointId) || Objects.nonNull(pointType)){
+            productIds = pointProductBindService.queryProductIdsByPidAndPtype(pointId, pointType);
+            //这里如果没查到就添加一个默认的，否则productIds为空，列表返回全部
+            if(CollectionUtils.isEmpty(productIds)) {
+                productIds = new ArrayList<>();
+                productIds.add(-1L);
+            }
+        }
 
-        productNews.forEach(item -> {
+        List<ProductNew> productNews = productNewService.queryAllByLimit(offset,limit,no,modelId,startTime,endTime,productIds);
+
+        productNews.parallelStream().forEach(item -> {
 
             PointProductBind pointProductBind = pointProductBindService.queryByProductId(item.getId());
             if(Objects.nonNull(pointProductBind)){
@@ -147,7 +158,7 @@ public class AdminJsonProductNewController {
         });
 
 
-        Integer count = productNewService.count(no,modelId,startTime,endTime,pointId);
+        Integer count = productNewService.count(no,modelId,startTime,endTime,productIds);
 
         HashMap<String, Object> stringObjectHashMap = new HashMap<>();
         stringObjectHashMap.put("data",productNews);
