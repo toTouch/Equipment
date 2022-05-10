@@ -108,8 +108,8 @@ public class ProductNewServiceImpl implements ProductNewService {
      * @return 对象列表
      */
     @Override
-    public List<ProductNew> queryAllByLimit(int offset, int limit,String no,Long modelId,Long startTime,Long endTime, Long pointId, Integer pointType) {
-        return this.productNewMapper.queryAllByLimit(offset, limit,no,modelId,startTime,endTime, pointId, pointType);
+    public List<ProductNew> queryAllByLimit(int offset, int limit,String no,Long modelId,Long startTime,Long endTime, List<Long> list) {
+        return this.productNewMapper.queryAllByLimit(offset, limit,no,modelId,startTime,endTime,list);
     }
 
     /**
@@ -348,8 +348,8 @@ public class ProductNewServiceImpl implements ProductNewService {
     }
 
     @Override
-    public Integer count(String no,Long modelId,Long startTime,Long endTime, Long pointId) {
-        return this.productNewMapper.countProduct(no,modelId,startTime,endTime,pointId);
+    public Integer count(String no,Long modelId,Long startTime,Long endTime, List<Long> list) {
+        return this.productNewMapper.countProduct(no,modelId,startTime,endTime,list);
     }
 
     @Override

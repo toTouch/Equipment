@@ -64,4 +64,5 @@ public interface PointProductBindMapper extends BaseMapper<PointProductBind> {
      */
     int deleteById(Long id);
 
+    List<Long> queryProductIdsByPidAndPtype(@Param("pointId") Long pointId, @Param("pointType")Integer pointType);
 }

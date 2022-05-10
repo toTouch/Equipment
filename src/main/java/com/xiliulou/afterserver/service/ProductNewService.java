@@ -41,7 +41,7 @@ public interface ProductNewService {
      * @param limit  查询条数
      * @return 对象列表
      */
-    List<ProductNew> queryAllByLimit(int offset, int limit,String no,Long modelId,Long startTime,Long endTime, Long pointId, Integer pointType);
+    List<ProductNew> queryAllByLimit(int offset, int limit,String no,Long modelId,Long startTime,Long endTime,List<Long> list);
 
     /**
      * 新增数据
@@ -77,7 +77,7 @@ public interface ProductNewService {
 
     ProductNew prdouctInfoByNo(String no);
 
-    Integer count(String no,Long modelId,Long startTime,Long endTime, Long pointId);
+    Integer count(String no,Long modelId,Long startTime,Long endTime, List<Long> list);
 
     R getProductFile(Long id);
 
