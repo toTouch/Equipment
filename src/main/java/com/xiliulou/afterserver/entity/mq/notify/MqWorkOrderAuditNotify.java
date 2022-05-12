@@ -13,5 +13,5 @@ public class MqWorkOrderAuditNotify {
     private String orderTypeName;
     private String pointName;
     private String submitUName;
-    private Long submitTime;
+    private String submitTime;
 }
