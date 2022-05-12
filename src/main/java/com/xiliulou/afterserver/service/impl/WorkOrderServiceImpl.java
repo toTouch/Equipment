@@ -2668,7 +2668,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 return;
             }
 
-            SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             MqNotifyCommon<MqWorkOrderServerNotify> query = new MqNotifyCommon<>();
             query.setType(MqNotifyCommon.TYPE_AFTER_SALES_SERVER);
             query.setTime(System.currentTimeMillis());
