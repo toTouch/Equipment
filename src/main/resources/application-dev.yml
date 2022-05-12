@@ -129,8 +129,8 @@ userrole:
 rocketmq:
   name-server: xiliulou-rocketmq:9876
   producer:
-    group: after-sales-producer
+    group: cupboard-producer
   consumer:
-    group: after-sales-consumer
+    group: cupboard-consumer
 
 
