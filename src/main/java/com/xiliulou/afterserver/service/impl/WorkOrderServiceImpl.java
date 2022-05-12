@@ -2476,6 +2476,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         BeanUtils.copyProperties(workOrderAssignmentQuery, workOrder);
         String productInfo = JSON.toJSONString(workOrderAssignmentQuery.getProductInfoList());
         workOrder.setProductInfo(productInfo);
+        workOrder.setType(workOrderOld.getType());
 
         if(Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
             workOrder.setStatus(WorkOrder.STATUS_INIT);
@@ -2608,6 +2609,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     private void sendWorkAuditNotifyMq(WorkOrder workOrder) {
         Long time = System.currentTimeMillis();
 
+        SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         MqNotifyCommon<MqWorkOrderAuditNotify> query = new MqNotifyCommon<>();
         query.setType(MqNotifyCommon.TYPE_AFTER_SALES_AUDIT);
         query.setTime(time);
@@ -2615,7 +2617,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         MqWorkOrderAuditNotify mqWorkOrderAuditNotify = new MqWorkOrderAuditNotify();
         mqWorkOrderAuditNotify.setWorkOrderNo(workOrder.getOrderNo());
-        mqWorkOrderAuditNotify.setSubmitTime(time);
+        mqWorkOrderAuditNotify.setSubmitTime(simp.format(new Date(time)));
 
         WorkOrderType workOrderType = workOrderTypeService.getById(workOrder.getType());
         if(Objects.nonNull(workOrderType)){
