@@ -12,5 +12,5 @@ public class MqWorkOrderServerNotify {
     private String workOrderNo;
     private String orderTypeName;
     private String pointName;
-    private Long assignmentTime;
+    private String assignmentTime;
 }
