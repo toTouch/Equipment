@@ -353,8 +353,8 @@ public class ProductNewServiceImpl implements ProductNewService {
     }
 
     @Override
-    public R getProductFile(Long id) {
-        List<File> fileList = fileService.queryByProductNewId(id);
+    public R getProductFile(Long id, Integer fileType) {
+        List<File> fileList = fileService.queryByProductNewId(id, fileType);
         return R.ok(fileList);
     }
 
@@ -703,6 +703,9 @@ public class ProductNewServiceImpl implements ProductNewService {
             vo.setColor(productNew.getColor());
             vo.setSurface(productNew.getSurface());
             vo.setCreateTime(sdf.format(new Date(productNew.getCreateTime())));
+
+            List<File> fileList = fileService.queryByProductNewId(productNew.getId(), File.FILE_TYPE_PRODUCT_PDA);
+            vo.setFileList(fileList);
         }
 
         return R.ok(vo);

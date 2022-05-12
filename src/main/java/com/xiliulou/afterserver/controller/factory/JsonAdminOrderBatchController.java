@@ -1,15 +1,22 @@
 package com.xiliulou.afterserver.controller.factory;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.ProductNewDetailsQuery;
+import com.xiliulou.storage.service.impl.AliyunOssService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -33,7 +40,11 @@ public class JsonAdminOrderBatchController {
     @Autowired
     private CameraService cameraService;
     @Autowired
-    ColorCardService colorCardService;
+    private ColorCardService colorCardService;
+    @Autowired
+    private FileService fileService;
+    @Autowired
+    private AliyunOssService aliyunOssService;
 
 
     @GetMapping("/batch/list")
@@ -154,5 +165,50 @@ public class JsonAdminOrderBatchController {
     @GetMapping("colorCard/pull")
     public R queryPull(@RequestParam(value = "name", required = false) String name){
         return  colorCardService.queryPull(name);
+    }
+
+    /**
+     * 上传图片
+     * @param file
+     * @return
+     */
+    @PostMapping("productNew/file")
+    public R saveFile(@RequestBody File file){
+        file.setCreateTime(System.currentTimeMillis());
+        return R.ok(fileService.save(file));
+    }
+
+    /**
+     * 获取oss签名
+     * @param moduleName
+     * @return
+     */
+    @GetMapping("/oss/getPolicy")
+    public Map<String, String> policy(@RequestParam("moduleName")String moduleName) {
+        String name = moduleName + "/";
+        Map<String, String> ossUploadSign = aliyunOssService.getOssUploadSign(name);
+        return ossUploadSign;
+    }
+
+    /**
+     * 删除图片
+     * @param id
+     * @return
+     */
+    @DeleteMapping("productNew/file/{id}")
+    public R removeFile(@PathVariable("id") Long id){
+        return R.ok(fileService.removeById(id));
+    }
+
+    /**
+     * 下载图片
+     * @param fileName
+     * @param fileType
+     * @param response
+     * @return
+     */
+    @GetMapping("downLoad")
+    public R getFile(@RequestParam("fileName") String fileName, @RequestParam(value = "fileType", required = false, defaultValue = "0")Integer fileType, HttpServletResponse response) {
+        return fileService.downLoadFile(fileName,fileType, response);
     }
 }

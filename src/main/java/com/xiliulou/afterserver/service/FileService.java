@@ -19,7 +19,7 @@ public interface FileService extends IService<File> {
 
     List<File> queryByPointId(Long pid);
 
-    List<File> queryByProductNewId(Long productId);
+    List<File> queryByProductNewId(Long productId, Integer fileType);
 
     R removeFile(Long fileId, Integer fileType);
 

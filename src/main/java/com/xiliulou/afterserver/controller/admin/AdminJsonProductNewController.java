@@ -169,7 +169,7 @@ public class AdminJsonProductNewController {
 
     @GetMapping("/admin/productNew/{id}")
     public R getProductFile(@PathVariable("id") Long id){
-        return productNewService.getProductFile(id);
+        return productNewService.getProductFile(id, File.FILE_TYPE_PRODUCT_STRAWBERRY);
     }
 
     @PutMapping("/admin/productNew/update/status")

@@ -157,8 +157,8 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     }
 
     @Override
-    public List<File> queryByProductNewId(Long productId) {
-        LambdaQueryWrapper<File> queryWrapper = new LambdaQueryWrapper<File>().eq(File::getType, File.TYPE_PRODUCT).eq(File::getBindId, productId);
+    public List<File> queryByProductNewId(Long productId, Integer fileType) {
+        LambdaQueryWrapper<File> queryWrapper = new LambdaQueryWrapper<File>().eq(File::getType, File.TYPE_PRODUCT).eq(File::getBindId, productId).eq(File::getFileType, fileType);
         return this.baseMapper.selectList(queryWrapper);
     }
 

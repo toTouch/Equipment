@@ -79,7 +79,7 @@ public interface ProductNewService {
 
     Integer count(String no,Long modelId,Long startTime,Long endTime, List<Long> list);
 
-    R getProductFile(Long id);
+    R getProductFile(Long id, Integer fileType);
 
     R updateStatusFromBatch(List<Long> ids, Integer status);
 

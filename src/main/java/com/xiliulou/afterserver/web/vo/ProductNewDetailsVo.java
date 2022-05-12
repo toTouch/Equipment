@@ -1,6 +1,9 @@
 package com.xiliulou.afterserver.web.vo;
 
+import com.xiliulou.afterserver.entity.File;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * @author Hardy
@@ -68,4 +71,8 @@ public class ProductNewDetailsVo {
     private Long cameraCardId;
 
     private String createTime;
+    /**
+     * 手持终端图片
+     */
+    private List<File> fileList;
 }
