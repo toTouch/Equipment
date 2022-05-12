@@ -2668,6 +2668,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 return;
             }
 
+            SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             MqNotifyCommon<MqWorkOrderServerNotify> query = new MqNotifyCommon<>();
             query.setType(MqNotifyCommon.TYPE_AFTER_SALES_SERVER);
             query.setTime(System.currentTimeMillis());
@@ -2677,7 +2678,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             mqWorkOrderServerNotify.setWorkOrderNo(workOrder.getOrderNo());
             mqWorkOrderServerNotify.setOrderTypeName(data.get("workOrderType"));
             mqWorkOrderServerNotify.setPointName(data.get("pointNew"));
-            mqWorkOrderServerNotify.setAssignmentTime(workOrder.getAssignmentTime());
+            mqWorkOrderServerNotify.setAssignmentTime(simp.format(new Date(workOrder.getAssignmentTime())));
             query.setData(mqWorkOrderServerNotify);
 
             Pair<Boolean, String> result = rocketMqService.sendSyncMsg(MqConstant.TOPIC_MAINTENANCE_NOTIFY, JsonUtil.toJson(query), MqConstant.TAG_AFTER_SALES, "", 0);
