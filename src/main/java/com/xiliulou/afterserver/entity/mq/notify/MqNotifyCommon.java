@@ -29,9 +29,9 @@ public class MqNotifyCommon<T> {
     /**
      * 硬件消息
      */
-    public static final Integer  TYPE_AFTER_SALES_AUDIT = 3;
+    public static final Integer  TYPE_AFTER_SALES_AUDIT = 4;
     /**
      * 设备消息
      */
-    public static final Integer TYPE_AFTER_SALES_SERVER = 4;
+    public static final Integer TYPE_AFTER_SALES_SERVER = 3;
 }
