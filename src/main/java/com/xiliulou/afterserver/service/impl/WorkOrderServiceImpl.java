@@ -2083,7 +2083,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 && Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)
                 && Objects.isNull(oldWorkOrder.getAssignmentTime())) {
             workOrder.setAssignmentTime(System.currentTimeMillis());
-            this.sendWorkServerNotifyMq(workOrder);
+            this.sendWorkServerNotifyMq(oldWorkOrder);
         }
 
 
