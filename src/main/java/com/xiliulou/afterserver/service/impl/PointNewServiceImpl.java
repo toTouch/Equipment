@@ -377,7 +377,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
                     productNew.setBatchName(batch.getBatchNo());
                 }
 
-                List<File> productFileList = fileService.queryByProductNewId(productNew.getId());
+                List<File> productFileList = fileService.queryByProductNewId(productNew.getId(), File.FILE_TYPE_PRODUCT_STRAWBERRY);
                 productNew.setFileList(productFileList);
                 productNews.add(productNew);
 
