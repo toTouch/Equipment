@@ -19,6 +19,10 @@ public interface MqConstant {
     /**
      * phone
      */
-    String AUDIT_ADMIN_PHONE = "17614022644";
+    //周国威
+    //String AUDIT_ADMIN_PHONE = "17614022644";
+    //李苏明
     //String AUDIT_ADMIN_PHONE = "17302575157";
+    //王银
+    String AUDIT_ADMIN_PHONE = "15829762189";
 }
