@@ -66,6 +66,7 @@ public abstract class ApiFilter implements Filter {
             String tenantAppInfo = getTenantAppInfo();
 
             String signature = SignUtils.getSignature(apiRequestQuery,tenantAppInfo);
+            log.error("签名测试：" + apiRequestQuery + "," + signature);
             if (!apiRequestQuery.getSign().equals(signature)) {
                 ResponseUtil.out(response, R.fail("AUTH.1004", "签名失败!"));
                 return;
