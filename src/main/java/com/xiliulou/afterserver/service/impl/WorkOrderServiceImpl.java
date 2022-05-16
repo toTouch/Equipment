@@ -1156,7 +1156,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 statusStr = "已暂停";
                 break;
             case 6:
-                statusStr = "待排单";
+                statusStr = "待派单";
                 break;
         }
         return statusStr;
