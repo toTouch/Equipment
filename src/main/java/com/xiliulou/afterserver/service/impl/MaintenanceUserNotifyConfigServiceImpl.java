@@ -90,6 +90,7 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
                 .phones(query.getPhones())
                 .createTime(System.currentTimeMillis())
                 .updateTime(System.currentTimeMillis())
+
                 .build();
         save(build);
         return Pair.of(true, null);
