@@ -16,4 +16,9 @@ public class MaintenanceUserNotifyConfigQuery {
 
     @NotNull(message = "权限不可以为空")
     private Integer permission;
+
+    @NotNull(message = "类型不可以为空")
+    private Integer type;
+
+    private Integer bindId;
 }
