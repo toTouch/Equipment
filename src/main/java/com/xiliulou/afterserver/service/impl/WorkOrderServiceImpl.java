@@ -58,6 +58,7 @@ import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -102,6 +103,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     WorkAuditNotifyService workAuditNotifyService;
     @Autowired
     RocketMqService rocketMqService;
+    @Autowired
+    MaintenanceUserNotifyConfigService maintenanceUserNotifyConfigService;
 
 
     @Override
@@ -2607,38 +2610,45 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     private void sendWorkAuditNotifyMq(WorkOrder workOrder) {
-        Long time = System.currentTimeMillis();
-
+        MaintenanceUserNotifyConfig maintenanceUserNotifyConfig = maintenanceUserNotifyConfigService.queryByPermissions(MaintenanceUserNotifyConfig.P_REVIEW);
+        if(Objects.isNull(maintenanceUserNotifyConfig) || org.springframework.util.StringUtils.isEmpty(maintenanceUserNotifyConfig.getPhones())) {
+            return;
+        }
+        List<String> phones = JsonUtil.fromJsonArray(maintenanceUserNotifyConfig.getPhones(), String.class);
         SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        MqNotifyCommon<MqWorkOrderAuditNotify> query = new MqNotifyCommon<>();
-        query.setType(MqNotifyCommon.TYPE_AFTER_SALES_AUDIT);
-        query.setTime(time);
-        query.setPhone(MqConstant.AUDIT_ADMIN_PHONE);
+        phones.forEach(p -> {
+            MqNotifyCommon<MqWorkOrderAuditNotify> query = new MqNotifyCommon<>();
+            Long time = System.currentTimeMillis();
 
-        MqWorkOrderAuditNotify mqWorkOrderAuditNotify = new MqWorkOrderAuditNotify();
-        mqWorkOrderAuditNotify.setWorkOrderNo(workOrder.getOrderNo());
-        mqWorkOrderAuditNotify.setSubmitTime(simp.format(new Date(time)));
+            query.setType(MqNotifyCommon.TYPE_AFTER_SALES_AUDIT);
+            query.setTime(time);
+            query.setPhone(MqConstant.AUDIT_ADMIN_PHONE);
 
-        WorkOrderType workOrderType = workOrderTypeService.getById(workOrder.getType());
-        if(Objects.nonNull(workOrderType)){
-            mqWorkOrderAuditNotify.setOrderTypeName(workOrderType.getType());
-        }
+            MqWorkOrderAuditNotify mqWorkOrderAuditNotify = new MqWorkOrderAuditNotify();
+            mqWorkOrderAuditNotify.setWorkOrderNo(workOrder.getOrderNo());
+            mqWorkOrderAuditNotify.setSubmitTime(simp.format(new Date(time)));
 
-        PointNew pointNew = pointNewService.getById(workOrder.getPointId());
-        if(Objects.nonNull(pointNew)) {
-            mqWorkOrderAuditNotify.setPointName(pointNew.getName());
-        }
+            WorkOrderType workOrderType = workOrderTypeService.getById(workOrder.getType());
+            if(Objects.nonNull(workOrderType)){
+                mqWorkOrderAuditNotify.setOrderTypeName(workOrderType.getType());
+            }
 
-        User user = userService.getUserById(workOrder.getCommissionerId());
-        if(Objects.nonNull(user)) {
-            mqWorkOrderAuditNotify.setSubmitUName(user.getUserName());
-        }
-        query.setData(mqWorkOrderAuditNotify);
+            PointNew pointNew = pointNewService.getById(workOrder.getPointId());
+            if(Objects.nonNull(pointNew)) {
+                mqWorkOrderAuditNotify.setPointName(pointNew.getName());
+            }
 
-        Pair<Boolean, String> result = rocketMqService.sendSyncMsg(MqConstant.TOPIC_MAINTENANCE_NOTIFY, JsonUtil.toJson(query), MqConstant.TAG_AFTER_SALES, "", 0);
-        if (!result.getLeft()) {
-            log.error("SEND WORKORDER AUDIT MQ ERROR! no={}", workOrder.getOrderNo());
-        }
+            User user = userService.getUserById(workOrder.getCommissionerId());
+            if(Objects.nonNull(user)) {
+                mqWorkOrderAuditNotify.setSubmitUName(user.getUserName());
+            }
+            query.setData(mqWorkOrderAuditNotify);
+
+            Pair<Boolean, String> result = rocketMqService.sendSyncMsg(MqConstant.TOPIC_MAINTENANCE_NOTIFY, JsonUtil.toJson(query), MqConstant.TAG_AFTER_SALES, "", 0);
+            if (!result.getLeft()) {
+                log.error("SEND WORKORDER AUDIT MQ ERROR! no={}", workOrder.getOrderNo());
+            }
+        });
     }
 
     private void sendWorkServerNotifyMq(WorkOrder workOrder) {

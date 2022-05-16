@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiliulou.afterserver.mapper.MaintenanceUserNotifyConfigMapper">
+    <resultMap type="com.xiliulou.afterserver.entity.MaintenanceUserNotifyConfig" id="MaintenanceUserNotifyConfigMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="phones" column="phones" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="INTEGER"/>
+        <result property="updateTime" column="update_time" jdbcType="INTEGER"/>
+        <result property="permissions" column="permissions" jdbcType="INTEGER"/>
+    </resultMap>
+
+
+</mapper>
