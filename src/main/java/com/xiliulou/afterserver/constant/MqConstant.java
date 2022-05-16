@@ -25,4 +25,9 @@ public interface MqConstant {
     //String AUDIT_ADMIN_PHONE = "17302575157";
     //王银
     String AUDIT_ADMIN_PHONE = "15829762189";
+    /**
+     * 二维码链接
+     */
+     String QR_URL = "https://test.charge.xiliulou.com/hnotify";
+     String CACHE_TENANT_MAINTENANCE_USER_CONFIG_TEST = "cache_tenant_maintenance_user_config_test";
 }
