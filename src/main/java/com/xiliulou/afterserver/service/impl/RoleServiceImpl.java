@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.google.common.collect.Lists;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.RoleMapper;
@@ -181,5 +182,17 @@ public class RoleServiceImpl implements RoleService {
 
         List<PermissionResourceTree> permissionResourceTrees = TreeUtils.buildTree(result, PermissionResource.MENU_ROOT);
         return Pair.of(true, permissionResourceTrees);
+    }
+
+    @Override
+    public Pair<Boolean, Object> queryRoleByUid(Long uid) {
+        List<Role> userRoles = userRoleService.findByUid(uid);
+        List<Long> role = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(userRoles)) {
+            userRoles.forEach(x -> {
+                role.add(x.getId());
+            });
+        }
+        return Pair.of(true, role);
     }
 }
