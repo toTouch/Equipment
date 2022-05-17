@@ -15,7 +15,7 @@ public class MaintenanceUserNotifyConfigQuery {
     private String phones;
 
     @NotNull(message = "权限不可以为空")
-    private String permission;
+    private Integer permission;
 
     @NotNull(message = "类型不可以为空")
     private Integer type;

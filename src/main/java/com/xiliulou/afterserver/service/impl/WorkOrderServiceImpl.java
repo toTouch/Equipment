@@ -2615,23 +2615,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return;
         }
         List<String> phones = JsonUtil.fromJsonArray(maintenanceUserNotifyConfig.getPhones(), String.class);
-        List<String> permissions = JsonUtil.fromJsonArray(maintenanceUserNotifyConfig.getPermissions(), String.class);
 
         if(CollectionUtils.isEmpty(phones)) {
             return;
         }
 
-        if(CollectionUtils.isEmpty(permissions)) {
-            return;
-        }
-
-        Long permissionsSum = 0L;
-        for(String p : permissions) {
-            permissionsSum += Long.parseLong(p);
-        }
-
         SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        if(Objects.equals(permissionsSum & MaintenanceUserNotifyConfig.P_SERVER, MaintenanceUserNotifyConfig.P_SERVER)) {
+        if(Objects.equals(maintenanceUserNotifyConfig.getPermissions() & MaintenanceUserNotifyConfig.P_SERVER, MaintenanceUserNotifyConfig.P_SERVER)) {
             MqNotifyCommon<MqWorkOrderAuditNotify> query = new MqNotifyCommon<>();
             Long time = System.currentTimeMillis();
 
@@ -2693,22 +2683,12 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
 
             List<String> serverPhones = JsonUtil.fromJsonArray(maintenanceUserNotifyConfig.getPhones(), String.class);
-            List<String> permissions = JsonUtil.fromJsonArray(maintenanceUserNotifyConfig.getPermissions(), String.class);
 
             if(CollectionUtils.isEmpty(serverPhones)) {
                 return;
             }
 
-            if(CollectionUtils.isEmpty(permissions)) {
-                return;
-            }
-
-            Long permissionsSum = 0L;
-            for(String p : permissions) {
-                permissionsSum += Long.parseLong(p);
-            }
-
-            if(Objects.equals(permissionsSum & MaintenanceUserNotifyConfig.P_SERVER, MaintenanceUserNotifyConfig.P_SERVER)) {
+            if(Objects.equals(maintenanceUserNotifyConfig.getPermissions() & MaintenanceUserNotifyConfig.P_SERVER, MaintenanceUserNotifyConfig.P_SERVER)) {
                 serverPhones.parallelStream().forEach( p -> {
                     MqNotifyCommon<MqWorkOrderServerNotify> query = new MqNotifyCommon<>();
                     query.setType(MqNotifyCommon.TYPE_AFTER_SALES_SERVER);

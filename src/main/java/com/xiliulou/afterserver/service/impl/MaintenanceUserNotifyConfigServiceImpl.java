@@ -56,9 +56,8 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
 
         MaintenanceUserNotifyConfigVo vo = new MaintenanceUserNotifyConfigVo();
         vo.setId(maintenanceUserNotifyConfig.getId());
-        if(!StringUtils.isEmpty(maintenanceUserNotifyConfig.getPermissions())) {
-            vo.setPhones(JsonUtil.fromJsonArray(maintenanceUserNotifyConfig.getPermissions(), String.class));
-        }
+        vo.setPermissions(maintenanceUserNotifyConfig.getPermissions());
+
         if(!StringUtils.isEmpty(maintenanceUserNotifyConfig.getPhones())) {
             vo.setPhones(JsonUtil.fromJsonArray(maintenanceUserNotifyConfig.getPhones(), String.class));
         }
@@ -138,12 +137,11 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
         }
 
         List<String> phones = JsonUtil.fromJsonArray(maintenanceUserNotifyConfig.getPhones(), String.class);
-        List<String> permissions = JsonUtil.fromJsonArray(maintenanceUserNotifyConfig.getPermissions(), String.class);
 
         if(Objects.equals(type, MaintenanceUserNotifyConfig.TYPE_REVIEW)){
-            testReviewNotify(phones, permissions);
+            testReviewNotify(phones, maintenanceUserNotifyConfig.getPermissions());
         }else if(Objects.equals(type, MaintenanceUserNotifyConfig.TYPE_SERVER)){
-            testServerNotify(phones, permissions);
+            testServerNotify(phones, maintenanceUserNotifyConfig.getPermissions());
         }
 
         return Pair.of(true, null);
@@ -161,20 +159,9 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
                 .eq("bind_id", bindId));
     }
 
-    public void testServerNotify(List<String> phones, List<String> permissions) {
-        Long permissionsSum = 0L;
-        Long time = System.currentTimeMillis();
-        SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public void testServerNotify(List<String> phones, Integer permissions) {
 
-        if(CollectionUtils.isEmpty(permissions)) {
-            return;
-        }
-
-        for(String p : permissions) {
-            permissionsSum += Long.parseLong(p);
-        }
-
-        if(Objects.equals(permissionsSum & MaintenanceUserNotifyConfig.TYPE_SERVER, MaintenanceUserNotifyConfig.TYPE_SERVER)) {
+        if(Objects.equals(permissions & MaintenanceUserNotifyConfig.TYPE_SERVER, MaintenanceUserNotifyConfig.TYPE_SERVER)) {
             phones.forEach(p -> {
                 MqNotifyCommon<MqWorkOrderServerNotify> query = new MqNotifyCommon<>();
                 query.setType(MqNotifyCommon.TYPE_AFTER_SALES_SERVER);
@@ -185,7 +172,7 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
                 mqWorkOrderServerNotify.setWorkOrderNo("test");
                 mqWorkOrderServerNotify.setOrderTypeName("test");
                 mqWorkOrderServerNotify.setPointName("test");
-                mqWorkOrderServerNotify.setAssignmentTime("test");
+                mqWorkOrderServerNotify.setAssignmentTime("1970-01-01 0:0:0");
                 query.setData(mqWorkOrderServerNotify);
 
                 Pair<Boolean, String> result = rocketMqService.sendSyncMsg(MqConstant.TOPIC_MAINTENANCE_NOTIFY, JsonUtil.toJson(query), MqConstant.TAG_AFTER_SALES, "", 0);
@@ -196,27 +183,17 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
         }
     }
 
-    public void testReviewNotify(List<String> phones, List<String> permissions) {
-        Long permissionsSum = 0L;
-        Long time = System.currentTimeMillis();
-        SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-        if(!CollectionUtils.isEmpty(permissions)) {
-            for(String p : permissions) {
-                permissionsSum += Long.parseLong(p);
-            }
-        }
-
-        if(Objects.equals(permissionsSum & MaintenanceUserNotifyConfig.TYPE_REVIEW, MaintenanceUserNotifyConfig.TYPE_REVIEW)) {
+    public void testReviewNotify(List<String> phones, Integer permissions) {
+        if(Objects.equals(permissions & MaintenanceUserNotifyConfig.TYPE_REVIEW, MaintenanceUserNotifyConfig.TYPE_REVIEW)) {
             phones.forEach(p -> {
                 MqNotifyCommon<MqWorkOrderAuditNotify> query = new MqNotifyCommon<>();
                 query.setType(MqNotifyCommon.TYPE_AFTER_SALES_AUDIT);
-                query.setTime(time);
+                query.setTime(System.currentTimeMillis());
                 query.setPhone(p);
 
                 MqWorkOrderAuditNotify mqWorkOrderAuditNotify = new MqWorkOrderAuditNotify();
                 mqWorkOrderAuditNotify.setWorkOrderNo("test");
-                mqWorkOrderAuditNotify.setSubmitTime(simp.format(new Date(time)));
+                mqWorkOrderAuditNotify.setSubmitTime("1970-01-01 0:0:0");
                 mqWorkOrderAuditNotify.setOrderTypeName("test");
                 mqWorkOrderAuditNotify.setPointName("test");
                 mqWorkOrderAuditNotify.setSubmitUName("test");
