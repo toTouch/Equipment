@@ -2615,8 +2615,23 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return;
         }
         List<String> phones = JsonUtil.fromJsonArray(maintenanceUserNotifyConfig.getPhones(), String.class);
+        List<String> permissions = JsonUtil.fromJsonArray(maintenanceUserNotifyConfig.getPermissions(), String.class);
+
+        if(CollectionUtils.isEmpty(phones)) {
+            return;
+        }
+
+        if(CollectionUtils.isEmpty(permissions)) {
+            return;
+        }
+
+        Long permissionsSum = 0L;
+        for(String p : permissions) {
+            permissionsSum += Long.parseLong(p);
+        }
+
         SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        phones.forEach(p -> {
+        if(Objects.equals(permissionsSum & MaintenanceUserNotifyConfig.P_SERVER, MaintenanceUserNotifyConfig.P_SERVER)) {
             MqNotifyCommon<MqWorkOrderAuditNotify> query = new MqNotifyCommon<>();
             Long time = System.currentTimeMillis();
 
@@ -2648,7 +2663,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if (!result.getLeft()) {
                 log.error("SEND WORKORDER AUDIT MQ ERROR! no={}", workOrder.getOrderNo());
             }
-        });
+        }
+
     }
 
     private void sendWorkServerNotifyMq(WorkOrder workOrder) {
@@ -2679,11 +2695,15 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             List<String> serverPhones = JsonUtil.fromJsonArray(maintenanceUserNotifyConfig.getPhones(), String.class);
             List<String> permissions = JsonUtil.fromJsonArray(maintenanceUserNotifyConfig.getPermissions(), String.class);
 
-            Long permissionsSum = 0L;
-            if(org.springframework.util.CollectionUtils.isEmpty(permissions)) {
+            if(CollectionUtils.isEmpty(serverPhones)) {
                 return;
             }
 
+            if(CollectionUtils.isEmpty(permissions)) {
+                return;
+            }
+
+            Long permissionsSum = 0L;
             for(String p : permissions) {
                 permissionsSum += Long.parseLong(p);
             }
