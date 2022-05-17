@@ -4,6 +4,7 @@ import com.xiliulou.afterserver.config.AppConfig;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ApiRequestQuery;
 import com.xiliulou.security.utils.EncryptUtil;
+import com.xiliulou.storage.config.StorageConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,8 @@ public class JsonOuterCompressionController {
 
     @Autowired
     private AppConfig appConfig;
+    @Autowired
+    StorageConfig storageConfig;
 
     @PostMapping("/login")
     public R checkCompression(@RequestParam("username")String username, @RequestParam("password")String password){
@@ -35,8 +38,8 @@ public class JsonOuterCompressionController {
         Map<String, Object> result = new HashMap(4);
         result.put("appId", appConfig.getAppId());
         result.put("appSecret", appConfig.getAppSecret());
-        result.put("ossAccessKeyId", appConfig.getOssAccessKeyId());
-        result.put("ossAccessKeySecret", appConfig.getOssAccessKeySecret());
+        result.put("ossAccessKeyId", storageConfig.getAccessKeyId());
+        result.put("ossAccessKeySecret", storageConfig.getAccessKeySecret());
         return R.ok(result);
     }
 }
