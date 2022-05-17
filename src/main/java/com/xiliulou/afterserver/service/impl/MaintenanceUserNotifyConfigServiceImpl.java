@@ -48,6 +48,12 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
 
     @Override
     public Pair<Boolean, Object> queryConfigInfo(Integer type, Long bindId) {
+        if(Objects.equals(type, MaintenanceUserNotifyConfig.TYPE_SERVER)) {
+            if(Objects.isNull(bindId)) {
+                return Pair.of(false, "请选择服务商");
+            }
+        }
+
         MaintenanceUserNotifyConfig maintenanceUserNotifyConfig = this.queryByPermissions(type, bindId);
         if(Objects.isNull(maintenanceUserNotifyConfig)){
             return Pair.of(true,null);
@@ -70,6 +76,12 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
 
     @Override
     public Pair<Boolean, Object> saveConfig(MaintenanceUserNotifyConfigQuery query) {
+        if(Objects.equals(query.getType(), MaintenanceUserNotifyConfig.TYPE_SERVER)) {
+            if(Objects.isNull(query.getBindId())) {
+                return Pair.of(false, "请选择服务商");
+            }
+        }
+
         MaintenanceUserNotifyConfig maintenanceUserNotifyConfig = this.queryByPermissions(query.getType(), query.getBindId());
         if(Objects.nonNull(maintenanceUserNotifyConfig)) {
             return Pair.of(false, "已存在配置，无法重复创建");
@@ -96,9 +108,15 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
 
     @Override
     public Pair<Boolean, Object> updateConfig(MaintenanceUserNotifyConfigQuery query) {
+        if(Objects.equals(query.getType(), MaintenanceUserNotifyConfig.TYPE_SERVER)) {
+            if(Objects.isNull(query.getBindId())) {
+                return Pair.of(false, "请选择服务商");
+            }
+        }
+
         MaintenanceUserNotifyConfig maintenanceUserNotifyConfig = this.queryByPermissions(query.getType(), query.getBindId());
-        if(Objects.nonNull(maintenanceUserNotifyConfig)) {
-            return Pair.of(false, "已存在配置，无法重复创建");
+        if(Objects.isNull(maintenanceUserNotifyConfig)) {
+            return Pair.of(false, "未查询到相关配置");
         }
 
         if(!StringUtils.isEmpty(query.getPhones())) {
