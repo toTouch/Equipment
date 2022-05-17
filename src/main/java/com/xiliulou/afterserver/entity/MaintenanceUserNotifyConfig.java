@@ -31,7 +31,7 @@ public class MaintenanceUserNotifyConfig {
     /**
      * 选择权限
      */
-    private String permissions;
+    private Integer permissions;
     /**
      * 类型 1：服务商 2：审核
      */
