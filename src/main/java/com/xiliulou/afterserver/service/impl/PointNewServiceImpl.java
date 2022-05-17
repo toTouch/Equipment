@@ -443,6 +443,9 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         if(Objects.isNull(pointNew.getInstallType())){
             return R.fail("请填写安装类型");
         }
+        if(Objects.isNull(pointNew.getAddress())){
+            return R.fail("请填写详细地址");
+        }
         return null;
     }
 
