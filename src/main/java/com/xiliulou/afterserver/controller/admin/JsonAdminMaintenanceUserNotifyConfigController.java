@@ -22,8 +22,8 @@ public class JsonAdminMaintenanceUserNotifyConfigController extends BaseControll
     MaintenanceUserNotifyConfigService maintenanceUserNotifyConfigService;
 
     @GetMapping("/admin/maintenance/notify/config")
-    public R configInfo() {
-        return returnPairResult(maintenanceUserNotifyConfigService.queryConfigInfo());
+    public R configInfo(@RequestParam("type")Integer type, @RequestParam(value = "bindId", required = false)Long bindId) {
+        return returnPairResult(maintenanceUserNotifyConfigService.queryConfigInfo(type, bindId));
     }
 
     @PostMapping("/admin/maintenance/notify/config")

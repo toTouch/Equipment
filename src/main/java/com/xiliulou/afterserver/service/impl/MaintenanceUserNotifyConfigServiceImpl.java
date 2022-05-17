@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
@@ -46,27 +47,24 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
     RocketMqService rocketMqService;
 
     @Override
-    public Pair<Boolean, Object> queryConfigInfo() {
-        List<MaintenanceUserNotifyConfig> maintenanceUserNotifyConfigList = this.queryAll();
-        if(CollectionUtils.isEmpty(maintenanceUserNotifyConfigList)){
+    public Pair<Boolean, Object> queryConfigInfo(Integer type, Long bindId) {
+        MaintenanceUserNotifyConfig maintenanceUserNotifyConfig = this.queryByPermissions(type, bindId);
+        if(Objects.isNull(maintenanceUserNotifyConfig)){
             return Pair.of(true,null);
         }
 
-        List<MaintenanceUserNotifyConfigVo> data = new ArrayList<>();
-        maintenanceUserNotifyConfigList.forEach(item -> {
-            MaintenanceUserNotifyConfigVo vo = new MaintenanceUserNotifyConfigVo();
-            vo.setId(item.getId());
-            if(!StringUtils.isEmpty(item.getPermissions())) {
-                vo.setPhones(JsonUtil.fromJsonArray(item.getPermissions(), String.class));
-            }
-            if(!StringUtils.isEmpty(item.getPhones())) {
-                vo.setPhones(JsonUtil.fromJsonArray(item.getPhones(), String.class));
-            }
-            data.add(vo);
-        });
+
+        MaintenanceUserNotifyConfigVo vo = new MaintenanceUserNotifyConfigVo();
+        vo.setId(maintenanceUserNotifyConfig.getId());
+        if(!StringUtils.isEmpty(maintenanceUserNotifyConfig.getPermissions())) {
+            vo.setPhones(JsonUtil.fromJsonArray(maintenanceUserNotifyConfig.getPermissions(), String.class));
+        }
+        if(!StringUtils.isEmpty(maintenanceUserNotifyConfig.getPhones())) {
+            vo.setPhones(JsonUtil.fromJsonArray(maintenanceUserNotifyConfig.getPhones(), String.class));
+        }
 
         Map<String, Object> result = new HashMap<>(2);
-        result.put("data", data);
+        result.put("data", vo);
         result.put("qrUrl", MqConstant.QR_URL);
         return Pair.of(true, result);
     }
@@ -154,8 +152,8 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
     @Override
     public MaintenanceUserNotifyConfig queryByPermissions(Integer type, Long bindId) {
         return maintenanceUserNotifyConfigMapper.selectOne(new QueryWrapper<MaintenanceUserNotifyConfig>()
-                                                .eq("type", type)
-                                                .eq("bind_id", bindId));
+                .eq("type", type)
+                .eq("bind_id", bindId));
     }
 
     public void testServerNotify(List<String> phones, List<String> permissions) {
