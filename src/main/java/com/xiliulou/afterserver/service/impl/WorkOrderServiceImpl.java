@@ -2147,7 +2147,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         //发送Mq通知
         if (Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)
                 && Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)) {
-            this.sendWorkServerNotifyMq(workOrder);
+            this.sendWorkServerNotifyMq(this.getById(workOrder.getId()));
         }
 
         return R.ok();
