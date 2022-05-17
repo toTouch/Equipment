@@ -35,5 +35,7 @@ public interface RoleService{
     Pair<Boolean, Object> bindUserRole(Long uid, List<Long> roleIds);
 
     public Pair<Boolean, Object> getMenuByUid();
+
+    Pair<Boolean, Object> queryRoleByUid(Long uid);
 }
 

@@ -90,4 +90,8 @@ public class AdminJsonUserController extends BaseController {
         return returnPairResult(roleService.bindUserRole(uid, roleIds));
     }
 
+    @GetMapping("admin/user/role")
+    public R queryRoleByUid(@RequestParam("uid") Long uid) {
+        return returnPairResult(roleService.queryRoleByUid(uid));
+    }
 }
