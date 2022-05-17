@@ -15,10 +15,10 @@ public class MaintenanceUserNotifyConfigQuery {
     private String phones;
 
     @NotNull(message = "权限不可以为空")
-    private Integer permission;
+    private String permission;
 
     @NotNull(message = "类型不可以为空")
     private Integer type;
 
-    private Integer bindId;
+    private Long bindId;
 }

@@ -21,7 +21,7 @@ public class MaintenanceUserNotifyConfigVo {
     /**
      * 权限
      */
-    private Integer permissions;
+    private List<String> permissions;
     /**
      * 手机号
      */

@@ -7,6 +7,7 @@ import com.xiliulou.afterserver.constant.MqConstant;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.entity.mq.notify.MqNotifyCommon;
 import com.xiliulou.afterserver.entity.mq.notify.MqWorkOrderAuditNotify;
+import com.xiliulou.afterserver.entity.mq.notify.MqWorkOrderServerNotify;
 import com.xiliulou.afterserver.mapper.LoginInfoMapper;
 import com.xiliulou.afterserver.mapper.MaintenanceUserNotifyConfigMapper;
 import com.xiliulou.afterserver.service.MaintenanceUserNotifyConfigService;
@@ -55,12 +56,12 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
         maintenanceUserNotifyConfigList.forEach(item -> {
             MaintenanceUserNotifyConfigVo vo = new MaintenanceUserNotifyConfigVo();
             vo.setId(item.getId());
-            vo.setPermissions(item.getPermissions());
-            if(StringUtils.isEmpty(item.getPhones())) {
-               vo.setPhones(Lists.newArrayList());
-               return;
+            if(!StringUtils.isEmpty(item.getPermissions())) {
+                vo.setPhones(JsonUtil.fromJsonArray(item.getPermissions(), String.class));
             }
-            vo.setPhones(JsonUtil.fromJsonArray(item.getPhones(), String.class));
+            if(!StringUtils.isEmpty(item.getPhones())) {
+                vo.setPhones(JsonUtil.fromJsonArray(item.getPhones(), String.class));
+            }
             data.add(vo);
         });
 
@@ -72,7 +73,7 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
 
     @Override
     public Pair<Boolean, Object> saveConfig(MaintenanceUserNotifyConfigQuery query) {
-        MaintenanceUserNotifyConfig maintenanceUserNotifyConfig = this.queryByPermissions(query.getPermission());
+        MaintenanceUserNotifyConfig maintenanceUserNotifyConfig = this.queryByPermissions(query.getType(), query.getBindId());
         if(Objects.nonNull(maintenanceUserNotifyConfig)) {
             return Pair.of(false, "已存在配置，无法重复创建");
         }
@@ -84,13 +85,13 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
             }
         }
 
-
         MaintenanceUserNotifyConfig build = MaintenanceUserNotifyConfig.builder()
                 .permissions(query.getPermission())
                 .phones(query.getPhones())
                 .createTime(System.currentTimeMillis())
                 .updateTime(System.currentTimeMillis())
-
+                .type(query.getType())
+                .bindId(query.getBindId())
                 .build();
         save(build);
         return Pair.of(true, null);
@@ -98,7 +99,7 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
 
     @Override
     public Pair<Boolean, Object> updateConfig(MaintenanceUserNotifyConfigQuery query) {
-        MaintenanceUserNotifyConfig maintenanceUserNotifyConfig = this.queryByPermissions(query.getPermission());
+        MaintenanceUserNotifyConfig maintenanceUserNotifyConfig = this.queryByPermissions(query.getType(), query.getBindId());
         if(Objects.nonNull(maintenanceUserNotifyConfig)) {
             return Pair.of(false, "已存在配置，无法重复创建");
         }
@@ -115,27 +116,34 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
                 .permissions(query.getPermission())
                 .phones(query.getPhones())
                 .updateTime(System.currentTimeMillis())
+                .type(query.getType())
+                .bindId(query.getBindId())
                 .build();
         this.updateById(build);
         return Pair.of(true, null);
     }
 
     @Override
-    public Pair<Boolean, Object> testSendMsg(Integer permission) {
-        MaintenanceUserNotifyConfig maintenanceUserNotifyConfig = this.queryByPermissions(permission);
+    public Pair<Boolean, Object> testSendMsg(Integer type, Long bindId) {
+        MaintenanceUserNotifyConfig maintenanceUserNotifyConfig = this.queryByPermissions(type, bindId);
         if(Objects.isNull(maintenanceUserNotifyConfig) || StringUtils.isEmpty(maintenanceUserNotifyConfig.getPhones())) {
             return Pair.of(false, "请先配置手机号");
         }
 
-        if (!redisService.setNx(MqConstant.CACHE_TENANT_MAINTENANCE_USER_CONFIG_TEST + permission, "ok", TimeUnit.MINUTES.toMillis(5), false)) {
+        if (!redisService.setNx(MqConstant.CACHE_TENANT_MAINTENANCE_USER_CONFIG_TEST + maintenanceUserNotifyConfig.getId(), "ok", TimeUnit.MINUTES.toMillis(5), false)) {
             return Pair.of(false, "5分钟之内只能测试一次");
         }
 
         List<String> phones = JsonUtil.fromJsonArray(maintenanceUserNotifyConfig.getPhones(), String.class);
-        if(Objects.equals(permission, MaintenanceUserNotifyConfig.P_REVIEW)){
-            testReviewNotify(phones);
+        List<String> permissions = JsonUtil.fromJsonArray(maintenanceUserNotifyConfig.getPermissions(), String.class);
+
+        if(Objects.equals(type, MaintenanceUserNotifyConfig.TYPE_REVIEW)){
+            testReviewNotify(phones, permissions);
+        }else if(Objects.equals(type, MaintenanceUserNotifyConfig.TYPE_SERVER)){
+            testServerNotify(phones, permissions);
         }
-        return null;
+
+        return Pair.of(true, null);
     }
 
     @Override
@@ -144,32 +152,79 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
     }
 
     @Override
-    public MaintenanceUserNotifyConfig queryByPermissions(Integer permissions) {
-        return maintenanceUserNotifyConfigMapper.selectOne(new QueryWrapper<MaintenanceUserNotifyConfig>().eq("permissions", permissions));
+    public MaintenanceUserNotifyConfig queryByPermissions(Integer type, Long bindId) {
+        return maintenanceUserNotifyConfigMapper.selectOne(new QueryWrapper<MaintenanceUserNotifyConfig>()
+                                                .eq("type", type)
+                                                .eq("bind_id", bindId));
     }
 
-    public void testReviewNotify(List<String> phones) {
+    public void testServerNotify(List<String> phones, List<String> permissions) {
+        Long permissionsSum = 0L;
         Long time = System.currentTimeMillis();
-
         SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        phones.forEach(p -> {
-            MqNotifyCommon<MqWorkOrderAuditNotify> query = new MqNotifyCommon<>();
-            query.setType(MqNotifyCommon.TYPE_AFTER_SALES_AUDIT);
-            query.setTime(time);
-            query.setPhone(p);
 
-            MqWorkOrderAuditNotify mqWorkOrderAuditNotify = new MqWorkOrderAuditNotify();
-            mqWorkOrderAuditNotify.setWorkOrderNo("test");
-            mqWorkOrderAuditNotify.setSubmitTime(simp.format(new Date(time)));
-            mqWorkOrderAuditNotify.setOrderTypeName("test");
-            mqWorkOrderAuditNotify.setPointName("test");
-            mqWorkOrderAuditNotify.setSubmitUName("test");
-            query.setData(mqWorkOrderAuditNotify);
+        if(CollectionUtils.isEmpty(permissions)) {
+            return;
+        }
 
-            Pair<Boolean, String> result = rocketMqService.sendSyncMsg(MqConstant.TOPIC_MAINTENANCE_NOTIFY, JsonUtil.toJson(query), MqConstant.TAG_AFTER_SALES, "", 0);
-            if (!result.getLeft()) {
-                log.error("SEND WORKORDER AUDIT MQ ERROR! no={}, msg={}", "test", result.getRight());
+        for(String p : permissions) {
+            permissionsSum += Long.parseLong(p);
+        }
+
+        if(Objects.equals(permissionsSum & MaintenanceUserNotifyConfig.TYPE_SERVER, MaintenanceUserNotifyConfig.TYPE_SERVER)) {
+            phones.forEach(p -> {
+                MqNotifyCommon<MqWorkOrderServerNotify> query = new MqNotifyCommon<>();
+                query.setType(MqNotifyCommon.TYPE_AFTER_SALES_SERVER);
+                query.setTime(System.currentTimeMillis());
+                query.setPhone(p);
+
+                MqWorkOrderServerNotify mqWorkOrderServerNotify = new MqWorkOrderServerNotify();
+                mqWorkOrderServerNotify.setWorkOrderNo("test");
+                mqWorkOrderServerNotify.setOrderTypeName("test");
+                mqWorkOrderServerNotify.setPointName("test");
+                mqWorkOrderServerNotify.setAssignmentTime("test");
+                query.setData(mqWorkOrderServerNotify);
+
+                Pair<Boolean, String> result = rocketMqService.sendSyncMsg(MqConstant.TOPIC_MAINTENANCE_NOTIFY, JsonUtil.toJson(query), MqConstant.TAG_AFTER_SALES, "", 0);
+                if (!result.getLeft()) {
+                    log.error("SEND WORKORDER SERVER MQ ERROR! no={}, msg={}", "test", result.getRight());
+                }
+            });
+        }
+    }
+
+    public void testReviewNotify(List<String> phones, List<String> permissions) {
+        Long permissionsSum = 0L;
+        Long time = System.currentTimeMillis();
+        SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        if(!CollectionUtils.isEmpty(permissions)) {
+            for(String p : permissions) {
+                permissionsSum += Long.parseLong(p);
             }
-        });
+        }
+
+        if(Objects.equals(permissionsSum & MaintenanceUserNotifyConfig.TYPE_REVIEW, MaintenanceUserNotifyConfig.TYPE_REVIEW)) {
+            phones.forEach(p -> {
+                MqNotifyCommon<MqWorkOrderAuditNotify> query = new MqNotifyCommon<>();
+                query.setType(MqNotifyCommon.TYPE_AFTER_SALES_AUDIT);
+                query.setTime(time);
+                query.setPhone(p);
+
+                MqWorkOrderAuditNotify mqWorkOrderAuditNotify = new MqWorkOrderAuditNotify();
+                mqWorkOrderAuditNotify.setWorkOrderNo("test");
+                mqWorkOrderAuditNotify.setSubmitTime(simp.format(new Date(time)));
+                mqWorkOrderAuditNotify.setOrderTypeName("test");
+                mqWorkOrderAuditNotify.setPointName("test");
+                mqWorkOrderAuditNotify.setSubmitUName("test");
+                query.setData(mqWorkOrderAuditNotify);
+
+                Pair<Boolean, String> result = rocketMqService.sendSyncMsg(MqConstant.TOPIC_MAINTENANCE_NOTIFY, JsonUtil.toJson(query), MqConstant.TAG_AFTER_SALES, "", 0);
+                if (!result.getLeft()) {
+                    log.error("SEND WORKORDER AUDIT MQ ERROR! no={}, msg={}", "test", result.getRight());
+                }
+            });
+        }
+
     }
 }
