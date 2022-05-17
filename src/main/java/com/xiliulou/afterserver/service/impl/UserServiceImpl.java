@@ -143,7 +143,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
                 List<Role> userRoles = userRoleService.findByUid(user.getId());
                 List<Long> role = new ArrayList<>();
-                if(Objects.isNull(userRoles)) {
+                if(CollectionUtils.isNotEmpty(userRoles)) {
                     userRoles.forEach(x -> {
                         role.add(x.getId());
                     });
