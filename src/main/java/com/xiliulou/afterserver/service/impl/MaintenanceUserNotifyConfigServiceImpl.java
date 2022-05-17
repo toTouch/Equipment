@@ -154,9 +154,11 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
 
     @Override
     public MaintenanceUserNotifyConfig queryByPermissions(Integer type, Long bindId) {
-        return maintenanceUserNotifyConfigMapper.selectOne(new QueryWrapper<MaintenanceUserNotifyConfig>()
-                .eq("type", type)
-                .eq("bind_id", bindId));
+        LambdaQueryWrapper<MaintenanceUserNotifyConfig> query = new LambdaQueryWrapper<>();
+        query.eq(Objects.nonNull(type), MaintenanceUserNotifyConfig::getType, type);
+        query.eq(Objects.nonNull(bindId), MaintenanceUserNotifyConfig::getBindId, bindId);
+
+        return maintenanceUserNotifyConfigMapper.selectOne(query);
     }
 
     public void testServerNotify(List<String> phones, Integer permissions) {
