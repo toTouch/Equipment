@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface MaintenanceUserNotifyConfigService extends IService<MaintenanceUserNotifyConfig> {
 
-    Pair<Boolean, Object> queryConfigInfo();
+    Pair<Boolean, Object> queryConfigInfo(Integer type, Long bindId);
 
     Pair<Boolean, Object> saveConfig(MaintenanceUserNotifyConfigQuery query);
 
