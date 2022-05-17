@@ -198,7 +198,7 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
 
     public void testServerNotify(List<String> phones, Integer permissions) {
 
-        if(Objects.equals(permissions & MaintenanceUserNotifyConfig.TYPE_SERVER, MaintenanceUserNotifyConfig.TYPE_SERVER)) {
+        if(Objects.equals(permissions & MaintenanceUserNotifyConfig.P_SERVER, MaintenanceUserNotifyConfig.P_SERVER)) {
             phones.forEach(p -> {
                 MqNotifyCommon<MqWorkOrderServerNotify> query = new MqNotifyCommon<>();
                 query.setType(MqNotifyCommon.TYPE_AFTER_SALES_SERVER);
@@ -221,7 +221,7 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
     }
 
     public void testReviewNotify(List<String> phones, Integer permissions) {
-        if(Objects.equals(permissions & MaintenanceUserNotifyConfig.TYPE_REVIEW, MaintenanceUserNotifyConfig.TYPE_REVIEW)) {
+        if(Objects.equals(permissions & MaintenanceUserNotifyConfig.P_REVIEW, MaintenanceUserNotifyConfig.P_REVIEW)) {
             phones.forEach(p -> {
                 MqNotifyCommon<MqWorkOrderAuditNotify> query = new MqNotifyCommon<>();
                 query.setType(MqNotifyCommon.TYPE_AFTER_SALES_AUDIT);

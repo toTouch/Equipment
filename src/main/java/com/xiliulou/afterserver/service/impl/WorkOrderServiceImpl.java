@@ -2147,8 +2147,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         //发送Mq通知
         if (Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)
-                && Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)
-                && Objects.isNull(oldWorkOrder.getAssignmentTime())) {
+                && Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)) {
             this.sendWorkServerNotifyMq(workOrder);
         }
 
@@ -2702,6 +2701,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if(CollectionUtils.isEmpty(serverPhones)) {
                 return;
             }
+
+            log.error("mq测试 -->" + (Objects.equals(maintenanceUserNotifyConfig.getPermissions() & MaintenanceUserNotifyConfig.P_SERVER, MaintenanceUserNotifyConfig.P_SERVER)));
 
             if(Objects.equals(maintenanceUserNotifyConfig.getPermissions() & MaintenanceUserNotifyConfig.P_SERVER, MaintenanceUserNotifyConfig.P_SERVER)) {
                 serverPhones.parallelStream().forEach( p -> {
