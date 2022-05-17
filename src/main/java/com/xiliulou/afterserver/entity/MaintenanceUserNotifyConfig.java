@@ -44,11 +44,11 @@ public class MaintenanceUserNotifyConfig {
     /**
      * 审核
      */
-    public static Integer P_REVIEW = 1;
+    public static Integer P_REVIEW = 2;
     /**
      * 服务商
      */
-    public static Integer P_SERVER = 2;
+    public static Integer P_SERVER = 1;
     /**
      * 服务商
      */
