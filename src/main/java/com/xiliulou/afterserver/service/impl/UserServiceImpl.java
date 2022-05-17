@@ -24,10 +24,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @program: XILIULOU
@@ -126,6 +123,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public R list(Long offset, Long size, String username) {
         Page page = PageUtil.getPage(offset, size);
         Page selectPage = baseMapper.selectPage(page,Wrappers.<User>lambdaQuery().like(Objects.nonNull(username),User::getUserName, username));
+
         if(CollectionUtils.isNotEmpty(selectPage.getRecords())) {
             selectPage.getRecords().forEach(item -> {
                 User user = (User)item;
@@ -142,6 +140,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                         user.setThirdName(server.getName());
                     }
                 }
+
+                List<Role> userRoles = userRoleService.findByUid(user.getId());
+                List<Long> role = new ArrayList<>();
+                if(Objects.isNull(userRoles)) {
+                    userRoles.forEach(x -> {
+                        role.add(x.getId());
+                    });
+                }
+                user.setRids(role);
             });
         }
         return R.ok(selectPage);
