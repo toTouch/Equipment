@@ -2635,38 +2635,39 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        if(Objects.equals(maintenanceUserNotifyConfig.getPermissions() & MaintenanceUserNotifyConfig.P_SERVER, MaintenanceUserNotifyConfig.P_SERVER)) {
-            MqNotifyCommon<MqWorkOrderAuditNotify> query = new MqNotifyCommon<>();
-            Long time = System.currentTimeMillis();
+        if(Objects.equals(maintenanceUserNotifyConfig.getPermissions() & MaintenanceUserNotifyConfig.P_REVIEW, MaintenanceUserNotifyConfig.P_REVIEW)) {
+           phones.forEach(p -> {
+               MqNotifyCommon<MqWorkOrderAuditNotify> query = new MqNotifyCommon<>();
+               Long time = System.currentTimeMillis();
+               query.setType(MqNotifyCommon.TYPE_AFTER_SALES_AUDIT);
+               query.setTime(time);
+               query.setPhone(p);
 
-            query.setType(MqNotifyCommon.TYPE_AFTER_SALES_AUDIT);
-            query.setTime(time);
-            query.setPhone(MqConstant.AUDIT_ADMIN_PHONE);
+               MqWorkOrderAuditNotify mqWorkOrderAuditNotify = new MqWorkOrderAuditNotify();
+               mqWorkOrderAuditNotify.setWorkOrderNo(workOrder.getOrderNo());
+               mqWorkOrderAuditNotify.setSubmitTime(simp.format(new Date(time)));
 
-            MqWorkOrderAuditNotify mqWorkOrderAuditNotify = new MqWorkOrderAuditNotify();
-            mqWorkOrderAuditNotify.setWorkOrderNo(workOrder.getOrderNo());
-            mqWorkOrderAuditNotify.setSubmitTime(simp.format(new Date(time)));
+               WorkOrderType workOrderType = workOrderTypeService.getById(workOrder.getType());
+               if(Objects.nonNull(workOrderType)){
+                   mqWorkOrderAuditNotify.setOrderTypeName(workOrderType.getType());
+               }
 
-            WorkOrderType workOrderType = workOrderTypeService.getById(workOrder.getType());
-            if(Objects.nonNull(workOrderType)){
-                mqWorkOrderAuditNotify.setOrderTypeName(workOrderType.getType());
-            }
+               PointNew pointNew = pointNewService.getById(workOrder.getPointId());
+               if(Objects.nonNull(pointNew)) {
+                   mqWorkOrderAuditNotify.setPointName(pointNew.getName());
+               }
 
-            PointNew pointNew = pointNewService.getById(workOrder.getPointId());
-            if(Objects.nonNull(pointNew)) {
-                mqWorkOrderAuditNotify.setPointName(pointNew.getName());
-            }
+               User user = userService.getUserById(workOrder.getCommissionerId());
+               if(Objects.nonNull(user)) {
+                   mqWorkOrderAuditNotify.setSubmitUName(user.getUserName());
+               }
+               query.setData(mqWorkOrderAuditNotify);
 
-            User user = userService.getUserById(workOrder.getCommissionerId());
-            if(Objects.nonNull(user)) {
-                mqWorkOrderAuditNotify.setSubmitUName(user.getUserName());
-            }
-            query.setData(mqWorkOrderAuditNotify);
-
-            Pair<Boolean, String> result = rocketMqService.sendSyncMsg(MqConstant.TOPIC_MAINTENANCE_NOTIFY, JsonUtil.toJson(query), MqConstant.TAG_AFTER_SALES, "", 0);
-            if (!result.getLeft()) {
-                log.error("SEND WORKORDER AUDIT MQ ERROR! no={}", workOrder.getOrderNo());
-            }
+               Pair<Boolean, String> result = rocketMqService.sendSyncMsg(MqConstant.TOPIC_MAINTENANCE_NOTIFY, JsonUtil.toJson(query), MqConstant.TAG_AFTER_SALES, "", 0);
+               if (!result.getLeft()) {
+                   log.error("SEND WORKORDER AUDIT MQ ERROR! no={}", workOrder.getOrderNo());
+               }
+           });
         }
 
     }
