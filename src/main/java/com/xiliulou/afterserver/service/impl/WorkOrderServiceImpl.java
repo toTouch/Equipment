@@ -2145,6 +2145,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         this.baseMapper.updateOne(workOrder);
 
+        //发送Mq通知
+        if (Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)
+                && Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)
+                && Objects.isNull(oldWorkOrder.getAssignmentTime())) {
+            this.sendWorkServerNotifyMq(workOrder);
+        }
+
         return R.ok();
     }
 
@@ -2485,7 +2492,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             workOrder.setStatus(WorkOrder.STATUS_INIT);
             if(Objects.isNull(workOrderOld.getAssignmentTime())) {
                 workOrder.setAssignmentTime(System.currentTimeMillis());
-                this.sendWorkServerNotifyMq(workOrder);
             }
         }
 
@@ -2505,8 +2511,16 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
             }
         }
-
         this.updateById(workOrder);
+
+        //发送Mq通知
+        if(Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
+            workOrder.setStatus(WorkOrder.STATUS_INIT);
+            if(Objects.isNull(workOrderOld.getAssignmentTime())) {
+                this.sendWorkServerNotifyMq(workOrder);
+            }
+        }
+
 
         return R.ok();
     }
