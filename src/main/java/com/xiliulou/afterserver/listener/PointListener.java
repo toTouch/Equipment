@@ -11,6 +11,7 @@ import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.export.CustomerInfo;
 import com.xiliulou.afterserver.export.PointInfo;
 import com.xiliulou.afterserver.service.*;
+import com.xiliulou.afterserver.util.AmapUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import lombok.Data;
@@ -19,6 +20,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -81,8 +83,9 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
         }
         if(Objects.isNull(pointInfo.getAddress())){
             log.error("insert PointInfo error! InstallType is entry pointName={}",pointInfo.getName());
-            throw new RuntimeException("点位" + pointInfo.getName() + "请填写安装类型");
+            throw new RuntimeException("点位" + pointInfo.getName() + "请填写详细地址");
         }
+        //AmapUtil.getLonLat(URLEncoder.encode(pointInfo.getAddress(), "UTF-8"));
 
 
         if(StringUtils.isBlank(pointInfo.getCity())){
