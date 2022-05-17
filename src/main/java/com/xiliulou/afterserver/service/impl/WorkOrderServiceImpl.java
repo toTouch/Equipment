@@ -2610,7 +2610,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     private void sendWorkAuditNotifyMq(WorkOrder workOrder) {
-        MaintenanceUserNotifyConfig maintenanceUserNotifyConfig = maintenanceUserNotifyConfigService.queryByPermissions(MaintenanceUserNotifyConfig.P_REVIEW);
+        MaintenanceUserNotifyConfig maintenanceUserNotifyConfig = maintenanceUserNotifyConfigService.queryByPermissions(MaintenanceUserNotifyConfig.TYPE_REVIEW, null);
         if(Objects.isNull(maintenanceUserNotifyConfig) || org.springframework.util.StringUtils.isEmpty(maintenanceUserNotifyConfig.getPhones())) {
             return;
         }
@@ -2658,7 +2658,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         Map<String, String> data = new HashMap<>(2);
-
+        SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         WorkOrderType workOrderTypeByDB = workOrderTypeService.getById(workOrder.getType());
         if(Objects.nonNull(workOrderTypeByDB)){
@@ -2670,33 +2670,45 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             data.put("pointNew",  pointNewByDB.getName());
         }
 
-        workOrderServerQueries.parallelStream().forEach(item -> {
-            Server server = serverService.getById(item.getServerId());
-            if(Objects.isNull(server)) {
+        workOrderServerQueries.parallelStream().forEach(s -> {
+            MaintenanceUserNotifyConfig maintenanceUserNotifyConfig = maintenanceUserNotifyConfigService.queryByPermissions(MaintenanceUserNotifyConfig.TYPE_SERVER, s.getServerId());
+            if(Objects.isNull(maintenanceUserNotifyConfig)) {
                 return;
             }
 
-            if(Objects.isNull(server.getPhone())) {
+            List<String> serverPhones = JsonUtil.fromJsonArray(maintenanceUserNotifyConfig.getPhones(), String.class);
+            List<String> permissions = JsonUtil.fromJsonArray(maintenanceUserNotifyConfig.getPermissions(), String.class);
+
+            Long permissionsSum = 0L;
+            if(org.springframework.util.CollectionUtils.isEmpty(permissions)) {
                 return;
             }
 
-            SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            MqNotifyCommon<MqWorkOrderServerNotify> query = new MqNotifyCommon<>();
-            query.setType(MqNotifyCommon.TYPE_AFTER_SALES_SERVER);
-            query.setTime(System.currentTimeMillis());
-            query.setPhone(server.getPhone());
-
-            MqWorkOrderServerNotify mqWorkOrderServerNotify = new MqWorkOrderServerNotify();
-            mqWorkOrderServerNotify.setWorkOrderNo(workOrder.getOrderNo());
-            mqWorkOrderServerNotify.setOrderTypeName(data.get("workOrderType"));
-            mqWorkOrderServerNotify.setPointName(data.get("pointNew"));
-            mqWorkOrderServerNotify.setAssignmentTime(simp.format(new Date(workOrder.getAssignmentTime())));
-            query.setData(mqWorkOrderServerNotify);
-
-            Pair<Boolean, String> result = rocketMqService.sendSyncMsg(MqConstant.TOPIC_MAINTENANCE_NOTIFY, JsonUtil.toJson(query), MqConstant.TAG_AFTER_SALES, "", 0);
-            if (!result.getLeft()) {
-                log.error("SEND WORKORDER SERVER MQ ERROR! no={}", workOrder.getOrderNo());
+            for(String p : permissions) {
+                permissionsSum += Long.parseLong(p);
             }
+
+            if(Objects.equals(permissionsSum & MaintenanceUserNotifyConfig.P_SERVER, MaintenanceUserNotifyConfig.P_SERVER)) {
+                serverPhones.parallelStream().forEach( p -> {
+                    MqNotifyCommon<MqWorkOrderServerNotify> query = new MqNotifyCommon<>();
+                    query.setType(MqNotifyCommon.TYPE_AFTER_SALES_SERVER);
+                    query.setTime(System.currentTimeMillis());
+                    query.setPhone(p);
+
+                    MqWorkOrderServerNotify mqWorkOrderServerNotify = new MqWorkOrderServerNotify();
+                    mqWorkOrderServerNotify.setWorkOrderNo(workOrder.getOrderNo());
+                    mqWorkOrderServerNotify.setOrderTypeName(data.get("workOrderType"));
+                    mqWorkOrderServerNotify.setPointName(data.get("pointNew"));
+                    mqWorkOrderServerNotify.setAssignmentTime(simp.format(new Date(workOrder.getAssignmentTime())));
+                    query.setData(mqWorkOrderServerNotify);
+
+                    Pair<Boolean, String> result = rocketMqService.sendSyncMsg(MqConstant.TOPIC_MAINTENANCE_NOTIFY, JsonUtil.toJson(query), MqConstant.TAG_AFTER_SALES, "", 0);
+                    if (!result.getLeft()) {
+                        log.error("SEND WORKORDER SERVER MQ ERROR! no={}", workOrder.getOrderNo());
+                    }
+                });
+            }
+
         });
     }
 

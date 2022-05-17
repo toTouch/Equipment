@@ -21,9 +21,9 @@ public interface MaintenanceUserNotifyConfigService extends IService<Maintenance
 
     Pair<Boolean, Object> updateConfig(MaintenanceUserNotifyConfigQuery query);
 
-    Pair<Boolean, Object> testSendMsg(Integer permission);
+    Pair<Boolean, Object> testSendMsg(Integer type, Long bindId);
 
     List<MaintenanceUserNotifyConfig> queryAll();
 
-    MaintenanceUserNotifyConfig queryByPermissions(Integer permissions);
+    MaintenanceUserNotifyConfig queryByPermissions(Integer type, Long bindId);
 }

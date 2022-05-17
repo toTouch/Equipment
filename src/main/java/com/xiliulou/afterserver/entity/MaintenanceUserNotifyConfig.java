@@ -31,19 +31,30 @@ public class MaintenanceUserNotifyConfig {
     /**
      * 选择权限
      */
-    private Integer permissions;
+    private String permissions;
+    /**
+     * 类型 1：服务商 2：审核
+     */
+    private Integer type;
+
+    private Long bindId;
 
     public static final Integer DEL_NORMAL = 0;
     public static final Integer DEL_DEL = 1;
     /**
-     * 专员审核
+     * 审核
      */
     public static Integer P_REVIEW = 1;
     /**
      * 服务商
      */
-    public static Integer P_SERVER;
+    public static Integer P_SERVER = 2;
     /**
-     *
+     * 服务商
      */
+    public static Integer TYPE_SERVER = 1;
+    /**
+     * 审核
+     */
+    public static Integer TYPE_REVIEW = 2;
 }
