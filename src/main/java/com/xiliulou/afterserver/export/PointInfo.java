@@ -43,74 +43,79 @@ public class PointInfo {
     @ExcelProperty(index = 5)
     private String installType;
     /**
-     * 雨棚数量
+     * 详细地址
      */
     @ExcelProperty(index = 6)
+    private String address;
+    /**
+     * 雨棚数量
+     */
+    @ExcelProperty(index = 7)
     private Integer canopyCount;
     /**
      *sn码
      */
-    @ExcelProperty(index = 7)
+    @ExcelProperty(index = 8)
     private String snNo;
     /**
      * 物联网卡
      */
-    @ExcelProperty(index = 8)
+    @ExcelProperty(index = 9)
     private String cardNumber;
     /**
      * '物联网卡供应商
      */
-    @ExcelProperty(index = 9)
+    @ExcelProperty(index = 10)
     private String cardSupplier;
 
     /**
      * 摄像头数量
      */
-    @ExcelProperty(index = 10)
+    @ExcelProperty(index = 11)
     private Integer cameraCount;
     /**
      * 安装时间
      */
-    @ExcelProperty(index = 11)
+    @ExcelProperty(index = 12)
     private String installTime;
     /**
      * 质保有效期
      */
-    @ExcelProperty(index = 12)
+    @ExcelProperty(index = 13)
     private String warrantyPeriod;
     /**
      * 施工完成时间
      */
-    @ExcelProperty(index = 13)
+    @ExcelProperty(index = 14)
     private String completionTime;
     /**
      * 入账
      */
-    @ExcelProperty(index = 14)
+    @ExcelProperty(index = 15)
     private String isEntry;
     /**
      * 验收
      */
-    @ExcelProperty(index = 15)
+    @ExcelProperty(index = 16)
     private String isAcceptance;
     /**
      * 下单时间
      */
-    @ExcelProperty(index = 16)
+    @ExcelProperty(index = 17)
     private String orderTime;
     /**
      * '运营商'
      */
-    @ExcelProperty(index = 17)
+    @ExcelProperty(index = 18)
     private String operator;
     /**
      * '物流信息'
      */
-    @ExcelProperty(index = 18)
+    @ExcelProperty(index = 19)
     private String logisticsInfo;
     /**
      * '备注'
      */
-    @ExcelProperty(index = 19)
+    @ExcelProperty(index = 20)
     private String remarks;
 }

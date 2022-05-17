@@ -79,6 +79,11 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
             log.error("insert PointInfo error! InstallType is entry pointName={}",pointInfo.getName());
             throw new RuntimeException("点位" + pointInfo.getName() + "请填写安装类型");
         }
+        if(Objects.isNull(pointInfo.getAddress())){
+            log.error("insert PointInfo error! InstallType is entry pointName={}",pointInfo.getName());
+            throw new RuntimeException("点位" + pointInfo.getName() + "请填写安装类型");
+        }
+
 
         if(StringUtils.isBlank(pointInfo.getCity())){
             log.error("insert PointInfo error! City is entry pointName={}",pointInfo.getName());
