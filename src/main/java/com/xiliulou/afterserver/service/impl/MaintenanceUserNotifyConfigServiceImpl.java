@@ -157,6 +157,11 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
                 return Pair.of(false, "请选择服务商");
             }
         }
+
+        if(Objects.equals(type, MaintenanceUserNotifyConfig.TYPE_REVIEW)) {
+            bindId = null;
+        }
+
         MaintenanceUserNotifyConfig maintenanceUserNotifyConfig = this.queryByPermissions(type, bindId);
         if(Objects.isNull(maintenanceUserNotifyConfig) || StringUtils.isEmpty(maintenanceUserNotifyConfig.getPhones())) {
             return Pair.of(false, "请先配置手机号");
