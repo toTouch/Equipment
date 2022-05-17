@@ -37,7 +37,7 @@ public class JsonAdminMaintenanceUserNotifyConfigController extends BaseControll
     }
 
     @PostMapping("/admin/maintenace/test")
-    public R testSendMsg(@RequestParam("type") Integer type, Long bindId) {
+    public R testSendMsg(@RequestParam("type") Integer type, @RequestParam("bindId") Long bindId) {
         return returnPairResult(maintenanceUserNotifyConfigService.testSendMsg(type, bindId));
     }
 }
