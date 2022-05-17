@@ -9,12 +9,19 @@ import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.export.PointInfo;
 import com.xiliulou.afterserver.export.PointUpdateInfo;
 import com.xiliulou.afterserver.service.*;
+import com.xiliulou.afterserver.util.AmapUtil;
 import com.xiliulou.afterserver.vo.PointNewInfoVo;
+import com.xiliulou.afterserver.web.query.GeoCodeQuery;
+import com.xiliulou.afterserver.web.query.GeoCodeResultQuery;
 import jdk.net.SocketFlow;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.util.CollectionUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -145,6 +152,34 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
             log.error("insert PointInfo error! not calculation warrantyTime pointName={}",pointInfo.getName());
             throw new RuntimeException("点位" + pointInfo.getName() + "没有添加安装时间");
         }
+        if(Objects.isNull(pointInfo.getAddress())){
+            log.error("insert PointInfo error! InstallType is entry pointName={}",pointInfo.getName());
+            throw new RuntimeException("点位" + pointInfo.getName() + "请填写详细地址");
+        }
+
+
+        GeoCodeResultQuery geoCodeResultQuery = null;
+        try {
+            geoCodeResultQuery = AmapUtil.getLonLat(URLEncoder.encode(pointInfo.getAddress(), "UTF-8"));
+        } catch (Exception e) {
+            log.error("insert PointInfo error! CALL GEO CODE RESULT QUERY API ERROR pointName={}",pointInfo.getName(), e);
+            throw new RuntimeException("调用高德逆地理编码失败，请联系管理员");
+        }
+
+        if(Objects.isNull(geoCodeResultQuery)) {
+            log.error("insert PointInfo error! geoCodeResultQuery is entry pointName={}",pointInfo.getName());
+            throw new RuntimeException("获取点位" + pointInfo.getName() + "逆地理编码为空，请检查");
+        }
+
+        if(Objects.equals(geoCodeResultQuery.getStatus(), GeoCodeResultQuery.STATUS_FAIL)) {
+            log.error("insert PointInfo error! GEO CODE RESULT QUERY FAIL pointName={}",pointInfo.getName());
+            throw new RuntimeException("获取点位" + pointInfo.getName() + "逆地理编码失败，请联系管理员");
+        }
+
+        if(CollectionUtils.isEmpty(geoCodeResultQuery.getGeocodes())) {
+            log.error("insert PointInfo error! GEO CODES IS ENTRY pointName={}",pointInfo.getName());
+            throw new RuntimeException("获取点位" + pointInfo.getName() + "逆地理编码为空，请检查");
+        }
 
         list.add(pointInfo);
         if (list.size() >= BATCH_COUNT) {
@@ -188,6 +223,18 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
             }
 
             point.setAddress(item.getAddress());
+            GeoCodeResultQuery geoCodeResultQuery = null;
+            try {
+                geoCodeResultQuery = AmapUtil.getLonLat(URLEncoder.encode(item.getAddress(), "UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                log.error("insert PointInfo error! CALL GEO CODE RESULT QUERY API ERROR pointName={}",item.getName(), e);
+                throw new RuntimeException("调用高德逆地理编码失败，请联系管理员");
+            }
+            GeoCodeQuery geoCodeQuery = geoCodeResultQuery.getGeocodes().get(0);
+            String[] lonlat = geoCodeQuery.getLocation().split(",");
+            point.setCoordX(new BigDecimal(lonlat[1]));
+            point.setCoordY(new BigDecimal(lonlat[0]));
+
             point.setCameraCount(item.getCameraCount());
             point.setCanopyCount(item.getCanopyCount());
             point.setSnNo(item.getSnNo());
