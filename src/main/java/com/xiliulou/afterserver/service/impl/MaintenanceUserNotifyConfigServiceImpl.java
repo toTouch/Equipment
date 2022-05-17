@@ -54,6 +54,10 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
             }
         }
 
+        if(Objects.equals(type, MaintenanceUserNotifyConfig.TYPE_REVIEW)) {
+            bindId = null;
+        }
+
         MaintenanceUserNotifyConfig maintenanceUserNotifyConfig = this.queryByPermissions(type, bindId);
         if(Objects.isNull(maintenanceUserNotifyConfig)){
             return Pair.of(true,null);
@@ -80,6 +84,10 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
             if(Objects.isNull(query.getBindId())) {
                 return Pair.of(false, "请选择服务商");
             }
+        }
+
+        if(Objects.equals(query.getType(), MaintenanceUserNotifyConfig.TYPE_REVIEW)) {
+            query.setBindId(null);
         }
 
         MaintenanceUserNotifyConfig maintenanceUserNotifyConfig = this.queryByPermissions(query.getType(), query.getBindId());
@@ -112,6 +120,10 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
             if(Objects.isNull(query.getBindId())) {
                 return Pair.of(false, "请选择服务商");
             }
+        }
+
+        if(Objects.equals(query.getType(), MaintenanceUserNotifyConfig.TYPE_REVIEW)) {
+            query.setBindId(null);
         }
 
         MaintenanceUserNotifyConfig maintenanceUserNotifyConfig = this.queryByPermissions(query.getType(), query.getBindId());
