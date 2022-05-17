@@ -123,6 +123,11 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
 
     @Override
     public Pair<Boolean, Object> testSendMsg(Integer type, Long bindId) {
+        if(Objects.equals(type, MaintenanceUserNotifyConfig.TYPE_SERVER)) {
+            if(Objects.isNull(bindId)) {
+                return Pair.of(false, "请选择服务商");
+            }
+        }
         MaintenanceUserNotifyConfig maintenanceUserNotifyConfig = this.queryByPermissions(type, bindId);
         if(Objects.isNull(maintenanceUserNotifyConfig) || StringUtils.isEmpty(maintenanceUserNotifyConfig.getPhones())) {
             return Pair.of(false, "请先配置手机号");
