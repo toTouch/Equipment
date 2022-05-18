@@ -2,8 +2,11 @@ package com.xiliulou.afterserver.mapper;
 
 import com.xiliulou.afterserver.entity.PointNew;
 
+import java.math.BigDecimal;
 import java.util.List;
 
+import com.xiliulou.afterserver.web.vo.PointNewMapCountVo;
+import com.xiliulou.afterserver.web.vo.PointNewMapStatisticsVo;
 import com.xiliulou.afterserver.web.vo.PointNewPullVo;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -109,4 +112,16 @@ public interface PointNewMapper extends BaseMapper<PointNew> {
 
     @Select("select id, name from t_point_new where name like concat('%', #{name}, '%') limit 0, 20")
     List<PointNewPullVo> queryPointNewPull(String name);
+
+    List<PointNewMapStatisticsVo> mapStatistics(@Param("coordXStart") BigDecimal coordXStart,
+                                                @Param("coordXEnd")BigDecimal coordXEnd,
+                                                @Param("coordYStart")BigDecimal coordYStart,
+                                                @Param("coordYEnd")BigDecimal coordYEnd,
+                                                @Param("cityId")Long cityId,
+                                                @Param("provinceId")Long provinceId,
+                                                @Param("productSeries")Integer productSeries);
+
+    List<PointNewMapCountVo> pointNewMapProvinceCount();
+
+    List<PointNewMapCountVo> pointNewMapCityCount(@Param("pid") Long pid);
 }
