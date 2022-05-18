@@ -128,3 +128,16 @@ storage:
 userrole:
   unShow: [1,2,3,4]
   userRole: [2]
+
+app-config:
+  username: compression
+  password: xiliulou
+  appId: after_v96s3love7
+  appSecret: B/1aF4XecFWalszX3Uytf+G9ce+OGNsswsnASDc6Clc=
+
+rocketmq:
+  name-server: xiliulou-rocketmq:9876
+  producer:
+    group: cupboard-producer
+  consumer:
+    group: cupboard-consumer
