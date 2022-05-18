@@ -152,7 +152,7 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
             log.error("insert PointInfo error! not calculation warrantyTime pointName={}",pointInfo.getName());
             throw new RuntimeException("点位" + pointInfo.getName() + "没有添加安装时间");
         }
-        if(Objects.isNull(pointInfo.getAddress())){
+        /*if(Objects.isNull(pointInfo.getAddress())){
             log.error("insert PointInfo error! InstallType is entry pointName={}",pointInfo.getName());
             throw new RuntimeException("点位" + pointInfo.getName() + "请填写详细地址");
         }
@@ -179,7 +179,7 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
         if(CollectionUtils.isEmpty(geoCodeResultQuery.getGeocodes())) {
             log.error("insert PointInfo error! GEO CODES IS ENTRY pointName={}",pointInfo.getName());
             throw new RuntimeException("获取点位" + pointInfo.getName() + "逆地理编码为空，请检查");
-        }
+        }*/
 
         list.add(pointInfo);
         if (list.size() >= BATCH_COUNT) {
@@ -223,7 +223,7 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
             }
 
             point.setAddress(item.getAddress());
-            GeoCodeResultQuery geoCodeResultQuery = null;
+           /* GeoCodeResultQuery geoCodeResultQuery = null;
             try {
                 geoCodeResultQuery = AmapUtil.getLonLat(URLEncoder.encode(item.getAddress(), "UTF-8"));
             } catch (UnsupportedEncodingException e) {
@@ -233,7 +233,7 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
             GeoCodeQuery geoCodeQuery = geoCodeResultQuery.getGeocodes().get(0);
             String[] lonlat = geoCodeQuery.getLocation().split(",");
             point.setCoordX(new BigDecimal(lonlat[1]));
-            point.setCoordY(new BigDecimal(lonlat[0]));
+            point.setCoordY(new BigDecimal(lonlat[0]));*/
 
             point.setCameraCount(item.getCameraCount());
             point.setCanopyCount(item.getCanopyCount());
