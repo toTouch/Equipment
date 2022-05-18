@@ -15,7 +15,4 @@ public interface CommonConstants {
 	 * 失败标记
 	 */
 	Integer FAIL = 1;
-
-
-
 }

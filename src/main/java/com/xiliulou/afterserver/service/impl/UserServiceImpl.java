@@ -14,10 +14,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.config.RolePermissionConfig;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.UserMapper;
-import com.xiliulou.afterserver.service.ServerService;
-import com.xiliulou.afterserver.service.SupplierService;
-import com.xiliulou.afterserver.service.UserRoleService;
-import com.xiliulou.afterserver.service.UserService;
+import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
@@ -27,10 +24,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @program: XILIULOU
@@ -65,6 +59,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if(StringUtils.isBlank(user.getPassWord())){
             return Pair.of(false, "请填写合法密码");
         }
+
         if(Objects.equals(User.TYPE_FACTORY, user.getUserType())){
             Supplier supplier = supplierService.getById(user.getThirdId());
             if(Objects.isNull(supplier)){
@@ -77,6 +72,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 return Pair.of(false, "未查询到服务商，请检查");
             }
         }
+
         user.setRoleId(User.AFTER_USER_ROLE);
         user.setPicture("1.npg");
         user.setCreateTime(System.currentTimeMillis());
@@ -127,6 +123,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public R list(Long offset, Long size, String username) {
         Page page = PageUtil.getPage(offset, size);
         Page selectPage = baseMapper.selectPage(page,Wrappers.<User>lambdaQuery().like(Objects.nonNull(username),User::getUserName, username));
+
         if(CollectionUtils.isNotEmpty(selectPage.getRecords())) {
             selectPage.getRecords().forEach(item -> {
                 User user = (User)item;
@@ -143,6 +140,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                         user.setThirdName(server.getName());
                     }
                 }
+
+                List<Role> userRoles = userRoleService.findByUid(user.getId());
+                List<Long> role = new ArrayList<>();
+                if(CollectionUtils.isNotEmpty(userRoles)) {
+                    userRoles.forEach(x -> {
+                        role.add(x.getId());
+                    });
+                }
+                user.setRids(role);
             });
         }
         return R.ok(selectPage);
@@ -156,5 +162,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public R typePull(String username, Integer type) {
         return R.ok(baseMapper.typePull(username, type));
+    }
+
+    @Override
+    public R updateUser(User user) {
+        if(Objects.isNull(user)){
+            return R.fail("请传入用户信息");
+        }
+        if(Objects.isNull(user.getPassWord())){
+            return R.fail("请传入用户密码");
+        }
+
+        user.setPassWord(PasswordUtils.encode(user.getPassWord()));
+        this.updateById(user);
+
+        return R.ok();
     }
 }

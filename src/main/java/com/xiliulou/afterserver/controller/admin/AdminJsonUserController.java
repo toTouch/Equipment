@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.controller.admin;
 
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xiliulou.afterserver.config.MinioConfig;
 import com.xiliulou.afterserver.controller.BaseController;
@@ -65,18 +66,8 @@ public class AdminJsonUserController extends BaseController {
 
    @PutMapping("/admin/user")
     public R updateUser(@RequestBody User user,HttpServletRequest request){
-//       User userDb = this.userService.getBaseMapper().selectOne(Wrappers.<User>lambdaQuery().eq(User::getUserName, user.getUserName()));
-//       if (Objects.nonNull(userDb)) {
-//           return R.fail("用户名已存在");
-//       }
-        if(Objects.isNull(user)){
-            return R.fail("请传入用户信息");
-        }
-       if(Objects.isNull(user.getPassWord())){
-           return R.fail("请传入用户密码");
-       }
-       user.setPassWord(PasswordUtils.encode(user.getPassWord()));
-      return R.ok(userService.updateById(user));
+       return userService.updateUser(user);
+
    }
 
    @DeleteMapping("/admin/user/{uid}")
@@ -99,4 +90,8 @@ public class AdminJsonUserController extends BaseController {
         return returnPairResult(roleService.bindUserRole(uid, roleIds));
     }
 
+    @GetMapping("admin/user/role")
+    public R queryRoleByUid(@RequestParam("uid") Long uid) {
+        return returnPairResult(roleService.queryRoleByUid(uid));
+    }
 }
