@@ -32,6 +32,15 @@ public class City {
     * 城市名称
     */
     private String name;
+    /**
+     *城市纬度
+     */
+    private String coordX;
+    /**
+     *城市经度
+     */
+    private String coordY;
+
 
     public static final Integer DEL_NORMAL = 0;
     public static final Integer DEL_DEL = 1;

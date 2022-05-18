@@ -8,6 +8,7 @@ import com.xiliulou.afterserver.web.query.PointAuditStatusQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
 import com.xiliulou.afterserver.web.vo.PointNewPullVo;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -98,4 +99,10 @@ public interface PointNewService extends IService<PointNew> {
     void updatePastWarrantyStatus();
 
     List<PointNewPullVo> queryPointNewPull(String name);
+
+    R pointNewMapStatistics(List<BigDecimal> coordXList, List<BigDecimal> coordYList, Long cityId, Long provinceId, Integer productSeries);
+
+    R pointNewMapProvinceCount();
+
+    R pointNewMapCityCount(Long pid);
 }

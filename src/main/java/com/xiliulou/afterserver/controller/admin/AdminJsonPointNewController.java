@@ -32,6 +32,7 @@ import com.xiliulou.afterserver.web.query.CameraInfoQuery;
 import com.xiliulou.afterserver.web.query.PointAuditStatusQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
 import com.xiliulou.afterserver.web.query.ProductInfoQuery;
+import com.xiliulou.core.json.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -633,5 +635,27 @@ public class AdminJsonPointNewController {
     @PostMapping("admin/pointNew/update/auditStatus")
     public R updateAuditStatus(@RequestBody PointAuditStatusQuery pointAuditStatusQuery) {
         return pointNewService.updateAuditStatus(pointAuditStatusQuery);
+    }
+
+    @GetMapping("admin/pointNew/map/statistics")
+    public R pointNewMapStatistics(@RequestParam(value = "cityId",required = false) Long cityId,
+                                   @RequestParam(value = "provinceId", required = false) Long provinceId,
+                                   @RequestParam(value = "productSeries", required = false)Integer productSeries,
+                                   @RequestParam(value = "coordXs") String coordXs,
+                                   @RequestParam(value = "coordYs") String coordYs) {
+
+        List<BigDecimal> coordXList = JsonUtil.fromJsonArray(coordXs, BigDecimal.class);
+        List<BigDecimal> coordYList = JsonUtil.fromJsonArray(coordYs, BigDecimal.class);
+       return pointNewService.pointNewMapStatistics(coordXList, coordYList, cityId, provinceId,productSeries);
+    }
+
+    @GetMapping("admin/pointNew/map/province/count")
+    public R pointNewMapProvinceCount() {
+        return pointNewService.pointNewMapProvinceCount();
+    }
+
+    @GetMapping("admin/pointNew/map/city/count")
+    public R pointNewMapCityCount(@RequestParam("pid")Long pid) {
+        return pointNewService.pointNewMapCityCount(pid);
     }
 }

@@ -3,34 +3,26 @@ package com.xiliulou.afterserver.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.Query;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.*;
-import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.*;
 import com.xiliulou.afterserver.service.*;
-import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.vo.PointNewInfoVo;
-import com.xiliulou.afterserver.web.query.CameraInfoQuery;
-import com.xiliulou.afterserver.web.query.PointAuditStatusQuery;
-import com.xiliulou.afterserver.web.query.PointQuery;
-import com.xiliulou.afterserver.web.query.ProductInfoQuery;
+import com.xiliulou.afterserver.web.query.*;
+import com.xiliulou.afterserver.web.vo.PointNewMapStatisticsVo;
 import com.xiliulou.afterserver.web.vo.PointNewPullVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.*;
 
 import lombok.extern.slf4j.Slf4j;
@@ -292,7 +284,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             pointNew.setWarrantyTime(null);
         }
         int update = this.pointNewMapper.update(pointNew);
-        pointNew.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
+        //pointNew.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
         if (update>0){
             return R.ok();
         }
@@ -424,6 +416,9 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         if(Objects.isNull(pointNew.getInstallType())){
             return R.fail("请填写安装类型");
         }
+        if(Objects.isNull(pointNew.getAddress())){
+            return R.fail("请填写详细地址");
+        }
         return null;
     }
 
@@ -435,6 +430,30 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     @Override
     public List<PointNewPullVo> queryPointNewPull(String name) {
         return pointNewMapper.queryPointNewPull(name);
+    }
+
+    @Override
+    public R pointNewMapStatistics(List<BigDecimal> coordXList, List<BigDecimal> coordYList, Long cityId, Long provinceId, Integer productSeries) {
+        if(CollectionUtils.isEmpty(coordXList) || coordXList.size() != 2) {
+            return R.ok("纬度范围不合法,请传入正确范围");
+        }
+        if(CollectionUtils.isEmpty(coordYList) || coordYList.size() != 2) {
+            return R.ok("经度范围不合法,请传入正确范围");
+        }
+
+        List<PointNewMapStatisticsVo> pointNewMapStatisticsVo = pointNewMapper.mapStatistics(coordXList.get(0), coordXList.get(1), coordYList.get(0), coordYList.get(1), cityId, provinceId, productSeries);
+
+        return R.ok(pointNewMapStatisticsVo);
+    }
+
+    @Override
+    public R pointNewMapProvinceCount() {
+        return R.ok(pointNewMapper.pointNewMapProvinceCount());
+    }
+
+    @Override
+    public R pointNewMapCityCount(Long pid) {
+        return R.ok(pointNewMapper.pointNewMapCityCount(pid));
     }
 
     /*@Override
