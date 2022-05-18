@@ -133,4 +133,11 @@ rocketmq:
   consumer:
     group: cupboard-consumer
 
+app-config:
+  username: compression
+  password: xiliulou
+  appId: after_v96s3love7
+  appSecret: B/1aF4XecFWalszX3Uytf+G9ce+OGNsswsnASDc6Clc=
+
+
 
