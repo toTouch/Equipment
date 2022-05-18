@@ -356,6 +356,7 @@
     <select id="mapStatistics" resultType="com.xiliulou.afterserver.web.vo.PointNewMapStatisticsVo">
         select name as point_name, product_series, coord_x, coord_y from t_point_new
         <where>
+            del_flag = 0
             <if test="coordXStart != null and coordXEnd != null">
                 and coord_x &gt;= #{coordXStart} and coord_x &lt;= #{coordXEnd}
             </if>
