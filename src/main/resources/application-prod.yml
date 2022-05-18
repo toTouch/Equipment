@@ -60,6 +60,33 @@ xiliulou:
     - /outer/**
     - /actuator/**
     - /error/**
+  token:
+    infos:
+      0:
+        maxTokenCnt: 10
+        expiryTimeMillis: 7200000
+        maxExpiryTimeMillis: 7200000
+      1:
+        maxTokenCnt: 10
+        expiryTimeMillis: 7200000
+        maxExpiryTimeMillis: 7200000
+      2:
+        maxTokenCnt: 10
+        expiryTimeMillis: 7200000
+        maxExpiryTimeMillis: 7200000
+      3:
+        maxTokenCnt: 20
+        expiryTimeMillis: 7776000000
+        maxExpiryTimeMillis: 7776000000
+      4:
+        maxTokenCnt: 10
+        expiryTimeMillis: 7776000000
+        maxExpiryTimeMillis: 7776000000
+      5:
+        maxTokenCnt: 10
+        expiryTimeMillis: 7776000000
+        maxExpiryTimeMillis: 7776000000
+
 jwt:
   #secret: A0B1C2D3E4F5G6H7I8J9KALBMCNDOEPFQ0R1S2T3U4V5W6X7Y8Z8
   secret: 20e5@cda38da811*27ed6fa.d226&8
@@ -73,32 +100,7 @@ jwt:
   #secure: false
   #bucketName: test
 
-token:
-  infos:
-    0:
-      maxTokenCnt: 10
-      expiryTimeMillis: 7200000
-      maxExpiryTimeMillis: 7200000
-    1:
-      maxTokenCnt: 10
-      expiryTimeMillis: 7200000
-      maxExpiryTimeMillis: 7200000
-    2:
-      maxTokenCnt: 10
-      expiryTimeMillis: 7200000
-      maxExpiryTimeMillis: 7200000
-    3:
-      maxTokenCnt: 20
-      expiryTimeMillis: 7776000000
-      maxExpiryTimeMillis: 7776000000
-    4:
-      maxTokenCnt: 10
-      expiryTimeMillis: 7776000000
-      maxExpiryTimeMillis: 7776000000
-    5:
-      maxTokenCnt: 10
-      expiryTimeMillis: 7776000000
-      maxExpiryTimeMillis: 7776000000
+
 
 storage:
   ### oss:oss-cn-beijing.aliyuncs.com minio:http://172.26.20.230:9000
