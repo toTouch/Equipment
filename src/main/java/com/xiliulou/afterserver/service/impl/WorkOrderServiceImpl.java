@@ -20,7 +20,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiliulou.afterserver.constant.MqConstant;
 import com.xiliulou.afterserver.entity.*;
+import com.xiliulou.afterserver.entity.mq.notify.MqNotifyCommon;
+import com.xiliulou.afterserver.entity.mq.notify.MqWorkOrderAuditNotify;
+import com.xiliulou.afterserver.entity.mq.notify.MqWorkOrderServerNotify;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.ProductSerialNumberMapper;
 import com.xiliulou.afterserver.mapper.WorkOrderMapper;
@@ -32,8 +36,10 @@ import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.*;
 import com.xiliulou.afterserver.web.vo.*;
 import com.xiliulou.core.json.JsonUtil;
+import com.xiliulou.mq.service.RocketMqService;
 import io.micrometer.core.instrument.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,6 +58,7 @@ import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -94,6 +101,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     WorkOrderServerService workOrderServerService;
     @Autowired
     WorkAuditNotifyService workAuditNotifyService;
+    @Autowired
+    RocketMqService rocketMqService;
+    @Autowired
+    MaintenanceUserNotifyConfigService maintenanceUserNotifyConfigService;
 
 
     @Override
@@ -158,6 +169,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if (Objects.nonNull(item.getProductInfo())) {
                 List<ProductInfoQuery> productInfo = JSON.parseArray(item.getProductInfo(), ProductInfoQuery.class);
                 item.setProductInfoList(productInfo);
+            }
+            
+            if(Objects.nonNull(item.getWorkOrderReasonId())) {
+                item.setWorkOrderReasonName(this.getWorkOrderReasonStr(item.getWorkOrderReasonId(), ""));
             }
 
             //处理图片
@@ -377,12 +392,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             //"工单原因",
             //workOrderReasonName
             if (Objects.nonNull(o.getWorkOrderReasonId())) {
-                WorkOrderReason workOrderReason = workOrderReasonService.getById(o.getWorkOrderReasonId());
-                if (Objects.nonNull(workOrderReason)) {
-                    row.add(workOrderReason.getName());
-                } else {
-                    row.add("");
-                }
+                String name = this.getWorkOrderReasonStr(o.getWorkOrderReasonId(), "");
+                row.add(name);
             } else {
                 row.add("");
             }
@@ -724,12 +735,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             //"工单原因",
             //workOrderReasonName
             if (Objects.nonNull(o.getWorkOrderReasonId())) {
-                WorkOrderReason workOrderReason = workOrderReasonService.getById(o.getWorkOrderReasonId());
-                if (Objects.nonNull(workOrderReason)) {
-                    row.add(workOrderReason.getName());
-                } else {
-                    row.add("");
-                }
+                String name = this.getWorkOrderReasonStr(o.getWorkOrderReasonId(), "");
+                row.add(name);
             } else {
                 row.add("");
             }
@@ -1195,6 +1202,19 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 break;
         }
         return thirdCompanyTypeStr;
+    }
+
+    private String getWorkOrderReasonStr(Long id, String name) {
+        WorkOrderReason workOrderReason = workOrderReasonService.getById(id);
+        if(Objects.isNull(workOrderReason)) {
+            return name;
+        }
+
+        if(Objects.equals(workOrderReason.getParentId(), WorkOrderReason.PARENT_NODE)) {
+            return workOrderReason.getName() + "/" + name;
+        }
+
+        return getWorkOrderReasonStr(workOrderReason.getParentId(),   workOrderReason.getName() +  "/" + name);
     }
 
     @Override
@@ -1854,6 +1874,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
 
+
         if (!CollectionUtils.isEmpty(workOrder.getWorkOrderServerList())) {
             workOrder.getWorkOrderServerList().forEach(item -> {
                 WorkOrderServer workOrderServer = new WorkOrderServer();
@@ -1894,6 +1915,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             });
         }
 
+        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)) {
+            this.sendWorkServerNotifyMq(workOrder);
+        }
+
         return R.ok();
     }
 
@@ -1924,64 +1949,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("审核通过的工单不允许修改");
         }
 
-        /*if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
-            if (!checkServerProcess(workOrder.getId())) {
-                return R.fail("有服务商没有处理，请等待服务商处理或后台添加处理时间");
-            }
+        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT) && Objects.equals(query.getStatus(), WorkOrder.STATUS_INIT)) {
+            workOrder.setAssignmentTime(System.currentTimeMillis());
+            this.sendWorkServerNotifyMq(workOrder);
         }
-
-        //除了暂停状态不可往之前的状态修改
-        Integer status = WorkOrder.STATUS_ASSIGNMENT.equals(query.getStatus()) ? -1 : query.getStatus();
-        Integer statusOld = WorkOrder.STATUS_ASSIGNMENT.equals(workOrder.getStatus()) ? -1 : workOrder.getStatus();
-        if (status < statusOld && !Objects.equals(WorkOrder.STATUS_SUSPEND, status)) {
-            return R.fail("状态不可往前修改");
-        }
-
-        List<WorkOrderServerQuery> list = workOrderServerService.queryByWorkOrderIdAndServerId(workOrder.getId(), null);
-        if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)) {
-            if (CollectionUtils.isEmpty(list)) {
-                return R.fail("工单必须有服务商");
-            }
-        }
-
-        if(query.getStatus() >= WorkOrder.STATUS_PROCESSING && query.getStatus() <= WorkOrder.STATUS_FINISHED){
-            if (CollectionUtils.isEmpty(list)) {
-                return R.fail("工单必须有服务商");
-            }
-
-            for(WorkOrderServerQuery item : list){
-                if(StringUtils.isBlank(item.getSolution())){
-                    return R.fail("服务商"+item.getServerName()+"没填写解决方案");
-                }
-
-                QueryWrapper<File> wrapper = new QueryWrapper<>();
-                wrapper.eq("type", File.TYPE_WORK_ORDER);
-                wrapper.eq("bind_id", item.getWorkOrderId());
-                wrapper.ge("file_type", 1).lt("file_type", 90000);
-                wrapper.eq("server_id", item.getServerId());
-
-                int fileCount = fileService.count(wrapper);
-                if (fileCount == 0) {
-                   return R.fail("服务商"+item.getServerName()+"没上传处理图片");
-                }
-            }
-
-        }
-
-        if (!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)
-                && Objects.equals(workOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_WAIT)
-                && Objects.equals(query.getStatus(), WorkOrder.STATUS_FINISHED)) {
-            saveWorkAuditNotify(workOrder);
-        }*/
 
         workOrder.setStatus(query.getStatus());
         workOrder.setWorkOrderReasonId(query.getWorkOrderReasonId());
         baseMapper.updateById(workOrder);
-        /*if(Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
-            workOrder.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
-            baseMapper.updateById(workOrder);
-            return R.ok("状态成功修改为已完结，审核状态已更新为待审核");
-        }*/
         return R.ok();
     }
 
@@ -2030,19 +2005,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("审核通过的工单不允许修改");
         }
 
-        /*if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_FINISHED)) {
-            if (!checkServerProcess(workOrder.getId())) {
-                return R.fail("有服务商没有处理，请等待服务商处理或后台添加处理时间");
-            }
-        }
-
-        //除了暂停状态不可往之前的状态修改
-        Integer status = WorkOrder.STATUS_ASSIGNMENT.equals(workOrder.getStatus()) ? -1 : workOrder.getStatus();
-        Integer statusOld = WorkOrder.STATUS_ASSIGNMENT.equals(workOrder.getStatus()) ? -1 : workOrder.getStatus();
-        if (status < statusOld && !Objects.equals(WorkOrder.STATUS_SUSPEND, status)) {
-            return R.fail("状态不可往前修改");
-        }*/
-
         if (!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
             if (CollectionUtils.isEmpty(workOrder.getWorkOrderServerList())) {
                 return R.fail("工单必须填写服务商相关信息");
@@ -2086,32 +2048,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     }
                 }
             }
-            workOrder.setAssignmentTime(workOrder.getCreateTime());
+            //workOrder.setAssignmentTime(workOrder.getCreateTime());
         }
-
-        /*if(workOrder.getStatus() >= WorkOrder.STATUS_PROCESSING && workOrder.getStatus() <= WorkOrder.STATUS_FINISHED){
-            if (CollectionUtils.isEmpty(workOrderServerList)) {
-                return R.fail("工单必须有服务商");
-            }
-
-            for(WorkOrderServerQuery item : workOrderServerList){
-                if(StringUtils.isBlank(item.getSolution())){
-                    return R.fail("服务商"+item.getServerName()+"没填写解决方案");
-                }
-
-                QueryWrapper<File> wrapper = new QueryWrapper<>();
-                wrapper.eq("type", File.TYPE_WORK_ORDER);
-                wrapper.eq("bind_id", item.getWorkOrderId());
-                wrapper.ge("file_type", 1).lt("file_type", 90000);
-                wrapper.eq("server_id", item.getServerId());
-
-                int fileCount = fileService.count(wrapper);
-                if (fileCount == 0) {
-                    return R.fail("服务商"+item.getServerName()+"没上传处理图片");
-                }
-            }
-        }*/
-
 
         //非待派发状态 不可修添加或删除服务商
         if (!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
@@ -2148,6 +2086,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 && Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)
                 && Objects.isNull(oldWorkOrder.getAssignmentTime())) {
             workOrder.setAssignmentTime(System.currentTimeMillis());
+            workOrder.setOrderNo(oldWorkOrder.getOrderNo());
         }
 
 
@@ -2204,6 +2143,12 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         this.baseMapper.updateOne(workOrder);
+
+        //发送Mq通知
+        if (Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_ASSIGNMENT)
+                && Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)) {
+            this.sendWorkServerNotifyMq(this.getById(workOrder.getId()));
+        }
 
         return R.ok();
     }
@@ -2387,6 +2332,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     item.setProductInfoList(productInfo);
                 }
 
+                if(Objects.nonNull(item.getWorkOrderReasonId())) {
+                    item.setWorkOrderReasonName(this.getWorkOrderReasonStr(item.getWorkOrderReasonId(), ""));
+                }
+
                 List<WorkOrderServerQuery> workOrderServerList = workOrderServerService.queryByWorkOrderIdAndServerId(item.getId(), serverId);
                 item.setWorkOrderServerList(workOrderServerList);
 
@@ -2535,6 +2484,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         BeanUtils.copyProperties(workOrderAssignmentQuery, workOrder);
         String productInfo = JSON.toJSONString(workOrderAssignmentQuery.getProductInfoList());
         workOrder.setProductInfo(productInfo);
+        workOrder.setType(workOrderOld.getType());
 
         if(Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
             workOrder.setStatus(WorkOrder.STATUS_INIT);
@@ -2559,8 +2509,16 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
             }
         }
-
         this.updateById(workOrder);
+
+        //发送Mq通知
+        if(Objects.equals(workOrderOld.getStatus(), WorkOrder.STATUS_ASSIGNMENT)) {
+            workOrder.setStatus(WorkOrder.STATUS_INIT);
+            if(Objects.isNull(workOrderOld.getAssignmentTime())) {
+                this.sendWorkServerNotifyMq(workOrder);
+            }
+        }
+
 
         return R.ok();
     }
@@ -2659,7 +2617,114 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         this.updateById(update);
 
         this.saveWorkAuditNotify(workOrder);
+        this.sendWorkAuditNotifyMq(workOrder);
         return R.ok();
+    }
+
+    private void sendWorkAuditNotifyMq(WorkOrder workOrder) {
+        MaintenanceUserNotifyConfig maintenanceUserNotifyConfig = maintenanceUserNotifyConfigService.queryByPermissions(MaintenanceUserNotifyConfig.TYPE_REVIEW, null);
+        if(Objects.isNull(maintenanceUserNotifyConfig) || org.springframework.util.StringUtils.isEmpty(maintenanceUserNotifyConfig.getPhones())) {
+            return;
+        }
+        List<String> phones = JsonUtil.fromJsonArray(maintenanceUserNotifyConfig.getPhones(), String.class);
+
+        if(CollectionUtils.isEmpty(phones)) {
+            return;
+        }
+
+        SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        if(Objects.equals(maintenanceUserNotifyConfig.getPermissions() & MaintenanceUserNotifyConfig.P_REVIEW, MaintenanceUserNotifyConfig.P_REVIEW)) {
+           phones.forEach(p -> {
+               MqNotifyCommon<MqWorkOrderAuditNotify> query = new MqNotifyCommon<>();
+               Long time = System.currentTimeMillis();
+               query.setType(MqNotifyCommon.TYPE_AFTER_SALES_AUDIT);
+               query.setTime(time);
+               query.setPhone(p);
+
+               MqWorkOrderAuditNotify mqWorkOrderAuditNotify = new MqWorkOrderAuditNotify();
+               mqWorkOrderAuditNotify.setWorkOrderNo(workOrder.getOrderNo());
+               mqWorkOrderAuditNotify.setSubmitTime(simp.format(new Date(time)));
+
+               WorkOrderType workOrderType = workOrderTypeService.getById(workOrder.getType());
+               if(Objects.nonNull(workOrderType)){
+                   mqWorkOrderAuditNotify.setOrderTypeName(workOrderType.getType());
+               }
+
+               PointNew pointNew = pointNewService.getById(workOrder.getPointId());
+               if(Objects.nonNull(pointNew)) {
+                   mqWorkOrderAuditNotify.setPointName(pointNew.getName());
+               }
+
+               User user = userService.getUserById(workOrder.getCommissionerId());
+               if(Objects.nonNull(user)) {
+                   mqWorkOrderAuditNotify.setSubmitUName(user.getUserName());
+               }
+               query.setData(mqWorkOrderAuditNotify);
+
+               Pair<Boolean, String> result = rocketMqService.sendSyncMsg(MqConstant.TOPIC_MAINTENANCE_NOTIFY, JsonUtil.toJson(query), MqConstant.TAG_AFTER_SALES, "", 0);
+               if (!result.getLeft()) {
+                   log.error("SEND WORKORDER AUDIT MQ ERROR! no={}", workOrder.getOrderNo());
+               }
+           });
+        }
+
+    }
+
+    private void sendWorkServerNotifyMq(WorkOrder workOrder) {
+        List<WorkOrderServerQuery> workOrderServerQueries = workOrderServerService.queryByWorkOrderId(workOrder.getId());
+        if(CollectionUtils.isEmpty(workOrderServerQueries)) {
+            return;
+        }
+
+        Map<String, String> data = new HashMap<>(2);
+        SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        WorkOrderType workOrderTypeByDB = workOrderTypeService.getById(workOrder.getType());
+        if(Objects.nonNull(workOrderTypeByDB)){
+            data.put("workOrderType", workOrderTypeByDB.getType());
+        }
+
+        PointNew pointNewByDB = pointNewService.getById(workOrder.getPointId());
+        if(Objects.nonNull(pointNewByDB)) {
+            data.put("pointNew",  pointNewByDB.getName());
+        }
+
+        workOrderServerQueries.parallelStream().forEach(s -> {
+            MaintenanceUserNotifyConfig maintenanceUserNotifyConfig = maintenanceUserNotifyConfigService.queryByPermissions(MaintenanceUserNotifyConfig.TYPE_SERVER, s.getServerId());
+            if(Objects.isNull(maintenanceUserNotifyConfig)) {
+                return;
+            }
+
+            List<String> serverPhones = JsonUtil.fromJsonArray(maintenanceUserNotifyConfig.getPhones(), String.class);
+
+            if(CollectionUtils.isEmpty(serverPhones)) {
+                return;
+            }
+
+            log.error("mq测试 -->" + (Objects.equals(maintenanceUserNotifyConfig.getPermissions() & MaintenanceUserNotifyConfig.P_SERVER, MaintenanceUserNotifyConfig.P_SERVER)));
+
+            if(Objects.equals(maintenanceUserNotifyConfig.getPermissions() & MaintenanceUserNotifyConfig.P_SERVER, MaintenanceUserNotifyConfig.P_SERVER)) {
+                serverPhones.parallelStream().forEach( p -> {
+                    MqNotifyCommon<MqWorkOrderServerNotify> query = new MqNotifyCommon<>();
+                    query.setType(MqNotifyCommon.TYPE_AFTER_SALES_SERVER);
+                    query.setTime(System.currentTimeMillis());
+                    query.setPhone(p);
+
+                    MqWorkOrderServerNotify mqWorkOrderServerNotify = new MqWorkOrderServerNotify();
+                    mqWorkOrderServerNotify.setWorkOrderNo(workOrder.getOrderNo());
+                    mqWorkOrderServerNotify.setOrderTypeName(data.get("workOrderType"));
+                    mqWorkOrderServerNotify.setPointName(data.get("pointNew"));
+                    mqWorkOrderServerNotify.setAssignmentTime(simp.format(new Date(workOrder.getAssignmentTime())));
+                    query.setData(mqWorkOrderServerNotify);
+
+                    Pair<Boolean, String> result = rocketMqService.sendSyncMsg(MqConstant.TOPIC_MAINTENANCE_NOTIFY, JsonUtil.toJson(query), MqConstant.TAG_AFTER_SALES, "", 0);
+                    if (!result.getLeft()) {
+                        log.error("SEND WORKORDER SERVER MQ ERROR! no={}", workOrder.getOrderNo());
+                    }
+                });
+            }
+
+        });
     }
 
     private WorkAuditNotify saveWorkAuditNotify(WorkOrder workOrder) {

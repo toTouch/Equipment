@@ -24,4 +24,6 @@ public interface WorkOrderServerService extends IService<WorkOrderServer> {
     Long queryPrescriptionAvgByServerId(Long curtMonthTime, Long id);
 
     Integer queryMaxCountByWorkOrderId(List<Long> workOrderIds);
+
+    List<WorkOrderServerQuery> queryByWorkOrderId(Long workOrderId);
 }

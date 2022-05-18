@@ -133,7 +133,7 @@
         (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
-        wor.name as wor_name,
+--         wor.name as wor_name,
         u.user_name as u_user_name,
         p.name as p_name,
         p.status as p_status
@@ -678,8 +678,7 @@
         wo.work_order_reason_id as wo_work_order_reason_id,
         wo.reason as wo_reason,
         wo.audit_status as wo_audit_status,
-        wo.audit_remarks as wo_audit_remarks,
-        wor.name as wor_name
+        wo.audit_remarks as wo_audit_remarks
         FROM work_order as wo
         LEFT JOIN work_order_type as wot on wot.id = wo.id
         LEFT JOIN t_point_new as p on p.id = wo.point_id
