@@ -2690,6 +2690,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         workOrderServerQueries.parallelStream().forEach(s -> {
+            if(Objects.isNull(s.getServerId())) {
+                return;
+            }
+
             MaintenanceUserNotifyConfig maintenanceUserNotifyConfig = maintenanceUserNotifyConfigService.queryByPermissions(MaintenanceUserNotifyConfig.TYPE_SERVER, s.getServerId());
             if(Objects.isNull(maintenanceUserNotifyConfig)) {
                 return;
