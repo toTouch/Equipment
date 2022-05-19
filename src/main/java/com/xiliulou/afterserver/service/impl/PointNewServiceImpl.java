@@ -431,7 +431,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         if(Objects.isNull(pointNew.getIsAcceptance())){
             return R.fail("请确认是否验收");
         }
-        if(StringUtils.isBlank(pointNew.getProductInfo())){
+        if(CollectionUtils.isEmpty(pointNew.getProductInfoList())){
             return R.fail("请填写产品信息");
         }
         if(Objects.isNull(pointNew.getCoordX()) || Objects.isNull(pointNew.getCoordY())){
