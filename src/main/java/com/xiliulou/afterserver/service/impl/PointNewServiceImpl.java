@@ -419,6 +419,24 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         if(Objects.isNull(pointNew.getAddress())){
             return R.fail("请填写详细地址");
         }
+        if(Objects.isNull(pointNew.getInstallTime())){
+            return R.fail("请填写安装时间");
+        }
+        if(Objects.isNull(pointNew.getWarrantyPeriod())){
+            return R.fail("请填写质保有效期");
+        }
+        if(Objects.isNull(pointNew.getWarrantyTime())){
+            return R.fail("请填写质保结束时间");
+        }
+        if(Objects.isNull(pointNew.getIsAcceptance())){
+            return R.fail("请确认是否验收");
+        }
+        if(StringUtils.isBlank(pointNew.getProductInfo())){
+            return R.fail("请填写产品信息");
+        }
+        if(Objects.isNull(pointNew.getCoordX()) || Objects.isNull(pointNew.getCoordY())){
+            return R.fail("详细地址经纬度为空，请选择详细地址");
+        }
         return null;
     }
 
