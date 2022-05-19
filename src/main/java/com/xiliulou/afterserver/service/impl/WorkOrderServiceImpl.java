@@ -2000,7 +2000,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 return R.fail("非待处理的工单不可修改为已暂停");
             }
         }
-        
+
 
         if (Objects.equals(oldWorkOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_PASSED)) {
             return R.fail("审核通过的工单不允许修改");
