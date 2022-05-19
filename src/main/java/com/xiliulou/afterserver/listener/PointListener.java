@@ -136,10 +136,19 @@ public class PointListener extends AnalysisEventListener<PointInfo> {
                 throw new RuntimeException("点位" + pointInfo.getName() + "没有查询到客户信息");
             }
         }
-        if(Objects.nonNull(pointInfo.getWarrantyPeriod()) && Objects.isNull(pointInfo.getInstallTime())){
-            log.error("insert PointInfo error! not calculation warrantyTime pointName={}",pointInfo.getName());
+        if( Objects.isNull(pointInfo.getInstallTime())){
+            log.error("insert PointInfo error! not calculation InstallTime pointName={}",pointInfo.getName());
             throw new RuntimeException("点位" + pointInfo.getName() + "没有添加安装时间");
         }
+        if( Objects.isNull(pointInfo.getWarrantyPeriod())){
+            log.error("insert PointInfo error! is null WarrantyPeriod pointName={}",pointInfo.getName());
+            throw new RuntimeException("点位" + pointInfo.getName() + "没有添加质保有效期");
+        }
+        if( Objects.isNull(pointInfo.getIsAcceptance())){
+            log.error("insert PointInfo error! is null IsAcceptance pointName={}",pointInfo.getName());
+            throw new RuntimeException("点位" + pointInfo.getName() + "没有添加是否验收");
+        }
+
         list.add(pointInfo);
         if (list.size() >= BATCH_COUNT) {
             saveData();
