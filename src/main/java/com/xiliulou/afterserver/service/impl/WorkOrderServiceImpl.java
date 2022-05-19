@@ -1988,18 +1988,19 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         if (Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_SUSPEND)
-                && (!Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_SUSPEND)
-                || !Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT))) {
+                && !Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_SUSPEND)
+                && !Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_INIT)) {
             return R.fail("工单已暂停只能修改为待处理");
         }
 
         if (Objects.equals(workOrder.getStatus(), WorkOrder.STATUS_SUSPEND)) {
             if (!Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_INIT)
-                    || Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_SUSPEND)) {
+                    && !Objects.equals(oldWorkOrder.getStatus(), WorkOrder.STATUS_SUSPEND)) {
 
                 return R.fail("非待处理的工单不可修改为已暂停");
             }
         }
+        
 
         if (Objects.equals(oldWorkOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_PASSED)) {
             return R.fail("审核通过的工单不允许修改");
