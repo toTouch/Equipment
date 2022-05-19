@@ -361,7 +361,7 @@
                 and coord_x &gt;= #{coordXStart} and coord_x &lt;= #{coordXEnd}
             </if>
             <if test="coordYStart != null and coordYEnd != null">
-                and coord_y &gt;= #{coordYStart} and coord_x &lt;= #{coordYEnd}
+                and coord_y &gt;= #{coordYStart} and coord_y &lt;= #{coordYEnd}
             </if>
             <if test="cityId != null">
                 and city_id = #{cityId}
