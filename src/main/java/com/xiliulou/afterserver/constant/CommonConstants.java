@@ -18,7 +18,8 @@ public interface CommonConstants {
 
 
 
-	String OSS_IMG_WATERMARK_URL = "https://wm-xiliulou-test.oss-cn-beijing.aliyuncs.com/%s?x-oss-process=image/watermark,text_%s,type_%s,color_%s,size_%s,x_%s";
+	//String OSS_IMG_WATERMARK_URL = "https://wm-xiliulou-test.oss-cn-beijing.aliyuncs.com/%s?x-oss-process=image/watermark,text_%s,type_%s,color_%s,size_%s,x_%s";
+	String OSS_IMG_WATERMARK_STYLE = "image/watermark,text_%s,type_%s,color_%s,size_%s,x_%s";
 
 	/**
 	 * oss水印文字类型 （文泉驿正黑）
@@ -31,7 +32,13 @@ public interface CommonConstants {
 	String OSS_IMG_WATERMARK_COLOR = "FFFFFF";
 
 	/**
-	 * oss水印文字偏移量
+	 * oss水印文字大小（px)
+	 */
+	String OSS_IMG_WATERMARK_SIZE = "80";
+
+
+	/**
+	 * oss水印文字偏移量（px)
 	 */
 	String OSS_IMG_WATERMARK_OFFSET = "40";
 }

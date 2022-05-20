@@ -30,6 +30,7 @@ import com.xiliulou.afterserver.web.vo.OssUrlVo;
 import com.xiliulou.afterserver.web.vo.ProductNewDetailsVo;
 import com.xiliulou.core.json.JsonUtil;
 import com.xiliulou.storage.config.StorageConfig;
+import com.xiliulou.storage.service.impl.AliyunOssService;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -84,6 +85,8 @@ public class ProductNewServiceImpl implements ProductNewService {
     private ColorCardService colorCardService;
     @Autowired
     private StorageConfig storageConfig;
+    @Autowired
+    private AliyunOssService aliyunOssService;
     /**
      * 通过ID查询单条数据从DB
      *
@@ -717,8 +720,7 @@ public class ProductNewServiceImpl implements ProductNewService {
                 ArrayList<OssUrlVo> fileUrlList = new ArrayList<>();
                 fileList.forEach(item -> {
                     OssUrlVo ossUrlVo = new OssUrlVo();
-                    String fileName = storageConfig.getDir() + item.getFileName();
-                    String url = getOssWatermarkUrl(fileName, simp.format(item.getCreateTime()));
+                    String url = getOssWatermarkUrl(item.getFileName(), simp.format(item.getCreateTime()));
 
                     ossUrlVo.setId(item.getId());
                     ossUrlVo.setUrl(url);
@@ -862,12 +864,27 @@ public class ProductNewServiceImpl implements ProductNewService {
             return "";
         }
 
-        String url = String.format(CommonConstants.OSS_IMG_WATERMARK_URL,
-                fileName,
-                base64Encode(createTime),
-                CommonConstants.OSS_IMG_WATERMARK_TYPE,
-                CommonConstants.OSS_IMG_WATERMARK_COLOR,
-                CommonConstants.OSS_IMG_WATERMARK_OFFSET);
+        String bucketName = storageConfig.getBucketName();
+        String dirName = storageConfig.getDir();
+        String url = "";
+
+
+        try{
+            Long expiration = Optional.ofNullable(storageConfig.getExpiration())
+                    .orElse(1000L * 60L * 3L) + System.currentTimeMillis();
+
+            String style = String.format(CommonConstants.OSS_IMG_WATERMARK_STYLE,
+                    base64Encode(createTime),
+                    CommonConstants.OSS_IMG_WATERMARK_TYPE,
+                    CommonConstants.OSS_IMG_WATERMARK_COLOR,
+                    CommonConstants.OSS_IMG_WATERMARK_SIZE,
+                    CommonConstants.OSS_IMG_WATERMARK_OFFSET);
+
+            url = aliyunOssService.getOssFileUrl(bucketName, dirName + fileName, expiration, style);
+        }catch (Exception e){
+            log.error("aliyunOss down watermark file Error!", e);
+        }
+
         return url;
     }
 
