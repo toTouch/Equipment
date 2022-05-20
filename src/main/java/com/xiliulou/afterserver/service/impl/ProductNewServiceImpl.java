@@ -39,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -717,12 +718,8 @@ public class ProductNewServiceImpl implements ProductNewService {
                 fileList.forEach(item -> {
                     OssUrlVo ossUrlVo = new OssUrlVo();
                     String fileName = storageConfig.getDir() + item.getFileName();
-                    String url = String.format(CommonConstants.OSS_IMG_WATERMARK_URL,
-                            fileName,
-                            simp.format(new Date(item.getCreateTime())),
-                            CommonConstants.OSS_IMG_WATERMARK_TYPE, 
-                            CommonConstants.OSS_IMG_WATERMARK_COLOR,
-                            CommonConstants.OSS_IMG_WATERMARK_OFFSET);
+                    String url = getOssWatermarkUrl(fileName, simp.format(item.getCreateTime()));
+
                     ossUrlVo.setId(item.getId());
                     ossUrlVo.setUrl(url);
                 });
@@ -860,6 +857,21 @@ public class ProductNewServiceImpl implements ProductNewService {
         return R.fail(vo);
     }
 
+    private String getOssWatermarkUrl(String fileName , String createTime) {
+        String url = String.format(CommonConstants.OSS_IMG_WATERMARK_URL,
+                fileName,
+                base64Encode(createTime),
+                CommonConstants.OSS_IMG_WATERMARK_TYPE,
+                CommonConstants.OSS_IMG_WATERMARK_COLOR,
+                CommonConstants.OSS_IMG_WATERMARK_OFFSET);
+        return url;
+    }
+
+    private String base64Encode(String content){
+        Base64.Encoder encoder = Base64.getUrlEncoder();
+        byte[] base64Result = encoder.encode(content.getBytes());
+        return new String(base64Result, StandardCharsets.UTF_8);
+    }
 
     private ProductNew queryByNo(String no){
         if(Objects.isNull(no)){
