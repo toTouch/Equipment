@@ -858,6 +858,10 @@ public class ProductNewServiceImpl implements ProductNewService {
     }
 
     private String getOssWatermarkUrl(String fileName , String createTime) {
+        if(Objects.equals(storageConfig.getIsUseOSS(), StorageConfig.IS_USE_OSS)) {
+            return "";
+        }
+
         String url = String.format(CommonConstants.OSS_IMG_WATERMARK_URL,
                 fileName,
                 base64Encode(createTime),
