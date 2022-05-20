@@ -196,8 +196,8 @@ public class JsonAdminOrderBatchController {
      * @return
      */
     @DeleteMapping("productNew/file/{id}")
-    public R removeFile(@PathVariable("id") Long id){
-        return R.ok(fileService.removeById(id));
+    public R removeFile(@PathVariable("id") Long id,  @RequestParam(value = "fileType", required = false, defaultValue = "0")Integer fileType){
+        return R.ok(fileService.removeFile(id, fileType));
     }
 
     /**
