@@ -103,8 +103,8 @@ public class JsonAdminOrderBatchController {
      * @return
      */
     @GetMapping("/productNew/info")
-    public R queryProductNewInfoById(@RequestParam("no")String no){
-        return productNewService.queryProductNewInfoById(no);
+    public R queryProductNewInfoById(@RequestParam("no")String no, HttpServletResponse response){
+        return productNewService.queryProductNewInfoById(no, response);
     }
 
     /**

@@ -25,6 +25,7 @@ import com.xiliulou.afterserver.web.query.ProductNewDetailsQuery;
 import com.xiliulou.afterserver.web.query.ProductNewQuery;
 import com.xiliulou.afterserver.web.vo.BatchProductNewVo;
 import com.xiliulou.afterserver.web.vo.DeliverProductNewInfoVo;
+import com.xiliulou.afterserver.web.vo.OssUrlVo;
 import com.xiliulou.afterserver.web.vo.ProductNewDetailsVo;
 import com.xiliulou.core.json.JsonUtil;
 import org.apache.commons.lang3.RandomUtils;
@@ -35,6 +36,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -645,7 +647,7 @@ public class ProductNewServiceImpl implements ProductNewService {
     }
 
     @Override
-    public R queryProductNewInfoById(String no) {
+    public R queryProductNewInfoById(String no, HttpServletResponse response) {
         ProductNew productNew = this.queryByNo(no);
 
         Long uid = SecurityUtils.getUid();
@@ -705,7 +707,22 @@ public class ProductNewServiceImpl implements ProductNewService {
             vo.setCreateTime(sdf.format(new Date(productNew.getCreateTime())));
 
             List<File> fileList = fileService.queryByProductNewId(productNew.getId(), File.FILE_TYPE_PRODUCT_PDA);
-            vo.setFileList(fileList);
+            if(CollectionUtils.isNotEmpty(fileList)) {
+                ArrayList<OssUrlVo> fileUrlList = new ArrayList<>();
+                fileList.forEach(item -> {
+                    R r = fileService.downLoadFile(item.getFileName(), 0, response);
+                    if(Objects.isNull(r)){
+                        return;
+                    }
+
+                    OssUrlVo ossUrlVo = new OssUrlVo();
+                    ossUrlVo.setId(item.getId());
+                    ossUrlVo.setUrl(String.valueOf(r.getData()));
+                    fileUrlList.add(ossUrlVo);
+                });
+                vo.setFileList(fileUrlList);
+            }
+
         }
 
         return R.ok(vo);

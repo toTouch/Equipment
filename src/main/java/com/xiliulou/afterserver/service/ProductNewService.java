@@ -8,6 +8,7 @@ import com.xiliulou.afterserver.web.query.CompressionQuery;
 import com.xiliulou.afterserver.web.query.ProductNewDetailsQuery;
 import com.xiliulou.afterserver.web.query.ProductNewQuery;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -99,7 +100,7 @@ public interface ProductNewService {
 
     R queryByBatchAndSupplier(Long batchId,Long offset, Long size);
 
-    R queryProductNewInfoById(String no);
+    R queryProductNewInfoById(String no, HttpServletResponse response);
 
     BaseMapper<ProductNew> getBaseMapper();
 
