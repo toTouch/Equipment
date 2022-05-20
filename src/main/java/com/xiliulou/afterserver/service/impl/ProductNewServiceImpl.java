@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.xiliulou.afterserver.constant.CommonConstants;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.PointNewMapper;
 import com.xiliulou.afterserver.mapper.PointProductBindMapper;
@@ -28,6 +29,7 @@ import com.xiliulou.afterserver.web.vo.DeliverProductNewInfoVo;
 import com.xiliulou.afterserver.web.vo.OssUrlVo;
 import com.xiliulou.afterserver.web.vo.ProductNewDetailsVo;
 import com.xiliulou.core.json.JsonUtil;
+import com.xiliulou.storage.config.StorageConfig;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -79,6 +81,8 @@ public class ProductNewServiceImpl implements ProductNewService {
     private WarehouseService warehouseService;
     @Autowired
     private ColorCardService colorCardService;
+    @Autowired
+    private StorageConfig storageConfig;
     /**
      * 通过ID查询单条数据从DB
      *
@@ -707,18 +711,20 @@ public class ProductNewServiceImpl implements ProductNewService {
             vo.setCreateTime(sdf.format(new Date(productNew.getCreateTime())));
 
             List<File> fileList = fileService.queryByProductNewId(productNew.getId(), File.FILE_TYPE_PRODUCT_PDA);
+            SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             if(CollectionUtils.isNotEmpty(fileList)) {
                 ArrayList<OssUrlVo> fileUrlList = new ArrayList<>();
                 fileList.forEach(item -> {
-                    R r = fileService.downLoadFile(item.getFileName(), 0, response);
-                    if(Objects.isNull(r)){
-                        return;
-                    }
-
                     OssUrlVo ossUrlVo = new OssUrlVo();
+                    String fileName = storageConfig.getDir() + item.getFileName();
+                    String url = String.format(CommonConstants.OSS_IMG_WATERMARK_URL,
+                            fileName,
+                            simp.format(new Date(item.getCreateTime())),
+                            CommonConstants.OSS_IMG_WATERMARK_TYPE, 
+                            CommonConstants.OSS_IMG_WATERMARK_COLOR,
+                            CommonConstants.OSS_IMG_WATERMARK_OFFSET);
                     ossUrlVo.setId(item.getId());
-                    ossUrlVo.setUrl(String.valueOf(r.getData()));
-                    fileUrlList.add(ossUrlVo);
+                    ossUrlVo.setUrl(url);
                 });
                 vo.setFileList(fileUrlList);
             }
