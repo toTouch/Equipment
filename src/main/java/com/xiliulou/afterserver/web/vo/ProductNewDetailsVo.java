@@ -74,5 +74,5 @@ public class ProductNewDetailsVo {
     /**
      * 手持终端图片
      */
-    private List<File> fileList;
+    private List<OssUrlVo> fileList;
 }
