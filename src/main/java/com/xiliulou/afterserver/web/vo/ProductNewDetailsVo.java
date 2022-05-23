@@ -71,8 +71,4 @@ public class ProductNewDetailsVo {
     private Long cameraCardId;
 
     private String createTime;
-    /**
-     * 手持终端图片
-     */
-    private List<OssUrlVo> fileList;
 }

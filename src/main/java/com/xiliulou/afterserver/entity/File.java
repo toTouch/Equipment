@@ -70,6 +70,7 @@ public class File {
     public static final Integer TYPE_POINTNEW = 2;
     public static final Integer TYPE_WORK_ORDER = 3;
 
-    public static final Integer FILE_TYPE_PRODUCT_STRAWBERRY = 1;
-    public static final Integer FILE_TYPE_PRODUCT_PDA = 2;
+    public static final Integer FILE_TYPE_PRODUCT_PRODUCT = 1;
+    public static final Integer FILE_TYPE_PRODUCT_INSPECTION_FILE = 2;
+    public static final Integer FILE_TYPE_PRODUCT_INSPECTION_SHEET  = 3;
 }
