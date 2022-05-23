@@ -106,9 +106,9 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
      * @return 对象列表
      */
     @Override
-    public List<PointNew> queryAllByLimit(int offset, int limit, String name, Integer cid,
-                                          Integer status, Long customerId, Long startTime, Long endTime, Long createUid, String snNo, Integer productSeries, Integer auditStatus) {
-        return this.pointNewMapper.queryAllByLimit(offset, limit, name, cid, status, customerId, startTime, endTime, createUid, snNo, productSeries, auditStatus);
+    public List<PointNew> queryAllByLimit(int offset, int limit, String name,Integer cid,
+                                          Integer status, Long customerId,Long startTime,Long endTime,Long createUid,String snNo,Integer productSeries, Integer auditStatus) {
+        return this.pointNewMapper.queryAllByLimit(offset, limit, name,cid,status,customerId,startTime,endTime,createUid,snNo, productSeries, auditStatus);
     }
 
     /**
@@ -152,27 +152,27 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     @Override
     public R saveAdminPointNew(PointNew pointNew) {
         R r = checkPropertes(pointNew);
-        if (Objects.nonNull(r)) {
+        if(Objects.nonNull(r)){
             return r;
         }
-        if (Objects.nonNull(pointNew.getProductInfoList())) {
+        if(Objects.nonNull(pointNew.getProductInfoList())) {
             Iterator<ProductInfoQuery> iterator = pointNew.getProductInfoList().iterator();
-            while (iterator.hasNext()) {
+            while (iterator.hasNext()){
                 ProductInfoQuery productInfoQuery = iterator.next();
-                if (Objects.isNull(productInfoQuery.getProductId()) || Objects.isNull(productInfoQuery.getNumber())) {
+                if(Objects.isNull(productInfoQuery.getProductId()) || Objects.isNull(productInfoQuery.getNumber())){
                     iterator.remove();
                 }
             }
             String productInfo = JSON.toJSONString(pointNew.getProductInfoList());
             pointNew.setProductInfo(productInfo);
         }
-        if (Objects.nonNull(pointNew.getCameraInfoList())) {
+        if(Objects.nonNull(pointNew.getCameraInfoList())) {
             Iterator<CameraInfoQuery> iterator = pointNew.getCameraInfoList().iterator();
-            while (iterator.hasNext()) {
+            while(iterator.hasNext()){
                 CameraInfoQuery cameraInfoQuery = iterator.next();
-                if (StringUtils.isBlank(cameraInfoQuery.getCameraSupplier())
+                if(StringUtils.isBlank(cameraInfoQuery.getCameraSupplier())
                         && StringUtils.isBlank(cameraInfoQuery.getCameraSn())
-                        && StringUtils.isBlank(cameraInfoQuery.getCameraNumber())) {
+                        && StringUtils.isBlank(cameraInfoQuery.getCameraNumber())){
                     iterator.remove();
                 }
             }
@@ -180,10 +180,10 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             pointNew.setCameraInfo(cameraInfo);
         }
         PointNew pointNewOld = queryByName(pointNew.getName());
-        if (Objects.nonNull(pointNewOld)) {
+        if(Objects.nonNull(pointNewOld)){
             return R.fail("该点位已存在");
         }
-        if (Objects.isNull(pointNew.getInstallTime()) || Objects.isNull(pointNew.getWarrantyPeriod())) {
+        if(Objects.isNull(pointNew.getInstallTime()) || Objects.isNull(pointNew.getWarrantyPeriod())){
             pointNew.setWarrantyTime(null);
         }
         pointNew.setDelFlag(PointNew.DEL_NORMAL);
@@ -193,10 +193,8 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         return R.ok();
     }
 
-    public PointNew queryByName(String name) {
-        if (StringUtils.isBlank(name)) {
-            return null;
-        }
+    public PointNew queryByName(String name){
+        if(StringUtils.isBlank(name)) {return null;}
         return this.getBaseMapper().selectOne(new QueryWrapper<PointNew>().eq("name", name).eq("del_flag", 0));
     }
 
@@ -204,7 +202,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     @Transactional(rollbackFor = Exception.class)
     public R putAdminPointNew(PointNew pointNew) {
         PointNew queryById = pointNewMapper.queryById(pointNew.getId());
-        if (Objects.isNull(queryById)) {
+        if (Objects.isNull(queryById)){
             return R.fail("请传入点位id");
         }
 
@@ -228,7 +226,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
                     .selectOne(new QueryWrapper<PointProductBind>()
                             .eq("product_id", item));
 
-            if (ObjectUtils.isNotNull(oldPointProductBind)) {
+            if(ObjectUtils.isNotNull(oldPointProductBind)){
                 pointProductBindMapper.deleteById(oldPointProductBind.getId());
             }
 
@@ -286,27 +284,27 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     @Override
     public R putAdminPoint(PointNew pointNew) {
         R r = checkPropertes(pointNew);
-        if (Objects.nonNull(r)) {
+        if(Objects.nonNull(r)){
             return r;
         }
-        if (Objects.nonNull(pointNew.getProductInfoList())) {
+        if(Objects.nonNull(pointNew.getProductInfoList())) {
             Iterator<ProductInfoQuery> iterator = pointNew.getProductInfoList().iterator();
-            while (iterator.hasNext()) {
+            while (iterator.hasNext()){
                 ProductInfoQuery productInfoQuery = iterator.next();
-                if (Objects.isNull(productInfoQuery.getProductId()) || Objects.isNull(productInfoQuery.getNumber())) {
+                if(Objects.isNull(productInfoQuery.getProductId()) || Objects.isNull(productInfoQuery.getNumber())){
                     iterator.remove();
                 }
             }
             String productInfo = JSON.toJSONString(pointNew.getProductInfoList());
             pointNew.setProductInfo(productInfo);
         }
-        if (Objects.nonNull(pointNew.getCameraInfoList())) {
+        if(Objects.nonNull(pointNew.getCameraInfoList())) {
             Iterator<CameraInfoQuery> iterator = pointNew.getCameraInfoList().iterator();
-            while (iterator.hasNext()) {
+            while(iterator.hasNext()){
                 CameraInfoQuery cameraInfoQuery = iterator.next();
-                if (StringUtils.isBlank(cameraInfoQuery.getCameraSupplier())
+                if(StringUtils.isBlank(cameraInfoQuery.getCameraSupplier())
                         && StringUtils.isBlank(cameraInfoQuery.getCameraSn())
-                        && StringUtils.isBlank(cameraInfoQuery.getCameraNumber())) {
+                        && StringUtils.isBlank(cameraInfoQuery.getCameraNumber())){
                     iterator.remove();
                 }
             }
@@ -314,15 +312,15 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             pointNew.setCameraInfo(cameraInfo);
         }
         PointNew pointNewOld = queryByName(pointNew.getName());
-        if (Objects.nonNull(pointNewOld) && !Objects.equals(pointNew.getId(), pointNewOld.getId())) {
+        if(Objects.nonNull(pointNewOld) && !Objects.equals(pointNew.getId(), pointNewOld.getId())){
             return R.fail("该点位已存在");
         }
-        if (Objects.isNull(pointNew.getInstallTime()) || Objects.isNull(pointNew.getWarrantyPeriod())) {
+        if(Objects.isNull(pointNew.getInstallTime()) || Objects.isNull(pointNew.getWarrantyPeriod())){
             pointNew.setWarrantyTime(null);
         }
         int update = this.pointNewMapper.update(pointNew);
         pointNew.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
-        if (update > 0) {
+        if (update>0){
             return R.ok();
         }
         return R.fail("修改失败");
@@ -333,22 +331,22 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         LambdaQueryWrapper<PointNew> queryWrapper = new LambdaQueryWrapper<PointNew>().eq(PointNew::getId, pid).eq(PointNew::getDelFlag, PointNew.DEL_NORMAL);
         PointNew pointNew = this.pointNewMapper.selectOne(queryWrapper);
 
-        if (Objects.isNull(pointNew)) {
+        if (Objects.isNull(pointNew)){
             return R.fail("未查询到相关数据");
         }
 
         PointNewInfoVo pointNewInfoVo = new PointNewInfoVo();
 
-        if (Objects.nonNull(pointNew.getCityId())) {
+        if (Objects.nonNull(pointNew.getCityId())){
             City byId = cityService.getById(pointNew.getCityId());
             pointNew.setCityName(byId.getName());
             Province province = provinceService.queryByIdFromDB(byId.getPid());
             pointNew.setProvince(province.getName());
         }
 
-        if (Objects.nonNull(pointNew.getCustomerId())) {
+        if (Objects.nonNull(pointNew.getCustomerId())){
             Customer byId = customerService.getById(pointNew.getCustomerId());
-            if (Objects.nonNull(byId)) {
+            if (Objects.nonNull(byId)){
                 pointNew.setCustomerName(byId.getName());
             }
         }
@@ -362,20 +360,20 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         Map<String, Long> map = new HashMap<>();
         List<Map> productTypeAndNumList = new ArrayList<>();
 
-        if (Objects.nonNull(pointProductBindList)) {
+        if (Objects.nonNull(pointProductBindList)){
             pointProductBindList.forEach(item -> {
                 ProductNew productNew = productNewService.queryByIdFromDB(item.getProductId());
-                if (Objects.isNull(productNew)) {
+                if (Objects.isNull(productNew)){
                     return;
                 }
 
                 Product product = productService.getBaseMapper().selectById(productNew.getModelId());
-                if (Objects.nonNull(product)) {
+                if (Objects.nonNull(product)){
                     productNew.setModelName(product.getName());
                 }
 
                 Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
-                if (Objects.nonNull(batch)) {
+                if (Objects.nonNull(batch)){
                     productNew.setBatchName(batch.getBatchNo());
                 }
 
@@ -389,7 +387,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
             pointNewInfoVo.setProductNew(productNews);
 
-            for (Map.Entry entry : map.entrySet()) {
+            for (Map.Entry entry : map.entrySet()){
                 Map item = new HashMap();
                 item.put("productType", entry.getKey());
                 item.put("productNum", entry.getValue());
@@ -402,62 +400,62 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
     @Override
     public Integer countPoint(String name, Integer cid, Integer status, Long customerId,
-                              Long startTime, Long endTime, Long createUid, String snNo, Integer productSeries, Integer auditStatus) {
-        return this.pointNewMapper.countPoint(name, cid, status, customerId, startTime, endTime, createUid, snNo, productSeries, auditStatus);
+                              Long startTime, Long endTime, Long createUid,String snNo, Integer productSeries, Integer auditStatus) {
+        return this.pointNewMapper.countPoint(name,cid,status,customerId,startTime,endTime,createUid,snNo,productSeries,auditStatus);
     }
 
     @Override
-    public List<PointNew> queryAllByLimitExcel(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime, Long createUid, String snNo, Integer productSeries, Integer auditStatus) {
-        return this.pointNewMapper.queryAllByLimitExcel(name, cid, status, customerId, startTime, endTime, createUid, snNo, productSeries, auditStatus);
+    public List<PointNew> queryAllByLimitExcel(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime, Long createUid,String snNo,Integer productSeries, Integer auditStatus) {
+        return this.pointNewMapper.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid,snNo,productSeries,auditStatus);
     }
 
     @Override
-    public R putAdminPointNewCreateUser(Long id, Long createUid) {
-        if (Objects.isNull(id) || Objects.isNull(createUid)) {
+    public R putAdminPointNewCreateUser(Long id, Long createUid){
+        if(Objects.isNull(id) || Objects.isNull(createUid)){
             return R.fail("参数非法，请检查");
         }
 
         User user = userService.getUserById(createUid);
-        if (Objects.isNull(user)) {
+        if(Objects.isNull(user)){
             return R.fail("没有查询到该用户");
         }
 
         Integer len = pointNewMapper.putAdminPointNewCreateUser(id, createUid);
 
-        if (len != null && len > 0) {
+        if(len != null && len > 0){
             return R.ok();
         }
 
         return R.fail("修改失败");
     }
 
-    public R checkPropertes(PointNew pointNew) {
-        if (Objects.isNull(pointNew.getAuditStatus())) {
+    public R checkPropertes(PointNew pointNew){
+        if(Objects.isNull(pointNew.getAuditStatus())){
             return R.fail("请填写审核状态");
         }
-        if (Objects.isNull(pointNew.getProductSeries())) {
+        if(Objects.isNull(pointNew.getProductSeries())){
             return R.fail("请填写产品系列");
         }
-        if (Objects.isNull(pointNew.getCityId())) {
+        if(Objects.isNull(pointNew.getCityId())){
             return R.fail("请填写城市信息");
         }
-        if (Objects.isNull(pointNew.getCustomerId())) {
+        if(Objects.isNull(pointNew.getCustomerId())){
             return R.fail("请填写客户信息");
         }
-        if (StringUtils.isBlank(pointNew.getName())) {
+        if(StringUtils.isBlank(pointNew.getName())){
             return R.fail("请填写点位名称");
         }
-        if (Objects.isNull(pointNew.getStatus())) {
+        if(Objects.isNull(pointNew.getStatus())){
             return R.fail("请填写点位状态");
         }
-        if (Objects.isNull(pointNew.getInstallType())) {
+        if(Objects.isNull(pointNew.getInstallType())){
             return R.fail("请填写安装类型");
         }
         return null;
     }
 
     @Override
-    public void updatePastWarrantyStatus() {
+    public void updatePastWarrantyStatus(){
         pointNewMapper.updatePastWarrantyStatus(System.currentTimeMillis());
     }
 
@@ -540,7 +538,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     }*/
 
     @Override
-    public void updateMany(List<PointNew> pointNew) {
+    public void updateMany(List<PointNew> pointNew){
         pointNewMapper.updateMany(pointNew);
     }
 
@@ -551,21 +549,22 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             return R.failMsg("未找到点位信息!");
         }
         if (ObjectUtil.isNotEmpty(pointQuery.getProductSerialNumberIdAndSetNoMap())) {
-            pointQuery.getProductSerialNumberIdAndSetNoMap().forEach((k, v) -> {
+            pointQuery.getProductSerialNumberIdAndSetNoMap().forEach((k,v) -> {
                 PointProductBind pointProductBind = pointProductBindMapper
                         .selectOne(new QueryWrapper<PointProductBind>()
                                 .eq("product_id", k));
 
-                if (ObjectUtils.isNotNull(pointProductBind)) {
+                if(ObjectUtils.isNotNull(pointProductBind)){
                     ProductNew productNew = productNewService.queryByIdFromDB(k);
-                    R.fail("柜机 +【" + (productNew == null ? "未知" : productNew.getNo()) + "】已绑定柜机");
+                    R.fail("柜机 +【" + (productNew == null?"未知":productNew.getNo() )+ "】已绑定柜机");
                 }
             });
         }
 
 
+
         if (ObjectUtil.isNotEmpty(pointQuery.getProductSerialNumberIdAndSetNoMap())) {
-            pointQuery.getProductSerialNumberIdAndSetNoMap().forEach((k, v) -> {
+            pointQuery.getProductSerialNumberIdAndSetNoMap().forEach((k,v) -> {
                 PointProductBind bind = new PointProductBind();
                 bind.setPointId(pointQuery.getId());
                 bind.setProductId(k);
@@ -578,12 +577,12 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
     @Override
     public R updateAuditStatus(PointAuditStatusQuery pointAuditStatusQuery) {
-        if (Objects.isNull(pointAuditStatusQuery.getId()) || Objects.isNull(pointAuditStatusQuery.getAuditStatus())) {
+        if(Objects.isNull(pointAuditStatusQuery.getId()) || Objects.isNull(pointAuditStatusQuery.getAuditStatus())){
             return R.fail("参数不合法");
         }
 
         PointNew pointNew = this.getById(pointAuditStatusQuery.getId());
-        if (Objects.isNull(pointNew)) {
+        if(Objects.isNull(pointNew)){
             return R.fail("未查询到相关点位");
         }
         PointNew pointNewUpdate = new PointNew();
