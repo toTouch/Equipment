@@ -12,7 +12,7 @@ public interface UserService extends IService<User> {
 
     User getUserById(Long uid);
 
-    R list(Long offset, Long size, String username);
+    R list(Long offset, Long size, String username, Integer userType);
 
     User findByUserName(String username);
 
