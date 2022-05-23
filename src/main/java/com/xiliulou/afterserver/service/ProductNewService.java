@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.service;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.entity.ProductNew;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ApiRequestQuery;
@@ -107,4 +108,16 @@ public interface ProductNewService {
     R updateProductNew(ProductNewDetailsQuery productNewDetailsQuery);
 
     R checkProperty(String no);
+
+    R getProductNewByNo(String no);
+
+    R electricalQualified(String no);
+
+    R deliveryQualified(String no);
+
+    R factorySaveFile(File file);
+
+    R deliveryQualifiedStatusUpdate(String no);
+
+    R pointList(Integer offset, Integer limit, String no, Long modelId, Long pointId, Integer pointType, Long startTime, Long endTime);
 }

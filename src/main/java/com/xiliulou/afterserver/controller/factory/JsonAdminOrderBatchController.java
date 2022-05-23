@@ -41,11 +41,6 @@ public class JsonAdminOrderBatchController {
     private CameraService cameraService;
     @Autowired
     private ColorCardService colorCardService;
-    @Autowired
-    private FileService fileService;
-    @Autowired
-    private AliyunOssService aliyunOssService;
-
 
     @GetMapping("/batch/list")
     public R queryByfactory(@RequestParam(value = "offset", required = false) Long offset,
@@ -167,48 +162,4 @@ public class JsonAdminOrderBatchController {
         return  colorCardService.queryPull(name);
     }
 
-    /**
-     * 上传图片
-     * @param file
-     * @return
-     */
-    @PostMapping("productNew/file")
-    public R saveFile(@RequestBody File file){
-        file.setCreateTime(System.currentTimeMillis());
-        return R.ok(fileService.save(file));
-    }
-
-    /**
-     * 获取oss签名
-     * @param moduleName
-     * @return
-     */
-    @GetMapping("/oss/getPolicy")
-    public Map<String, String> policy(@RequestParam("moduleName")String moduleName) {
-        String name = moduleName + "/";
-        Map<String, String> ossUploadSign = aliyunOssService.getOssUploadSign(name);
-        return ossUploadSign;
-    }
-
-    /**
-     * 删除图片
-     * @param id
-     * @return
-     */
-    @DeleteMapping("productNew/file/{id}")
-    public R removeFile(@PathVariable("id") Long id,  @RequestParam(value = "fileType", required = false, defaultValue = "0")Integer fileType){
-        return R.ok(fileService.removeFile(id, fileType));
-    }
-
-    /**
-     * 下载图片
-     * @param fileName
-     * @param fileType
-     * @param response
-     * @return
-     */
-    @GetMapping("downLoad")
-    public R getFile(@RequestParam("fileName") String fileName, @RequestParam(value = "fileType", required = false, defaultValue = "0")Integer fileType, HttpServletResponse response) {
-        return fileService.downLoadFile(fileName,fileType, response);
-    }
 }

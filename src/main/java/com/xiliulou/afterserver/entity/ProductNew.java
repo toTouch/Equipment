@@ -2,6 +2,8 @@ package com.xiliulou.afterserver.entity;
 
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.xiliulou.afterserver.constant.ProductNewStatusSortConstants;
+import com.xiliulou.afterserver.web.vo.OssUrlVo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -65,7 +67,16 @@ public class ProductNew {
      *         {
      *           value: 6,
      *           label: '已测试'
+     *         },
+     *         {
+     *           value: 7,
+     *           label: '电装检验合格'
+     *         },
+     *         {
+     *           value: 8,
+     *           label: '出货检验合格'
      *         }
+     * {@link ProductNewStatusSortConstants}
      */
     private Integer status;
     /**
@@ -150,4 +161,8 @@ public class ProductNew {
     private String cameraSerialNum;
     @TableField(exist = false)
     private String colorName;
+    @TableField(exist = false)
+    private List<OssUrlVo> inspectionFileList;
+    @TableField(exist = false)
+    private List<OssUrlVo> inspectionSheetList;
 }
