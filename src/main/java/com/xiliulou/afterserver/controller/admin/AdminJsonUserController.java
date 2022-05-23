@@ -47,14 +47,22 @@ public class AdminJsonUserController extends BaseController {
     //}
 
     @GetMapping("admin/user/page")
-    public R page(@RequestParam("offset") Long offset, @RequestParam("size") Long size, @RequestParam(value = "username",required = false) String username, HttpServletRequest request) {
-        return userService.list(offset,size,username);
+    public R page(@RequestParam("offset") Long offset,
+                  @RequestParam("size") Long size,
+                  @RequestParam(value = "username",required = false) String username,
+                  @RequestParam(value = "userType",required = false) Integer userType,
+                  HttpServletRequest request) {
+        return userService.list(offset,size,username, userType);
 
     }
 
     @GetMapping("admin/user/page/pull")
-    public R pagePull(@RequestParam("offset") Long offset, @RequestParam("size") Long size, @RequestParam(value = "username",required = false) String username, HttpServletRequest request) {
-        return userService.list(offset,size,username);
+    public R pagePull(@RequestParam("offset") Long offset,
+                      @RequestParam("size") Long size,
+                      @RequestParam(value = "username",required = false) String username,
+                      @RequestParam(value = "userType",required = false) Integer userType,
+                      HttpServletRequest request) {
+        return userService.list(offset,size,username, userType);
 
     }
 

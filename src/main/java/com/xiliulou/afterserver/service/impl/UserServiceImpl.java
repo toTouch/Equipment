@@ -120,9 +120,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public R list(Long offset, Long size, String username) {
+    public R list(Long offset, Long size, String username, Integer userType) {
         Page page = PageUtil.getPage(offset, size);
-        Page selectPage = baseMapper.selectPage(page,Wrappers.<User>lambdaQuery().like(Objects.nonNull(username),User::getUserName, username));
+        Page selectPage = baseMapper.selectPage(page,Wrappers.<User>lambdaQuery().like(Objects.nonNull(username),User::getUserName, username).eq(Objects.nonNull(userType), User::getUserType, userType));
 
         if(CollectionUtils.isNotEmpty(selectPage.getRecords())) {
             selectPage.getRecords().forEach(item -> {
