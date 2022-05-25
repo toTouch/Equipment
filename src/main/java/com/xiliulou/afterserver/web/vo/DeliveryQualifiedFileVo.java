@@ -13,6 +13,7 @@ import java.util.List;
 public class DeliveryQualifiedFileVo {
     private Long id;
     private String no;
-    private List<OssUrlVo> inspectionFileUrl;
-    private OssUrlVo inspectionSheetUrl;
+    private List<OssUrlVo> accessoryPackagingFileUrl;
+    private List<OssUrlVo> outerPackagingFileUrl;
+    private List<OssUrlVo> qualityInspectionFileUrl;
 }

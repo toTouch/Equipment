@@ -162,7 +162,9 @@ public class ProductNew {
     @TableField(exist = false)
     private String colorName;
     @TableField(exist = false)
-    private List<OssUrlVo> inspectionFileList;
+    private List<OssUrlVo> accessoryPackagingFileList;
     @TableField(exist = false)
-    private List<OssUrlVo> inspectionSheetList;
+    private List<OssUrlVo> outerPackagingFileList;
+    @TableField(exist = false)
+    private List<OssUrlVo> qualityInspectionFileList;
 }
