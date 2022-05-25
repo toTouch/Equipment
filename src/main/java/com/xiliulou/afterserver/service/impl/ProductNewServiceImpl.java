@@ -975,10 +975,7 @@ public class ProductNewServiceImpl implements ProductNewService {
         if (Objects.equals(File.FILE_TYPE_PRODUCT_QUALITY_INSPECTION, file.getFileType()) && Objects.equals(File.TYPE_PRODUCT, file.getType())) {
             List<File> fileSheepList = fileService.queryByProductNewId(file.getBindId(), File.FILE_TYPE_PRODUCT_QUALITY_INSPECTION);
             if (Objects.nonNull(fileSheepList) && fileSheepList.size() == 1) {
-                File update = fileSheepList.get(0);
-                update.setFileName(file.getFileName());
-                fileService.updateById(update);
-                return R.ok();
+                fileService.removeFile(file.getId(), 0);
             }
         }
 
