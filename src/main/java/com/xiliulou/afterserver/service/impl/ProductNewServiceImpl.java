@@ -701,9 +701,6 @@ public class ProductNewServiceImpl implements ProductNewService {
             vo.setBatchId(productNew.getBatchId());
             vo.setBatchNo(batch.getBatchNo());
         }
-        vo.setNo(productNew.getNo());
-        vo.setStatus(productNew.getStatus());
-        vo.setStatusName(this.getStatusName(productNew.getStatus()));
 
         if (Objects.nonNull(productNew.getCameraId())) {
             Camera camera = cameraService.getById(productNew.getCameraId());
@@ -729,9 +726,19 @@ public class ProductNewServiceImpl implements ProductNewService {
             vo.setColorName(colorCard.getName());
         }
 
+        List<OssUrlVo> accessoryPackaging = getOssUrlVoList(productNew.getId(), File.FILE_TYPE_PRODUCT_ACCESSORY_PACKAGING);
+        List<OssUrlVo> outerPackaging = getOssUrlVoList(productNew.getId(), File.FILE_TYPE_PRODUCT_OUTER_PACKAGING);
+        List<OssUrlVo> qualityInspection = getOssUrlVoList(productNew.getId(), File.FILE_TYPE_PRODUCT_QUALITY_INSPECTION);
+
+        vo.setAccessoryPackagingFileUrl(accessoryPackaging);
+        vo.setOuterPackagingFileUrl(outerPackaging);
+        vo.setQualityInspectionFileUrl(qualityInspection);
         vo.setColor(productNew.getColor());
         vo.setSurface(productNew.getSurface());
         vo.setCreateTime(sdf.format(new Date(productNew.getCreateTime())));
+        vo.setNo(productNew.getNo());
+        vo.setStatus(productNew.getStatus());
+        vo.setStatusName(this.getStatusName(productNew.getStatus()));
 
         return R.ok(vo);
     }
@@ -937,11 +944,13 @@ public class ProductNewServiceImpl implements ProductNewService {
 
         DeliveryQualifiedFileVo deliveryQualifiedFileVo = new DeliveryQualifiedFileVo();
 
-        List<OssUrlVo> fileList = getOssUrlVoList(productNew.getId(), File.FILE_TYPE_PRODUCT_INSPECTION_FILE);
-        List<OssUrlVo> fileSheepList = getOssUrlVoList(productNew.getId(), File.FILE_TYPE_PRODUCT_INSPECTION_SHEET);
+        List<OssUrlVo> accessoryPackaging = getOssUrlVoList(productNew.getId(), File.FILE_TYPE_PRODUCT_ACCESSORY_PACKAGING);
+        List<OssUrlVo> outerPackaging = getOssUrlVoList(productNew.getId(), File.FILE_TYPE_PRODUCT_OUTER_PACKAGING);
+        List<OssUrlVo> qualityInspection = getOssUrlVoList(productNew.getId(), File.FILE_TYPE_PRODUCT_QUALITY_INSPECTION);
 
-        deliveryQualifiedFileVo.setInspectionFileUrl(fileList);
-        deliveryQualifiedFileVo.setInspectionSheetUrl(Objects.isNull(fileSheepList) ? null : fileSheepList.get(0));
+        deliveryQualifiedFileVo.setAccessoryPackagingFileUrl(accessoryPackaging);
+        deliveryQualifiedFileVo.setOuterPackagingFileUrl(outerPackaging);
+        deliveryQualifiedFileVo.setQualityInspectionFileUrl(qualityInspection);
         deliveryQualifiedFileVo.setId(productNew.getId());
         deliveryQualifiedFileVo.setNo(productNew.getNo());
         return R.ok(deliveryQualifiedFileVo);
@@ -949,15 +958,22 @@ public class ProductNewServiceImpl implements ProductNewService {
 
     @Override
     public R factorySaveFile(File file) {
-        if (Objects.equals(File.FILE_TYPE_PRODUCT_INSPECTION_FILE, file.getFileType()) && Objects.equals(File.TYPE_PRODUCT, file.getType())) {
-            List<File> fileList = fileService.queryByProductNewId(file.getBindId(), File.FILE_TYPE_PRODUCT_INSPECTION_FILE);
+        if (Objects.equals(File.FILE_TYPE_PRODUCT_ACCESSORY_PACKAGING, file.getFileType()) && Objects.equals(File.TYPE_PRODUCT, file.getType())) {
+            List<File> fileList = fileService.queryByProductNewId(file.getBindId(), File.FILE_TYPE_PRODUCT_ACCESSORY_PACKAGING);
             if (Objects.nonNull(fileList) && fileList.size() >= 4) {
-                return R.fail("发货凭证上传数量已达上限");
+                return R.fail("附件包上传数量已达上限");
             }
         }
 
-        if (Objects.equals(File.FILE_TYPE_PRODUCT_INSPECTION_SHEET, file.getFileType()) && Objects.equals(File.TYPE_PRODUCT, file.getType())) {
-            List<File> fileSheepList = fileService.queryByProductNewId(file.getBindId(), File.FILE_TYPE_PRODUCT_INSPECTION_SHEET);
+        if (Objects.equals(File.FILE_TYPE_PRODUCT_OUTER_PACKAGING, file.getFileType()) && Objects.equals(File.TYPE_PRODUCT, file.getType())) {
+            List<File> fileList = fileService.queryByProductNewId(file.getBindId(), File.FILE_TYPE_PRODUCT_OUTER_PACKAGING);
+            if (Objects.nonNull(fileList) && fileList.size() >= 4) {
+                return R.fail("外包装上传数量已达上限");
+            }
+        }
+
+        if (Objects.equals(File.FILE_TYPE_PRODUCT_QUALITY_INSPECTION, file.getFileType()) && Objects.equals(File.TYPE_PRODUCT, file.getType())) {
+            List<File> fileSheepList = fileService.queryByProductNewId(file.getBindId(), File.FILE_TYPE_PRODUCT_QUALITY_INSPECTION);
             if (Objects.nonNull(fileSheepList) && fileSheepList.size() == 1) {
                 File update = fileSheepList.get(0);
                 update.setFileName(file.getFileName());
@@ -988,18 +1004,27 @@ public class ProductNewServiceImpl implements ProductNewService {
             return R.fail("资产编码不存在");
         }
 
+        if( !Objects.equals(productNew.getStatus(), ProductNewStatusSortConstants.STATUS_TESTED)) {
+            return R.fail("产品状态非已测试，请检查");
+        }
+
         if (!Objects.equals(productNew.getSupplierId(), user.getThirdId())) {
             return R.fail(null, "柜机厂家与登录厂家不一致，请重新登陆");
         }
 
-        List<File> fileList = fileService.queryByProductNewId(productNew.getId(), File.FILE_TYPE_PRODUCT_INSPECTION_FILE);
-        if(Objects.isNull(fileList) || fileList.isEmpty()){
-            return R.fail("请上传发货凭证");
+        List<File> accessoryPackaging = fileService.queryByProductNewId(productNew.getId(), File.FILE_TYPE_PRODUCT_ACCESSORY_PACKAGING);
+        if(Objects.isNull(accessoryPackaging) || accessoryPackaging.isEmpty()){
+            return R.fail("请上传附件包图片");
         }
 
-        List<File> fileSheepList = fileService.queryByProductNewId(productNew.getId(), File.FILE_TYPE_PRODUCT_INSPECTION_SHEET);
-        if(Objects.isNull(fileSheepList) || fileSheepList.isEmpty()){
-            return R.fail("请上传检验单");
+        List<File> outerPackaging = fileService.queryByProductNewId(productNew.getId(), File.FILE_TYPE_PRODUCT_OUTER_PACKAGING);
+        if(Objects.isNull(outerPackaging) || outerPackaging.isEmpty()){
+            return R.fail("请上传外包装图片");
+        }
+
+        List<File> qualityInspection = fileService.queryByProductNewId(productNew.getId(), File.FILE_TYPE_PRODUCT_QUALITY_INSPECTION);
+        if(Objects.isNull(qualityInspection) || qualityInspection.isEmpty()){
+            return R.fail("请上传检验单图片");
         }
 
         ProductNew update = new ProductNew();
@@ -1093,10 +1118,12 @@ public class ProductNewServiceImpl implements ProductNewService {
             if(Objects.nonNull(colorCard)){
                 item.setColorName(colorCard.getName());
             }
-            List<OssUrlVo> fileList = getOssUrlVoList(item.getId(), File.FILE_TYPE_PRODUCT_INSPECTION_FILE);
-            List<OssUrlVo> fileSheepList = getOssUrlVoList(item.getId(), File.FILE_TYPE_PRODUCT_INSPECTION_SHEET);
-            item.setInspectionFileList(fileList);
-            item.setInspectionSheetList(fileSheepList);
+            List<OssUrlVo> accessoryPackaging = getOssUrlVoList(item.getId(), File.FILE_TYPE_PRODUCT_ACCESSORY_PACKAGING);
+            List<OssUrlVo> outerPackaging = getOssUrlVoList(item.getId(), File.FILE_TYPE_PRODUCT_OUTER_PACKAGING);
+            List<OssUrlVo> qualityInspection = getOssUrlVoList(item.getId(), File.FILE_TYPE_PRODUCT_QUALITY_INSPECTION);
+            item.setAccessoryPackagingFileList(accessoryPackaging);
+            item.setOuterPackagingFileList(outerPackaging);
+            item.setQualityInspectionFileList(qualityInspection);
         });
 
         Integer count = this.count(no,modelId,startTime,endTime,productIds);
