@@ -92,23 +92,26 @@ public class AdminJsonFileController {
             }
         }
 
-        if (Objects.equals(File.FILE_TYPE_PRODUCT_INSPECTION_FILE, file.getFileType()) && Objects.equals(File.TYPE_PRODUCT, file.getType())) {
-            List<File> fileList = fileService.queryByProductNewId(file.getBindId(), File.FILE_TYPE_PRODUCT_INSPECTION_FILE);
+        if (Objects.equals(File.FILE_TYPE_PRODUCT_ACCESSORY_PACKAGING, file.getFileType()) && Objects.equals(File.TYPE_PRODUCT, file.getType())) {
+            List<File> fileList = fileService.queryByProductNewId(file.getBindId(), File.FILE_TYPE_PRODUCT_ACCESSORY_PACKAGING);
             if (Objects.nonNull(fileList) && fileList.size() >= 4) {
-                return R.fail("发货凭证上传数量已达上限");
+                return R.fail("附件包上传数量已达上限");
             }
         }
 
-        if (Objects.equals(File.FILE_TYPE_PRODUCT_INSPECTION_SHEET, file.getFileType()) && Objects.equals(File.TYPE_PRODUCT, file.getType())) {
-            List<File> fileSheepList = fileService.queryByProductNewId(file.getBindId(), File.FILE_TYPE_PRODUCT_INSPECTION_SHEET);
+        if (Objects.equals(File.FILE_TYPE_PRODUCT_OUTER_PACKAGING, file.getFileType()) && Objects.equals(File.TYPE_PRODUCT, file.getType())) {
+            List<File> fileList = fileService.queryByProductNewId(file.getBindId(), File.FILE_TYPE_PRODUCT_OUTER_PACKAGING);
+            if (Objects.nonNull(fileList) && fileList.size() >= 4) {
+                return R.fail("外包装上传数量已达上限");
+            }
+        }
+
+        if (Objects.equals(File.FILE_TYPE_PRODUCT_QUALITY_INSPECTION, file.getFileType()) && Objects.equals(File.TYPE_PRODUCT, file.getType())) {
+            List<File> fileSheepList = fileService.queryByProductNewId(file.getBindId(), File.FILE_TYPE_PRODUCT_QUALITY_INSPECTION);
             if (Objects.nonNull(fileSheepList) && fileSheepList.size() == 1) {
-                File update = fileSheepList.get(0);
-                update.setFileName(file.getFileName());
-                fileService.updateById(update);
-                return R.ok();
+                fileService.removeFile(file.getId(), 0);
             }
         }
-
 
         file.setCreateTime(System.currentTimeMillis());
         return R.ok(fileService.save(file));
