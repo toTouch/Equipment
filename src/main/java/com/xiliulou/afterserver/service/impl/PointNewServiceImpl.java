@@ -198,8 +198,8 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             return R.fail("请传入点位id");
         }
 
-        Integer row = this.update(pointNew);
-        if (row == 0) {
+        //Integer row = this.update(pointNew);
+        if (this.updateById(pointNew)) {
             return R.fail("数据库错误");
         }
 
