@@ -558,17 +558,19 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         if (Objects.isNull(pointNew)) {
             return R.failMsg("未找到点位信息!");
         }
+
         if (ObjectUtil.isNotEmpty(pointQuery.getProductSerialNumberIdAndSetNoMap())) {
-            pointQuery.getProductSerialNumberIdAndSetNoMap().forEach((k,v) -> {
+            Set<Map.Entry<Long, Integer>> entrySet =  pointQuery.getProductSerialNumberIdAndSetNoMap().entrySet();
+            for(Map.Entry<Long, Integer> entry : entrySet){
                 PointProductBind pointProductBind = pointProductBindMapper
                         .selectOne(new QueryWrapper<PointProductBind>()
-                                .eq("product_id", k));
+                                .eq("product_id", entry.getKey()));
 
                 if(ObjectUtils.isNotNull(pointProductBind)){
-                    ProductNew productNew = productNewService.queryByIdFromDB(k);
-                    R.fail("柜机 +【" + (productNew == null?"未知":productNew.getNo() )+ "】已绑定柜机");
+                    ProductNew productNew = productNewService.queryByIdFromDB(entry.getKey());
+                    return R.fail("柜机 +【" + (productNew == null?"未知":productNew.getNo() )+ "】已绑定柜机");
                 }
-            });
+            }
         }
 
 
