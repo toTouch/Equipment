@@ -568,7 +568,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
                 if(ObjectUtils.isNotNull(pointProductBind)){
                     ProductNew productNew = productNewService.queryByIdFromDB(entry.getKey());
-                    return R.fail("柜机 +【" + (productNew == null?"未知":productNew.getNo() )+ "】已绑定柜机");
+                    return R.fail("柜机【" + (productNew == null?"未知":productNew.getNo() )+ "】已绑定位置");
                 }
             }
         }
