@@ -109,15 +109,7 @@ public interface ProductNewService {
 
     R checkProperty(String no);
 
-    R getProductNewByNo(String no);
-
-    R electricalQualified(String no);
-
-    R deliveryQualified(String no);
-
     R factorySaveFile(File file);
-
-    R deliveryQualifiedStatusUpdate(String no);
 
     R pointList(Integer offset, Integer limit, String no, Long modelId, Long pointId, Integer pointType, Long startTime, Long endTime);
 }

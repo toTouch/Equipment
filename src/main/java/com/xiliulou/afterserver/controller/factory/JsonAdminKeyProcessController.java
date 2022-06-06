@@ -34,38 +34,6 @@ public class JsonAdminKeyProcessController {
     private FileService fileService;
 
     /**
-     * 校验资产编码是否存在
-     */
-    @GetMapping("check/productNo")
-    public R getProductNewByNo(@RequestParam("no")String no){
-        return productNewService.getProductNewByNo(no);
-    }
-
-    /**
-     *电装检验合格
-     */
-    @PostMapping("electrical/qualified")
-    public R electricalQualified(@RequestParam("no")String no){
-        return productNewService.electricalQualified(no);
-    }
-
-    /**
-     *出货检验回显
-     */
-    @GetMapping("delivery/qualified")
-    public R deliveryQualified(@RequestParam("no")String no){
-        return productNewService.deliveryQualified(no);
-    }
-
-    /**
-     * 出货检验合格
-     */
-    @PutMapping("delivery/qualified")
-    public R deliveryQualifiedStatusUpdate(@RequestParam("no")String no){
-        return productNewService.deliveryQualifiedStatusUpdate(no);
-    }
-
-    /**
      * 获取oss签名
      */
     @GetMapping("/oss/getPolicy")
