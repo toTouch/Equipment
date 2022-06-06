@@ -107,7 +107,7 @@ public interface PointNewMapper extends BaseMapper<PointNew> {
 
     void updateMany(@Param("list")List<PointNew> list);
 
-    @Update("update t_point_new set status = 11 where warranty_time < #{curTime}")
+    @Update("update t_point_new set status = 11 where warranty_time < #{curTime} and status != 3")
     void updatePastWarrantyStatus(@Param("curTime")Long curTime);
 
     @Select("select id, name from t_point_new where name like concat('%', #{name}, '%') limit 0, 20")
