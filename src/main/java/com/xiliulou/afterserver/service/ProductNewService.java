@@ -101,7 +101,7 @@ public interface ProductNewService {
 
     R queryByBatchAndSupplier(Long batchId,Long offset, Long size);
 
-    R queryProductNewInfoById(String no, HttpServletResponse response);
+    R queryProductNewProcessInfo(String no, HttpServletResponse response);
 
     BaseMapper<ProductNew> getBaseMapper();
 
@@ -112,4 +112,6 @@ public interface ProductNewService {
     R factorySaveFile(File file);
 
     R pointList(Integer offset, Integer limit, String no, Long modelId, Long pointId, Integer pointType, Long startTime, Long endTime);
+
+    public ProductNew queryByNo(String no);
 }
