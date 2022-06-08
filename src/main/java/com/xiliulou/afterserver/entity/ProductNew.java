@@ -130,6 +130,8 @@ public class ProductNew {
 
     public static final String TYPE_M = "M";
     public static final String TYPE_V = "V";
+    public static final Integer TEST_RESULT_FAIL = 0;
+    public static final Integer TEST_RESULT_SUCCESS = 1;
 
 //    //左区间
 //    @TableField(exist = false)

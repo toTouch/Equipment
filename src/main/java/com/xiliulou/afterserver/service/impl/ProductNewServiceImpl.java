@@ -30,6 +30,7 @@ import com.xiliulou.core.json.JsonUtil;
 import com.xiliulou.storage.config.StorageConfig;
 import com.xiliulou.storage.service.impl.AliyunOssService;
 import org.apache.commons.lang3.RandomUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -87,6 +88,8 @@ public class ProductNewServiceImpl implements ProductNewService {
     private AliyunOssService aliyunOssService;
     @Autowired
     private PointProductBindService pointProductBindService;
+    @Autowired
+    private AuditProcessService auditProcessService;
 
     /**
      * 通过ID查询单条数据从DB
@@ -239,15 +242,15 @@ public class ProductNewServiceImpl implements ProductNewService {
         }
 
         Double statusValueOld = ProductNewStatusSortConstants.acquireStatusValue(productNewOld.getStatus());
-        if(Objects.isNull(statusValueOld)) {
+        if (Objects.isNull(statusValueOld)) {
             return R.fail("产品状态不合法");
         }
         Double statusValue = ProductNewStatusSortConstants.acquireStatusValue(query.getStatus());
-        if(Objects.isNull(statusValue)) {
+        if (Objects.isNull(statusValue)) {
             return R.fail("输入状态不合法");
         }
 
-        if(statusValueOld.compareTo(statusValue) > 0){
+        if (statusValueOld.compareTo(statusValue) > 0) {
             return R.fail("产品状态不能回溯，请合法修改");
         }
 
@@ -539,6 +542,7 @@ public class ProductNewServiceImpl implements ProductNewService {
                 return R.fail(unqualifiedElectricalProducts, null, unqualifiedElectricalProductNo + "电装检验不合格，请核对");
             }
 
+
             ProductNew mainProduct = mainProducts.get(0);
             mainProductNo = mainProduct.getNo();
             if (!Objects.equals(mainProduct.getIotCardId(), iotCard.getId())) {
@@ -670,7 +674,7 @@ public class ProductNewServiceImpl implements ProductNewService {
     }
 
     @Override
-    public R queryProductNewInfoById(String no, HttpServletResponse response) {
+    public R queryProductNewProcessInfo(String no, HttpServletResponse response) {
         ProductNew productNew = this.queryByNo(no);
 
         Long uid = SecurityUtils.getUid();
@@ -691,57 +695,74 @@ public class ProductNewServiceImpl implements ProductNewService {
             return R.fail(null, "柜机厂家与登录厂家不一致，请重新登陆");
         }
 
-        ProductNewDetailsVo vo = new ProductNewDetailsVo();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-
-        vo.setId(productNew.getId());
         Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
-        if (Objects.nonNull(batch)) {
-            vo.setBatchId(productNew.getBatchId());
-            vo.setBatchNo(batch.getBatchNo());
+        if (Objects.isNull(batch)) {
+            return R.fail(null, "柜机未绑定批次，请重新登陆");
         }
 
-        if (Objects.nonNull(productNew.getCameraId())) {
-            Camera camera = cameraService.getById(productNew.getCameraId());
-            if (Objects.nonNull(camera)) {
-                vo.setCameraId(camera.getId());
-                vo.setSerialNum(camera.getSerialNum());
-
-                IotCard iotCard = iotCardService.getById(camera.getIotCardId());
-                if (Objects.nonNull(iotCard)) {
-                    vo.setCameraCardId(iotCard.getId());
-                    vo.setCameraCard(iotCard.getSn());
-                }
-            }
-        }
-
-        IotCard iotCard = iotCardService.getById(productNew.getIotCardId());
-        if (Objects.nonNull(iotCard)) {
-            vo.setIotCardId(iotCard.getId());
-            vo.setIotCardNo(iotCard.getSn());
-        }
-        ColorCard colorCard = colorCardService.getById(productNew.getColor());
-        if (Objects.nonNull(colorCard)) {
-            vo.setColorName(colorCard.getName());
-        }
-
-        List<OssUrlVo> accessoryPackaging = getOssUrlVoList(productNew.getId(), File.FILE_TYPE_PRODUCT_ACCESSORY_PACKAGING);
-        List<OssUrlVo> outerPackaging = getOssUrlVoList(productNew.getId(), File.FILE_TYPE_PRODUCT_OUTER_PACKAGING);
-        List<OssUrlVo> qualityInspection = getOssUrlVoList(productNew.getId(), File.FILE_TYPE_PRODUCT_QUALITY_INSPECTION);
-
-        vo.setAccessoryPackagingFileUrl(accessoryPackaging);
-        vo.setOuterPackagingFileUrl(outerPackaging);
-        vo.setQualityInspectionFileUrl(qualityInspection);
-        vo.setColor(productNew.getColor());
-        vo.setSurface(productNew.getSurface());
-        vo.setCreateTime(sdf.format(new Date(productNew.getCreateTime())));
+        ProductNewProcessInfoVo vo = new ProductNewProcessInfoVo();
+        vo.setId(productNew.getId());
         vo.setNo(productNew.getNo());
-        vo.setStatus(productNew.getStatus());
-        vo.setStatusName(this.getStatusName(productNew.getStatus()));
+        vo.setBatchId(productNew.getBatchId());
+        vo.setBatchNo(batch.getBatchNo());
 
+        List<AuditProcess> auditProcessList = auditProcessService.getBaseMapper().selectList(null);
+        List<AuditProcessVo> voList = new ArrayList<>();
+        //如果搜索页面配置为空，则只获取压测状态，发货状态随压测状态改变
+        if (CollectionUtils.isEmpty(auditProcessList)) {
+            AuditProcessVo auditProcessVo = auditProcessService.createTestAuditProcessVo();
+            auditProcessVo.setStatus(ProductNew.TEST_RESULT_SUCCESS.equals(productNew.getTestResult()) ? AuditProcessVo.STATUS_FINISHED : AuditProcessVo.STATUS_EXECUTING);
+            voList.add(auditProcessVo);
+
+            vo.setAuditProcessList(voList);
+            vo.setDeliverStatus(AuditProcessVo.STATUS_FINISHED.equals(auditProcessVo.getStatus()) ? ProductNewProcessInfoVo.STATUS_FINISHED : ProductNewProcessInfoVo.STATUS_UN_FINISHED);
+            return R.ok(vo);
+        }
+
+        //统计流程状态的类型共有几种
+        Set<Integer> statusSet = new HashSet<>(3);
+        //获取所有流程状态
+        auditProcessList.parallelStream().forEach(item -> {
+            Integer status = auditProcessService.getAuditProcessStatus(item, productNew);
+            AuditProcessVo auditProcessVo = new AuditProcessVo();
+            BeanUtils.copyProperties(item, auditProcessVo);
+            auditProcessVo.setStatus(status);
+
+            voList.add(auditProcessVo);
+            statusSet.add(status);
+        });
+
+        //获取压测状态
+        AuditProcessVo testAuditProcessVo = auditProcessService.createTestAuditProcessVo();
+        //获取当前压测状态，
+        if(Objects.equals(productNew.getTestResult(), ProductNew.TEST_RESULT_SUCCESS)) {
+            //如果测试完成 那么压测状态一定是绿灯
+            testAuditProcessVo.setStatus(AuditProcessVo.STATUS_FINISHED);
+        } else {
+            //如果测试未完成，需要看前置检查是否完成：完成则压测正在执行，未完则置灰
+            voList.forEach(item -> {
+                if(Objects.equals(AuditProcess.TYPE_PRE, item.getType())) {
+                    testAuditProcessVo.setStatus(Objects.equals(item.getStatus(), AuditProcessVo.STATUS_FINISHED)? AuditProcessVo.STATUS_EXECUTING : AuditProcessVo.STATUS_UNFINISHED);
+                }
+            });
+        }
+        voList.add(testAuditProcessVo);
+        statusSet.add(testAuditProcessVo.getStatus());
+
+        if (statusSet.size() > 1) {
+            //如果状态有多个，那么发货状态一定置灰
+            vo.setDeliverStatus(ProductNewProcessInfoVo.STATUS_UN_FINISHED);
+        } else if (statusSet.contains(AuditProcessVo.STATUS_UNFINISHED)) {
+            //流程调整 如果流程中全部为未完成，那么前置检测状态应为正在执行
+            auditProcessService.processStatusAdjustment(voList);
+            vo.setDeliverStatus(ProductNewProcessInfoVo.STATUS_UN_FINISHED);
+        }
+
+        vo.setDeliverStatus(ProductNewProcessInfoVo.STATUS_FINISHED);
+        vo.setAuditProcessList(voList);
         return R.ok(vo);
     }
+
 
     @Override
     public BaseMapper<ProductNew> getBaseMapper() {
@@ -900,40 +921,40 @@ public class ProductNewServiceImpl implements ProductNewService {
     @Override
     public R pointList(Integer offset, Integer limit, String no, Long modelId, Long pointId, Integer pointType, Long startTime, Long endTime) {
         List<Long> productIds = null;
-        if(Objects.nonNull(pointId) || Objects.nonNull(pointType)){
+        if (Objects.nonNull(pointId) || Objects.nonNull(pointType)) {
             productIds = pointProductBindService.queryProductIdsByPidAndPtype(pointId, pointType);
             //这里如果没查到就添加一个默认的，否则productIds为空，列表返回全部
-            if(CollectionUtils.isEmpty(productIds)) {
+            if (CollectionUtils.isEmpty(productIds)) {
                 productIds = new ArrayList<>();
                 productIds.add(-1L);
             }
         }
 
-        List<ProductNew> productNews = this.queryAllByLimit(offset,limit,no,modelId,startTime,endTime,productIds);
+        List<ProductNew> productNews = this.queryAllByLimit(offset, limit, no, modelId, startTime, endTime, productIds);
 
         productNews.parallelStream().forEach(item -> {
 
             PointProductBind pointProductBind = pointProductBindService.queryByProductId(item.getId());
-            if(Objects.nonNull(pointProductBind)){
-                if(Objects.equals(pointProductBind.getPointType(), PointProductBind.TYPE_POINT)){
+            if (Objects.nonNull(pointProductBind)) {
+                if (Objects.equals(pointProductBind.getPointType(), PointProductBind.TYPE_POINT)) {
                     PointNew pointNew = this.pointNewMapper.selectById(pointProductBind.getPointId());
-                    if(Objects.nonNull(pointNew)){
+                    if (Objects.nonNull(pointNew)) {
                         item.setPointId(pointNew.getId().intValue());
                         item.setPointName(pointNew.getName());
                         item.setPointType(PointProductBind.TYPE_POINT);
                     }
                 }
-                if(Objects.equals(pointProductBind.getPointType(), PointProductBind.TYPE_WAREHOUSE)){
+                if (Objects.equals(pointProductBind.getPointType(), PointProductBind.TYPE_WAREHOUSE)) {
                     WareHouse wareHouse = warehouseService.getById(pointProductBind.getPointId());
-                    if(Objects.nonNull(wareHouse)){
+                    if (Objects.nonNull(wareHouse)) {
                         item.setPointId(wareHouse.getId());
                         item.setPointName(wareHouse.getWareHouses());
                         item.setPointType(PointProductBind.TYPE_WAREHOUSE);
                     }
                 }
-                if(Objects.equals(pointProductBind.getPointType(), PointProductBind.TYPE_SUPPLIER)){
+                if (Objects.equals(pointProductBind.getPointType(), PointProductBind.TYPE_SUPPLIER)) {
                     Supplier supplier = supplierService.getById(pointProductBind.getPointId());
-                    if(Objects.nonNull(supplier)){
+                    if (Objects.nonNull(supplier)) {
                         item.setPointId(supplier.getId().intValue());
                         item.setPointName(supplier.getName());
                         item.setPointType(PointProductBind.TYPE_SUPPLIER);
@@ -941,43 +962,43 @@ public class ProductNewServiceImpl implements ProductNewService {
                 }
             }
 
-            if (Objects.nonNull(item.getModelId())){
+            if (Objects.nonNull(item.getModelId())) {
                 Product product = productService.getBaseMapper().selectById(item.getModelId());
-                if (Objects.nonNull(product)){
+                if (Objects.nonNull(product)) {
                     item.setModelName(product.getName());
                 }
             }
 
-            if (Objects.nonNull(item.getBatchId())){
+            if (Objects.nonNull(item.getBatchId())) {
                 Batch batch = batchService.queryByIdFromDB(item.getBatchId());
-                if (Objects.nonNull(batch)){
+                if (Objects.nonNull(batch)) {
                     item.setBatchName(batch.getBatchNo());
                 }
             }
 
-            if(Objects.nonNull(item.getSupplierId())){
+            if (Objects.nonNull(item.getSupplierId())) {
                 Supplier supplier = supplierService.getById(item.getSupplierId());
-                if(Objects.nonNull(supplier)){
+                if (Objects.nonNull(supplier)) {
                     item.setSupplierName(supplier.getName());
                 }
             }
 
-            if(Objects.nonNull(item.getIotCardId())){
+            if (Objects.nonNull(item.getIotCardId())) {
                 IotCard iotCard = iotCardService.getById(item.getIotCardId());
-                if(Objects.nonNull(iotCard)){
+                if (Objects.nonNull(iotCard)) {
                     item.setIotCardName(iotCard.getSn());
                 }
             }
 
-            if(Objects.nonNull(item.getCameraId())){
+            if (Objects.nonNull(item.getCameraId())) {
                 Camera camera = cameraService.getById(item.getCameraId());
-                if(Objects.nonNull(camera)){
+                if (Objects.nonNull(camera)) {
                     item.setCameraSerialNum(camera.getSerialNum());
                 }
             }
 
             ColorCard colorCard = colorCardService.getById(item.getColor());
-            if(Objects.nonNull(colorCard)){
+            if (Objects.nonNull(colorCard)) {
                 item.setColorName(colorCard.getName());
             }
             List<OssUrlVo> accessoryPackaging = getOssUrlVoList(item.getId(), File.FILE_TYPE_PRODUCT_ACCESSORY_PACKAGING);
@@ -988,12 +1009,20 @@ public class ProductNewServiceImpl implements ProductNewService {
             item.setQualityInspectionFileList(qualityInspection);
         });
 
-        Integer count = this.count(no,modelId,startTime,endTime,productIds);
+        Integer count = this.count(no, modelId, startTime, endTime, productIds);
 
         HashMap<String, Object> stringObjectHashMap = new HashMap<>(2);
-        stringObjectHashMap.put("data",productNews);
-        stringObjectHashMap.put("count",count);
+        stringObjectHashMap.put("data", productNews);
+        stringObjectHashMap.put("count", count);
         return R.ok(stringObjectHashMap);
+    }
+
+    @Override
+    public ProductNew queryByNo(String no) {
+        if (Objects.isNull(no)) {
+            return null;
+        }
+        return this.productNewMapper.selectOne(new QueryWrapper<ProductNew>().eq("no", no));
     }
 
     private List<OssUrlVo> getOssUrlVoList(Long productNewId, Integer fileType) {
@@ -1050,13 +1079,6 @@ public class ProductNewServiceImpl implements ProductNewService {
         Base64.Encoder encoder = Base64.getUrlEncoder();
         byte[] base64Result = encoder.encode(content.getBytes());
         return new String(base64Result, StandardCharsets.UTF_8);
-    }
-
-    private ProductNew queryByNo(String no) {
-        if (Objects.isNull(no)) {
-            return null;
-        }
-        return this.productNewMapper.selectOne(new QueryWrapper<ProductNew>().eq("no", no));
     }
 
     private String getStatusName(Integer status) {

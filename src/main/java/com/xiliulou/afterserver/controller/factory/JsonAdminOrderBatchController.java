@@ -93,13 +93,13 @@ public class JsonAdminOrderBatchController {
     }
 
     /**
-     * 手持终端获取 柜机详情
+     * 手持终端 获取柜机详情
      * @param no
      * @return
      */
     @GetMapping("/productNew/info")
     public R queryProductNewInfoById(@RequestParam("no")String no, HttpServletResponse response){
-        return productNewService.queryProductNewInfoById(no, response);
+        return productNewService.queryProductNewProcessInfo(no, response);
     }
 
     /**
@@ -107,7 +107,7 @@ public class JsonAdminOrderBatchController {
      * @param productNewDetailsQuery
      * @return
      */
-    @PutMapping("/productNew")
+    //@PutMapping("/productNew")
     public R updateProductNew(@RequestBody ProductNewDetailsQuery productNewDetailsQuery){
         return productNewService.updateProductNew(productNewDetailsQuery);
     }

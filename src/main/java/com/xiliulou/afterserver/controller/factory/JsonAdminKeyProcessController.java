@@ -1,12 +1,15 @@
 package com.xiliulou.afterserver.controller.factory;
 
 import com.xiliulou.afterserver.entity.File;
+import com.xiliulou.afterserver.service.AuditProcessService;
 import com.xiliulou.afterserver.service.FileService;
 import com.xiliulou.afterserver.service.ProductNewService;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.KeyProcessQuery;
 import com.xiliulou.storage.service.impl.AliyunOssService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import retrofit2.http.GET;
 
@@ -32,6 +35,9 @@ public class JsonAdminKeyProcessController {
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private AuditProcessService auditProcessService;
 
     /**
      * 获取oss签名
@@ -65,5 +71,21 @@ public class JsonAdminKeyProcessController {
     @GetMapping("downLoad")
     public R getFile(@RequestParam("fileName") String fileName, @RequestParam(value = "fileType", required = false, defaultValue = "0")Integer fileType, HttpServletResponse response) {
         return fileService.downLoadFile(fileName,fileType, response);
+    }
+
+    /**
+     * 获取关键流程内容
+     */
+    @GetMapping("key/process")
+    public R getKeyProcess(@RequestParam("no")String no, @RequestParam("type")String type, @RequestParam(value = "groupId", required = false)Long groupId){
+        return auditProcessService.getKeyProcess(no, type, groupId);
+    }
+
+    /**
+     *更新关键流程内容
+     */
+    @PutMapping("key/process")
+    public R putKeyProcess(@Validated @RequestBody KeyProcessQuery keyProcessQuery){
+        return auditProcessService.putKeyProcess(keyProcessQuery);
     }
 }
