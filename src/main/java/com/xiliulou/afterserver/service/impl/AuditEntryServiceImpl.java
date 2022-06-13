@@ -91,13 +91,18 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
             return R.fail(null,"未查询到相关模块");
         }
 
-        List<AuditEntry> entryIds = this.getByEntryIds(JsonUtil.fromJsonArray(auditGroup.getEntryIds(), Long.class));
-        List<AuditEntryStrawberryVo> data = new ArrayList<>();
+        List<Long> entryIds = JsonUtil.fromJsonArray(auditGroup.getEntryIds(), Long.class);
         if(CollectionUtils.isEmpty(entryIds)) {
             return R.ok();
         }
 
-        entryIds.forEach(item -> {
+        List<AuditEntry> entrys = this.getByEntryIds(entryIds);
+        if(CollectionUtils.isEmpty(entrys)) {
+            return R.ok();
+        }
+
+        List<AuditEntryStrawberryVo> data = new ArrayList<>();
+        entrys.forEach(item -> {
             AuditEntryStrawberryVo vo = new AuditEntryStrawberryVo();
             BeanUtils.copyProperties(item, vo);
             data.add(vo);
@@ -246,6 +251,7 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
         }
         return R.ok();
     }
+
 
 
     private String generateRegular(Integer auditEntryType, String jsonRoot){
