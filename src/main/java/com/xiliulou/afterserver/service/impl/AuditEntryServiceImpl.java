@@ -204,12 +204,12 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
         }
 
         AuditEntry auditEntryOld = this.getByName(query.getName());
-        if(Objects.nonNull(auditEntryOld)) {
+        if(Objects.nonNull(auditEntryOld) && !Objects.equals(auditEntryOld.getId(), auditEntry.getId())) {
             return R.fail(null, "组件名称已存在");
         }
 
         auditEntryOld = this.getBySort(query.getSort());
-        if(Objects.nonNull(auditEntryOld)) {
+        if(Objects.nonNull(auditEntryOld) && !Objects.equals(auditEntryOld.getId(), auditEntry.getId())) {
             return R.fail(null, "排序值重复，请修改");
         }
 
