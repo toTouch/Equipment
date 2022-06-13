@@ -3,6 +3,8 @@ package com.xiliulou.afterserver.web.vo;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author zgw
@@ -47,4 +49,9 @@ public class KeyProcessAuditEntryVo {
      * 组件值
      * */
     private String value;
+    /**
+     * ossURL
+     * key:url value:主键值
+     */
+    private Map<String, String> ossUrlMap;
 }

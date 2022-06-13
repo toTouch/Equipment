@@ -72,7 +72,7 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
 
         voList.forEach(item -> {
             if(Objects.equals(item.getType(), AuditEntry.TYPE_PHOTO)) {
-
+                //Map<String, String> ossUrlMap
             }
         });
 
@@ -292,26 +292,6 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
 
         String template = "((%s),)*(%s)";
         return String.format(template, alternativesReg, alternativesReg);
-    }
-
-    private List<OssUrlVo> getOssUrlVoList(Long productNewId, Integer fileType) {
-//        List<File> fileList = fileService.queryByProductNewId(productNewId, fileType);
-//        if (CollectionUtils.isEmpty(fileList)) {
-//            return null;
-//        }
-//
-        ArrayList<OssUrlVo> fileUrlList = new ArrayList<>();
-//        SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//
-//        fileList.forEach(item -> {
-//            OssUrlVo ossUrlVo = new OssUrlVo();
-//            String url = getOssWatermarkUrl(item.getFileName(), simp.format(item.getCreateTime()));
-//
-//            ossUrlVo.setId(item.getId());
-//            ossUrlVo.setUrl(url);
-//            fileUrlList.add(ossUrlVo);
-//        });
-        return fileUrlList;
     }
 
     private String getOssWatermarkUrl(String fileName, String createTime) {
