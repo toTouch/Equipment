@@ -15,6 +15,8 @@ import java.util.List;
  * @mood
  */
 public interface AuditProcessService extends IService<AuditProcess> {
+    AuditProcess getByType(String type);
+
     AuditProcessVo createTestAuditProcessVo();
 
     Integer getAuditProcessStatus(AuditProcess item, ProductNew productNew);

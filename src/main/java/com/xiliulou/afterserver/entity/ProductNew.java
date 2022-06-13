@@ -70,11 +70,11 @@ public class ProductNew {
      *         },
      *         {
      *           value: 7,
-     *           label: '电装检验合格'
+     *           label: '前置检测完成'
      *         },
      *         {
      *           value: 8,
-     *           label: '出货检验合格'
+     *           label: '后置检查完成'
      *         }
      * {@link ProductNewStatusSortConstants}
      */
@@ -104,7 +104,7 @@ public class ProductNew {
      */
     private Integer delFlag;
     /**
-     * 外观
+     * 外观 0未选择 1小皱 2平光 3 橘纹
      */
     private Integer surface;
     /**

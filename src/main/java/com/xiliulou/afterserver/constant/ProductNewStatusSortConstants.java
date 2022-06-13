@@ -50,15 +50,15 @@ public class ProductNewStatusSortConstants {
     public static final Integer STATUS_TESTED = 6;
     public static final Double STATUS_TESTED_VALUE = 2.00;
     /**
-     *电装检验合格
+     *前置检验合格
      */
-    public static final Integer STATUS_ELECTRICAL_QUALIFIED = 7;
-    public static final Double STATUS_ELECTRICAL_QUALIFIED_VALUE = 1.00;
+    public static final Integer STATUS_PRE_DETECTION = 7;
+    public static final Double STATUS_PRE_DETECTION_VALUE = 1.00;
     /**
-     * 出货检验合格
+     * 后置检验合格
      */
-    public static final Integer STATUS_DELIVERY_QUALIFIED = 8;
-    public static final Double STATUS_DELIVERY_QUALIFIED_VALUE = 3.00;
+    public static final Integer STATUS_POST_DETECTION = 8;
+    public static final Double STATUS_POST_DETECTION_VALUE = 3.00;
 
     static{
         STATUS_VALUE_MAPS.put(STATUS_PRODUCTION, STATUS_PRODUCTION_VALUE);
@@ -68,8 +68,8 @@ public class ProductNewStatusSortConstants {
         STATUS_VALUE_MAPS.put(STATUS_DISMANTLE, STATUS_DISMANTLE_VALUE);
         STATUS_VALUE_MAPS.put(STATUS_SCRAPPED, STATUS_SCRAPPED_VALUE);
         STATUS_VALUE_MAPS.put(STATUS_TESTED, STATUS_TESTED_VALUE);
-        STATUS_VALUE_MAPS.put(STATUS_ELECTRICAL_QUALIFIED, STATUS_ELECTRICAL_QUALIFIED_VALUE);
-        STATUS_VALUE_MAPS.put(STATUS_DELIVERY_QUALIFIED, STATUS_DELIVERY_QUALIFIED_VALUE);
+        STATUS_VALUE_MAPS.put(STATUS_PRE_DETECTION, STATUS_PRE_DETECTION_VALUE);
+        STATUS_VALUE_MAPS.put(STATUS_POST_DETECTION, STATUS_POST_DETECTION_VALUE);
     }
 
     public static Double acquireStatusValue(Integer status) {

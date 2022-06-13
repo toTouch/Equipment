@@ -1,13 +1,18 @@
 package com.xiliulou.afterserver.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiliulou.afterserver.entity.AuditEntry;
 import com.xiliulou.afterserver.entity.AuditValue;
 import com.xiliulou.afterserver.mapper.AuditValueMapper;
+import com.xiliulou.afterserver.service.AuditEntryService;
 import com.xiliulou.afterserver.service.AuditValueService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author zgw
@@ -19,9 +24,46 @@ public class AuditValueServiceImpl extends ServiceImpl<AuditValueMapper, AuditVa
 
     @Resource
     AuditValueMapper auditValueMapper;
+    @Autowired
+    AuditEntryService auditEntryService;
 
     @Override
     public Long getCountByEntryIdsAndPid(List<Long> entryIds, Long productNewId, Integer required) {
         return auditValueMapper.getCountByEntryIdsAndPid(entryIds, productNewId, required);
+    }
+
+    @Override
+    public boolean biandOrUnbindEntry(Long entryId, String value, Long pid) {
+        AuditEntry auditEntryOld = auditEntryService.getById(entryId);
+        if(Objects.isNull(auditEntryOld)) {
+            return false;
+        }
+
+        AuditValue auditValue = auditValueMapper.selectByEntryId(entryId, pid);
+        // 如果为空value 看entryId绑定的值是否为空.为空跳过，不为空删除
+        if(StringUtils.isBlank(value)) {
+            if(!Objects.isNull(auditValue)) {
+                auditValueMapper.deleteById(auditValue.getId());
+            }
+            return true;
+        }
+
+        //如果不为空value 看entryId绑定的值是否为空 不为空修改
+        if(!Objects.isNull(auditValue)) {
+            auditValue.setValue(value);
+            auditValue.setUpdateTime(System.currentTimeMillis());
+            auditValueMapper.updateById(auditValue);
+            return true;
+        }
+
+        //为空创建
+        auditValue = new AuditValue();
+        auditValue.setPid(pid);
+        auditValue.setEntryId(entryId);
+        auditValue.setValue(value);
+        auditValue.setCreateTime(System.currentTimeMillis());
+        auditValue.setUpdateTime(System.currentTimeMillis());
+        auditValueMapper.insert(auditValue);
+        return true;
     }
 }

@@ -12,4 +12,6 @@ import com.xiliulou.afterserver.util.R;
  */
 public interface ColorCardService extends IService<ColorCard> {
      R queryPull(String name);
+
+     ColorCard getOneByName(String name);
 }

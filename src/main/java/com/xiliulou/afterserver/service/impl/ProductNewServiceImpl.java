@@ -494,7 +494,12 @@ public class ProductNewServiceImpl implements ProductNewService {
             return R.fail(null, null, "参数解析错误");
         }
 
+        if (CollectionUtils.isNotEmpty(compression.getNoList())) {
+            return R.fail(null, null, "压测柜机不存在，请核对");
+        }
+
         List<String> errorNos = new ArrayList<>();
+        List<String> errorStatus = new ArrayList<>();
 
         String mainProductNo = "";
 
@@ -508,49 +513,48 @@ public class ProductNewServiceImpl implements ProductNewService {
         }
 
         ArrayList<ProductNew> mainProducts = new ArrayList<>(1);
-        ArrayList<String> unqualifiedElectricalProducts = new ArrayList<>(0);
 
-        if (CollectionUtils.isNotEmpty(compression.getNoList())) {
-            for (String no : compression.getNoList()) {
-                ProductNew product = this.queryByNo(no);
-                if (Objects.isNull(product)) {
-                    errorNos.add(no);
-                } else {
-                    if (Objects.equals(product.getType(), ProductNew.TYPE_M)) {
-                        mainProducts.add(product);
-                    }
-                    if (!Objects.equals(product.getStatus(), ProductNewStatusSortConstants.STATUS_ELECTRICAL_QUALIFIED)) {
-                        unqualifiedElectricalProducts.add(product.getNo());
-                    }
+
+        for (String no : compression.getNoList()) {
+            ProductNew product = this.queryByNo(no);
+            if (Objects.isNull(product)) {
+                errorNos.add(no);
+            } else {
+                //统计是否有多主柜
+                if (Objects.equals(product.getType(), ProductNew.TYPE_M)) {
+                    mainProducts.add(product);
+                }
+
+                //统计是否有前置检测未通过柜机
+                AuditProcess auditProcess = auditProcessService.getByType(AuditProcess.TYPE_PRE);
+                Integer status = auditProcessService.getAuditProcessStatus(auditProcess, product);
+                if(!Objects.equals(status, AuditProcessVo.STATUS_FINISHED)
+                        || !Objects.equals(product.getStatus(), ProductNewStatusSortConstants.STATUS_PRE_DETECTION)){
+                    errorStatus.add(product.getNo());
                 }
             }
+        }
 
-            if (CollectionUtils.isNotEmpty(errorNos)) {
-                return R.fail(errorNos, null, "资产编码不存在，请核对");
-            }
+        if (CollectionUtils.isNotEmpty(errorNos)) {
+            return R.fail(errorNos, null, "资产编码不存在，请核对");
+        }
 
-            if (!(mainProducts.size() == 1) || Objects.isNull(mainProducts.get(0))) {
-                return R.fail(mainProducts, null, "主柜不存在或存在多个，请核对");
-            }
+        if (!(mainProducts.size() == 1) || Objects.isNull(mainProducts.get(0))) {
+            return R.fail(mainProducts, null, "主柜不存在或存在多个，请核对");
+        }
 
-            if (CollectionUtils.isNotEmpty(unqualifiedElectricalProducts)) {
-                StringBuilder sb = new StringBuilder();
-                unqualifiedElectricalProducts.forEach(item -> {
-                    sb.append(item).append(",");
-                });
-                String unqualifiedElectricalProductNo = sb.deleteCharAt(sb.length() - 1).toString();
-                return R.fail(unqualifiedElectricalProducts, null, unqualifiedElectricalProductNo + "电装检验不合格，请核对");
-            }
+        if(CollectionUtils.isNotEmpty(errorStatus)) {
+            return R.fail(errorStatus, null, "柜机前置检测未通过或非前置检测完成状态,请核对");
+        }
 
-
-            ProductNew mainProduct = mainProducts.get(0);
-            mainProductNo = mainProduct.getNo();
-            if (!Objects.equals(mainProduct.getIotCardId(), iotCard.getId())) {
-                ProductNew updateMainProduct = new ProductNew();
-                updateMainProduct.setId(mainProduct.getId());
-                updateMainProduct.setIotCardId(iotCard.getId());
-                this.update(updateMainProduct);
-            }
+        //更新物联网卡
+        ProductNew mainProduct = mainProducts.get(0);
+        mainProductNo = mainProduct.getNo();
+        if (!Objects.equals(mainProduct.getIotCardId(), iotCard.getId())) {
+            ProductNew updateMainProduct = new ProductNew();
+            updateMainProduct.setId(mainProduct.getId());
+            updateMainProduct.setIotCardId(iotCard.getId());
+            this.update(updateMainProduct);
         }
 
         return R.ok(Arrays.asList(mainProductNo));
@@ -568,6 +572,10 @@ public class ProductNewServiceImpl implements ProductNewService {
             return R.fail(null, null, "参数解析错误");
         }
 
+        if (CollectionUtils.isNotEmpty(compression.getNoList())) {
+            return R.fail(null, null, "压测柜机不存在，请核对");
+        }
+
         if (StringUtils.isBlank(compression.getCompressionFile())) {
             return R.fail(null, null, "测试文件为空");
         }
@@ -578,33 +586,39 @@ public class ProductNewServiceImpl implements ProductNewService {
         }
 
         ArrayList<ProductNew> mainProducts = new ArrayList(1);
-        if (CollectionUtils.isNotEmpty(compression.getNoList())) {
-            for (String no : compression.getNoList()) {
-                ProductNew product = this.queryByNo(no);
-                if (Objects.equals(product.getType(), ProductNew.TYPE_M)) {
-                    mainProducts.add(product);
-                }
-
+        for (String no : compression.getNoList()) {
+            ProductNew product = this.queryByNo(no);
+            if (Objects.equals(product.getType(), ProductNew.TYPE_M)) {
+                mainProducts.add(product);
             }
+
         }
 
         if (!(mainProducts.size() == 1) || Objects.isNull(mainProducts.get(0))) {
             return R.fail(mainProducts, null, "主柜不存在或存在多个，请核对");
         }
 
-        if (CollectionUtils.isNotEmpty(compression.getNoList())) {
-            for (String no : compression.getNoList()) {
-                ProductNew productOld = this.queryByNo(no);
-                if (Objects.nonNull(productOld)) {
-                    ProductNew product = new ProductNew();
-                    product.setNo(no);
-                    product.setTestFile(compression.getCompressionFile());
-                    product.setTestResult(1);
-                    product.setStatus(6);
-                    product.setIotCardId(iotCard.getId());
-                    productNewMapper.updateByNo(product);
-                }
+        AuditProcess byType = auditProcessService.getByType(AuditProcess.TYPE_POST);
+
+        for (String no : compression.getNoList()) {
+            ProductNew productOld = this.queryByNo(no);
+            if (Objects.nonNull(productOld)) {
+                continue;
             }
+
+            ProductNew product = new ProductNew();
+            product.setNo(no);
+            product.setTestFile(compression.getCompressionFile());
+            product.setTestResult(1);
+            product.setIotCardId(iotCard.getId());
+
+            Integer status = auditProcessService.getAuditProcessStatus(byType, productOld);
+            if(Objects.equals(status, AuditProcessVo.STATUS_FINISHED)){
+                product.setStatus(ProductNewStatusSortConstants.STATUS_POST_DETECTION);
+            } else {
+                product.setStatus(ProductNewStatusSortConstants.STATUS_TESTED);
+            }
+            productNewMapper.updateByNo(product);
         }
 
         return R.ok();
@@ -819,63 +833,20 @@ public class ProductNewServiceImpl implements ProductNewService {
             return R.fail(null, "10001", "柜机资产编码不存在，请核对");
         }
 
-        if (!Objects.equals(productNew.getStatus(), 8) && !Objects.equals(productNew.getTestResult(), 1)) {
-            return R.fail(null, "10001", "柜机非出货检验合格状态或测试结果非测试成功，请检查");
-        }
 
-        if (Objects.isNull(productNew.getIotCardId())) {
-            return R.fail(null, null, "物联卡号未绑定，请录入");
-        }
-
-        IotCard iotCard = iotCardService.getById(productNew.getIotCardId());
-        if (Objects.isNull(iotCard)) {
-            return R.fail(null, null, "未查询到物联网卡信息，请核对");
-        }
 
         Batch productBatch = batchService.queryByIdFromDB(productNew.getBatchId());
         if (Objects.isNull(productBatch)) {
             return R.fail(null, null, "未查询到柜机批次，请联系管理员");
         }
 
-        Batch iotBatch = batchService.queryByIdFromDB(iotCard.getBatchId());
-        if (Objects.isNull(iotBatch)) {
-            return R.fail(null, null, "未查询到物联网卡批次，请录入");
-        }
-
-        if (Objects.isNull(productNew.getCameraId())) {
-            return R.fail(null, null, "摄像头序列号未绑定，请录入");
-        }
-
-        Camera camera = cameraService.getById(productNew.getCameraId());
-        if (Objects.isNull(camera)) {
-            return R.fail(null, null, "未查询到摄像序列号，请核对");
-        }
-
-        if (Objects.isNull(camera.getIotCardId())) {
-            return R.fail(null, null, "摄像头物联网卡号未绑定，请录入");
-        }
-
-        IotCard cameraCard = iotCardService.getById(camera.getIotCardId());
-        if (Objects.isNull(cameraCard)) {
-            return R.fail(null, null, "未查询到摄像头物联网卡信息，请核对");
-        }
-
-        if (Objects.isNull(productNew.getColor())) {
-            return R.fail(null, null, "柜机颜色未填写，请录入");
-        }
-
-        if (Objects.isNull(productNew.getColor())) {
-            return R.fail(null, null, "柜机颜色未填写，请录入");
-        }
-
-        if (Objects.isNull(productNew.getSurface())) {
-            return R.fail(null, null, "柜机外观未填写，请录入");
-        }
 
         Product product = productService.getById(productNew.getModelId());
         if (Objects.isNull(product)) {
             return R.fail(null, "10001", "未查询到柜机类型，请联系管理员");
         }
+
+
 
         SimpleDateFormat sim = new SimpleDateFormat("hh:mm");
 

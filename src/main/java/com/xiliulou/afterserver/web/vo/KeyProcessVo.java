@@ -1,7 +1,6 @@
 package com.xiliulou.afterserver.web.vo;
 
 import lombok.Data;
-
 import java.util.List;
 
 /**
@@ -11,6 +10,7 @@ import java.util.List;
  */
 @Data
 public class KeyProcessVo {
+    private Long pid;
     private Long groupId;
     /**
      * 产品编号
@@ -33,3 +33,5 @@ public class KeyProcessVo {
      */
     private List<KeyProcessAuditEntryVo> keyProcessAuditEntryList;
 }
+
+
