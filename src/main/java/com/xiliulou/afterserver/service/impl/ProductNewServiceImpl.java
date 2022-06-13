@@ -690,26 +690,25 @@ public class ProductNewServiceImpl implements ProductNewService {
     public R queryProductNewProcessInfo(String no, HttpServletResponse response) {
         ProductNew productNew = this.queryByNo(no);
 
-        Long uid = SecurityUtils.getUid();
-        if (Objects.isNull(uid)) {
-            return R.fail("未查询到相关用户");
-        }
-
-        User user = userService.getUserById(uid);
+        User user = userService.getUserById(SecurityUtils.getUid());
         if (Objects.isNull(user)) {
+            log.error("QUERY PROCESS INFO ERROR! not found uid! uid={}", SecurityUtils.getUid());
             return R.fail("未查询到相关用户");
         }
 
         if (Objects.isNull(productNew)) {
+            log.error("QUERY PROCESS INFO ERROR! not found no! no={}", no);
             return R.fail("资产编码不存在");
         }
 
         if (!Objects.equals(productNew.getSupplierId(), user.getThirdId())) {
+            log.error("QUERY PROCESS INFO ERROR! current user inconsistent  factory! supplierId={}, userThirdId", productNew.getSupplierId(), user.getThirdId());
             return R.fail(null, "柜机厂家与登录厂家不一致，请重新登陆");
         }
 
         Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
         if (Objects.isNull(batch)) {
+            log.error("QUERY PROCESS INFO ERROR! not found batch! batch={}", productNew.getBatchId());
             return R.fail(null, "柜机未绑定批次，请重新登陆");
         }
 
@@ -993,62 +992,6 @@ public class ProductNewServiceImpl implements ProductNewService {
             return null;
         }
         return this.productNewMapper.selectOne(new QueryWrapper<ProductNew>().eq("no", no));
-    }
-
-    private List<OssUrlVo> getOssUrlVoList(Long productNewId, Integer fileType) {
-        List<File> fileList = fileService.queryByProductNewId(productNewId, fileType);
-        if (CollectionUtils.isEmpty(fileList)) {
-            return null;
-        }
-
-        ArrayList<OssUrlVo> fileUrlList = new ArrayList<>();
-        SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-        fileList.forEach(item -> {
-            OssUrlVo ossUrlVo = new OssUrlVo();
-            String url = getOssWatermarkUrl(item.getFileName(), simp.format(item.getCreateTime()));
-
-            ossUrlVo.setId(item.getId());
-            ossUrlVo.setUrl(url);
-            fileUrlList.add(ossUrlVo);
-        });
-        return fileUrlList;
-    }
-
-    private String getOssWatermarkUrl(String fileName, String createTime) {
-        if (!Objects.equals(storageConfig.getIsUseOSS(), StorageConfig.IS_USE_OSS)) {
-            return "";
-        }
-
-        String bucketName = storageConfig.getBucketName();
-        String dirName = storageConfig.getDir();
-        String url = "";
-
-
-        try {
-            Long expiration = Optional.ofNullable(storageConfig.getExpiration())
-                    .orElse(1000L * 60L * 3L) + System.currentTimeMillis();
-
-            String style = String.format(CommonConstants.OSS_IMG_WATERMARK_STYLE,
-                    base64Encode(createTime),
-                    CommonConstants.OSS_IMG_WATERMARK_TYPE,
-                    CommonConstants.OSS_IMG_WATERMARK_COLOR,
-                    CommonConstants.OSS_IMG_WATERMARK_SIZE,
-                    CommonConstants.OSS_IMG_WATERMARK_OFFSET);
-
-            url = aliyunOssService.getOssFileUrl(bucketName, dirName + fileName, expiration, style);
-        } catch (Exception e) {
-            log.error("aliyunOss down watermark file Error!", e);
-        }
-
-        return url;
-    }
-
-
-    private String base64Encode(String content) {
-        Base64.Encoder encoder = Base64.getUrlEncoder();
-        byte[] base64Result = encoder.encode(content.getBytes());
-        return new String(base64Result, StandardCharsets.UTF_8);
     }
 
     private String getStatusName(Integer status) {

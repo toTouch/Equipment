@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.constant.AuditProcessConstans;
+import com.xiliulou.afterserver.constant.CommonConstants;
 import com.xiliulou.afterserver.entity.AuditEntry;
 import com.xiliulou.afterserver.entity.AuditGroup;
+import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.mapper.AuditEntryMapper;
 import com.xiliulou.afterserver.service.AuditEntryService;
 import com.xiliulou.afterserver.service.AuditGroupService;
@@ -15,8 +17,11 @@ import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.AuditEntryStrawberryQuery;
 import com.xiliulou.afterserver.web.vo.AuditEntryStrawberryVo;
 import com.xiliulou.afterserver.web.vo.KeyProcessAuditEntryVo;
+import com.xiliulou.afterserver.web.vo.OssUrlVo;
 import com.xiliulou.core.exception.CustomBusinessException;
 import com.xiliulou.core.json.JsonUtil;
+import com.xiliulou.storage.config.StorageConfig;
+import com.xiliulou.storage.service.impl.AliyunOssService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +30,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author zgw
@@ -44,6 +49,10 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
     AuditValueService auditValueService;
     @Autowired
     AuditGroupService auditGroupService;
+    @Autowired
+    AliyunOssService aliyunOssService;
+    @Autowired
+    StorageConfig storageConfig;
 
     @Override
     public Long getCountByIdsAndRequired(List<Long> entryIds, Integer required) {
@@ -56,7 +65,18 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
             return null;
         }
 
-        return  auditEntryMapper.queryByEntryIdsAndPid(entryIds, pid);
+        List<KeyProcessAuditEntryVo> voList = auditEntryMapper.queryByEntryIdsAndPid(entryIds, pid);
+        if(CollectionUtils.isEmpty(voList)) {
+            return null;
+        }
+
+        voList.forEach(item -> {
+            if(Objects.equals(item.getType(), AuditEntry.TYPE_PHOTO)) {
+
+            }
+        });
+
+        return voList;
     }
 
     @Override
@@ -113,7 +133,7 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
     @Override
     @Transactional(rollbackFor = Exception.class)
     public R saveOne(AuditEntryStrawberryQuery query) {
-        AuditGroup auditGroup = auditGroupService.getById(query.getId());
+        AuditGroup auditGroup = auditGroupService.getById(query.getGroupId());
         if(Objects.isNull(auditGroup)) {
             return R.fail(null,"未查询到相关模块");
         }
@@ -168,7 +188,7 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
 
     @Override
     public R putOne(AuditEntryStrawberryQuery query) {
-        AuditGroup auditGroup = auditGroupService.getById(query.getId());
+        AuditGroup auditGroup = auditGroupService.getById(query.getGroupId());
         if(Objects.isNull(auditGroup)) {
             return R.fail(null, "未查询到相关模块");
         }
@@ -252,8 +272,6 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
         return R.ok();
     }
 
-
-
     private String generateRegular(Integer auditEntryType, String jsonRoot){
         List<String> jsonRoots = JsonUtil.fromJsonArray(jsonRoot, String.class);
         if(CollectionUtils.isEmpty(jsonRoots)) {
@@ -274,5 +292,61 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
 
         String template = "((%s),)*(%s)";
         return String.format(template, alternativesReg, alternativesReg);
+    }
+
+    private List<OssUrlVo> getOssUrlVoList(Long productNewId, Integer fileType) {
+//        List<File> fileList = fileService.queryByProductNewId(productNewId, fileType);
+//        if (CollectionUtils.isEmpty(fileList)) {
+//            return null;
+//        }
+//
+        ArrayList<OssUrlVo> fileUrlList = new ArrayList<>();
+//        SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//
+//        fileList.forEach(item -> {
+//            OssUrlVo ossUrlVo = new OssUrlVo();
+//            String url = getOssWatermarkUrl(item.getFileName(), simp.format(item.getCreateTime()));
+//
+//            ossUrlVo.setId(item.getId());
+//            ossUrlVo.setUrl(url);
+//            fileUrlList.add(ossUrlVo);
+//        });
+        return fileUrlList;
+    }
+
+    private String getOssWatermarkUrl(String fileName, String createTime) {
+        if (!Objects.equals(storageConfig.getIsUseOSS(), StorageConfig.IS_USE_OSS)) {
+            return "";
+        }
+
+        String bucketName = storageConfig.getBucketName();
+        String dirName = storageConfig.getDir();
+        String url = "";
+
+
+        try {
+            Long expiration = Optional.ofNullable(storageConfig.getExpiration())
+                    .orElse(1000L * 60L * 3L) + System.currentTimeMillis();
+
+            String style = String.format(CommonConstants.OSS_IMG_WATERMARK_STYLE,
+                    base64Encode(createTime),
+                    CommonConstants.OSS_IMG_WATERMARK_TYPE,
+                    CommonConstants.OSS_IMG_WATERMARK_COLOR,
+                    CommonConstants.OSS_IMG_WATERMARK_SIZE,
+                    CommonConstants.OSS_IMG_WATERMARK_OFFSET);
+
+            url = aliyunOssService.getOssFileUrl(bucketName, dirName + fileName, expiration, style);
+        } catch (Exception e) {
+            log.error("aliyunOss down watermark file Error!", e);
+        }
+
+        return url;
+    }
+
+
+    private String base64Encode(String content) {
+        Base64.Encoder encoder = Base64.getUrlEncoder();
+        byte[] base64Result = encoder.encode(content.getBytes());
+        return new String(base64Result, StandardCharsets.UTF_8);
     }
 }
