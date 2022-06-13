@@ -50,4 +50,20 @@
         </where>
         order by sort
     </select>
+
+    <select id="getByEntryIds" resultMap="AuditEntryMap">
+        select
+           id, name, type, json_content, json_root, sort, required, update_time, del_flag, create_time
+        from t_audit_entry
+        <where>
+            e.del_flag = 0
+            <if test="entryIds != null and entryIds.size() > 0">
+                and e.id in
+                <foreach collection="entryIds" item="e" open="(" close=")" separator=",">
+                    #{e}
+                </foreach>
+            </if>
+        </where>
+        order by sort
+    </select>
 </mapper>

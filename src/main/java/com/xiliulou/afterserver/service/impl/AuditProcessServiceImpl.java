@@ -2,13 +2,17 @@ package com.xiliulou.afterserver.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiliulou.afterserver.constant.AuditProcessConstans;
 import com.xiliulou.afterserver.constant.ProductNewStatusSortConstants;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.AuditProcessMapper;
+import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
+import com.xiliulou.afterserver.web.query.AuditEntryQuery;
 import com.xiliulou.afterserver.web.query.KeyProcessQuery;
 import com.xiliulou.afterserver.web.vo.AuditProcessVo;
 import com.xiliulou.afterserver.web.vo.KeyProcessAuditEntryVo;
@@ -21,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author zgw
@@ -32,6 +37,8 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
 
     @Resource
     AuditProcessMapper auditProcessMapper;
+    @Resource
+    ProductNewMapper productNewMapper;
     @Autowired
     AuditGroupService auditGroupService;
     @Autowired
@@ -44,6 +51,12 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
     UserService userService;
     @Autowired
     BatchService batchService;
+    @Autowired
+    CameraService cameraService;
+    @Autowired
+    IotCardService iotCardService;
+    @Autowired
+    ColorCardService colorCardService;
 
     @Override
     public AuditProcessVo createTestAuditProcessVo() {
@@ -129,6 +142,7 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
         }
 
         KeyProcessVo keyProcessVo = new KeyProcessVo();
+        keyProcessVo.setPid(productNew.getId());
         keyProcessVo.setNo(productNew.getNo());
         keyProcessVo.setBatchId(batch.getId());
         keyProcessVo.setBatchNo(batch.getBatchNo());
@@ -183,15 +197,106 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
             return R.fail(null, "未查询到相关分组信息");
         }
 
+        ProductNew productNew = productNewService.queryByIdFromDB(keyProcessQuery.getPid());
+        if(Objects.isNull(productNew)){
+            return R.fail(null, "未查询到相关柜机");
+        }
+
         if(CollectionUtils.isEmpty(keyProcessQuery.getAuditEntryQueryList())) {
             return R.ok();
         }
+        //判断传入的entry_ids 是否都是改group的 coantainsAll
+        List<Long> groupBindEntryIds = JsonUtil.fromJsonArray(groupById.getEntryIds(), Long.class);
+        List<Long> updateEtryIds = keyProcessQuery.getAuditEntryQueryList().stream().map(item -> item.getId()).collect(Collectors.toList());
+        if(!groupBindEntryIds.containsAll(updateEtryIds)) {
+            return R.fail(null, "参数错误");
+        }
 
-        List<>
+        //当分组为基本信息录入时，需检查值是否正确
+        if(Objects.equals(keyProcessQuery.getGroupId(), 1L)) {
+            for(AuditEntryQuery item : keyProcessQuery.getAuditEntryQueryList()) {
+                R r = checkEssentialInfo(item);
+                if(Objects.nonNull(r)) {
+                    return r;
+                }
+            }
+        }
+
+        //updateCreate方法
+        keyProcessQuery.getAuditEntryQueryList().forEach(item -> {
+            auditValueService.biandOrUnbindEntry(item.getId(), item.getValue(), productNew.getId());
+        });
+
+        AuditProcess auditProcess = auditProcessMapper.selectById(groupById.getProcessId());
+        //查看流程是否检验完成 未完成直接结束
+        Integer status = getAuditProcessStatus(auditProcess, productNew);
+        if(!Objects.equals(status, AuditProcessVo.STATUS_FINISHED)) {
+            return R.ok();
+        }
+
+        //完成，
+        // 如果为前置检测 改变状态
+        if(Objects.equals(AuditProcess.TYPE_PRE, auditProcess.getType())) {
+            productNew.setStatus(ProductNewStatusSortConstants.STATUS_PRE_DETECTION);
+            productNewMapper.updateById(productNew);
+            return R.ok();
+        }
+
+        //如果为后置 需要判断压测是否完成
+        if(Objects.equals(productNew.getTestResult(), ProductNew.TEST_RESULT_FAIL)) {
+            return R.ok();
+        }
+
+        productNew.setStatus(ProductNewStatusSortConstants.STATUS_POST_DETECTION);
+        productNewMapper.updateById(productNew);
+        return R.ok();
     }
 
+    @Override
     public AuditProcess getByType(String type) {
         return auditProcessMapper.selectOne(new QueryWrapper<AuditProcess>().eq("type", type));
+    }
+
+    private R checkEssentialInfo(AuditEntryQuery item) {
+        if(StringUtils.isNotBlank(item.getValue())) {
+            return null;
+        }
+
+        //"摄像头序列号"
+        if(Objects.equals(item.getId(), AuditProcessConstans.CAMERA_SN_AUDIT_ENTRY)) {
+            Camera camera = cameraService.getBySn(item.getValue());
+            if(Objects.isNull(camera)) {
+                return R.fail(null,"未查询到相关摄像头序列号");
+            }
+        }
+        //"摄像头物联网卡号"
+        if(Objects.equals(item.getId(), AuditProcessConstans.CAMERA_IOT_AUDIT_ENTRY)) {
+            IotCard iotCard = iotCardService.queryBySn(item.getValue());
+            if(Objects.isNull(iotCard)) {
+                return R.fail(null,"未查询到相关摄像头物联网卡号");
+            }
+        }
+        //"柜机物联网卡号"
+        if(Objects.equals(item.getId(), AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY)) {
+            IotCard iotCard = iotCardService.queryBySn(item.getValue());
+            if(Objects.isNull(iotCard)) {
+                return R.fail(null,"未查询到相关柜机物联网卡号");
+            }
+        }
+        //"柜机颜色"
+        if(Objects.equals(item.getId(), AuditProcessConstans.PRODUCT_COLOR_AUDIT_ENTRY)) {
+            ColorCard oneByName = colorCardService.getOneByName(item.getValue());
+            if(Objects.isNull(oneByName)) {
+                return R.fail(null,"未查询到相关色卡");
+            }
+        }
+        //"柜机外观"
+        if(Objects.equals(item.getId(), AuditProcessConstans.PRODUCT_COLOR_AUDIT_ENTRY)) {
+            if(!Arrays.asList("小皱", "平光", "橘纹").contains(item.getValue())) {
+                return R.fail(null,"外观录入有误，请重新填写");
+            }
+        }
+        return null;
     }
 
     private Integer getStatusByProductNewStatus(String type, Integer status){

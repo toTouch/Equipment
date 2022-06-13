@@ -1,22 +1,32 @@
 package com.xiliulou.afterserver.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiliulou.afterserver.constant.AuditProcessConstans;
 import com.xiliulou.afterserver.entity.AuditEntry;
 import com.xiliulou.afterserver.entity.AuditGroup;
 import com.xiliulou.afterserver.entity.AuditProcess;
 import com.xiliulou.afterserver.mapper.AuditGroupMapper;
 import com.xiliulou.afterserver.service.AuditEntryService;
 import com.xiliulou.afterserver.service.AuditGroupService;
+import com.xiliulou.afterserver.service.AuditProcessService;
 import com.xiliulou.afterserver.service.AuditValueService;
+import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.AuditGroupStrawberryQuery;
+import com.xiliulou.afterserver.web.vo.AuditGroupStrawberryVo;
 import com.xiliulou.afterserver.web.vo.AuditGroupVo;
 import com.xiliulou.afterserver.web.vo.KeyProcessAuditGroupVo;
 import com.xiliulou.core.json.JsonUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -35,10 +45,22 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
     AuditEntryService auditEntryService;
     @Autowired
     AuditValueService auditValueService;
+    @Autowired
+    AuditProcessService auditProcessService;
 
     @Override
     public List<AuditGroup> getByProcessId(Long id) {
         return auditGroupMapper.getByProcessId(id);
+    }
+
+    @Override
+    public AuditGroup getByName(String name){
+        return this.baseMapper.selectOne(new QueryWrapper<AuditGroup>().eq("name", name));
+    }
+
+    @Override
+    public AuditGroup getBySort(BigDecimal sort){
+        return this.baseMapper.selectOne(new QueryWrapper<AuditGroup>().eq("sort", sort));
     }
 
     @Override
@@ -77,4 +99,99 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
         }
         return null;
     }
+
+    @Override
+    public R queryList(String type) {
+        AuditProcess auditProcess = auditProcessService.getByType(type);
+        if(Objects.isNull(auditProcess)) {
+            return R.fail("参数错误，未查询到相关流程");
+        }
+
+        List<AuditGroupStrawberryVo> data = new ArrayList<>();
+        List<AuditGroup> auditGroupList = this.baseMapper.selectList(new QueryWrapper<AuditGroup>().orderByAsc("sort"));
+        if(CollectionUtils.isEmpty(auditGroupList)) {
+            return R.ok(data);
+        }
+
+        auditGroupList.forEach(item -> {
+            AuditGroupStrawberryVo vo = new AuditGroupStrawberryVo();
+            BeanUtils.copyProperties(item, vo);
+            data.add(vo);
+        });
+
+        return R.ok(data);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public R saveOne(AuditGroupStrawberryQuery query) {
+        AuditProcess auditProcess = auditProcessService.getByType(query.getProcessType());
+        if(Objects.isNull(auditProcess)) {
+            return R.fail("参数错误，未查询到相关流程");
+        }
+
+        AuditGroup auditGroup = this.getByName(query.getName());
+        if(Objects.nonNull(auditGroup)) {
+            return R.fail("模块名称已存在");
+        }
+
+        auditGroup = this.getBySort(query.getSort());
+        if(Objects.nonNull(auditGroup)) {
+            return R.fail("排序值重复，请修改");
+        }
+
+        auditGroup = new AuditGroup();
+        auditGroup.setName(query.getName());
+        auditGroup.setSort(query.getSort());
+        auditGroup.setProcessId(auditProcess.getId());
+        this.baseMapper.insert(auditGroup);
+        return R.ok();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public R putOne(AuditGroupStrawberryQuery query) {
+        AuditProcess auditProcess = auditProcessService.getByType(query.getProcessType());
+        if(Objects.isNull(auditProcess)) {
+            return R.fail("参数错误，未查询到相关流程");
+        }
+
+        AuditGroup auditGroup = this.baseMapper.selectById(query.getId());
+        if(Objects.isNull(auditGroup)) {
+            return R.fail("未查询到相关模块，请检查");
+        }
+
+        if(Objects.equals(auditProcess.getId(), auditGroup.getProcessId())) {
+            return R.fail("参数错误，模块与流程绑定不一致");
+        }
+
+        auditGroup.setSort(query.getSort());
+        auditGroup.setName(query.getName());
+        this.baseMapper.updateById(auditGroup);
+        return R.ok();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public R reomveOne(Long id) {
+        AuditGroup auditGroup = this.baseMapper.selectById(id);
+        if(Objects.isNull(auditGroup)) {
+            return R.fail("未查询到相关模块，请检查");
+        }
+
+        List<Long> entryIds = JsonUtil.fromJsonArray(auditGroup.getEntryIds(), Long.class);
+        if(CollectionUtils.isNotEmpty(entryIds)) {
+            return R.fail("模块有组件绑定，不可删除");
+        }
+
+        String fixedgGroup = AuditProcessConstans.getFixedgGroup(id);
+        if(!StringUtils.isEmpty(fixedgGroup)) {
+            return R.fail("模块不可删除");
+        }
+
+        this.baseMapper.deleteById(id);
+        return R.ok();
+    }
+
+
 }

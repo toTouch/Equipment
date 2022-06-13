@@ -6,45 +6,34 @@ import java.math.BigDecimal;
 
 /**
  * @author zgw
- * @date 2022/6/8 10:36
+ * @date 2022/6/10 15:05
  * @mood
  */
 @Data
-public class KeyProcessAuditEntryVo {
-    /**
-     * ID
-     * */
+public class AuditEntryStrawberryVo {
     private Long id;
     /**
-     * 组件名
-     * */
+     * 控件名字
+     */
     private String name;
     /**
-     * 组件类型
-     * */
+     * 控件类型：1单选 2多选 3文本 4图片
+     */
     private Integer type;
     /**
      * 正则
-     * */
+     */
     private String jsonContent;
     /**
-     * 对组件的限制
-     * */
+     * 保留字段
+     */
     private String jsonRoot;
     /**
      * 排序
-     * */
+     */
     private BigDecimal sort;
     /**
-     * 是否是必填
-     * */
+     * 是否必填 0非必填 1必填
+     */
     private Integer required;
-    /**
-     *
-     * */
-    private Long valueId;
-    /**
-     * 组件值
-     * */
-    private String value;
 }

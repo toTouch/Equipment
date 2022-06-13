@@ -14,6 +14,8 @@ import java.util.List;
 public class KeyProcessQuery {
     @NotNull(message = "分组id不能为空")
     private Long groupId;
+    @NotNull(message = "柜机Id不能为空")
+    private Long pid;
 
-    List<AuditEntryQuery> auditEntryQueryList;
+    private List<AuditEntryQuery> auditEntryQueryList;
 }

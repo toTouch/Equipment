@@ -1,20 +1,32 @@
 package com.xiliulou.afterserver.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.AuditEntry;
+import com.xiliulou.afterserver.entity.AuditGroup;
 import com.xiliulou.afterserver.mapper.AuditEntryMapper;
 import com.xiliulou.afterserver.service.AuditEntryService;
+import com.xiliulou.afterserver.service.AuditGroupService;
 import com.xiliulou.afterserver.service.AuditValueService;
+import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.AuditEntryStrawberryQuery;
+import com.xiliulou.afterserver.web.vo.AuditEntryStrawberryVo;
 import com.xiliulou.afterserver.web.vo.KeyProcessAuditEntryVo;
+import com.xiliulou.core.exception.CustomBusinessException;
+import com.xiliulou.core.json.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author zgw
@@ -29,6 +41,8 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
     AuditEntryMapper auditEntryMapper;
     @Autowired
     AuditValueService auditValueService;
+    @Autowired
+    AuditGroupService auditGroupService;
 
     @Override
     public Long getCountByIdsAndRequired(List<Long> entryIds, Integer required) {
@@ -44,22 +58,209 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
         return  auditEntryMapper.queryByEntryIdsAndPid(entryIds, pid);
     }
 
+    @Override
+    public List<AuditEntry> getByEntryIds(List<Long> entryIds) {
+        if(CollectionUtils.isEmpty(entryIds)) {
+            return null;
+        }
 
-    private String GenerateRegular(Integer auditEntryType, String alternatives){
+        return  auditEntryMapper.getByEntryIds(entryIds);
+    }
 
-        if(StringUtils.isNotBlank(alternatives)) {
-            String alternativesReg = alternatives.replaceAll(",", "|");
-            //1单选 2多选 3文本 4图片
-            if(auditEntryType.equals(AuditEntry.TYPE_RADIO)) {
-                return alternativesReg;
-            }
+    @Override
+    public AuditEntry getByName(String name) {
+        return this.baseMapper.selectOne(new QueryWrapper<AuditEntry>().eq("name", name).eq("del_flag", AuditEntry.DEL_NORMAL));
+    }
 
-            if(auditEntryType.equals(AuditEntry.TYPE_CHECKBOX)) {
-                String template = "((%s),)*(%s)";
-                return String.format(template, alternativesReg, alternativesReg);
+    @Override
+    public AuditEntry getBySort(BigDecimal sort) {
+        return this.baseMapper.selectOne(new QueryWrapper<AuditEntry>().eq("sort", sort).eq("del_flag", AuditEntry.DEL_NORMAL));
+    }
+
+    @Override
+    public boolean removeById(Long id) {
+        return this.baseMapper.removeById(id);
+    }
+
+
+    @Override
+    public R queryList(String groupId) {
+        AuditGroup auditGroup = auditGroupService.getById(groupId);
+        if(Objects.isNull(auditGroup)) {
+            return R.fail(null,"未查询到相关模块");
+        }
+
+        List<AuditEntry> entryIds = this.getByEntryIds(JsonUtil.fromJsonArray(auditGroup.getEntryIds(), Long.class));
+        List<AuditEntryStrawberryVo> data = new ArrayList<>();
+        if(CollectionUtils.isEmpty(entryIds)) {
+            return R.ok();
+        }
+
+        entryIds.forEach(item -> {
+            AuditEntryStrawberryVo vo = new AuditEntryStrawberryVo();
+            BeanUtils.copyProperties(item, vo);
+            data.add(vo);
+        });
+        return R.ok(data);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public R saveOne(AuditEntryStrawberryQuery query) {
+        AuditGroup auditGroup = auditGroupService.getById(query.getId());
+        if(Objects.isNull(auditGroup)) {
+            return R.fail(null,"未查询到相关模块");
+        }
+
+        AuditEntry auditEntry = this.getByName(query.getName());
+        if(Objects.nonNull(auditEntry)) {
+            return R.fail(null,"组件名称已存在");
+        }
+
+        auditEntry = this.getBySort(query.getSort());
+        if(Objects.nonNull(auditEntry)) {
+            return R.fail(null,"排序值重复，请修改");
+        }
+
+        String regexp = null;
+        if(Objects.equals(query.getType(), AuditEntry.TYPE_RADIO) || Objects.equals(query.getType(), AuditEntry.TYPE_CHECKBOX)) {
+            regexp = generateRegular(query.getType(), query.getJsonRoot());
+            if(StringUtils.isBlank(regexp)) {
+                return R.fail(null,"请填入备选项");
             }
         }
 
-        return null;
+        AuditEntry insertEntry = new AuditEntry();
+        insertEntry.setName(query.getName());
+        insertEntry.setType(query.getType());
+        insertEntry.setSort(query.getSort());
+        insertEntry.setJsonContent(regexp);
+        insertEntry.setJsonRoot(query.getJsonRoot());
+        insertEntry.setRequired(query.getRequired());
+        insertEntry.setDelFlag(AuditEntry.DEL_NORMAL);
+        insertEntry.setCreateTime(System.currentTimeMillis());
+        insertEntry.setUpdateTime(System.currentTimeMillis());
+        if((this.baseMapper.insert(insertEntry) == 0)) {
+            log.error("DB ERROR! save auditEntry sql error data={}", insertEntry.toString());
+            throw new CustomBusinessException("数据库错误");
+        }
+
+
+        List<Long> entryIds = JsonUtil.fromJsonArray(auditGroup.getEntryIds(), Long.class);
+        if(CollectionUtils.isEmpty(entryIds)) {
+            entryIds = new ArrayList<>();
+        }
+        entryIds.add(insertEntry.getId());
+        auditGroup.setEntryIds(JsonUtil.toJson(entryIds));
+        if(!auditGroupService.updateById(auditGroup)) {
+            log.error("DB ERROR! update auditEntry sql error data={}", insertEntry.toString());
+            throw new CustomBusinessException("数据库错误");
+        }
+
+        return R.ok();
+    }
+
+    @Override
+    public R putOne(AuditEntryStrawberryQuery query) {
+        AuditGroup auditGroup = auditGroupService.getById(query.getId());
+        if(Objects.isNull(auditGroup)) {
+            return R.fail(null, "未查询到相关模块");
+        }
+
+        AuditEntry auditEntry = this.getById(query.getId());
+        if(Objects.isNull(auditEntry)) {
+            return R.fail(null, "未查询到相关组件");
+        }
+
+        List<Long> entryIds = JsonUtil.fromJsonArray(auditGroup.getEntryIds(), Long.class);
+        if(CollectionUtils.isEmpty(entryIds) || !entryIds.contains(auditEntry.getId())) {
+            return R.fail(null, "模块内没有该组件信息");
+        }
+
+        AuditEntry auditEntryOld = this.getByName(query.getName());
+        if(Objects.nonNull(auditEntryOld)) {
+            return R.fail(null, "组件名称已存在");
+        }
+
+        auditEntryOld = this.getBySort(query.getSort());
+        if(Objects.nonNull(auditEntryOld)) {
+            return R.fail(null, "排序值重复，请修改");
+        }
+
+        String regexp = null;
+        if(Objects.equals(auditEntry.getType(), AuditEntry.TYPE_RADIO) || Objects.equals(auditEntry.getType(), AuditEntry.TYPE_CHECKBOX)) {
+            regexp = generateRegular(auditEntry.getType(), query.getJsonRoot());
+            if(StringUtils.isBlank(regexp)) {
+                return R.fail("请填入备选项");
+            }
+        }
+
+        AuditEntry updateEntry = new AuditEntry();
+        updateEntry.setId(query.getId());
+        updateEntry.setName(query.getName());
+        updateEntry.setSort(query.getSort());
+        updateEntry.setJsonContent(regexp);
+        updateEntry.setJsonRoot(query.getJsonRoot());
+        updateEntry.setRequired(query.getRequired());
+        updateEntry.setUpdateTime(System.currentTimeMillis());
+        if((this.baseMapper.updateById(updateEntry) == 0)) {
+            log.error("DB ERROR! save auditEntry sql error data={}", updateEntry.toString());
+            throw new CustomBusinessException("数据库错误");
+        }
+        return R.ok();
+    }
+
+    @Override
+    public R removeOne(Long groupId, Long id) {
+        AuditGroup auditGroup = auditGroupService.getById(groupId);
+        if(Objects.isNull(auditGroup)) {
+            return R.fail(null, "未查询到相关模块");
+        }
+
+        AuditEntry auditEntry = this.getById(id);
+        if(Objects.isNull(auditEntry)) {
+            return R.fail(null, "未查询到相关组件");
+        }
+
+        List<Long> entryIds = JsonUtil.fromJsonArray(auditGroup.getEntryIds(), Long.class);
+        if(CollectionUtils.isEmpty(entryIds) || !entryIds.contains(auditEntry.getId())) {
+            return R.fail(null, "模块内没有该组件信息");
+        }
+
+        entryIds.remove(id);
+        auditGroup.setEntryIds(JsonUtil.toJson(entryIds));
+        if(!auditGroupService.updateById(auditGroup)) {
+            log.error("DB ERROR! update auditGroup sql error data={}", auditGroup.toString());
+            throw new CustomBusinessException("数据库错误");
+        }
+
+        if(!removeById(id)) {
+            log.error("DB ERROR! delete auditEntry sql error data={}", auditGroup.toString());
+            throw new CustomBusinessException("数据库错误");
+        }
+        return R.ok();
+    }
+
+
+    private String generateRegular(Integer auditEntryType, String jsonRoot){
+        List<String> jsonRoots = JsonUtil.fromJsonArray(jsonRoot, String.class);
+        if(CollectionUtils.isEmpty(jsonRoots)) {
+            return null;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        jsonRoots.forEach(item -> {
+            sb.append(item).append(",");
+        });
+        String alternatives = sb.deleteCharAt(sb.length() - 1).toString();
+
+        String alternativesReg = alternatives.replaceAll(",", "|");
+        //1单选 2多选 3文本 4图片
+        if(auditEntryType.equals(AuditEntry.TYPE_RADIO)) {
+            return alternativesReg;
+        }
+
+        String template = "((%s),)*(%s)";
+        return String.format(template, alternativesReg, alternativesReg);
     }
 }
