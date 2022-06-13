@@ -171,18 +171,18 @@
             <if test="remarks != null and remarks != ''">
                 remarks = #{remarks},
             </if>
-            <if test="iotCardId != null">
-                iot_card_id = #{iotCardId},
-            </if>
-            <if test="cameraId != null">
-                camera_id = #{cameraId},
-            </if>
-            <if test="surface != null">
-                surface = #{surface},
-            </if>
-            <if test="color != null">
-                color = #{color},
-            </if>
+<!--            <if test="iotCardId != null">-->
+<!--                iot_card_id = #{iotCardId},-->
+<!--            </if>-->
+<!--            <if test="cameraId != null">-->
+<!--                camera_id = #{cameraId},-->
+<!--            </if>-->
+<!--            <if test="surface != null">-->
+<!--                surface = #{surface},-->
+<!--            </if>-->
+<!--            <if test="color != null">-->
+<!--                color = #{color},-->
+<!--            </if>-->
             <if test="appVersion != null and appVersion != ''">
                 app_version = #{appVersion},
             </if>

@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.xiliulou.afterserver.constant.AuditProcessConstans;
 import com.xiliulou.afterserver.constant.CommonConstants;
 import com.xiliulou.afterserver.constant.ProductNewStatusSortConstants;
 import com.xiliulou.afterserver.entity.*;
@@ -90,6 +91,8 @@ public class ProductNewServiceImpl implements ProductNewService {
     private PointProductBindService pointProductBindService;
     @Autowired
     private AuditProcessService auditProcessService;
+    @Autowired
+    private AuditValueService auditValueService;
 
     /**
      * 通过ID查询单条数据从DB
@@ -234,12 +237,12 @@ public class ProductNewServiceImpl implements ProductNewService {
             return R.fail("未查询到相关柜机信息");
         }
 
-        if (Objects.nonNull(query.getCameraCardId())) {
-            Camera camera = cameraService.getById(query.getCameraCardId());
-            if (Objects.isNull(camera)) {
-                return R.fail("未查询到摄像头序列号");
-            }
-        }
+//        if (Objects.nonNull(query.getCameraCardId())) {
+//            Camera camera = cameraService.getById(query.getCameraCardId());
+//            if (Objects.isNull(camera)) {
+//                return R.fail("未查询到摄像头序列号");
+//            }
+//        }
 
         Double statusValueOld = ProductNewStatusSortConstants.acquireStatusValue(productNewOld.getStatus());
         if (Objects.isNull(statusValueOld)) {
@@ -293,10 +296,10 @@ public class ProductNewServiceImpl implements ProductNewService {
                 }
             }
         }
-        updateProductNew.setIotCardId(query.getIotCardId());
-        updateProductNew.setCameraId(query.getCameraCardId());
-        updateProductNew.setColor(query.getColor());
-        updateProductNew.setSurface(query.getSurface());
+//        updateProductNew.setIotCardId(query.getIotCardId());
+//        updateProductNew.setCameraId(query.getCameraCardId());
+//        updateProductNew.setColor(query.getColor());
+//        updateProductNew.setSurface(query.getSurface());
         updateProductNew.setRemarks(query.getRemarks());
         updateProductNew.setAppVersion(query.getAppVersion());
         updateProductNew.setSysVersion(query.getSysVersion());
@@ -501,7 +504,7 @@ public class ProductNewServiceImpl implements ProductNewService {
         List<String> errorNos = new ArrayList<>();
         List<String> errorStatus = new ArrayList<>();
 
-        String mainProductNo = "";
+        //String mainProductNo = "";
 
         if (Objects.isNull(compression.getIotCard())) {
             return R.fail(null, null, "未上报主柜物联网卡号");
@@ -549,15 +552,8 @@ public class ProductNewServiceImpl implements ProductNewService {
 
         //更新物联网卡
         ProductNew mainProduct = mainProducts.get(0);
-        mainProductNo = mainProduct.getNo();
-        if (!Objects.equals(mainProduct.getIotCardId(), iotCard.getId())) {
-            ProductNew updateMainProduct = new ProductNew();
-            updateMainProduct.setId(mainProduct.getId());
-            updateMainProduct.setIotCardId(iotCard.getId());
-            this.update(updateMainProduct);
-        }
-
-        return R.ok(Arrays.asList(mainProductNo));
+        auditValueService.biandOrUnbindEntry(AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY, iotCard.getSn(), mainProduct.getId());
+        return R.ok(Arrays.asList(mainProduct.getNo()));
     }
 
 
@@ -610,8 +606,10 @@ public class ProductNewServiceImpl implements ProductNewService {
             product.setNo(no);
             product.setTestFile(compression.getCompressionFile());
             product.setTestResult(1);
-            product.setIotCardId(iotCard.getId());
 
+            //更新物联网卡
+            auditValueService.biandOrUnbindEntry(AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY, iotCard.getSn(), productOld.getId());
+            //更新柜机状态
             Integer status = auditProcessService.getAuditProcessStatus(byType, productOld);
             if(Objects.equals(status, AuditProcessVo.STATUS_FINISHED)){
                 product.setStatus(ProductNewStatusSortConstants.STATUS_POST_DETECTION);
@@ -626,21 +624,22 @@ public class ProductNewServiceImpl implements ProductNewService {
 
     @Override
     public R findIotCard(String no) {
-        ProductNew productNew = this.productNewMapper.selectOne(new QueryWrapper<ProductNew>().eq("no", no));
-        if (Objects.isNull(productNew)) {
-            return R.fail(null, null, "未查询到柜机信息，请检查资产编码是否正确");
-        }
-
-        if (Objects.equals(productNew.getType(), ProductNew.TYPE_M)) {
-            return R.fail(null, null, "资产编码不是主柜类型，请检查");
-        }
-
-        if (Objects.isNull(productNew.getIotCardId())) {
-            return R.fail(null, null, "柜机未录入物联网卡号");
-        }
-        Map<String, Object> result = new HashMap<>();
-        result.put("data", productNew.getIotCardId());
-        return R.ok(result);
+//        ProductNew productNew = this.productNewMapper.selectOne(new QueryWrapper<ProductNew>().eq("no", no));
+//        if (Objects.isNull(productNew)) {
+//            return R.fail(null, null, "未查询到柜机信息，请检查资产编码是否正确");
+//        }
+//
+//        if (Objects.equals(productNew.getType(), ProductNew.TYPE_M)) {
+//            return R.fail(null, null, "资产编码不是主柜类型，请检查");
+//        }
+//
+//        if (Objects.isNull(productNew.getIotCardId())) {
+//            return R.fail(null, null, "柜机未录入物联网卡号");
+//        }
+//        Map<String, Object> result = new HashMap<>();
+//        result.put("data", productNew.getIotCardId());
+//        return R.ok(result);
+        return R.ok();
     }
 
     @Override
@@ -786,42 +785,42 @@ public class ProductNewServiceImpl implements ProductNewService {
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public R updateProductNew(ProductNewDetailsQuery query) {
-        ProductNew productNewOld = this.productNewMapper.queryById(query.getId());
-        if (Objects.isNull(productNewOld)) {
-            return R.fail(null, null, "未查询到相关柜机信息");
-        }
-
-        Camera camera = new Camera();
-        if (StringUtils.isNotBlank(query.getSerialNum())) {
-            camera = cameraService.queryBySerialNum(query.getSerialNum());
-            if (Objects.isNull(camera)) {
-                return R.fail(null, null, "未查询到摄像头序列号");
-            }
-
-           /* ProductNew productNew = productNewMapper.selectOne(new QueryWrapper<ProductNew>()
-                    .eq("camera_id", camera.getId())
-                    .eq("del_flag", ProductNew.DEL_NORMAL));
-
-            if(Objects.nonNull(productNew) && !Objects.equals(productNew.getId(), query.getId())){
-                return R.fail(null, null, "序列号已绑定到其他产品");
-            }*/
-        }
-
-
-        ProductNew updateProductNew = new ProductNew();
-        updateProductNew.setId(query.getId());
-        updateProductNew.setCameraId(camera.getId());
-        updateProductNew.setIotCardId(query.getIotCardId());
-        updateProductNew.setColor(query.getColor());
-        updateProductNew.setSurface(query.getSurface());
-        this.productNewMapper.updateById(updateProductNew);
-
-        if (Objects.nonNull(camera.getId())) {
-            Camera updateCamera = new Camera();
-            updateCamera.setId(camera.getId());
-            updateCamera.setIotCardId(query.getCameraCardId());
-            cameraService.updateById(updateCamera);
-        }
+//        ProductNew productNewOld = this.productNewMapper.queryById(query.getId());
+//        if (Objects.isNull(productNewOld)) {
+//            return R.fail(null, null, "未查询到相关柜机信息");
+//        }
+//
+//        Camera camera = new Camera();
+//        if (StringUtils.isNotBlank(query.getSerialNum())) {
+//            camera = cameraService.queryBySerialNum(query.getSerialNum());
+//            if (Objects.isNull(camera)) {
+//                return R.fail(null, null, "未查询到摄像头序列号");
+//            }
+//
+//           /* ProductNew productNew = productNewMapper.selectOne(new QueryWrapper<ProductNew>()
+//                    .eq("camera_id", camera.getId())
+//                    .eq("del_flag", ProductNew.DEL_NORMAL));
+//
+//            if(Objects.nonNull(productNew) && !Objects.equals(productNew.getId(), query.getId())){
+//                return R.fail(null, null, "序列号已绑定到其他产品");
+//            }*/
+//        }
+//
+//
+//        ProductNew updateProductNew = new ProductNew();
+//        updateProductNew.setId(query.getId());
+//        updateProductNew.setCameraId(camera.getId());
+//        updateProductNew.setIotCardId(query.getIotCardId());
+//        updateProductNew.setColor(query.getColor());
+//        updateProductNew.setSurface(query.getSurface());
+//        this.productNewMapper.updateById(updateProductNew);
+//
+//        if (Objects.nonNull(camera.getId())) {
+//            Camera updateCamera = new Camera();
+//            updateCamera.setId(camera.getId());
+//            updateCamera.setIotCardId(query.getCameraCardId());
+//            cameraService.updateById(updateCamera);
+//        }
 
         return R.ok();
     }
@@ -863,26 +862,26 @@ public class ProductNewServiceImpl implements ProductNewService {
 
     @Override
     public R factorySaveFile(File file) {
-        if (Objects.equals(File.FILE_TYPE_PRODUCT_ACCESSORY_PACKAGING, file.getFileType()) && Objects.equals(File.TYPE_PRODUCT, file.getType())) {
-            List<File> fileList = fileService.queryByProductNewId(file.getBindId(), File.FILE_TYPE_PRODUCT_ACCESSORY_PACKAGING);
-            if (Objects.nonNull(fileList) && fileList.size() >= 4) {
-                return R.fail("附件包上传数量已达上限");
-            }
-        }
-
-        if (Objects.equals(File.FILE_TYPE_PRODUCT_OUTER_PACKAGING, file.getFileType()) && Objects.equals(File.TYPE_PRODUCT, file.getType())) {
-            List<File> fileList = fileService.queryByProductNewId(file.getBindId(), File.FILE_TYPE_PRODUCT_OUTER_PACKAGING);
-            if (Objects.nonNull(fileList) && fileList.size() >= 4) {
-                return R.fail("外包装上传数量已达上限");
-            }
-        }
-
-        if (Objects.equals(File.FILE_TYPE_PRODUCT_QUALITY_INSPECTION, file.getFileType()) && Objects.equals(File.TYPE_PRODUCT, file.getType())) {
-            List<File> fileSheepList = fileService.queryByProductNewId(file.getBindId(), File.FILE_TYPE_PRODUCT_QUALITY_INSPECTION);
-            if (Objects.nonNull(fileSheepList) && fileSheepList.size() == 1) {
-                fileService.removeFile(file.getId(), 0);
-            }
-        }
+//        if (Objects.equals(File.FILE_TYPE_PRODUCT_ACCESSORY_PACKAGING, file.getFileType()) && Objects.equals(File.TYPE_PRODUCT, file.getType())) {
+//            List<File> fileList = fileService.queryByProductNewId(file.getBindId(), File.FILE_TYPE_PRODUCT_ACCESSORY_PACKAGING);
+//            if (Objects.nonNull(fileList) && fileList.size() >= 4) {
+//                return R.fail("附件包上传数量已达上限");
+//            }
+//        }
+//
+//        if (Objects.equals(File.FILE_TYPE_PRODUCT_OUTER_PACKAGING, file.getFileType()) && Objects.equals(File.TYPE_PRODUCT, file.getType())) {
+//            List<File> fileList = fileService.queryByProductNewId(file.getBindId(), File.FILE_TYPE_PRODUCT_OUTER_PACKAGING);
+//            if (Objects.nonNull(fileList) && fileList.size() >= 4) {
+//                return R.fail("外包装上传数量已达上限");
+//            }
+//        }
+//
+//        if (Objects.equals(File.FILE_TYPE_PRODUCT_QUALITY_INSPECTION, file.getFileType()) && Objects.equals(File.TYPE_PRODUCT, file.getType())) {
+//            List<File> fileSheepList = fileService.queryByProductNewId(file.getBindId(), File.FILE_TYPE_PRODUCT_QUALITY_INSPECTION);
+//            if (Objects.nonNull(fileSheepList) && fileSheepList.size() == 1) {
+//                fileService.removeFile(file.getId(), 0);
+//            }
+//        }
 
         file.setCreateTime(System.currentTimeMillis());
         fileService.save(file);
@@ -954,30 +953,30 @@ public class ProductNewServiceImpl implements ProductNewService {
                 }
             }
 
-            if (Objects.nonNull(item.getIotCardId())) {
-                IotCard iotCard = iotCardService.getById(item.getIotCardId());
-                if (Objects.nonNull(iotCard)) {
-                    item.setIotCardName(iotCard.getSn());
-                }
-            }
+//            if (Objects.nonNull(item.getIotCardId())) {
+//                IotCard iotCard = iotCardService.getById(item.getIotCardId());
+//                if (Objects.nonNull(iotCard)) {
+//                    item.setIotCardName(iotCard.getSn());
+//                }
+//            }
 
-            if (Objects.nonNull(item.getCameraId())) {
-                Camera camera = cameraService.getById(item.getCameraId());
-                if (Objects.nonNull(camera)) {
-                    item.setCameraSerialNum(camera.getSerialNum());
-                }
-            }
+//            if (Objects.nonNull(item.getCameraId())) {
+//                Camera camera = cameraService.getById(item.getCameraId());
+//                if (Objects.nonNull(camera)) {
+//                    item.setCameraSerialNum(camera.getSerialNum());
+//                }
+//            }
 
-            ColorCard colorCard = colorCardService.getById(item.getColor());
-            if (Objects.nonNull(colorCard)) {
-                item.setColorName(colorCard.getName());
-            }
-            List<OssUrlVo> accessoryPackaging = getOssUrlVoList(item.getId(), File.FILE_TYPE_PRODUCT_ACCESSORY_PACKAGING);
-            List<OssUrlVo> outerPackaging = getOssUrlVoList(item.getId(), File.FILE_TYPE_PRODUCT_OUTER_PACKAGING);
-            List<OssUrlVo> qualityInspection = getOssUrlVoList(item.getId(), File.FILE_TYPE_PRODUCT_QUALITY_INSPECTION);
-            item.setAccessoryPackagingFileList(accessoryPackaging);
-            item.setOuterPackagingFileList(outerPackaging);
-            item.setQualityInspectionFileList(qualityInspection);
+//            ColorCard colorCard = colorCardService.getById(item.getColor());
+//            if (Objects.nonNull(colorCard)) {
+//                item.setColorName(colorCard.getName());
+//            }
+//            List<OssUrlVo> accessoryPackaging = getOssUrlVoList(item.getId(), File.FILE_TYPE_PRODUCT_ACCESSORY_PACKAGING);
+//            List<OssUrlVo> outerPackaging = getOssUrlVoList(item.getId(), File.FILE_TYPE_PRODUCT_OUTER_PACKAGING);
+//            List<OssUrlVo> qualityInspection = getOssUrlVoList(item.getId(), File.FILE_TYPE_PRODUCT_QUALITY_INSPECTION);
+//            item.setAccessoryPackagingFileList(accessoryPackaging);
+//            item.setOuterPackagingFileList(outerPackaging);
+//            item.setQualityInspectionFileList(qualityInspection);
         });
 
         Integer count = this.count(no, modelId, startTime, endTime, productIds);

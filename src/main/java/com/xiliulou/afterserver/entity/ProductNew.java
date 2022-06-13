@@ -103,14 +103,14 @@ public class ProductNew {
      * 删除状态 0正常 1 删除
      */
     private Integer delFlag;
-    /**
-     * 外观 0未选择 1小皱 2平光 3 橘纹
-     */
-    private Integer surface;
-    /**
-     * 颜色
-     */
-    private Integer color;
+//    /**
+//     * 外观 0未选择 1小皱 2平光 3 橘纹
+//     */
+//    private Integer surface;
+//    /**
+//     * 颜色
+//     */
+//    private Integer color;
 
     public static final Integer DEL_NORMAL = 0;
     public static final Integer DEL_DEL = 1;
@@ -123,8 +123,8 @@ public class ProductNew {
     private String remarks;
     private Integer testResult;
     private String testFile;
-    private Long iotCardId;
-    private Long cameraId;
+//    private Long iotCardId;
+//    private Long cameraId;
     private String appVersion;
     private String sysVersion;
 
@@ -157,16 +157,16 @@ public class ProductNew {
     private String supplierName;
     @TableField(exist = false)
     private Integer pointType;
-    @TableField(exist = false)
-    private String iotCardName;
-    @TableField(exist = false)
-    private String cameraSerialNum;
-    @TableField(exist = false)
-    private String colorName;
-    @TableField(exist = false)
-    private List<OssUrlVo> accessoryPackagingFileList;
-    @TableField(exist = false)
-    private List<OssUrlVo> outerPackagingFileList;
-    @TableField(exist = false)
-    private List<OssUrlVo> qualityInspectionFileList;
+//    @TableField(exist = false)
+//    private String iotCardName;
+//    @TableField(exist = false)
+//    private String cameraSerialNum;
+//    @TableField(exist = false)
+//    private String colorName;
+//    @TableField(exist = false)
+//    private List<OssUrlVo> accessoryPackagingFileList;
+//    @TableField(exist = false)
+//    private List<OssUrlVo> outerPackagingFileList;
+//    @TableField(exist = false)
+//    private List<OssUrlVo> qualityInspectionFileList;
 }
