@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiliulou.afterserver.constant.AuditProcessConstans;
 import com.xiliulou.afterserver.entity.AuditEntry;
 import com.xiliulou.afterserver.entity.AuditGroup;
 import com.xiliulou.afterserver.mapper.AuditEntryMapper;
@@ -225,6 +226,11 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
         List<Long> entryIds = JsonUtil.fromJsonArray(auditGroup.getEntryIds(), Long.class);
         if(CollectionUtils.isEmpty(entryIds) || !entryIds.contains(auditEntry.getId())) {
             return R.fail(null, "模块内没有该组件信息");
+        }
+
+        String fixedgGroup = AuditProcessConstans.getFixedgEntry(id);
+        if(!org.springframework.util.StringUtils.isEmpty(fixedgGroup)) {
+            return R.fail("组件不可删除");
         }
 
         entryIds.remove(id);
