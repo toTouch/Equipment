@@ -108,7 +108,7 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
         }
 
         List<AuditGroupStrawberryVo> data = new ArrayList<>();
-        List<AuditGroup> auditGroupList = this.baseMapper.selectList(new QueryWrapper<AuditGroup>().orderByAsc("sort"));
+        List<AuditGroup> auditGroupList = this.baseMapper.selectList(new QueryWrapper<AuditGroup>().eq("process_id", auditProcess.getId()).orderByAsc("sort"));
         if(CollectionUtils.isEmpty(auditGroupList)) {
             return R.ok(data);
         }
@@ -163,6 +163,16 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
 
         if(!Objects.equals(auditProcess.getId(), auditGroup.getProcessId())) {
             return R.fail("参数错误，模块与流程绑定不一致");
+        }
+
+        AuditGroup auditGroupOld = this.getByName(query.getName());
+        if(Objects.nonNull(auditGroupOld) && Objects.equals(auditGroupOld.getId(), auditGroup.getId())) {
+            return R.fail("模块名称已存在");
+        }
+
+        auditGroupOld = this.getBySort(query.getSort());
+        if(Objects.nonNull(auditGroupOld) && Objects.equals(auditGroupOld.getId(), auditGroup.getId())) {
+            return R.fail("排序值重复，请修改");
         }
 
         auditGroup.setSort(query.getSort());
