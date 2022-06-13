@@ -15,10 +15,10 @@
         <result property="updateTime" column="update_time" jdbcType="INTEGER"/>
         <result property="delFlag" column="del_flag" jdbcType="INTEGER"/>
         <result property="remarks" column="remarks" jdbcType="VARCHAR"/>
-        <result property="iotCardId" column="iot_card_id" jdbcType="INTEGER"/>
-        <result property="cameraId" column="camera_id" jdbcType="INTEGER"/>
-        <result property="surface" column="surface" jdbcType="INTEGER"/>
-        <result property="color" column="color" jdbcType="INTEGER"/>
+<!--        <result property="iotCardId" column="iot_card_id" jdbcType="INTEGER"/>-->
+<!--        <result property="cameraId" column="camera_id" jdbcType="INTEGER"/>-->
+<!--        <result property="surface" column="surface" jdbcType="INTEGER"/>-->
+<!--        <result property="color" column="color" jdbcType="INTEGER"/>-->
         <result property="testResult" column="test_result" jdbcType="INTEGER"/>
         <result property="testFile" column="test_file"/>
     </resultMap>
