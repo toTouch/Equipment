@@ -58,22 +58,6 @@ public class JsonAdminKeyProcessController {
     }
 
     /**
-     * 删除图片
-     */
-    @DeleteMapping("productNew/file/{id}")
-    public R removeFile(@PathVariable("id") Long id,  @RequestParam(value = "fileType", required = false, defaultValue = "0")Integer fileType){
-        return R.ok(fileService.removeFile(id, fileType));
-    }
-
-    /**
-     * 下载图片
-     */
-    @GetMapping("downLoad")
-    public R getFile(@RequestParam("fileName") String fileName, @RequestParam(value = "fileType", required = false, defaultValue = "0")Integer fileType, HttpServletResponse response) {
-        return fileService.downLoadFile(fileName,fileType, response);
-    }
-
-    /**
      * 获取关键流程内容
      */
     @GetMapping("key/process")
