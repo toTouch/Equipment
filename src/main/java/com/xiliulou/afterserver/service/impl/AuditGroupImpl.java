@@ -161,7 +161,7 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
             return R.fail("未查询到相关模块，请检查");
         }
 
-        if(Objects.equals(auditProcess.getId(), auditGroup.getProcessId())) {
+        if(!Objects.equals(auditProcess.getId(), auditGroup.getProcessId())) {
             return R.fail("参数错误，模块与流程绑定不一致");
         }
 

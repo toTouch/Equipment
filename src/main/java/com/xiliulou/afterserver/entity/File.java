@@ -71,7 +71,7 @@ public class File {
     public static final Integer TYPE_WORK_ORDER = 3;
 
     public static final Integer FILE_TYPE_PRODUCT_PRODUCT = 1;
-    public static final Integer FILE_TYPE_PRODUCT_ACCESSORY_PACKAGING  = 2;
-    public static final Integer FILE_TYPE_PRODUCT_OUTER_PACKAGING  = 3;
-    public static final Integer FILE_TYPE_PRODUCT_QUALITY_INSPECTION  = 4;
+//    public static final Integer FILE_TYPE_PRODUCT_ACCESSORY_PACKAGING  = 2;
+//    public static final Integer FILE_TYPE_PRODUCT_OUTER_PACKAGING  = 3;
+//    public static final Integer FILE_TYPE_PRODUCT_QUALITY_INSPECTION  = 4;
 }

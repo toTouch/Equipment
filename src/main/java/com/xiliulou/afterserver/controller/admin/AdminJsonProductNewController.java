@@ -28,33 +28,33 @@ import java.util.*;
 public class AdminJsonProductNewController {
     @Autowired
     private ProductNewService productNewService;
-    @Autowired
-    private ProductService productService;
-    @Autowired
-    private BatchService batchService;
-    @Autowired
-    private PointProductBindService pointProductBindService;
-    @Autowired
-    private PointNewService pointNewService;
-    @Autowired
-    private SupplierService supplierService;
-    @Autowired
-    private WarehouseService warehouseService;
-    @Autowired
-    private IotCardService iotCardService;
-    @Autowired
-    private CameraService cameraService;
+//    @Autowired
+//    private ProductService productService;
+//    @Autowired
+//    private BatchService batchService;
+//    @Autowired
+//    private PointProductBindService pointProductBindService;
+//    @Autowired
+//    private PointNewService pointNewService;
+//    @Autowired
+//    private SupplierService supplierService;
+//    @Autowired
+//    private WarehouseService warehouseService;
+//    @Autowired
+//    private IotCardService iotCardService;
+//    @Autowired
+//    private CameraService cameraService;
     @Autowired
     private AliyunOssService aliyunOssService;
     @Autowired
     private StorageConfig StorageConfig;
-    @Autowired
-    private ColorCardService colorCardService;
+//    @Autowired
+//    private ColorCardService colorCardService;
 
     //@PostMapping("/admin/productNew")
-    public R saveAdminPointNew(@RequestBody ProductNew productNew){
-        return productNewService.saveAdminProductNew(productNew);
-    }
+//    public R saveAdminPointNew(@RequestBody ProductNew productNew){
+//        return productNewService.saveAdminProductNew(productNew);
+//    }
 
     @PutMapping("/admin/productNew")
     public R putAdminPointNew(@RequestBody ProductNewQuery query){
@@ -117,7 +117,7 @@ public class AdminJsonProductNewController {
      * @param no
      * @return
      */
-    @GetMapping("/admin/productNew/findIotCard")
+    //@GetMapping("/admin/productNew/findIotCard")
     public R findIotCard(@RequestParam("no") String no){
         return productNewService.findIotCard(no);
     }
