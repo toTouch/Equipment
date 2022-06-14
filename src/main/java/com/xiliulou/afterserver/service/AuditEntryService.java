@@ -23,7 +23,7 @@ public interface AuditEntryService extends IService<AuditEntry> {
 
     AuditEntry getByName(String name);
 
-    AuditEntry getBySort(BigDecimal sort);
+    AuditEntry getBySort(BigDecimal sort, List<Long> entryIds);
 
     boolean removeById(Long id);
 
