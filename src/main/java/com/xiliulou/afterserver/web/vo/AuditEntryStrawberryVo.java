@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.web.vo;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author zgw
@@ -27,7 +28,7 @@ public class AuditEntryStrawberryVo {
     /**
      * 保留字段
      */
-    private String jsonRoot;
+    private List<String> jsonRoot;
     /**
      * 排序
      */
