@@ -723,7 +723,7 @@ public class ProductNewServiceImpl implements ProductNewService {
         vo.setCreateTime(simp.format(new Date(productNew.getCreateTime())));
         vo.setProductStatus(getStatusName(productNew.getStatus()));
 
-        List<AuditProcess> auditProcessList = auditProcessService.getBaseMapper().selectList(null);
+        List<AuditProcess> auditProcessList = auditProcessService.getBaseMapper().selectList(new QueryWrapper<AuditProcess>().orderByAsc("id"));
         //如果搜索页面配置为空，则只获取压测状态，发货状态随压测状态改变
         if (CollectionUtils.isEmpty(auditProcessList)) {
             AuditProcessVo testVo = auditProcessService.createTestAuditProcessVo();
@@ -740,7 +740,7 @@ public class ProductNewServiceImpl implements ProductNewService {
         //统计流程状态的类型共有几种
         Set<Integer> statusSet = new HashSet<>(3);
         //获取所有流程状态
-        auditProcessList.parallelStream().forEach(item -> {
+        auditProcessList.parallelStream().forEachOrdered(item -> {
             Integer status = auditProcessService.getAuditProcessStatus(item, productNew);
             AuditProcessVo auditProcessVo = new AuditProcessVo();
             BeanUtils.copyProperties(item, auditProcessVo);
