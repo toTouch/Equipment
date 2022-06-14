@@ -166,12 +166,12 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
         }
 
         AuditGroup auditGroupOld = this.getByName(query.getName());
-        if(Objects.nonNull(auditGroupOld) && Objects.equals(auditGroupOld.getId(), auditGroup.getId())) {
+        if(Objects.nonNull(auditGroupOld) && !Objects.equals(auditGroupOld.getId(), auditGroup.getId())) {
             return R.fail("模块名称已存在");
         }
 
         auditGroupOld = this.getBySort(query.getSort());
-        if(Objects.nonNull(auditGroupOld) && Objects.equals(auditGroupOld.getId(), auditGroup.getId())) {
+        if(Objects.nonNull(auditGroupOld) && !Objects.equals(auditGroupOld.getId(), auditGroup.getId())) {
             return R.fail("排序值重复，请修改");
         }
 
