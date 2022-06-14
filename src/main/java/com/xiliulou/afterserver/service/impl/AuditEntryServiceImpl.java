@@ -96,8 +96,8 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
     }
 
     @Override
-    public AuditEntry getBySort(BigDecimal sort) {
-        return this.baseMapper.selectOne(new QueryWrapper<AuditEntry>().eq("sort", sort).eq("del_flag", AuditEntry.DEL_NORMAL));
+    public AuditEntry getBySort(BigDecimal sort, List<Long> entryIds) {
+        return this.baseMapper.selectOne(new QueryWrapper<AuditEntry>().eq("sort", sort).in("entry_ids", entryIds).eq("del_flag", AuditEntry.DEL_NORMAL));
     }
 
     @Override
@@ -146,7 +146,7 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
             return R.fail(null,"组件名称已存在");
         }
 
-        auditEntry = this.getBySort(query.getSort());
+        auditEntry = this.getBySort(query.getSort(), JsonUtil.fromJsonArray(auditGroup.getEntryIds(), Long.class));
         if(Objects.nonNull(auditEntry)) {
             return R.fail(null,"排序值重复，请修改");
         }
@@ -211,7 +211,7 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
             return R.fail(null, "组件名称已存在");
         }
 
-        auditEntryOld = this.getBySort(query.getSort());
+        auditEntryOld = this.getBySort(query.getSort(), entryIds);
         if(Objects.nonNull(auditEntryOld) && !Objects.equals(auditEntryOld.getId(), auditEntry.getId())) {
             return R.fail(null, "排序值重复，请修改");
         }

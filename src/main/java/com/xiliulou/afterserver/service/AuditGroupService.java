@@ -21,7 +21,7 @@ public interface AuditGroupService extends IService<AuditGroup> {
 
     AuditGroup getByName(String name);
 
-    AuditGroup getBySort(BigDecimal sort);
+    AuditGroup getBySort(BigDecimal sort,Long processId);
 
     Integer getGroupStatus(AuditGroup auditGroup, Long ProductNewId);
 

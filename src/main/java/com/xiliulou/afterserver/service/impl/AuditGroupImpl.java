@@ -59,8 +59,8 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
     }
 
     @Override
-    public AuditGroup getBySort(BigDecimal sort){
-        return this.baseMapper.selectOne(new QueryWrapper<AuditGroup>().eq("sort", sort));
+    public AuditGroup getBySort(BigDecimal sort, Long processId){
+        return this.baseMapper.selectOne(new QueryWrapper<AuditGroup>().eq("sort", sort).eq("process_id", processId));
     }
 
     @Override
@@ -135,7 +135,7 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
             return R.fail("模块名称已存在");
         }
 
-        auditGroup = this.getBySort(query.getSort());
+        auditGroup = this.getBySort(query.getSort(), auditProcess.getId());
         if(Objects.nonNull(auditGroup)) {
             return R.fail("排序值重复，请修改");
         }
@@ -170,7 +170,7 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
             return R.fail("模块名称已存在");
         }
 
-        auditGroupOld = this.getBySort(query.getSort());
+        auditGroupOld = this.getBySort(query.getSort(), auditProcess.getId());
         if(Objects.nonNull(auditGroupOld) && !Objects.equals(auditGroupOld.getId(), auditGroup.getId())) {
             return R.fail("排序值重复，请修改");
         }
