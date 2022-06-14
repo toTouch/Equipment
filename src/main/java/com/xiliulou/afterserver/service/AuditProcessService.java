@@ -19,6 +19,8 @@ public interface AuditProcessService extends IService<AuditProcess> {
 
     AuditProcessVo createTestAuditProcessVo();
 
+    AuditProcessVo createDeliverAuditProcessVo();
+
     Integer getAuditProcessStatus(AuditProcess item, ProductNew productNew);
 
     public void processStatusAdjustment(List<AuditProcessVo> auditProcessVos);

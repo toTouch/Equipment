@@ -712,22 +712,25 @@ public class ProductNewServiceImpl implements ProductNewService {
             return R.fail(null, "柜机未绑定批次，请重新登陆");
         }
 
+        List<AuditProcessVo> voList = new ArrayList<>();
         ProductNewProcessInfoVo vo = new ProductNewProcessInfoVo();
         vo.setId(productNew.getId());
         vo.setNo(productNew.getNo());
         vo.setBatchId(productNew.getBatchId());
         vo.setBatchNo(batch.getBatchNo());
+        vo.setAuditProcessList(voList);
 
         List<AuditProcess> auditProcessList = auditProcessService.getBaseMapper().selectList(null);
-        List<AuditProcessVo> voList = new ArrayList<>();
         //如果搜索页面配置为空，则只获取压测状态，发货状态随压测状态改变
         if (CollectionUtils.isEmpty(auditProcessList)) {
-            AuditProcessVo auditProcessVo = auditProcessService.createTestAuditProcessVo();
-            auditProcessVo.setStatus(ProductNew.TEST_RESULT_SUCCESS.equals(productNew.getTestResult()) ? AuditProcessVo.STATUS_FINISHED : AuditProcessVo.STATUS_EXECUTING);
-            voList.add(auditProcessVo);
+            AuditProcessVo testVo = auditProcessService.createTestAuditProcessVo();
+            testVo.setStatus(ProductNew.TEST_RESULT_SUCCESS.equals(productNew.getTestResult()) ? AuditProcessVo.STATUS_FINISHED : AuditProcessVo.STATUS_EXECUTING);
+            AuditProcessVo deliverVo = auditProcessService.createDeliverAuditProcessVo();
+            deliverVo.setStatus(AuditProcessVo.STATUS_FINISHED.equals(testVo.getStatus()) ? ProductNewProcessInfoVo.STATUS_FINISHED : ProductNewProcessInfoVo.STATUS_UN_FINISHED);
+            voList.add(testVo);
+            voList.add(deliverVo);
 
             vo.setAuditProcessList(voList);
-            vo.setDeliverStatus(AuditProcessVo.STATUS_FINISHED.equals(auditProcessVo.getStatus()) ? ProductNewProcessInfoVo.STATUS_FINISHED : ProductNewProcessInfoVo.STATUS_UN_FINISHED);
             return R.ok(vo);
         }
 
@@ -761,17 +764,19 @@ public class ProductNewServiceImpl implements ProductNewService {
         voList.add(testAuditProcessVo);
         statusSet.add(testAuditProcessVo.getStatus());
 
+        AuditProcessVo deliverVo = auditProcessService.createDeliverAuditProcessVo();
         if (statusSet.size() > 1) {
             //如果状态有多个，那么发货状态一定置灰
-            vo.setDeliverStatus(ProductNewProcessInfoVo.STATUS_UN_FINISHED);
+            deliverVo.setStatus(ProductNewProcessInfoVo.STATUS_UN_FINISHED);
         } else if (statusSet.contains(AuditProcessVo.STATUS_UNFINISHED)) {
             //流程调整 如果流程中全部为未完成，那么前置检测状态应为正在执行
             auditProcessService.processStatusAdjustment(voList);
-            vo.setDeliverStatus(ProductNewProcessInfoVo.STATUS_UN_FINISHED);
+            deliverVo.setStatus(ProductNewProcessInfoVo.STATUS_UN_FINISHED);
         }
 
-        vo.setDeliverStatus(ProductNewProcessInfoVo.STATUS_FINISHED);
-        vo.setAuditProcessList(voList);
+        deliverVo.setStatus(ProductNewProcessInfoVo.STATUS_FINISHED);
+        voList.add(deliverVo);
+
         return R.ok(vo);
     }
 
