@@ -71,6 +71,7 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
         }
 
         voList.forEach(item -> {
+            item.setJsonRootList(JsonUtil.fromJsonArray(item.getJsonRoot(), String.class));
             if(Objects.equals(item.getType(), AuditEntry.TYPE_PHOTO)) {
                 Map<String, String> ossUrlMap = this.getOssUrlMap(JsonUtil.fromJsonArray(item.getValue(), String.class));
                 item.setOssUrlMap(ossUrlMap);
@@ -126,6 +127,7 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
         entrys.forEach(item -> {
             AuditEntryStrawberryVo vo = new AuditEntryStrawberryVo();
             BeanUtils.copyProperties(item, vo);
+            vo.setJsonRoot(JsonUtil.fromJsonArray(item.getJsonRoot(), String.class));
             data.add(vo);
         });
         return R.ok(data);

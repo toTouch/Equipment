@@ -33,6 +33,7 @@ public class KeyProcessAuditEntryVo {
      * 对组件的限制
      * */
     private String jsonRoot;
+    private List<String> jsonRootList;
     /**
      * 排序
      * */
