@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -145,11 +146,14 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
             return R.fail(null, "未查询到相关流程信息");
         }
 
+        SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         KeyProcessVo keyProcessVo = new KeyProcessVo();
         keyProcessVo.setPid(productNew.getId());
         keyProcessVo.setNo(productNew.getNo());
         keyProcessVo.setBatchId(batch.getId());
         keyProcessVo.setBatchNo(batch.getBatchNo());
+        keyProcessVo.setCreateTime(simp.format(new Date(productNew.getCreateTime())));
+        keyProcessVo.setProductStatus(productNewService.getStatusName(productNew.getStatus()));
 
         //如果流程分组为空，直接返回
         List<AuditGroup> byProcessId = auditGroupService.getByProcessId(auditProcess.getId());

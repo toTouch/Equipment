@@ -712,6 +712,7 @@ public class ProductNewServiceImpl implements ProductNewService {
             return R.fail(null, "柜机未绑定批次，请重新登陆");
         }
 
+        SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<AuditProcessVo> voList = new ArrayList<>();
         ProductNewProcessInfoVo vo = new ProductNewProcessInfoVo();
         vo.setId(productNew.getId());
@@ -719,6 +720,8 @@ public class ProductNewServiceImpl implements ProductNewService {
         vo.setBatchId(productNew.getBatchId());
         vo.setBatchNo(batch.getBatchNo());
         vo.setAuditProcessList(voList);
+        vo.setCreateTime(simp.format(new Date(productNew.getCreateTime())));
+        vo.setProductStatus(getStatusName(productNew.getStatus()));
 
         List<AuditProcess> auditProcessList = auditProcessService.getBaseMapper().selectList(null);
         //如果搜索页面配置为空，则只获取压测状态，发货状态随压测状态改变
@@ -999,7 +1002,8 @@ public class ProductNewServiceImpl implements ProductNewService {
         return this.productNewMapper.selectOne(new QueryWrapper<ProductNew>().eq("no", no));
     }
 
-    private String getStatusName(Integer status) {
+    @Override
+    public String getStatusName(Integer status) {
         String statusName = "";
         switch (status) {
             case 0:

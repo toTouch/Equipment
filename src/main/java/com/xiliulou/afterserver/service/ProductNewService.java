@@ -114,4 +114,6 @@ public interface ProductNewService {
     R pointList(Integer offset, Integer limit, String no, Long modelId, Long pointId, Integer pointType, Long startTime, Long endTime);
 
     public ProductNew queryByNo(String no);
+
+    String getStatusName(Integer status);
 }

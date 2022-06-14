@@ -25,6 +25,14 @@ public class KeyProcessVo {
      */
     private String batchNo;
     /**
+     * 创建时间
+     */
+    private String createTime;
+    /**
+     * 柜机时间
+     */
+    private String productStatus;
+    /**
      * 分组
      */
     private List<KeyProcessAuditGroupVo> keyProcessAuditGroupList;
