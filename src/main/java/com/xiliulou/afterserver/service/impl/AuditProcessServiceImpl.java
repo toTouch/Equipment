@@ -67,6 +67,14 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
     }
 
     @Override
+    public AuditProcessVo createDeliverAuditProcessVo() {
+        AuditProcessVo auditProcessVo = new AuditProcessVo();
+        auditProcessVo.setName("发货状态");
+        auditProcessVo.setType("deliver");
+        return auditProcessVo;
+    }
+
+    @Override
     public Integer getAuditProcessStatus(AuditProcess auditProcess, ProductNew productNew) {
 
         List<AuditGroup> auditGroupList = auditGroupService.getByProcessId(auditProcess.getId());
