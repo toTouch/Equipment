@@ -775,9 +775,9 @@ public class ProductNewServiceImpl implements ProductNewService {
             //流程调整 如果流程中全部为未完成，那么前置检测状态应为正在执行
             auditProcessService.processStatusAdjustment(voList);
             deliverVo.setStatus(ProductNewProcessInfoVo.STATUS_UN_FINISHED);
+        } else {
+            deliverVo.setStatus(ProductNewProcessInfoVo.STATUS_FINISHED);
         }
-
-        deliverVo.setStatus(ProductNewProcessInfoVo.STATUS_FINISHED);
         voList.add(deliverVo);
 
         return R.ok(vo);
