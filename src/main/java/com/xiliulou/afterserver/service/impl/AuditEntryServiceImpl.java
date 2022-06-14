@@ -97,6 +97,9 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
 
     @Override
     public AuditEntry getBySort(BigDecimal sort, List<Long> entryIds) {
+        if(CollectionUtils.isEmpty(entryIds)){
+            return null;
+        }
         return this.baseMapper.selectOne(new QueryWrapper<AuditEntry>().eq("sort", sort).in("entry_ids", entryIds).eq("del_flag", AuditEntry.DEL_NORMAL));
     }
 
