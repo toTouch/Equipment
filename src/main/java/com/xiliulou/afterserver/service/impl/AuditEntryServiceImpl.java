@@ -100,7 +100,7 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
         if(CollectionUtils.isEmpty(entryIds)){
             return null;
         }
-        return this.baseMapper.selectOne(new QueryWrapper<AuditEntry>().eq("sort", sort).in("entry_ids", entryIds).eq("del_flag", AuditEntry.DEL_NORMAL));
+        return this.baseMapper.selectOne(new QueryWrapper<AuditEntry>().eq("sort", sort).in("id", entryIds).eq("del_flag", AuditEntry.DEL_NORMAL));
     }
 
     @Override
