@@ -131,10 +131,6 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
             return R.fail("未查询到相关用户");
         }
 
-        if (!Objects.equals(productNew.getSupplierId(), user.getThirdId())) {
-            return R.fail(null, "柜机厂家与登录厂家不一致，请重新登陆");
-        }
-
         //查询组件
         AuditProcess auditProcess = getByType(type);
         if(Objects.isNull(auditProcess)) {
