@@ -111,7 +111,11 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
         }
 
         for(AuditProcessVo item : auditProcessVos){
-            if (Objects.equals(item.getType(), AuditProcess.TYPE_PRE)) {
+            if(Objects.equals(item.getStatus(), AuditProcessVo.STATUS_EXECUTING)) {
+                return;
+            }
+
+            if (Objects.equals(item.getStatus(), AuditProcessVo.STATUS_UNFINISHED)) {
                 item.setStatus(AuditProcessVo.STATUS_EXECUTING);
                 return;
             }
