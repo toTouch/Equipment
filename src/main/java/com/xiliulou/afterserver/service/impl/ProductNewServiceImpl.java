@@ -767,15 +767,16 @@ public class ProductNewServiceImpl implements ProductNewService {
         voList.add(1,testAuditProcessVo);
         statusSet.add(testAuditProcessVo.getStatus());
 
+        auditProcessService.processStatusAdjustment(voList);
+
         AuditProcessVo deliverVo = auditProcessService.createDeliverAuditProcessVo();
         if (statusSet.size() > 1) {
             //如果状态有多个，那么发货状态一定置灰
             deliverVo.setStatus(ProductNewProcessInfoVo.STATUS_UN_FINISHED);
-        } else if (statusSet.contains(AuditProcessVo.STATUS_UNFINISHED)) {
-            //流程调整 如果流程中全部为未完成，那么前置检测状态应为正在执行
-            auditProcessService.processStatusAdjustment(voList);
+        } /*else if (statusSet.contains(AuditProcessVo.STATUS_UNFINISHED)) {
+            //如果流程中全部为未完成，
             deliverVo.setStatus(ProductNewProcessInfoVo.STATUS_UN_FINISHED);
-        } else {
+        }*/ else {
             deliverVo.setStatus(ProductNewProcessInfoVo.STATUS_FINISHED);
         }
         voList.add(deliverVo);
