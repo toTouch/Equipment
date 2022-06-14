@@ -38,10 +38,10 @@ public class ProductNewProcessInfoVo {
      */
     private List<AuditProcessVo> auditProcessList;
 //    /**
-//     * 发货状态 0置灰 1绿灯
+//     * 发货状态 0置灰 2绿灯
 //     */
 //    private Integer deliverStatus;
 
     public static final Integer STATUS_UN_FINISHED = 0;
-    public static final Integer STATUS_FINISHED = 1;
+    public static final Integer STATUS_FINISHED = 2;
 }

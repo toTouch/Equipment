@@ -770,7 +770,7 @@ public class ProductNewServiceImpl implements ProductNewService {
         auditProcessService.processStatusAdjustment(voList);
 
         AuditProcessVo deliverVo = auditProcessService.createDeliverAuditProcessVo();
-        if (statusSet.size() > 1) {
+        if (statusSet.size() > 1 || statusSet.contains(AuditProcessVo.STATUS_UNFINISHED)) {
             //如果状态有多个，那么发货状态一定置灰
             deliverVo.setStatus(ProductNewProcessInfoVo.STATUS_UN_FINISHED);
         } /*else if (statusSet.contains(AuditProcessVo.STATUS_UNFINISHED)) {
