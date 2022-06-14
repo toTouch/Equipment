@@ -34,7 +34,7 @@ public interface CommonConstants {
 	/**
 	 * oss水印文字大小（px)
 	 */
-	String OSS_IMG_WATERMARK_SIZE = "80";
+	String OSS_IMG_WATERMARK_SIZE = "60";
 
 
 	/**
