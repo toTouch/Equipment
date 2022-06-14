@@ -26,13 +26,21 @@ public class ProductNewProcessInfoVo {
      */
     private String batchNo;
     /**
+     * 创建时间
+     */
+    private String createTime;
+    /**
+     * 柜机状态
+     */
+    private String productStatus;
+    /**
      * 大工序流程
      */
     private List<AuditProcessVo> auditProcessList;
-    /**
-     * 发货状态 0置灰 1绿灯
-     */
-    private Integer deliverStatus;
+//    /**
+//     * 发货状态 0置灰 1绿灯
+//     */
+//    private Integer deliverStatus;
 
     public static final Integer STATUS_UN_FINISHED = 0;
     public static final Integer STATUS_FINISHED = 1;
