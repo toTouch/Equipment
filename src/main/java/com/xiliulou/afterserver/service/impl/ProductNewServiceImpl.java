@@ -764,7 +764,7 @@ public class ProductNewServiceImpl implements ProductNewService {
                 }
             });
         }
-        voList.add(testAuditProcessVo);
+        voList.add(1,testAuditProcessVo);
         statusSet.add(testAuditProcessVo.getStatus());
 
         AuditProcessVo deliverVo = auditProcessService.createDeliverAuditProcessVo();
