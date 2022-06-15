@@ -71,7 +71,10 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
         }
 
         voList.forEach(item -> {
-            item.setJsonRootList(JsonUtil.fromJsonArray(item.getJsonRoot(), String.class));
+            if(StringUtils.isNotBlank(item.getJsonRoot()) && "\\[.*\\]".matches(item.getJsonRoot())) {
+                item.setJsonRootList(JsonUtil.fromJsonArray(item.getJsonRoot(), String.class));
+            }
+
             if(Objects.equals(item.getType(), AuditEntry.TYPE_PHOTO)) {
                 Map<String, String> ossUrlMap = this.getOssUrlMap(JsonUtil.fromJsonArray(item.getValue(), String.class));
                 item.setOssUrlMap(ossUrlMap);
