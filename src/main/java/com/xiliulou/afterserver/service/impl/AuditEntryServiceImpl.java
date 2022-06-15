@@ -71,7 +71,7 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
         }
 
         voList.forEach(item -> {
-            if(StringUtils.isNotBlank(item.getJsonRoot()) && "\\[.*\\]".matches(item.getJsonRoot())) {
+            if(StringUtils.isNotBlank(item.getJsonRoot()) && item.getJsonRoot().matches("\\[.*\\]")) {
                 item.setJsonRootList(JsonUtil.fromJsonArray(item.getJsonRoot(), String.class));
             }
 
