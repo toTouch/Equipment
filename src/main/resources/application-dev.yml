@@ -64,22 +64,26 @@ xiliulou:
     infos:
       0:
         maxTokenCnt: 10
-        expiryTimeMillis: 7200000
-        maxExpiryTimeMillis: 7200000
+        expiryTimeMillis: 7776000000
+        maxExpiryTimeMillis: 7776000000
       1:
-        maxTokenCnt: 5
-        expiryTimeMillis: 7200000
-        maxExpiryTimeMillis: 7200000
+        maxTokenCnt: 10
+        expiryTimeMillis: 7776000000
+        maxExpiryTimeMillis: 7776000000
       2:
-        maxTokenCnt: 5
-        expiryTimeMillis: 7200000
-        maxExpiryTimeMillis: 7200000
+        maxTokenCnt: 10
+        expiryTimeMillis: 7776000000
+        maxExpiryTimeMillis: 7776000000
       3:
-        maxTokenCnt: 1
+        maxTokenCnt: 10
         expiryTimeMillis: 7776000000
         maxExpiryTimeMillis: 7776000000
       4:
-        maxTokenCnt: 1
+        maxTokenCnt: 10
+        expiryTimeMillis: 7776000000
+        maxExpiryTimeMillis: 7776000000
+      5:
+        maxTokenCnt: 10
         expiryTimeMillis: 7776000000
         maxExpiryTimeMillis: 7776000000
 
@@ -100,24 +104,24 @@ storage:
   ### oss:oss-cn-beijing.aliyuncs.com minio:http://172.26.20.230:9000
   ossEndpoint: oss-cn-beijing.aliyuncs.com
   minioEndpoint: http://172.26.20.230:9000
-  accessKeyId: LTAI5tJpTD5MNbV1qfZnSxzh
-  accessKeySecret: pUhONTar46FesJIEC3o9OvHn4CLsmM
+  accessKeyId: LTAI5tC4goxYbeX99GMYaHY4
+  accessKeySecret: XQ8zD6nrHoJIiy6iodn843ZUlB9xS5
   ### minio:by-xiliulou
   accessKey: by-xiliulou
   ### minio:by123456
   secretKey: by123456
   ### oss:liubiqi minio:after-service
-  bucketName: liubiqi
+  bucketName: wm-xiliulou-test
   minioBucketName: after-service
   ### ossTestFileBucketName:ZgeTest
   ossTestFileBucketName: meituan-pressure
-  ossVidioBucketName: liubiqi
+  ossVidioBucketName: wm-xiliulou-test
   ### oss:img.wm.xiliulou.com
   urlPrefix:
-  dir: after-service/img/
+  dir: img/
   secure: false
   #testFileDir:
-  vidioDir: after-service/video/
+  vidioDir: video/
 
   ### oss:0 minio:1
   isUseOSS: 0
@@ -125,5 +129,21 @@ storage:
 userrole:
   unShow: [1,2,3,4]
   userRole: [2]
+
+app-config:
+  username: compression
+  password: xiliulou
+  appId: after_v96s3love7
+  appSecret: B/1aF4XecFWalszX3Uytf+G9ce+OGNsswsnASDc6Clc=
+  ossAccessKeyId: SuoR5L5r9lJKzNiO
+  ossAccessKeySecret: WsCM0f7upVDgOSLWpTr0HPLgjeCEoc
+
+
+rocketmq:
+  name-server: xiliulou-rocketmq:9876
+  producer:
+    group: cupboard-producer
+  consumer:
+    group: cupboard-consumer
 
 
