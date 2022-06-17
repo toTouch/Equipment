@@ -12,6 +12,7 @@ import java.util.List;
 public class KeyProcessVo {
     private Long pid;
     private Long groupId;
+    private String groupName;
     /**
      * 产品编号
      */
