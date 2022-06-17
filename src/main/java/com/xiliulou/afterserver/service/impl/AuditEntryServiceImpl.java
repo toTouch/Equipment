@@ -208,6 +208,12 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
             return R.fail(null, "未查询到相关组件");
         }
 
+        String fixedgGroup = AuditProcessConstans.getFixedgEntry(query.getId());
+        if(!org.springframework.util.StringUtils.isEmpty(fixedgGroup)) {
+            return R.fail("组件不可修改");
+        }
+
+
         List<Long> entryIds = JsonUtil.fromJsonArray(auditGroup.getEntryIds(), Long.class);
         if(CollectionUtils.isEmpty(entryIds) || !entryIds.contains(auditEntry.getId())) {
             return R.fail(null, "模块内没有该组件信息");

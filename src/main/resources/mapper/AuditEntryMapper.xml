@@ -36,6 +36,9 @@
     <select id="queryByEntryIdsAndPid" resultType="com.xiliulou.afterserver.web.vo.KeyProcessAuditEntryVo">
         select e.id, e.name, e.type, e.json_content, e.json_root, e.sort, e.required, v.id as value_id, v.value
         from t_audit_entry e left join t_audit_value v on e.id = v.entry_id
+        <if test="pid != null" >
+            and v.pid = #{pid}
+        </if>
         <where>
             e.del_flag = 0
             <if test="entryIds != null and entryIds.size() > 0">
@@ -44,9 +47,7 @@
                     #{e}
                 </foreach>
             </if>
-            <if test="pid != null" >
-                and v.pid = #{pid}
-            </if>
+
         </where>
         order by sort
     </select>

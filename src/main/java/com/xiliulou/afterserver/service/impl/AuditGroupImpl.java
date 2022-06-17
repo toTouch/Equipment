@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -143,6 +144,7 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
         auditGroup = new AuditGroup();
         auditGroup.setName(query.getName());
         auditGroup.setSort(query.getSort());
+        auditGroup.setEntryIds(JsonUtil.toJson(Arrays.asList(6)));
         auditGroup.setProcessId(auditProcess.getId());
         this.baseMapper.insert(auditGroup);
         return R.ok();
@@ -163,6 +165,11 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
 
         if(!Objects.equals(auditProcess.getId(), auditGroup.getProcessId())) {
             return R.fail("参数错误，模块与流程绑定不一致");
+        }
+
+        String fixedgGroup = AuditProcessConstans.getFixedgGroup(query.getId());
+        if(!StringUtils.isEmpty(fixedgGroup)) {
+            return R.fail("模块不可修改");
         }
 
         AuditGroup auditGroupOld = this.getByName(query.getName());
