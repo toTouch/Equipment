@@ -45,6 +45,10 @@ public class AuditProcessConstans {
      */
     public static final Long PRODUCT_SURFACE_AUDIT_ENTRY = 5L;
 
+    /**
+     * 保存
+     */
+    public static final Long SAVE_AUDIT_ENTRY = 6L;
     static{
         GROUP_MAPS.put(ENTRY_INFO_AUDIT_GROUP, "OK");
 
@@ -53,6 +57,7 @@ public class AuditProcessConstans {
         ENTRY_MAPS.put(PRODUCT_IOT_AUDIT_ENTRY, "OK");
         ENTRY_MAPS.put(PRODUCT_COLOR_AUDIT_ENTRY, "OK");
         ENTRY_MAPS.put(PRODUCT_SURFACE_AUDIT_ENTRY, "OK");
+        ENTRY_MAPS.put(SAVE_AUDIT_ENTRY, "OK");
     }
 
     public static String getFixedgGroup(Long key) {
