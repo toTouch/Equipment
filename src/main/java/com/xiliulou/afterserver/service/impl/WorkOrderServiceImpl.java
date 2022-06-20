@@ -2996,9 +2996,21 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("暂无服务商提交检验流程信息");
         }
 
+        List<WorkOrderServerAuditEntryVo> data = new ArrayList<>();
+
         workOrderServerQueries.forEach(item -> {
-            serverAuditEntryService.getWeChatServerAuditEntryVoList(item.getWorkOrderId(), item.getServerId())
+            Server server = serverService.getById(item.getServerId());
+            if(Objects.isNull(server)) {
+                return;
+            }
+            List<WeChatServerAuditEntryVo> weChatServerAuditEntryVoList = serverAuditEntryService.getWeChatServerAuditEntryVoList(item.getWorkOrderId(), item.getServerId());
+
+            WorkOrderServerAuditEntryVo vo = new WorkOrderServerAuditEntryVo();
+            vo.setId(server.getId());
+            vo.setName(server.getName());
+            vo.setWeChatServerAuditEntryVos(weChatServerAuditEntryVoList);
+            data.add(vo);
         });
-        return null;
+        return R.ok(data);
     }
 }
