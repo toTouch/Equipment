@@ -2993,7 +2993,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     public R workOrderServerAuditEntry(Long id) {
         List<WorkOrderServerQuery> workOrderServerQueries = workOrderServerService.queryByWorkOrderId(id);
         if(CollectionUtils.isEmpty(workOrderServerQueries)) {
-            return R.fail("暂无服务商提交检验流程信息");
+            return R.fail("未查询到工单服务商");
         }
 
         List<WorkOrderServerAuditEntryVo> data = new ArrayList<>();
