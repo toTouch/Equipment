@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.ServerAuditEntry;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ServerAuditEntryQuery;
+import com.xiliulou.afterserver.web.vo.WeChatServerAuditEntryVo;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author zgw
@@ -27,4 +29,6 @@ public interface ServerAuditEntryService extends IService<ServerAuditEntry> {
     R removeByid(Long id);
 
     R getUserList(Long workOrderId);
+
+    List<WeChatServerAuditEntryVo> getWeChatServerAuditEntryVoList(Long workOrderId, Long serverId);
 }

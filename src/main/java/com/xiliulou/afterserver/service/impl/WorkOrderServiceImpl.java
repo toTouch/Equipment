@@ -105,6 +105,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     RocketMqService rocketMqService;
     @Autowired
     MaintenanceUserNotifyConfigService maintenanceUserNotifyConfigService;
+    @Autowired
+    ServerAuditEntryService serverAuditEntryService;
 
 
     @Override
@@ -2985,5 +2987,18 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     public R queryWarehousePull(String name) {
         return R.ok(warehouseService.queryWarehouseLikeNamePull(name));
+    }
+
+    @Override
+    public R workOrderServerAuditEntry(Long id) {
+        List<WorkOrderServerQuery> workOrderServerQueries = workOrderServerService.queryByWorkOrderId(id);
+        if(CollectionUtils.isEmpty(workOrderServerQueries)) {
+            return R.fail("暂无服务商提交检验流程信息");
+        }
+
+        workOrderServerQueries.forEach(item -> {
+            serverAuditEntryService.getWeChatServerAuditEntryVoList(item.getWorkOrderId(), item.getServerId())
+        });
+        return null;
     }
 }
