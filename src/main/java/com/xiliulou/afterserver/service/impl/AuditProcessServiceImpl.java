@@ -162,11 +162,13 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
         //如果流程分组为空，直接返回
         List<AuditGroup> byProcessId = auditGroupService.getByProcessId(auditProcess.getId());
         if(CollectionUtils.isEmpty(byProcessId)) {
+            keyProcessVo.setKeyProcessAuditEntryList(new ArrayList<>());
+            keyProcessVo.setKeyProcessAuditGroupList(new ArrayList<>());
             return R.ok(keyProcessVo);
         }
 
         //统计分组状态
-        List<KeyProcessAuditGroupVo> keyProcessAuditGroupVos = new ArrayList(10);
+        List<KeyProcessAuditGroupVo> keyProcessAuditGroupVos = new ArrayList<>();
         byProcessId.parallelStream().forEachOrdered(item -> {
             KeyProcessAuditGroupVo keyProcessAuditGroupVo = new KeyProcessAuditGroupVo();
             keyProcessAuditGroupVos.add(keyProcessAuditGroupVo);
@@ -182,6 +184,7 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
 
         //如果正在执行分组为空，并且不查询已完成分组则直接返回
         if(Objects.isNull(executingGroup) && Objects.isNull(groupId)) {
+            keyProcessVo.setKeyProcessAuditEntryList(new ArrayList<>());
             return R.ok(keyProcessVo);
         }
 
@@ -191,6 +194,7 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
 
         AuditGroup groupById = auditGroupService.getById(groupId);
         if(Objects.isNull(groupById)) {
+            keyProcessVo.setKeyProcessAuditEntryList(new ArrayList<>());
             return R.ok(keyProcessVo);
         }
         keyProcessVo.setGroupId(groupId);
