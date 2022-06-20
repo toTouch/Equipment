@@ -96,4 +96,6 @@ public interface WorkOrderService extends IService<WorkOrder> {
     R queryPointNewPull(String name);
 
     R queryWarehousePull(String name);
+
+    R workOrderServerAuditEntry(Long id);
 }

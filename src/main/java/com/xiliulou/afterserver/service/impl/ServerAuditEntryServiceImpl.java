@@ -171,7 +171,8 @@ public class ServerAuditEntryServiceImpl extends ServiceImpl<ServerAuditEntryMap
         return R.ok(data);
     }
 
-    private List<WeChatServerAuditEntryVo> getWeChatServerAuditEntryVoList(Long workOrderId, Long serverId){
+    @Override
+    public List<WeChatServerAuditEntryVo> getWeChatServerAuditEntryVoList(Long workOrderId, Long serverId){
         List<WeChatServerAuditEntryVo> data = new ArrayList<>();
 
         List<ServerAuditEntryVo> serverAuditEntryVoList = getServerAuditEntryVoList();
