@@ -1,18 +1,17 @@
-package com.xiliulou.afterserver.entity;
+package com.xiliulou.afterserver.web.vo;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  * @author zgw
- * @date 2022/6/20 11:10
+ * @date 2022/6/20 14:33
  * @mood
  */
 @Data
-@TableName("t_server_audit_entry")
-public class ServerAuditEntry {
+public class ServerAuditEntryVo {
     private Long id;
     /**
      * 组件名
@@ -42,17 +41,8 @@ public class ServerAuditEntry {
      * 图片
      */
     private String photo;
-
-    private Long updateTime;
-    private Integer delFlag;
-    private Long createTime;
-
-    public static final Integer DEL_NORMAL = 0;
-    public static final Integer DEL_DEL = 1;
-
-    public static final Integer TYPE_RADIO = 1;
-    public static final Integer TYPE_CHECKBOX = 2;
-    public static final Integer TYPE_TEXT = 3;
-    public static final Integer TYPE_PHOTO = 4;
+    /**
+     * ossUrlMap
+     */
+    private Map<String, String> ossUrlMap;
 }
-

@@ -19,4 +19,8 @@ public interface ServerAuditEntryService extends IService<ServerAuditEntry> {
     ServerAuditEntry getBySort(BigDecimal sort);
 
     R saveOne(ServerAuditEntryQuery serverAuditEntryQuery);
+
+    R putOne(ServerAuditEntryQuery serverAuditEntryQuery);
+
+    R getList();
 }

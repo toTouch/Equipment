@@ -15,10 +15,6 @@ import java.math.BigDecimal;
 public class ServerAuditEntryQuery  {
     private Long id;
     /**
-     * 正则
-     */
-    private String jsonContent;
-    /**
      * 保留字段
      */
     private String jsonRoot;
