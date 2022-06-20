@@ -49,5 +49,10 @@ public class ServerAuditEntry {
 
     public static final Integer DEL_NORMAL = 0;
     public static final Integer DEL_DEL = 1;
+
+    public static final Integer TYPE_RADIO = 1;
+    public static final Integer TYPE_CHECKBOX = 2;
+    public static final Integer TYPE_TEXT = 3;
+    public static final Integer TYPE_PHOTO = 4;
 }
 
