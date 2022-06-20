@@ -127,11 +127,11 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
         ProductNew productNew = productNewService.queryByNo(no);
         Long uid = SecurityUtils.getUid();
         if (Objects.isNull(uid)) {
-            return R.fail("未查询到相关用户");
+            return R.fail(null, "未查询到相关用户");
         }
 
         if (Objects.isNull(productNew)) {
-            return R.fail("资产编码不存在");
+            return R.fail(null, "资产编码不存在");
         }
 
         Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
@@ -141,7 +141,7 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
 
         User user = userService.getUserById(uid);
         if (Objects.isNull(user)) {
-            return R.fail("未查询到相关用户");
+            return R.fail(null, "未查询到相关用户");
         }
 
         //查询组件
