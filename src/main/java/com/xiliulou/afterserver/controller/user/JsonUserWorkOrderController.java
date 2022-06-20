@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.controller.user;
 import com.alibaba.excel.util.CollectionUtils;
 import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.entity.WorkOrder;
+import com.xiliulou.afterserver.service.ServerAuditEntryService;
 import com.xiliulou.afterserver.service.WorkOrderService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
@@ -26,6 +27,8 @@ public class JsonUserWorkOrderController {
 
     @Autowired
     WorkOrderService workOrderService;
+    @Autowired
+    ServerAuditEntryService serverAuditEntryService;
 
     @GetMapping("/admin/wechat/workOrder")
     public R queryAssignmentStatusList(@RequestParam(value = "offset", required = false, defaultValue = "0") Long offset,
@@ -58,6 +61,15 @@ public class JsonUserWorkOrderController {
         String solution = serverWorkOrderQuery.getSolution();
         Long workOrderId = serverWorkOrderQuery.getWorkOrderId();
         return workOrderService.updateServer(solution, workOrderId);
+    }
+
+    @GetMapping("/admin/wechat/server/auditEntry")
+    public R getList(@RequestParam("workOrderId")Long workOrderId){
+        if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_PATROL_APPLET)){
+            return R.fail("请使用服务商账号进行登录");
+        }
+
+        return serverAuditEntryService.getUserList(workOrderId);
     }
 
     //@PutMapping("/admin/wechat/workOrder/assignment/status")

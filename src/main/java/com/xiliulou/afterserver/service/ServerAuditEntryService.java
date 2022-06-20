@@ -22,5 +22,9 @@ public interface ServerAuditEntryService extends IService<ServerAuditEntry> {
 
     R putOne(ServerAuditEntryQuery serverAuditEntryQuery);
 
-    R getList();
+    R getAdminList();
+
+    R removeByid(Long id);
+
+    R getUserList(Long workOrderId);
 }
