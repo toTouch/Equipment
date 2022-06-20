@@ -116,4 +116,6 @@ public interface ProductNewService {
     public ProductNew queryByNo(String no);
 
     String getStatusName(Integer status);
+
+    R delOssFileByName(String name);
 }

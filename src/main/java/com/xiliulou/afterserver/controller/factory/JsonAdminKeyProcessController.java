@@ -58,6 +58,14 @@ public class JsonAdminKeyProcessController {
     }
 
     /**
+     * 删除ossFile
+     */
+    @DeleteMapping("oss/file")
+    public R delOssFileByName(@RequestParam String name){
+        return productNewService.delOssFileByName(name);
+    }
+
+    /**
      * 获取关键流程内容
      */
     @GetMapping("key/process")
