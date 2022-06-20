@@ -9,4 +9,5 @@ import com.xiliulou.afterserver.entity.ServerAuditValue;
  * @mood
  */
 public interface ServerAuditValueService extends IService<ServerAuditValue> {
+    ServerAuditValue queryByOrderIdAndServerId(Long id, Long workOrderId, Long thirdId);
 }

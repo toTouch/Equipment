@@ -4,10 +4,7 @@ import com.xiliulou.afterserver.service.ServerAuditEntryService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ServerAuditEntryQuery;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author zgw
@@ -21,7 +18,7 @@ public class JsonAdminServerAuditEntryController {
 
     @GetMapping("admin/server/auditEntry")
     public R getList(){
-        return serverAuditEntryService.getList();
+        return serverAuditEntryService.getAdminList();
     }
 
     @PostMapping("admin/server/auditEntry")
@@ -32,5 +29,10 @@ public class JsonAdminServerAuditEntryController {
     @PutMapping("admin/server/auditEntry")
     public R putOne(ServerAuditEntryQuery serverAuditEntryQuery) {
         return serverAuditEntryService.putOne(serverAuditEntryQuery);
+    }
+
+    @DeleteMapping("admin/server/auditEntry/{id}")
+    public R removeByid(@PathVariable("id")Long id) {
+        return serverAuditEntryService.removeByid(id);
     }
 }

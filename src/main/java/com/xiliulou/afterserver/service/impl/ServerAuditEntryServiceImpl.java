@@ -5,12 +5,17 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.constant.CommonConstants;
-import com.xiliulou.afterserver.entity.ServerAuditEntry;
+import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.ServerAuditEntryMapper;
 import com.xiliulou.afterserver.service.ServerAuditEntryService;
+import com.xiliulou.afterserver.service.ServerAuditValueService;
+import com.xiliulou.afterserver.service.UserService;
+import com.xiliulou.afterserver.service.WorkOrderService;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.ServerAuditEntryQuery;
 import com.xiliulou.afterserver.web.vo.ServerAuditEntryVo;
+import com.xiliulou.afterserver.web.vo.WeChatServerAuditEntryVo;
 import com.xiliulou.core.json.JsonUtil;
 import com.xiliulou.storage.config.StorageConfig;
 import com.xiliulou.storage.service.impl.AliyunOssService;
@@ -39,6 +44,12 @@ public class ServerAuditEntryServiceImpl extends ServiceImpl<ServerAuditEntryMap
     StorageConfig storageConfig;
     @Autowired
     AliyunOssService aliyunOssService;
+    @Autowired
+    UserService userService;
+    @Autowired
+    WorkOrderService workOrderService;
+    @Autowired
+    ServerAuditValueService serverAuditValueService;
 
     @Override
     public ServerAuditEntry getByName(String name) {
@@ -124,10 +135,70 @@ public class ServerAuditEntryServiceImpl extends ServiceImpl<ServerAuditEntryMap
     }
 
     @Override
-    public R getList() {
-        List<ServerAuditEntry> serverAuditEntryList = this.baseMapper.selectList(new QueryWrapper<ServerAuditEntry>().eq("del_flag", ServerAuditEntry.DEL_NORMAL));
+    public R getAdminList() {
+        List<ServerAuditEntryVo> data = getServerAuditEntryVoList();
+        return R.ok(data);
+    }
+
+    @Override
+    public R removeByid(Long id) {
+        ServerAuditEntry serverAuditEntry = new ServerAuditEntry();
+        serverAuditEntry.setId(id);
+        serverAuditEntry.setDelFlag(ServerAuditEntry.DEL_DEL);
+        this.updateById(serverAuditEntry);
+        return R.ok();
+    }
+
+    @Override
+    public R getUserList(Long workOrderId) {
+        Long uid = SecurityUtils.getUid();
+
+        if (Objects.isNull(uid)) {
+            return R.fail("未查询到相关用户");
+        }
+
+        User user = userService.getUserById(uid);
+        if (Objects.isNull(user)) {
+            return R.fail("未查询到相关用户");
+        }
+
+        WorkOrder workOrderOld = workOrderService.getById(workOrderId);
+        if (Objects.isNull(workOrderOld)) {
+            return R.fail("未查询到工单相关信息");
+        }
+
+        List<WeChatServerAuditEntryVo> data = getWeChatServerAuditEntryVoList(workOrderId, user.getThirdId());
+        return R.ok(data);
+    }
+
+    private List<WeChatServerAuditEntryVo> getWeChatServerAuditEntryVoList(Long workOrderId, Long serverId){
+        List<WeChatServerAuditEntryVo> data = new ArrayList<>();
+
+        List<ServerAuditEntryVo> serverAuditEntryVoList = getServerAuditEntryVoList();
+        if(CollectionUtils.isEmpty(serverAuditEntryVoList)) {
+            return data;
+        }
+
+        serverAuditEntryVoList.forEach(item -> {
+            WeChatServerAuditEntryVo vo = new WeChatServerAuditEntryVo();
+            BeanUtils.copyProperties(item, vo);
+            ServerAuditValue serverAuditValue = serverAuditValueService.queryByOrderIdAndServerId(item.getId(), workOrderId, serverId);
+            if(Objects.isNull(serverAuditValue)) {
+                return;
+            }
+
+            vo.setValueId(serverAuditValue.getId());
+            vo.setValue(serverAuditValue.getValue());
+            data.add(vo);
+        });
+
+        return data;
+    }
+
+    private List<ServerAuditEntryVo> getServerAuditEntryVoList(){
+        List<ServerAuditEntry> serverAuditEntryList = this.baseMapper.selectList(new QueryWrapper<ServerAuditEntry>().eq("del_flag", ServerAuditEntry.DEL_NORMAL).orderByAsc("sort"));
         if(CollectionUtils.isEmpty(serverAuditEntryList)) {
-            return R.ok();
+            return null;
         }
 
         List<ServerAuditEntryVo> data = new ArrayList<>();
@@ -138,7 +209,7 @@ public class ServerAuditEntryServiceImpl extends ServiceImpl<ServerAuditEntryMap
             vo.setOssUrlMap(ossUrlMap);
         });
 
-        return R.ok(data);
+        return data;
     }
 
 
