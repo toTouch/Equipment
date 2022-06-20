@@ -1031,4 +1031,10 @@ public class ProductNewServiceImpl implements ProductNewService {
         }
         return statusName;
     }
+
+    @Override
+    public R delOssFileByName(String name) {
+        //0 表示图片
+        return fileService.removeOssOrMinio(name, 0);
+    }
 }
