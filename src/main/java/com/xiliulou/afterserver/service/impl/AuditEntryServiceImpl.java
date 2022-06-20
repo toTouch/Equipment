@@ -79,6 +79,8 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
             if(Objects.equals(item.getType(), AuditEntry.TYPE_PHOTO)) {
                 Map<String, String> ossUrlMap = this.getOssUrlMap(JsonUtil.fromJsonArray(item.getValue(), String.class));
                 item.setOssUrlMap(ossUrlMap);
+            } else {
+                item.setOssUrlMap(new HashMap<>());
             }
         });
 
