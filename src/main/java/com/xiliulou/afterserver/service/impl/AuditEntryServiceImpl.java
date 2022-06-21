@@ -382,8 +382,9 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
         vo.setId(0L);
         vo.setType(AuditEntry.TYPE_RADIO);
         vo.setJsonRoot("[\"/admin/factory/admin/factory\"]");
-        vo.setSort(new BigDecimal("99999.99"));
+        vo.setSort(new BigDecimal("999999.99"));
         vo.setRequired(0);
+        vo.setName("保存");
         return vo;
     }
 }
