@@ -4,6 +4,7 @@ import com.xiliulou.afterserver.service.ServerAuditEntryService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ServerAuditEntryQuery;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -22,12 +23,12 @@ public class JsonAdminServerAuditEntryController {
     }
 
     @PostMapping("admin/server/auditEntry")
-    public R saveOne(ServerAuditEntryQuery serverAuditEntryQuery){
+    public R saveOne(@RequestBody @Validated ServerAuditEntryQuery serverAuditEntryQuery){
         return serverAuditEntryService.saveOne(serverAuditEntryQuery);
     }
 
     @PutMapping("admin/server/auditEntry")
-    public R putOne(ServerAuditEntryQuery serverAuditEntryQuery) {
+    public R putOne(@RequestBody @Validated ServerAuditEntryQuery serverAuditEntryQuery) {
         return serverAuditEntryService.putOne(serverAuditEntryQuery);
     }
 
