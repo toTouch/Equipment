@@ -190,6 +190,16 @@ public class ServerAuditEntryServiceImpl extends ServiceImpl<ServerAuditEntryMap
 
             vo.setValueId(serverAuditValue.getId());
             vo.setValue(serverAuditValue.getValue());
+
+            Map<String, String> ossUrlMap = null;
+            vo.setOssUrlMap(ossUrlMap);
+
+            if(Objects.equals(item.getType(), ServerAuditEntry.TYPE_PHOTO)) {
+                ossUrlMap = this.getOssUrlMap(JsonUtil.fromJsonArray(serverAuditValue.getValue(), String.class));
+            }else {
+                ossUrlMap = new HashMap<>(0);
+            }
+
             data.add(vo);
         });
 
@@ -208,6 +218,7 @@ public class ServerAuditEntryServiceImpl extends ServiceImpl<ServerAuditEntryMap
             ServerAuditEntryVo vo = new ServerAuditEntryVo();
             BeanUtils.copyProperties(item, vo);
             vo.setOssUrlMap(ossUrlMap);
+            data.add(vo);
         });
 
         return data;
