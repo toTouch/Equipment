@@ -82,10 +82,14 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
             } else {
                 item.setOssUrlMap(new HashMap<>());
             }
+            //清除空键
+            clearEmptyKey(item.getOssUrlMap());
         });
 
         return voList;
     }
+
+
 
     @Override
     public List<AuditEntry> getByEntryIds(List<Long> entryIds) {
@@ -288,6 +292,13 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
             throw new CustomBusinessException("数据库错误");
         }
         return R.ok();
+    }
+
+    private void clearEmptyKey(Map source){
+        source.remove(null);
+        source.remove("");
+        source.remove("null");
+        source.remove("NULL");
     }
 
     private String generateRegular(Integer auditEntryType, String jsonRoot){
