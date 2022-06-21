@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @Data
 public class AuditEntryQuery {
     @NotNull(message = "组件id不能为空")
-    private Long id;
+    private Long id; //entryId
 
     private String value;
 }
