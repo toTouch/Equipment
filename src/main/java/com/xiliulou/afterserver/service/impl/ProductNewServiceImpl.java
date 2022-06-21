@@ -1028,6 +1028,12 @@ public class ProductNewServiceImpl implements ProductNewService {
             case 6:
                 statusName = "已测试";
                 break;
+            case 7:
+                statusName = "前置检验合格";
+                break;
+            case 8:
+                statusName = "后置检验合格";
+                break;
         }
         return statusName;
     }
