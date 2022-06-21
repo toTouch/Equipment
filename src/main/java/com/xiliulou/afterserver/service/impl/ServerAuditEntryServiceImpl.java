@@ -199,7 +199,7 @@ public class ServerAuditEntryServiceImpl extends ServiceImpl<ServerAuditEntryMap
             }else {
                 ossUrlMap = new HashMap<>(0);
             }
-            
+
             vo.setOssUrlMap(ossUrlMap);
         });
 
