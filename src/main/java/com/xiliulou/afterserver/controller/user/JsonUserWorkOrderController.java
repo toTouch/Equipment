@@ -72,6 +72,15 @@ public class JsonUserWorkOrderController {
         return serverAuditEntryService.getUserList(workOrderId);
     }
 
+    @PostMapping("/admin/wechat/server/auditEntry")
+    public R saveOne(){
+        if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_PATROL_APPLET)){
+            return R.fail("请使用服务商账号进行登录");
+        }
+
+        return null;
+    }
+
     //@PutMapping("/admin/wechat/workOrder/assignment/status")
     public R updateWorkOrderStatus(@RequestBody WorkerOrderUpdateStatusQuery query, HttpServletRequest request){
         if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_COMMISSIONER)){
