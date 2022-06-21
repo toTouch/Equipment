@@ -4,6 +4,7 @@ import com.alibaba.excel.util.CollectionUtils;
 import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.entity.WorkOrder;
 import com.xiliulou.afterserver.service.ServerAuditEntryService;
+import com.xiliulou.afterserver.service.ServerAuditValueService;
 import com.xiliulou.afterserver.service.WorkOrderService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
@@ -11,6 +12,7 @@ import com.xiliulou.afterserver.web.query.*;
 import feign.Body;
 import org.bouncycastle.jcajce.provider.util.SecretKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +31,8 @@ public class JsonUserWorkOrderController {
     WorkOrderService workOrderService;
     @Autowired
     ServerAuditEntryService serverAuditEntryService;
+    @Autowired
+    ServerAuditValueService serverAuditValueService;
 
     @GetMapping("/admin/wechat/workOrder")
     public R queryAssignmentStatusList(@RequestParam(value = "offset", required = false, defaultValue = "0") Long offset,
@@ -73,12 +77,11 @@ public class JsonUserWorkOrderController {
     }
 
     @PostMapping("/admin/wechat/server/auditEntry")
-    public R saveOne(){
+    public R saveOne(@RequestBody @Validated WechatServerAuditEntryQuery query){
         if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_PATROL_APPLET)){
             return R.fail("请使用服务商账号进行登录");
         }
-
-        return null;
+        return  serverAuditValueService.saveOne(query);
     }
 
     //@PutMapping("/admin/wechat/workOrder/assignment/status")

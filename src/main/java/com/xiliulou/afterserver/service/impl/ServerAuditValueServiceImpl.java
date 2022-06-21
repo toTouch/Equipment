@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.ServerAuditValue;
 import com.xiliulou.afterserver.mapper.ServerAuditValueMapper;
 import com.xiliulou.afterserver.service.ServerAuditValueService;
+import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.WechatServerAuditEntryQuery;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -23,5 +25,10 @@ public class ServerAuditValueServiceImpl extends ServiceImpl<ServerAuditValueMap
     @Override
     public ServerAuditValue queryByOrderIdAndServerId(Long entryId, Long workOrderId, Long thirdId) {
         return this.baseMapper.selectOne(new QueryWrapper<ServerAuditValue>().eq("entry_id", entryId).eq("order_id", workOrderId).eq("server_id", thirdId));
+    }
+
+    @Override
+    public R saveOne(WechatServerAuditEntryQuery query) {
+        return null;
     }
 }
