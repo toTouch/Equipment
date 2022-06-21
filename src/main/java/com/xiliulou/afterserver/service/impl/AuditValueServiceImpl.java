@@ -7,6 +7,7 @@ import com.xiliulou.afterserver.entity.AuditValue;
 import com.xiliulou.afterserver.mapper.AuditValueMapper;
 import com.xiliulou.afterserver.service.AuditEntryService;
 import com.xiliulou.afterserver.service.AuditValueService;
+import com.xiliulou.core.json.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +41,7 @@ public class AuditValueServiceImpl extends ServiceImpl<AuditValueMapper, AuditVa
         }
 
         AuditValue auditValue = auditValueMapper.selectByEntryId(entryId, pid);
+        log.error("测试pda上传 -----> " + JsonUtil.toJson(auditValue) + "value = " + pid);
         // 如果为空value 看entryId绑定的值是否为空.为空跳过，不为空删除
         if(StringUtils.isBlank(value)) {
             if(!Objects.isNull(auditValue)) {
