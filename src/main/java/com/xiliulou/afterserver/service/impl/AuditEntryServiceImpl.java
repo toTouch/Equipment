@@ -86,6 +86,7 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
             clearEmptyKey(item.getOssUrlMap());
         });
 
+        voList.add(createSaveButton());
         return voList;
     }
 
@@ -374,5 +375,15 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
         Base64.Encoder encoder = Base64.getUrlEncoder();
         byte[] base64Result = encoder.encode(content.getBytes());
         return new String(base64Result, StandardCharsets.UTF_8);
+    }
+
+    private KeyProcessAuditEntryVo createSaveButton(){
+        KeyProcessAuditEntryVo vo = new KeyProcessAuditEntryVo();
+        vo.setId(0L);
+        vo.setType(AuditEntry.TYPE_RADIO);
+        vo.setJsonRoot("[\"/admin/factory/admin/factory\"]");
+        vo.setSort(new BigDecimal("99999.99"));
+        vo.setRequired(0);
+        return vo;
     }
 }
