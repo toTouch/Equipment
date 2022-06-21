@@ -71,7 +71,7 @@ public class ServerAuditValueServiceImpl extends ServiceImpl<ServerAuditValueMap
             biandOrUnbindEntry(item.getEntryId(), item.getValue(), user.getThirdId(), query.getWorkOrderId());
         });
         
-        return null;
+        return R.ok();
     }
 
     private boolean biandOrUnbindEntry(Long entryId, String value, Long serverId, Long workOrderId){
