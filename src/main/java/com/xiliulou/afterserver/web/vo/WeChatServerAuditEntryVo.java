@@ -42,9 +42,9 @@ public class WeChatServerAuditEntryVo {
      */
     private String photo;
     /**
-     * ossUrlMap
+     * 标题ossUrlMap
      */
-    private Map<String, String> ossUrlMap;
+    private Map<String, String> ossUrlTitleMap;
     /**
      * valueId
      */
@@ -53,4 +53,8 @@ public class WeChatServerAuditEntryVo {
      * value
      */
     private String value;
+    /**
+     * 值ossUrlMap
+     */
+    private Map<String, String> ossUrlValueMap;
 }
