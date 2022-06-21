@@ -238,7 +238,7 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
             }
         }
 
-        //updateCreate方法
+        //updateOrCreate方法
         keyProcessQuery.getAuditEntryQueryList().forEach(item -> {
             auditValueService.biandOrUnbindEntry(keyProcessQuery.getGroupId(), item.getValue(), productNew.getId());
         });
