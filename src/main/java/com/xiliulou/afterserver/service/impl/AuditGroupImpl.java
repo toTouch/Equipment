@@ -144,7 +144,6 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
         auditGroup = new AuditGroup();
         auditGroup.setName(query.getName());
         auditGroup.setSort(query.getSort());
-        auditGroup.setEntryIds(JsonUtil.toJson(Arrays.asList(6)));
         auditGroup.setProcessId(auditProcess.getId());
         this.baseMapper.insert(auditGroup);
         return R.ok();
