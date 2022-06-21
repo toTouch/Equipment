@@ -109,7 +109,7 @@ public class ServerAuditEntryServiceImpl extends ServiceImpl<ServerAuditEntryMap
         }
 
         serverAuditEntry = this.getBySort(query.getSort());
-        if(Objects.nonNull(serverAuditEntry)) {
+        if(Objects.nonNull(serverAuditEntry) && !Objects.equals(serverAuditEntryOld.getSort(), query.getSort())) {
             return R.fail("排序值重复，请修改");
         }
 
