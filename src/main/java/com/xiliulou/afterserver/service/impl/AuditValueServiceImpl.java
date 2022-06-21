@@ -41,7 +41,7 @@ public class AuditValueServiceImpl extends ServiceImpl<AuditValueMapper, AuditVa
         }
 
         AuditValue auditValue = auditValueMapper.selectByEntryId(entryId, pid);
-        log.error("测试pda上传 -----> " + JsonUtil.toJson(auditValue) + "value = " + pid);
+        log.error("测试pda上传 -----> " + JsonUtil.toJson(auditValue) + "value = " + value  +",pid=" + pid + ",entryId="+entryId);
         // 如果为空value 看entryId绑定的值是否为空.为空跳过，不为空删除
         if(StringUtils.isBlank(value)) {
             if(!Objects.isNull(auditValue)) {
