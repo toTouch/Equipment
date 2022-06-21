@@ -183,6 +183,8 @@ public class ServerAuditEntryServiceImpl extends ServiceImpl<ServerAuditEntryMap
         serverAuditEntryVoList.forEach(item -> {
             WeChatServerAuditEntryVo vo = new WeChatServerAuditEntryVo();
             BeanUtils.copyProperties(item, vo);
+            data.add(vo);
+
             ServerAuditValue serverAuditValue = serverAuditValueService.queryByOrderIdAndServerId(item.getId(), workOrderId, serverId);
             if(Objects.isNull(serverAuditValue)) {
                 return;
@@ -192,15 +194,13 @@ public class ServerAuditEntryServiceImpl extends ServiceImpl<ServerAuditEntryMap
             vo.setValue(serverAuditValue.getValue());
 
             Map<String, String> ossUrlMap = null;
-            vo.setOssUrlMap(ossUrlMap);
-
             if(Objects.equals(item.getType(), ServerAuditEntry.TYPE_PHOTO)) {
                 ossUrlMap = this.getOssUrlMap(JsonUtil.fromJsonArray(serverAuditValue.getValue(), String.class));
             }else {
                 ossUrlMap = new HashMap<>(0);
             }
-
-            data.add(vo);
+            
+            vo.setOssUrlMap(ossUrlMap);
         });
 
         return data;
