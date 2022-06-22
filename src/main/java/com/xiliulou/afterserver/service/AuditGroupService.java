@@ -23,7 +23,7 @@ public interface AuditGroupService extends IService<AuditGroup> {
 
     AuditGroup getBySort(BigDecimal sort,Long processId);
 
-    Integer getGroupStatus(AuditGroup auditGroup, Long ProductNewId);
+    Integer getGroupStatus(AuditGroup auditGroup, Long productNewId);
 
     KeyProcessAuditGroupVo statusAdjustment(List<KeyProcessAuditGroupVo> keyProcessAuditGroupVos);
 

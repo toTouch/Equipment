@@ -13,5 +13,5 @@ import java.util.List;
 public interface AuditValueService extends IService<AuditValue> {
     Long getCountByEntryIdsAndPid(List<Long> entryIds, Long productNewId, Integer required);
 
-    boolean biandOrUnbindEntry(Long entryId, String value, Long pid);
+    boolean biandOrUnbindEntry(Long entryId, String value, Long pid, Long logId);
 }

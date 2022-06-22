@@ -6,12 +6,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.constant.AuditProcessConstans;
 import com.xiliulou.afterserver.entity.AuditEntry;
 import com.xiliulou.afterserver.entity.AuditGroup;
+import com.xiliulou.afterserver.entity.AuditGroupUpdateLog;
 import com.xiliulou.afterserver.entity.AuditProcess;
 import com.xiliulou.afterserver.mapper.AuditGroupMapper;
-import com.xiliulou.afterserver.service.AuditEntryService;
-import com.xiliulou.afterserver.service.AuditGroupService;
-import com.xiliulou.afterserver.service.AuditProcessService;
-import com.xiliulou.afterserver.service.AuditValueService;
+import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.AuditGroupStrawberryQuery;
 import com.xiliulou.afterserver.web.vo.AuditGroupStrawberryVo;
@@ -48,6 +46,8 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
     AuditValueService auditValueService;
     @Autowired
     AuditProcessService auditProcessService;
+    @Autowired
+    AuditGroupUpdateLogService auditGroupUpdateLogService;
 
     @Override
     public List<AuditGroup> getByProcessId(Long id) {
@@ -65,18 +65,23 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
     }
 
     @Override
-    public Integer getGroupStatus(AuditGroup auditGroup, Long ProductNewId) {
+    public Integer getGroupStatus(AuditGroup auditGroup, Long productNewId) {
         List<Long> entryIds = JsonUtil.fromJsonArray(auditGroup.getEntryIds(), Long.class);
         if(CollectionUtils.isEmpty(entryIds)) {
             return AuditGroupVo.STATUS_UNFINISHED;
         }
 
         Long auditEntryCount = auditEntryService.getCountByIdsAndRequired(entryIds, AuditEntry.REQUIRED);
-        Long auditValueRequiredCount = auditValueService.getCountByEntryIdsAndPid(entryIds, ProductNewId, AuditEntry.REQUIRED);
-        Long auditValueNotRequiredCount = auditValueService.getCountByEntryIdsAndPid(entryIds, ProductNewId, AuditEntry.NOT_REQUIRED);
+        Long auditValueRequiredCount = auditValueService.getCountByEntryIdsAndPid(entryIds, productNewId, AuditEntry.REQUIRED);
+        Long auditValueNotRequiredCount = auditValueService.getCountByEntryIdsAndPid(entryIds, productNewId, AuditEntry.NOT_REQUIRED);
 
-        if(Objects.equals(0L, auditEntryCount)) {
-            return AuditGroupVo.STATUS_FINISHED;
+
+        if(Objects.equals(auditEntryCount, 0L)) {
+            List<AuditGroupUpdateLog> auditGroupUpdateLogs = auditGroupUpdateLogService.list(new QueryWrapper<AuditGroupUpdateLog>().eq("group_id", auditGroup.getId()).eq("pid", productNewId));
+            if(CollectionUtils.isNotEmpty(auditGroupUpdateLogs)) {
+                return AuditGroupVo.STATUS_FINISHED;
+            }
+            return AuditGroupVo.STATUS_UNFINISHED;
         }
 
         if(Objects.equals(0L, auditValueRequiredCount + auditValueNotRequiredCount)) {

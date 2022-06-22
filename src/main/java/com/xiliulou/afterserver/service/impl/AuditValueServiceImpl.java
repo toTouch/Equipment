@@ -6,6 +6,7 @@ import com.xiliulou.afterserver.entity.AuditEntry;
 import com.xiliulou.afterserver.entity.AuditValue;
 import com.xiliulou.afterserver.mapper.AuditValueMapper;
 import com.xiliulou.afterserver.service.AuditEntryService;
+import com.xiliulou.afterserver.service.AuditGroupLogContentService;
 import com.xiliulou.afterserver.service.AuditValueService;
 import com.xiliulou.core.json.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,8 @@ public class AuditValueServiceImpl extends ServiceImpl<AuditValueMapper, AuditVa
     AuditValueMapper auditValueMapper;
     @Autowired
     AuditEntryService auditEntryService;
+    @Autowired
+    AuditGroupLogContentService auditGroupLogContentService;
 
     @Override
     public Long getCountByEntryIdsAndPid(List<Long> entryIds, Long productNewId, Integer required) {
@@ -34,11 +37,14 @@ public class AuditValueServiceImpl extends ServiceImpl<AuditValueMapper, AuditVa
     }
 
     @Override
-    public boolean biandOrUnbindEntry(Long entryId, String value, Long pid) {
+    public boolean biandOrUnbindEntry(Long entryId, String value, Long pid, Long logId) {
         AuditEntry auditEntryOld = auditEntryService.getById(entryId);
         if(Objects.isNull(auditEntryOld)) {
             return false;
         }
+
+        //添加日志
+        auditGroupLogContentService.saveOne(logId, auditEntryOld.getName(), auditEntryOld.getType(), value);
 
         AuditValue auditValue = auditValueMapper.selectByEntryId(entryId, pid);
         //log.error("测试pda上传 -----> " + JsonUtil.toJson(auditValue) + "value = " + value  +",pid=" + pid + ",entryId="+entryId);
