@@ -60,6 +60,10 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
     IotCardService iotCardService;
     @Autowired
     ColorCardService colorCardService;
+    @Autowired
+    AuditGroupLogContentService auditGroupLogContentService;
+    @Autowired
+    AuditGroupUpdateLogService auditGroupUpdateLogService;
 
     @Override
     public AuditProcessVo createTestAuditProcessVo() {
@@ -239,9 +243,17 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
             }
         }
 
+        //添加日志
+        AuditGroupUpdateLog auditGroupUpdateLog = new AuditGroupUpdateLog();
+        auditGroupUpdateLog.setGroupId(groupById.getId());
+        auditGroupUpdateLog.setPid(productNew.getId());
+        auditGroupUpdateLog.setUid(SecurityUtils.getUid());
+        auditGroupUpdateLog.setCreateTime(System.currentTimeMillis());
+        auditGroupUpdateLogService.save(auditGroupUpdateLog);
+
         //updateOrCreate方法
         keyProcessQuery.getAuditEntryQueryList().forEach(item -> {
-            auditValueService.biandOrUnbindEntry(item.getId(), item.getValue(), productNew.getId());
+            auditValueService.biandOrUnbindEntry(item.getId(), item.getValue(), productNew.getId(), auditGroupUpdateLog.getId());
         });
 
         AuditProcess auditProcess = auditProcessMapper.selectById(groupById.getProcessId());
