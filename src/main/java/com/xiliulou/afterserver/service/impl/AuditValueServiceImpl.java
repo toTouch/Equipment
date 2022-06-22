@@ -44,7 +44,9 @@ public class AuditValueServiceImpl extends ServiceImpl<AuditValueMapper, AuditVa
         }
 
         //添加日志
-        auditGroupLogContentService.saveOne(logId, auditEntryOld.getName(), auditEntryOld.getType(), value);
+        if(Objects.nonNull(logId)) {
+            auditGroupLogContentService.saveOne(logId, auditEntryOld.getName(), auditEntryOld.getType(), value);
+        }
 
         AuditValue auditValue = auditValueMapper.selectByEntryId(entryId, pid);
         //log.error("测试pda上传 -----> " + JsonUtil.toJson(auditValue) + "value = " + value  +",pid=" + pid + ",entryId="+entryId);
