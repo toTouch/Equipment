@@ -28,6 +28,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.baomidou.mybatisplus.core.toolkit.IdWorker.getId;
+
 /**
  * @author zgw
  * @date 2022/6/6 18:26
@@ -182,10 +184,9 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
         KeyProcessAuditGroupVo executingGroup = auditGroupService.statusAdjustment(keyProcessAuditGroupVos);
         keyProcessVo.setKeyProcessAuditGroupList(keyProcessAuditGroupVos);
 
-        //如果正在执行分组为空，并且不查询已完成分组则直接返回
+        //如果正在执行分组为空，说明全部填完，返回第一个模块的值
         if(Objects.isNull(executingGroup) && Objects.isNull(groupId)) {
-            keyProcessVo.setKeyProcessAuditEntryList(new ArrayList<>());
-            return R.ok(keyProcessVo);
+            groupId = Objects.isNull(keyProcessAuditGroupVos.get(0)) ? null : keyProcessAuditGroupVos.get(0).getId();
         }
 
         if(Objects.isNull(groupId)) {
