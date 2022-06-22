@@ -79,6 +79,10 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
             return AuditGroupVo.STATUS_UNFINISHED;
         }
 
+        if(Objects.equals(0L, auditEntryCount)) {
+            return AuditGroupVo.STATUS_FINISHED;
+        }
+
         if(Objects.equals(auditEntryCount, auditValueRequiredCount)) {
             return AuditGroupVo.STATUS_FINISHED;
         }
