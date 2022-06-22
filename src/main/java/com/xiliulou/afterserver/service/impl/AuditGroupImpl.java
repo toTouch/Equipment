@@ -75,12 +75,12 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
         Long auditValueRequiredCount = auditValueService.getCountByEntryIdsAndPid(entryIds, ProductNewId, AuditEntry.REQUIRED);
         Long auditValueNotRequiredCount = auditValueService.getCountByEntryIdsAndPid(entryIds, ProductNewId, AuditEntry.NOT_REQUIRED);
 
-        if(Objects.equals(0L, auditValueRequiredCount + auditValueNotRequiredCount)) {
-            return AuditGroupVo.STATUS_UNFINISHED;
-        }
-
         if(Objects.equals(0L, auditEntryCount)) {
             return AuditGroupVo.STATUS_FINISHED;
+        }
+
+        if(Objects.equals(0L, auditValueRequiredCount + auditValueNotRequiredCount)) {
+            return AuditGroupVo.STATUS_UNFINISHED;
         }
 
         if(Objects.equals(auditEntryCount, auditValueRequiredCount)) {
