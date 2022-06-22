@@ -68,7 +68,7 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
     public Integer getGroupStatus(AuditGroup auditGroup, Long ProductNewId) {
         List<Long> entryIds = JsonUtil.fromJsonArray(auditGroup.getEntryIds(), Long.class);
         if(CollectionUtils.isEmpty(entryIds)) {
-            return AuditGroupVo.STATUS_FINISHED;
+            return AuditGroupVo.STATUS_UNFINISHED;
         }
 
         Long auditEntryCount = auditEntryService.getCountByIdsAndRequired(entryIds, AuditEntry.REQUIRED);
