@@ -237,6 +237,7 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
         if(Objects.equals(keyProcessQuery.getGroupId(), 1L)) {
             for(AuditEntryQuery item : keyProcessQuery.getAuditEntryQueryList()) {
                 R r = checkEssentialInfo(item);
+                log.error("测试基本信息录入 --> " + JsonUtil.toJson(item) + "r=" + JsonUtil.toJson(r));
                 if(Objects.nonNull(r)) {
                     return r;
                 }
