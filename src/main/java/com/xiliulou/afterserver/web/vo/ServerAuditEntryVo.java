@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.web.vo;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,5 +45,5 @@ public class ServerAuditEntryVo {
     /**
      * ossUrlMap
      */
-    private Map<String, String> ossUrlMap;
+    private List<Map<String, String>> ossUrlList;
 }
