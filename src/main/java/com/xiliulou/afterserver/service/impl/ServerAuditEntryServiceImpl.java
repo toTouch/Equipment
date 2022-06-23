@@ -104,7 +104,7 @@ public class ServerAuditEntryServiceImpl extends ServiceImpl<ServerAuditEntryMap
         }
 
         ServerAuditEntry serverAuditEntry = this.getByName(query.getName());
-        if(Objects.nonNull(serverAuditEntry)) {
+        if(Objects.nonNull(serverAuditEntry) && !Objects.equals(serverAuditEntry.getId(), query.getId())) {
             return R.fail("组件名称已存在");
         }
 
