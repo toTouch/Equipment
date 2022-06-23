@@ -75,7 +75,8 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
         Long auditValueRequiredCount = auditValueService.getCountByEntryIdsAndPid(entryIds, productNewId, AuditEntry.REQUIRED);
         Long auditValueNotRequiredCount = auditValueService.getCountByEntryIdsAndPid(entryIds, productNewId, AuditEntry.NOT_REQUIRED);
 
-
+        //必填组件为零，说明页面都为非必填
+        //当他没提交过内容则为未完成，当它提交过内容（哪怕啥也没提交）为已完成
         if(Objects.equals(auditEntryCount, 0L)) {
             List<AuditGroupUpdateLog> auditGroupUpdateLogs = auditGroupUpdateLogService.list(new QueryWrapper<AuditGroupUpdateLog>().eq("group_id", auditGroup.getId()).eq("pid", productNewId));
             if(CollectionUtils.isNotEmpty(auditGroupUpdateLogs)) {
@@ -84,6 +85,7 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
             return AuditGroupVo.STATUS_UNFINISHED;
         }
 
+        //当一个也没填
         if(Objects.equals(0L, auditValueRequiredCount + auditValueNotRequiredCount)) {
             return AuditGroupVo.STATUS_UNFINISHED;
         }
