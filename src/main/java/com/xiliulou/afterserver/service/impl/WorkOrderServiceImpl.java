@@ -2156,7 +2156,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         return R.ok();
     }
 
-    private Boolean checkServerProcess(Long id) {
+    @Override
+    public Boolean checkServerProcess(Long id) {
         List<WorkOrderServerQuery> workOrderServerQueries = workOrderServerService.queryByWorkOrderIdAndServerId(id, null);
         boolean flag = true;
         if (!CollectionUtils.isEmpty(workOrderServerQueries)) {

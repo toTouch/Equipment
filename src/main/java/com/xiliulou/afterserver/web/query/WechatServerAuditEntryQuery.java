@@ -14,5 +14,6 @@ import java.util.List;
 public class WechatServerAuditEntryQuery {
     @NotNull
     private Long workOrderId;
+    private String solution;
     private List<WechatServerEntryValueQuery> wechatServerEntryValueQueryList;
 }

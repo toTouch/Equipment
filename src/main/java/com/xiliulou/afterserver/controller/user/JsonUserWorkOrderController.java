@@ -56,7 +56,7 @@ public class JsonUserWorkOrderController {
         return workOrderService.updateAssignment(workOrderAssignmentQuery);
     }
 
-    @PutMapping("/admin/wechat/server/workOrder")
+    //@PutMapping("/admin/wechat/server/workOrder")
     public R updateServer(@RequestBody ServerWorkOrderQuery serverWorkOrderQuery){
         if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_PATROL_APPLET)){
             return R.fail("请使用服务商账号进行登录");
@@ -67,6 +67,11 @@ public class JsonUserWorkOrderController {
         return workOrderService.updateServer(solution, workOrderId);
     }
 
+    /**
+     * 服务商工单流程验证获取
+     * @param workOrderId
+     * @return
+     */
     @GetMapping("/admin/wechat/server/auditEntry")
     public R getList(@RequestParam("workOrderId")Long workOrderId){
         if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_PATROL_APPLET)){
@@ -76,6 +81,11 @@ public class JsonUserWorkOrderController {
         return serverAuditEntryService.getUserList(workOrderId);
     }
 
+    /**
+     * 服务商工单流程验证添加
+     * @param query
+     * @return
+     */
     @PostMapping("/admin/wechat/server/auditEntry")
     public R saveOne(@RequestBody @Validated WechatServerAuditEntryQuery query){
         if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_PATROL_APPLET)){
