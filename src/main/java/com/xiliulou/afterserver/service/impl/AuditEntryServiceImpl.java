@@ -55,6 +55,9 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
     @Autowired
     StorageConfig storageConfig;
 
+    private static final String RADIO = "(单选)";
+    private static final String CHECKBOX = "(多选)";
+
     @Override
     public Long getCountByIdsAndRequired(List<Long> entryIds, Integer required) {
         return auditEntryMapper.getCountByIdsAndRequired(entryIds, required);
@@ -74,6 +77,14 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
         voList.forEach(item -> {
             if(StringUtils.isNotBlank(item.getJsonRoot()) && item.getJsonRoot().matches("\\[.*\\]")) {
                 item.setJsonRootList(JsonUtil.fromJsonArray(item.getJsonRoot(), String.class));
+            }
+
+            if(Objects.equals(item.getType(), AuditEntry.TYPE_RADIO)) {
+                item.setName(item.getName() + RADIO);
+            }
+
+            if(Objects.equals(item.getType(), AuditEntry.TYPE_CHECKBOX)) {
+                item.setName(item.getName() + CHECKBOX);
             }
 
             if(Objects.equals(item.getType(), AuditEntry.TYPE_PHOTO)) {
