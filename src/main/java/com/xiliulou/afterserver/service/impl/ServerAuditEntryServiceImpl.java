@@ -183,7 +183,7 @@ public class ServerAuditEntryServiceImpl extends ServiceImpl<ServerAuditEntryMap
         serverAuditEntryVoList.forEach(item -> {
             WeChatServerAuditEntryVo vo = new WeChatServerAuditEntryVo();
             BeanUtils.copyProperties(item, vo);
-            vo.setOssUrlTitleMap(item.getOssUrlMap());
+            vo.setOssUrlTitleList(item.getOssUrlList());
             data.add(vo);
 
             ServerAuditValue serverAuditValue = serverAuditValueService.queryByOrderIdAndServerId(item.getId(), workOrderId, serverId);
@@ -194,14 +194,14 @@ public class ServerAuditEntryServiceImpl extends ServiceImpl<ServerAuditEntryMap
             vo.setValueId(serverAuditValue.getId());
             vo.setValue(serverAuditValue.getValue());
 
-            Map<String, String> ossUrlMap = null;
+           List<Map<String, String>> ossUrlList = null;
             if(Objects.equals(item.getType(), ServerAuditEntry.TYPE_PHOTO)) {
-                ossUrlMap = this.getOssUrlMap(JsonUtil.fromJsonArray(serverAuditValue.getValue(), String.class));
+                ossUrlList = this.getOssUrlList(JsonUtil.fromJsonArray(serverAuditValue.getValue(), String.class));
             }else {
-                ossUrlMap = new HashMap<>(0);
+                ossUrlList = new ArrayList<>(0);
             }
 
-            vo.setOssUrlValueMap(ossUrlMap);
+            vo.setOssUrlValueMap(ossUrlList);
         });
 
         return data;
@@ -215,10 +215,10 @@ public class ServerAuditEntryServiceImpl extends ServiceImpl<ServerAuditEntryMap
 
         List<ServerAuditEntryVo> data = new ArrayList<>();
         serverAuditEntryList.forEach(item -> {
-            Map<String, String> ossUrlMap = getOssUrlMap(JsonUtil.fromJsonArray(item.getPhoto(), String.class));
+            List<Map<String, String>> ossUrlList = getOssUrlList(JsonUtil.fromJsonArray(item.getPhoto(), String.class));
             ServerAuditEntryVo vo = new ServerAuditEntryVo();
             BeanUtils.copyProperties(item, vo);
-            vo.setOssUrlMap(ossUrlMap);
+            vo.setOssUrlList(ossUrlList);
             data.add(vo);
         });
 
@@ -248,24 +248,23 @@ public class ServerAuditEntryServiceImpl extends ServiceImpl<ServerAuditEntryMap
         return String.format(template, alternativesReg, alternativesReg);
     }
 
-    private Map<String, String> getOssUrlMap(List<String> fileNameList){
-        Map<String, String> ossUrlMap = new HashMap<>();
+    private List<Map<String, String>> getOssUrlList(List<String> fileNameList){
+        List<Map<String, String>> ossUrlList = new ArrayList<>();
         if(CollectionUtils.isEmpty(fileNameList)) {
-            return ossUrlMap;
+            return ossUrlList;
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
         fileNameList.forEach(item -> {
-            String timeStamp = item.substring(0, item.lastIndexOf("."));
-            String time = sdf.format(new Date(Long.parseLong(timeStamp)));
-            ossUrlMap.put(getOssWatermarkUrl(item, time), item);
+            Map<String, String> ossUrlMap = new HashMap<>();
+            ossUrlMap.put("url", getOssWatermarkUrl(item));
+            ossUrlMap.put("name", item);
+            ossUrlList.add(ossUrlMap);
         });
 
-        return ossUrlMap;
+        return ossUrlList;
     }
 
-    private String getOssWatermarkUrl(String fileName, String createTime) {
+    private String getOssWatermarkUrl(String fileName) {
         if (!Objects.equals(storageConfig.getIsUseOSS(), StorageConfig.IS_USE_OSS)) {
             return "";
         }
@@ -274,19 +273,11 @@ public class ServerAuditEntryServiceImpl extends ServiceImpl<ServerAuditEntryMap
         String dirName = storageConfig.getDir();
         String url = "";
 
-
         try {
             Long expiration = Optional.ofNullable(storageConfig.getExpiration())
                     .orElse(1000L * 60L * 3L) + System.currentTimeMillis();
 
-            String style = String.format(CommonConstants.OSS_IMG_WATERMARK_STYLE,
-                    base64Encode(createTime),
-                    CommonConstants.OSS_IMG_WATERMARK_TYPE,
-                    CommonConstants.OSS_IMG_WATERMARK_COLOR,
-                    CommonConstants.OSS_IMG_WATERMARK_SIZE,
-                    CommonConstants.OSS_IMG_WATERMARK_OFFSET);
-
-            url = aliyunOssService.getOssFileUrl(bucketName, dirName + fileName, expiration, style);
+            url = aliyunOssService.getOssFileUrl(bucketName, dirName + fileName, expiration);
         } catch (Exception e) {
             log.error("aliyunOss down watermark file Error!", e);
         }

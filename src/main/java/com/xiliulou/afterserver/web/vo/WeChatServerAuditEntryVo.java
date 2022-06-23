@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.web.vo;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,7 +45,7 @@ public class WeChatServerAuditEntryVo {
     /**
      * 标题ossUrlMap
      */
-    private Map<String, String> ossUrlTitleMap;
+    private List<Map<String, String>> ossUrlTitleList;
     /**
      * valueId
      */
@@ -56,5 +57,5 @@ public class WeChatServerAuditEntryVo {
     /**
      * 值ossUrlMap
      */
-    private Map<String, String> ossUrlValueMap;
+    private List<Map<String, String>> ossUrlValueMap;
 }
