@@ -695,12 +695,12 @@ public class ProductNewServiceImpl implements ProductNewService {
         User user = userService.getUserById(SecurityUtils.getUid());
         if (Objects.isNull(user)) {
             log.error("QUERY PROCESS INFO ERROR! not found uid! uid={}", SecurityUtils.getUid());
-            return R.fail("未查询到相关用户");
+            return R.fail(null,"未查询到相关用户");
         }
 
         if (Objects.isNull(productNew)) {
             log.error("QUERY PROCESS INFO ERROR! not found no! no={}", no);
-            return R.fail("资产编码不存在");
+            return R.fail(null,"资产编码不存在");
         }
 
         if (!Objects.equals(productNew.getSupplierId(), user.getThirdId())) {
