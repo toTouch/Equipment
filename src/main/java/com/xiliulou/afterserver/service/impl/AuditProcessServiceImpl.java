@@ -85,17 +85,22 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
     public Integer getAuditProcessStatus(AuditProcess auditProcess, ProductNew productNew) {
 
         List<AuditGroup> auditGroupList = auditGroupService.getByProcessId(auditProcess.getId());
-        //如果分组为空，那么流程状态根随柜机状态
-        if(CollectionUtils.isEmpty(auditGroupList)) {
-            return getStatusByProductNewStatus(auditProcess.getType(), productNew.getStatus());
+        //如果分组为空或柜机非生产状态，那么流程状态根随柜机状态定
+        if(CollectionUtils.isEmpty(auditGroupList) || !Objects.equals(productNew.getStatus(), ProductNewStatusSortConstants.STATUS_PRODUCTION)) {
+            Integer status = getStatusFollowProductNewStatus(auditProcess.getType(), productNew.getStatus(), productNew.getTestResult());
+            if(Objects.nonNull(status)) {
+                return status;
+            }
         }
 
         //统计所有分组状态的个数
         Set<Integer> groupStatusSet = new HashSet<>(3);
-
+        //上一个状态
+        Integer[] preStatus = new Integer[1];
         auditGroupList.parallelStream().forEach(group -> {
-            Integer status = auditGroupService.getGroupStatus(group, productNew.getId());
+            Integer status = auditGroupService.getGroupStatus(group, productNew.getId(), preStatus[0]);
             groupStatusSet.add(status);
+            preStatus[0] = status;
         });
 
         //当分组状态为多个一定是 正在执行 状态
@@ -178,9 +183,12 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
         byProcessId.parallelStream().forEachOrdered(item -> {
             KeyProcessAuditGroupVo keyProcessAuditGroupVo = new KeyProcessAuditGroupVo();
             keyProcessAuditGroupVos.add(keyProcessAuditGroupVo);
-
             BeanUtils.copyProperties(item, keyProcessAuditGroupVo);
-            Integer status = auditGroupService.getGroupStatus(item, productNew.getId());
+            Integer preStatus = null;
+            if(CollectionUtils.isNotEmpty(keyProcessAuditGroupVos)) {
+                preStatus = keyProcessAuditGroupVos.get(keyProcessAuditGroupVos.size() - 1).getStatus();
+            }
+            Integer status = auditGroupService.getGroupStatus(item, productNew.getId(), preStatus);
             keyProcessAuditGroupVo.setStatus(status);
         });
 
@@ -243,17 +251,17 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
             }
         }
 
-        //添加日志
-        AuditGroupUpdateLog auditGroupUpdateLog = new AuditGroupUpdateLog();
-        auditGroupUpdateLog.setGroupId(groupById.getId());
-        auditGroupUpdateLog.setPid(productNew.getId());
-        auditGroupUpdateLog.setUid(SecurityUtils.getUid());
-        auditGroupUpdateLog.setCreateTime(System.currentTimeMillis());
-        auditGroupUpdateLogService.save(auditGroupUpdateLog);
+//        //添加日志
+//        AuditGroupUpdateLog auditGroupUpdateLog = new AuditGroupUpdateLog();
+//        auditGroupUpdateLog.setGroupId(groupById.getId());
+//        auditGroupUpdateLog.setPid(productNew.getId());
+//        auditGroupUpdateLog.setUid(SecurityUtils.getUid());
+//        auditGroupUpdateLog.setCreateTime(System.currentTimeMillis());
+//        auditGroupUpdateLogService.save(auditGroupUpdateLog);
 
         //updateOrCreate方法
         keyProcessQuery.getAuditEntryQueryList().forEach(item -> {
-            auditValueService.biandOrUnbindEntry(item.getId(), item.getValue(), productNew.getId(), auditGroupUpdateLog.getId());
+            auditValueService.biandOrUnbindEntry(item.getId(), item.getValue(), productNew.getId());
         });
 
         AuditProcess auditProcess = auditProcessMapper.selectById(groupById.getProcessId());
@@ -328,22 +336,32 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
         return null;
     }
 
-    private Integer getStatusByProductNewStatus(String type, Integer status){
-        Integer auditProcessStatus = null;
-        if(Objects.equals(type, AuditProcess.TYPE_PRE)) {
-            auditProcessStatus = 7;
-        }else{
-            auditProcessStatus = 8;
-        }
-        Double auditProcessValue = ProductNewStatusSortConstants.acquireStatusValue(auditProcessStatus);
-        Double statusValue = ProductNewStatusSortConstants.acquireStatusValue(status);
-        if( auditProcessValue < statusValue) {
-            return AuditProcessVo.STATUS_FINISHED;
-        }
-        if(auditProcessValue > statusValue) {
-            return AuditProcessVo.STATUS_UNFINISHED;
+    private Integer getStatusFollowProductNewStatus(String type, Integer status, Integer testStatus){
+        //当组件为空， 柜机为生产时
+        if(Objects.equals(status, ProductNewStatusSortConstants.STATUS_PRODUCTION)) {
+            if(Objects.equals(type, AuditProcess.TYPE_PRE)) {
+                return AuditProcessVo.STATUS_EXECUTING;
+            }else{
+                return AuditProcessVo.STATUS_UNFINISHED;
+            }
         }
 
-        return AuditProcessVo.STATUS_EXECUTING;
+        //这个时候柜机状态一定是非生产，那么跟随柜机状态判断
+        //如果页面为前置 那么一定是绿色
+        if(Objects.equals(type, AuditProcess.TYPE_PRE)) {
+            return AuditProcessVo.STATUS_FINISHED;
+        }
+
+        //页面为后置
+        Double auditProcessValue = ProductNewStatusSortConstants.acquireStatusValue(ProductNewStatusSortConstants.STATUS_POST_DETECTION);
+        Double statusValue = ProductNewStatusSortConstants.acquireStatusValue(status);
+
+        //看当前状态流程是否大于等于后置，如果是 则完成
+        if( auditProcessValue <= statusValue) {
+            return AuditProcessVo.STATUS_FINISHED;
+        }
+
+        //如果不是则继续判断是否填完
+        return null;
     }
 }

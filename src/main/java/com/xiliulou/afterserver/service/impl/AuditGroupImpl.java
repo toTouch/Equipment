@@ -65,7 +65,7 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
     }
 
     @Override
-    public Integer getGroupStatus(AuditGroup auditGroup, Long productNewId) {
+    public Integer getGroupStatus(AuditGroup auditGroup, Long productNewId, Integer preStatus) {
         List<Long> entryIds = JsonUtil.fromJsonArray(auditGroup.getEntryIds(), Long.class);
         if(CollectionUtils.isEmpty(entryIds)) {
             return AuditGroupVo.STATUS_UNFINISHED;
@@ -76,12 +76,21 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
         Long auditValueNotRequiredCount = auditValueService.getCountByEntryIdsAndPid(entryIds, productNewId, AuditEntry.NOT_REQUIRED);
 
         //必填组件为零，说明页面都为非必填
-        //当他没提交过内容则为未完成，当它提交过内容（哪怕啥也没提交）为已完成
+        //当为第一个时默认返回绿色， 其他时判断上一个的颜色 如果是绿色则为绿色，其他色置灰
         if(Objects.equals(auditEntryCount, 0L)) {
-            List<AuditGroupUpdateLog> auditGroupUpdateLogs = auditGroupUpdateLogService.list(new QueryWrapper<AuditGroupUpdateLog>().eq("group_id", auditGroup.getId()).eq("pid", productNewId));
-            if(CollectionUtils.isNotEmpty(auditGroupUpdateLogs)) {
+//            List<AuditGroupUpdateLog> auditGroupUpdateLogs = auditGroupUpdateLogService.list(new QueryWrapper<AuditGroupUpdateLog>().eq("group_id", auditGroup.getId()).eq("pid", productNewId));
+//            if(CollectionUtils.isNotEmpty(auditGroupUpdateLogs)) {
+//                return AuditGroupVo.STATUS_FINISHED;
+//            }
+//            return AuditGroupVo.STATUS_UNFINISHED;
+            if(Objects.isNull(preStatus)) {
                 return AuditGroupVo.STATUS_FINISHED;
             }
+
+            if(Objects.equals(preStatus, AuditGroupVo.STATUS_FINISHED)) {
+                return AuditGroupVo.STATUS_FINISHED;
+            }
+
             return AuditGroupVo.STATUS_UNFINISHED;
         }
 
@@ -182,8 +191,7 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
             return R.fail("参数错误，模块与流程绑定不一致");
         }
 
-        String fixedgGroup = AuditProcessConstans.getFixedgGroup(query.getId());
-        if(!StringUtils.isEmpty(fixedgGroup)) {
+        if(AuditProcessConstans.getFixedgGroup(query.getId())) {
             return R.fail("模块不可修改");
         }
 
@@ -219,8 +227,7 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
             return R.fail("模块有组件绑定，不可删除");
         }
 
-        String fixedgGroup = AuditProcessConstans.getFixedgGroup(id);
-        if(!StringUtils.isEmpty(fixedgGroup)) {
+        if(AuditProcessConstans.getFixedgGroup(id)) {
             return R.fail("模块不可删除");
         }
 
