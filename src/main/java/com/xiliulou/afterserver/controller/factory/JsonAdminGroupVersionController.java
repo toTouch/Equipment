@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.controller.factory;
 import com.xiliulou.afterserver.entity.GroupVersion;
 import com.xiliulou.afterserver.service.GroupVersionService;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.core.json.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,7 @@ public class JsonAdminGroupVersionController {
     }
 
     @PostMapping("/admin/factory/check/group/version")
-    public R checkGroupVersion(@RequestParam("groupVersionList")List<GroupVersion> groupVersionList, @RequestParam("type") String type){
-        return groupVersionService.checkGroupVersion(groupVersionList, type);
+    public R checkGroupVersion(@RequestParam("groupVersionList")String groupVersionList, @RequestParam("type") String type){
+        return groupVersionService.checkGroupVersion(JsonUtil.fromJsonArray(groupVersionList, GroupVersion.class), type);
     }
 }
