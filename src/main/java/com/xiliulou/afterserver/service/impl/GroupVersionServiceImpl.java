@@ -114,9 +114,10 @@ public class GroupVersionServiceImpl  extends ServiceImpl<GroupVersionMapper, Gr
                 if(Objects.equals(groupVersionOld.getGroupId(), groupVersion.getGroupId())) {
                     if(!(groupVersionOld.getVersion().compareTo(groupVersion.getVersion()) == 0)) {
                         msg.add(groupVersionOld.getGroupName() + UPDATE);
-                        it.remove();
-                        oldIt.remove();
                     }
+
+                    it.remove();
+                    oldIt.remove();
                 }
             }
         }
@@ -125,14 +126,12 @@ public class GroupVersionServiceImpl  extends ServiceImpl<GroupVersionMapper, Gr
             groupVersionsOld.forEach(item -> {
                 msg.add(item.getGroupName() + INSERT);
             });
-            return R.ok(msg);
         }
 
         if(CollectionUtils.isNotEmpty(groupVersionList)) {
             groupVersionList.forEach(item -> {
                 msg.add(item.getGroupName() + DELETE);
             });
-            return R.ok(msg);
         }
 
         return R.ok(msg);
