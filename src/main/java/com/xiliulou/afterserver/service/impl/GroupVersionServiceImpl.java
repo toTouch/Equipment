@@ -50,6 +50,8 @@ public class GroupVersionServiceImpl  extends ServiceImpl<GroupVersionMapper, Gr
             if(!save(insert)) {
                 throw  new CustomBusinessException("数据库错误");
             }
+
+            return;
         }
 
         groupVersion.setVersion(groupVersion.getVersion().add(new BigDecimal("0.01")));
