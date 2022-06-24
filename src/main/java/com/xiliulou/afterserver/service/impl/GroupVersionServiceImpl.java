@@ -108,7 +108,7 @@ public class GroupVersionServiceImpl  extends ServiceImpl<GroupVersionMapper, Gr
         Iterator<GroupVersion> it = groupVersionsOld.iterator();
 
         while(oldIt.hasNext()) {
-            GroupVersion groupVersionOld = it.next();
+            GroupVersion groupVersionOld = oldIt.next();
             while(it.hasNext()) {
                 GroupVersion groupVersion = it.next();
                 if(Objects.equals(groupVersionOld.getGroupId(), groupVersion.getGroupId())) {
