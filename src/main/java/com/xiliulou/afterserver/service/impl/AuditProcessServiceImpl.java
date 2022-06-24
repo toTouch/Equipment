@@ -180,16 +180,14 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
 
         //统计分组状态
         List<KeyProcessAuditGroupVo> keyProcessAuditGroupVos = new ArrayList<>();
+        Integer[] preStatus = new Integer[1];
         byProcessId.parallelStream().forEachOrdered(item -> {
             KeyProcessAuditGroupVo keyProcessAuditGroupVo = new KeyProcessAuditGroupVo();
             keyProcessAuditGroupVos.add(keyProcessAuditGroupVo);
             BeanUtils.copyProperties(item, keyProcessAuditGroupVo);
-            Integer preStatus = null;
-            if(CollectionUtils.isNotEmpty(keyProcessAuditGroupVos)) {
-                preStatus = keyProcessAuditGroupVos.get(keyProcessAuditGroupVos.size() - 1).getStatus();
-            }
-            Integer status = auditGroupService.getGroupStatus(item, productNew.getId(), preStatus);
+            Integer status = auditGroupService.getGroupStatus(item, productNew.getId(), preStatus[0]);
             keyProcessAuditGroupVo.setStatus(status);
+            preStatus[0] = status;
         });
 
         //调整分组状态（如果不存在正在执行，调整第一个未完成为正在执行，没有未完成返回空）
