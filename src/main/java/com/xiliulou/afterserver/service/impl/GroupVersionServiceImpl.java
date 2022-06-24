@@ -112,7 +112,7 @@ public class GroupVersionServiceImpl  extends ServiceImpl<GroupVersionMapper, Gr
             while(it.hasNext()) {
                 GroupVersion groupVersion = it.next();
                 if(Objects.equals(groupVersionOld.getGroupId(), groupVersion.getGroupId())) {
-                    if(groupVersionOld.getVersion().compareTo(groupVersion.getVersion()) < 0) {
+                    if(!(groupVersionOld.getVersion().compareTo(groupVersion.getVersion()) == 0)) {
                         msg.add(groupVersionOld.getGroupName() + UPDATE);
                         it.remove();
                         oldIt.remove();
