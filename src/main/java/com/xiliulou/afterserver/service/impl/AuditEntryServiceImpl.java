@@ -215,7 +215,7 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
         }
 
         //添加group版本
-        groupVersionService.createOrUpdate(auditGroup.getId(), query.getName());
+        groupVersionService.createOrUpdate(auditGroup.getId(), auditGroup.getName());
         return R.ok();
     }
 
@@ -274,7 +274,7 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
         }
 
         //添加group版本
-        groupVersionService.createOrUpdate(auditGroup.getId(), updateEntry.getName());
+        groupVersionService.createOrUpdate(auditGroup.getId(), auditGroup.getName());
         return R.ok();
     }
 
