@@ -13,6 +13,7 @@ import com.xiliulou.afterserver.mapper.AuditEntryMapper;
 import com.xiliulou.afterserver.service.AuditEntryService;
 import com.xiliulou.afterserver.service.AuditGroupService;
 import com.xiliulou.afterserver.service.AuditValueService;
+import com.xiliulou.afterserver.service.GroupVersionService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.AuditEntryStrawberryQuery;
 import com.xiliulou.afterserver.web.vo.AuditEntryStrawberryVo;
@@ -54,6 +55,8 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
     AliyunOssService aliyunOssService;
     @Autowired
     StorageConfig storageConfig;
+    @Autowired
+    GroupVersionService groupVersionService;
 
     private static final String RADIO = "(单选)";
     private static final String CHECKBOX = "(多选)";
@@ -199,7 +202,7 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
             throw new CustomBusinessException("数据库错误");
         }
 
-
+        //更新组件绑定
         List<Long> entryIds = JsonUtil.fromJsonArray(auditGroup.getEntryIds(), Long.class);
         if(CollectionUtils.isEmpty(entryIds)) {
             entryIds = new ArrayList<>();
@@ -211,6 +214,8 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
             throw new CustomBusinessException("数据库错误");
         }
 
+        //添加group版本
+        groupVersionService.createOrUpdate(auditGroup.getId(), auditGroup.getName());
         return R.ok();
     }
 
@@ -267,6 +272,9 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
             log.error("DB ERROR! save auditEntry sql error data={}", updateEntry.toString());
             throw new CustomBusinessException("数据库错误");
         }
+
+        //添加group版本
+        groupVersionService.createOrUpdate(auditGroup.getId(), auditGroup.getName());
         return R.ok();
     }
 
@@ -303,6 +311,9 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
             log.error("DB ERROR! delete auditEntry sql error data={}", auditGroup.toString());
             throw new CustomBusinessException("数据库错误");
         }
+
+        //添加group版本
+        groupVersionService.removeByGroupId(auditGroup.getId());
         return R.ok();
     }
 

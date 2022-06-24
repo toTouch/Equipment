@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.constant.AuditProcessConstans;
-import com.xiliulou.afterserver.entity.AuditEntry;
-import com.xiliulou.afterserver.entity.AuditGroup;
-import com.xiliulou.afterserver.entity.AuditGroupUpdateLog;
-import com.xiliulou.afterserver.entity.AuditProcess;
+import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.AuditGroupMapper;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
@@ -15,6 +12,7 @@ import com.xiliulou.afterserver.web.query.AuditGroupStrawberryQuery;
 import com.xiliulou.afterserver.web.vo.AuditGroupStrawberryVo;
 import com.xiliulou.afterserver.web.vo.AuditGroupVo;
 import com.xiliulou.afterserver.web.vo.KeyProcessAuditGroupVo;
+import com.xiliulou.core.exception.CustomBusinessException;
 import com.xiliulou.core.json.JsonUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +46,8 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
     AuditProcessService auditProcessService;
     @Autowired
     AuditGroupUpdateLogService auditGroupUpdateLogService;
+    @Autowired
+    GroupVersionService groupVersionService;
 
     @Override
     public List<AuditGroup> getByProcessId(Long id) {
@@ -156,7 +156,12 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
         auditGroup.setName(query.getName());
         auditGroup.setSort(query.getSort());
         auditGroup.setProcessId(auditProcess.getId());
-        this.baseMapper.insert(auditGroup);
+        if( this.baseMapper.insert(auditGroup) < 1) {
+            throw  new CustomBusinessException("数据库错误");
+        }
+
+        //添加group版本
+        groupVersionService.createOrUpdate(auditGroup.getId(), auditGroup.getName());
         return R.ok();
     }
 
@@ -195,6 +200,9 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
         auditGroup.setSort(query.getSort());
         auditGroup.setName(query.getName());
         this.baseMapper.updateById(auditGroup);
+
+        //添加group版本
+        groupVersionService.createOrUpdate(auditGroup.getId(), auditGroup.getName());
         return R.ok();
     }
 
@@ -217,6 +225,9 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
         }
 
         this.baseMapper.deleteById(id);
+
+        //删除group版本
+        groupVersionService.removeByGroupId(id);
         return R.ok();
     }
 
