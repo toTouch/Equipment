@@ -118,6 +118,7 @@ public class GroupVersionServiceImpl  extends ServiceImpl<GroupVersionMapper, Gr
 
                     it.remove();
                     oldIt.remove();
+                    break;
                 }
             }
         }
