@@ -552,7 +552,7 @@ public class ProductNewServiceImpl implements ProductNewService {
 
         //更新物联网卡
         ProductNew mainProduct = mainProducts.get(0);
-        auditValueService.biandOrUnbindEntry(AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY, iotCard.getSn(), mainProduct.getId(), null);
+        auditValueService.biandOrUnbindEntry(AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY, iotCard.getSn(), mainProduct.getId());
         return R.ok(Arrays.asList(mainProduct.getNo()));
     }
 
@@ -608,7 +608,7 @@ public class ProductNewServiceImpl implements ProductNewService {
             product.setTestResult(1);
 
             //更新物联网卡
-            auditValueService.biandOrUnbindEntry(AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY, iotCard.getSn(), productOld.getId(), null);
+            auditValueService.biandOrUnbindEntry(AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY, iotCard.getSn(), productOld.getId());
             //更新柜机状态
             Integer status = auditProcessService.getAuditProcessStatus(byType, productOld);
             if(Objects.equals(status, AuditProcessVo.STATUS_FINISHED)){
