@@ -37,16 +37,16 @@ public class AuditValueServiceImpl extends ServiceImpl<AuditValueMapper, AuditVa
     }
 
     @Override
-    public boolean biandOrUnbindEntry(Long entryId, String value, Long pid, Long logId) {
+    public boolean biandOrUnbindEntry(Long entryId, String value, Long pid) {
         AuditEntry auditEntryOld = auditEntryService.getById(entryId);
         if(Objects.isNull(auditEntryOld)) {
             return false;
         }
 
         //添加日志
-        if(Objects.nonNull(logId)) {
-            auditGroupLogContentService.saveOne(logId, auditEntryOld.getName(), auditEntryOld.getType(), value);
-        }
+//        if(Objects.nonNull(logId)) {
+//            auditGroupLogContentService.saveOne(logId, auditEntryOld.getName(), auditEntryOld.getType(), value);
+//        }
 
         AuditValue auditValue = auditValueMapper.selectByEntryId(entryId, pid);
         //log.error("测试pda上传 -----> " + JsonUtil.toJson(auditValue) + "value = " + value  +",pid=" + pid + ",entryId="+entryId);
