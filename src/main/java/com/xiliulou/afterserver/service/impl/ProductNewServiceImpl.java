@@ -533,7 +533,6 @@ public class ProductNewServiceImpl implements ProductNewService {
                 Integer status = auditProcessService.getAuditProcessStatus(auditProcess, product);
                 if(!Objects.equals(status, AuditProcessVo.STATUS_FINISHED)
                         || !Objects.equals(product.getStatus(), ProductNewStatusSortConstants.STATUS_PRE_DETECTION)){
-                    log.error("柜机前置检测未通过1 --> 状态=" + status + "proStats=" + product.getStatus());
                     errorStatus.add(product.getNo());
                 }
             }
@@ -548,7 +547,6 @@ public class ProductNewServiceImpl implements ProductNewService {
         }
 
         if(CollectionUtils.isNotEmpty(errorStatus)) {
-            log.error("柜机前置检测未通过2 --> " + JsonUtil.toJson(errorStatus));
             return R.fail(errorStatus, null, "柜机前置检测未通过或非前置检测完成状态,请核对");
         }
 
