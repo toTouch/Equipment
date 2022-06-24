@@ -104,8 +104,16 @@ public class GroupVersionServiceImpl  extends ServiceImpl<GroupVersionMapper, Gr
             return R.ok(msg);
         }
 
+
+//        List<GroupVersion> delOld = new ArrayList<>();
+//        List<GroupVersion> del = new ArrayList<>();
+//
+//        groupVersionsOld.forEach(old -> {
+//
+//        });
+
         Iterator<GroupVersion> oldIt = groupVersionsOld.iterator();
-        Iterator<GroupVersion> it = groupVersionsOld.iterator();
+        Iterator<GroupVersion> it = groupVersionList.iterator();
 
         while(oldIt.hasNext()) {
             GroupVersion groupVersionOld = oldIt.next();
