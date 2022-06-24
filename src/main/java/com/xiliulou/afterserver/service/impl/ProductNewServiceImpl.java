@@ -568,7 +568,7 @@ public class ProductNewServiceImpl implements ProductNewService {
             return R.fail(null, null, "参数解析错误");
         }
 
-        if (CollectionUtils.isNotEmpty(compression.getNoList())) {
+        if (CollectionUtils.isEmpty(compression.getNoList())) {
             return R.fail(null, null, "压测柜机不存在，请核对");
         }
 
