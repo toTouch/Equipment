@@ -45,6 +45,7 @@ public class GroupVersionServiceImpl  extends ServiceImpl<GroupVersionMapper, Gr
         if(Objects.isNull(groupVersion)) {
             GroupVersion insert = new GroupVersion();
             insert.setGroupId(groupId);
+            insert.setGroupName(groupName);
             insert.setVersion(new BigDecimal("0"));
             if(!save(insert)) {
                 throw  new CustomBusinessException("数据库错误");
@@ -52,6 +53,7 @@ public class GroupVersionServiceImpl  extends ServiceImpl<GroupVersionMapper, Gr
         }
 
         groupVersion.setVersion(groupVersion.getVersion().add(new BigDecimal("0.01")));
+        groupVersion.setGroupName(groupName);
         if(!updateById(groupVersion)) {
             throw  new CustomBusinessException("数据库错误");
         }
