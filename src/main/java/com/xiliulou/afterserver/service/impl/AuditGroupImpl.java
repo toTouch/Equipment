@@ -83,6 +83,7 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
 //                return AuditGroupVo.STATUS_FINISHED;
 //            }
 //            return AuditGroupVo.STATUS_UNFINISHED;
+            log.error("亮灯测试 --> pre="+preStatus);
             if(Objects.isNull(preStatus)) {
                 return AuditGroupVo.STATUS_FINISHED;
             }
