@@ -711,7 +711,7 @@ public class ProductNewServiceImpl implements ProductNewService {
         Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
         if (Objects.isNull(batch)) {
             log.error("QUERY PROCESS INFO ERROR! not found batch! batch={}", productNew.getBatchId());
-            return R.fail(null, "柜机未绑定批次，请重新登陆");
+            return R.fail(null, "柜机未绑定批次，请检查");
         }
 
         SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
