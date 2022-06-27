@@ -24,7 +24,7 @@ public class JsonAdminAuditProcessController {
      */
     @GetMapping("admin/audit/process/info")
     public R getKeyProcess(@RequestParam("no")String no, @RequestParam("type")String type, @RequestParam(value = "groupId", required = false)Long groupId){
-        Boolean isAdmin = true;
+        Integer isAdmin = 1;
         return auditProcessService.getKeyProcess(no, type, groupId, isAdmin);
     }
 }
