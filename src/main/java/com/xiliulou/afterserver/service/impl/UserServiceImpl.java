@@ -169,11 +169,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if(Objects.isNull(user)){
             return R.fail("请传入用户信息");
         }
-        if(Objects.isNull(user.getPassWord())){
-            return R.fail("请传入用户密码");
+        if(StringUtils.isBlank(user.getPassWord())){
+           user.setPassWord(null);
+        }else {
+            user.setPassWord(PasswordUtils.encode(user.getPassWord()));
         }
 
-        user.setPassWord(PasswordUtils.encode(user.getPassWord()));
+
         this.updateById(user);
 
         return R.ok();
