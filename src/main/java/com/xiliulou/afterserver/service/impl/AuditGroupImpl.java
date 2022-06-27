@@ -130,7 +130,7 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
         }
 
         List<AuditGroupStrawberryVo> data = new ArrayList<>();
-        List<AuditGroup> auditGroupList = this.baseMapper.selectList(new QueryWrapper<AuditGroup>().eq("process_id", auditProcess.getId()).orderByAsc("sort"));
+        List<AuditGroup> auditGroupList = this.baseMapper.selectList(new QueryWrapper<AuditGroup>().eq("process_id", auditProcess.getId()).eq("del_flag", AuditGroup.DEL_NORMAL).orderByAsc("sort"));
         if(CollectionUtils.isEmpty(auditGroupList)) {
             return R.ok(data);
         }
@@ -232,7 +232,8 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
             return R.fail("模块不可删除");
         }
 
-        this.baseMapper.deleteById(id);
+        auditGroup.setDelFlag(AuditGroup.DEL_DEL);
+        this.baseMapper.updateById(auditGroup);
 
         //删除group版本
         groupVersionService.removeByGroupId(id);
