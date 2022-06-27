@@ -67,12 +67,12 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
     }
 
     @Override
-    public List<KeyProcessAuditEntryVo> getVoByEntryIds(List<Long> entryIds, Long pid) {
+    public List<KeyProcessAuditEntryVo> getVoByEntryIds(List<Long> entryIds, Long pid, Boolean isAdmin) {
         if(CollectionUtils.isEmpty(entryIds)) {
             return  new ArrayList<>();
         }
 
-        List<KeyProcessAuditEntryVo> voList = auditEntryMapper.queryByEntryIdsAndPid(entryIds, pid);
+        List<KeyProcessAuditEntryVo> voList = auditEntryMapper.queryByEntryIdsAndPid(entryIds, pid, isAdmin);
         if(CollectionUtils.isEmpty(voList)) {
             return new ArrayList<>();
         }

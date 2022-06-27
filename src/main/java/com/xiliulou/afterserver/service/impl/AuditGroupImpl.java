@@ -56,12 +56,12 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
 
     @Override
     public AuditGroup getByName(String name){
-        return this.baseMapper.selectOne(new QueryWrapper<AuditGroup>().eq("name", name));
+        return this.baseMapper.selectOne(new QueryWrapper<AuditGroup>().eq("name", name).eq("del_flag", AuditGroup.DEL_NORMAL));
     }
 
     @Override
     public AuditGroup getBySort(BigDecimal sort, Long processId){
-        return this.baseMapper.selectOne(new QueryWrapper<AuditGroup>().eq("sort", sort).eq("process_id", processId));
+        return this.baseMapper.selectOne(new QueryWrapper<AuditGroup>().eq("sort", sort).eq("process_id", processId).eq("del_flag", AuditGroup.DEL_NORMAL));
     }
 
     @Override

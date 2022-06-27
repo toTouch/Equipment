@@ -70,7 +70,7 @@ public class JsonAdminKeyProcessController {
      */
     @GetMapping("key/process")
     public R getKeyProcess(@RequestParam("no")String no, @RequestParam("type")String type, @RequestParam(value = "groupId", required = false)Long groupId){
-        return auditProcessService.getKeyProcess(no, type, groupId);
+        return auditProcessService.getKeyProcess(no, type, groupId, null);
     }
 
     /**

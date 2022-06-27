@@ -134,7 +134,7 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
     }
 
     @Override
-    public R getKeyProcess(String no, String type, Long groupId) {
+    public R getKeyProcess(String no, String type, Long groupId, Boolean isAdmin) {
         ProductNew productNew = productNewService.queryByNo(no);
         Long uid = SecurityUtils.getUid();
         if (Objects.isNull(uid)) {
@@ -211,7 +211,7 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
         keyProcessVo.setGroupId(groupId);
         keyProcessVo.setGroupName(groupById.getName());
         //查询分组下的组件和值
-        List<KeyProcessAuditEntryVo> keyProcessAuditEntryVos = auditEntryService.getVoByEntryIds(JsonUtil.fromJsonArray(groupById.getEntryIds(), Long.class), productNew.getId());
+        List<KeyProcessAuditEntryVo> keyProcessAuditEntryVos = auditEntryService.getVoByEntryIds(JsonUtil.fromJsonArray(groupById.getEntryIds(), Long.class), productNew.getId(),  isAdmin);
         keyProcessVo.setKeyProcessAuditEntryList(keyProcessAuditEntryVos);
 
         return R.ok(keyProcessVo);
@@ -326,7 +326,7 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
             }
         }
         //"柜机外观"
-        if(Objects.equals(item.getId(), AuditProcessConstans.PRODUCT_COLOR_AUDIT_ENTRY)) {
+        if(Objects.equals(item.getId(), AuditProcessConstans.PRODUCT_SURFACE_AUDIT_ENTRY)) {
             if(!Arrays.asList("小皱", "平光", "橘纹").contains(item.getValue())) {
                 return R.fail(null,"外观录入有误，请重新填写");
             }

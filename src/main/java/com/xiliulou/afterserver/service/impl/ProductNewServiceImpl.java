@@ -837,22 +837,24 @@ public class ProductNewServiceImpl implements ProductNewService {
     public R checkProperty(String no) {
         ProductNew productNew = this.queryByNo(no);
         if (Objects.isNull(productNew)) {
-            return R.fail(null, "10001", "柜机资产编码不存在，请核对");
+            return R.fail(null, null, "柜机资产编码不存在，请核对");
         }
-
-
 
         Batch productBatch = batchService.queryByIdFromDB(productNew.getBatchId());
         if (Objects.isNull(productBatch)) {
             return R.fail(null, null, "未查询到柜机批次，请联系管理员");
         }
 
-
         Product product = productService.getById(productNew.getModelId());
         if (Objects.isNull(product)) {
-            return R.fail(null, "10001", "未查询到柜机类型，请联系管理员");
+            return R.fail(null, null, "未查询到柜机类型，请联系管理员");
         }
 
+        AuditProcess post = auditProcessService.getByType(AuditProcess.TYPE_POST);
+        Integer status =  auditProcessService.getAuditProcessStatus(post, productNew);
+        if(!Objects.equals(status, AuditProcessVo.STATUS_FINISHED) && !Objects.equals(productNew.getStatus(), ProductNewStatusSortConstants.STATUS_POST_DETECTION)) {
+            return R.fail(null, null, "产品非后置检查状态或后置检查未完成");
+        }
 
 
         SimpleDateFormat sim = new SimpleDateFormat("hh:mm");

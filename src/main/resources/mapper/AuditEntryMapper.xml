@@ -40,7 +40,9 @@
             and v.pid = #{pid}
         </if>
         <where>
-            e.del_flag = 0
+            <if test="not isAdmin">
+                e.del_flag = 0
+            </if>
             <if test="entryIds != null and entryIds.size() > 0">
                 and e.id in
                 <foreach collection="entryIds" item="e" open="(" close=")" separator=",">

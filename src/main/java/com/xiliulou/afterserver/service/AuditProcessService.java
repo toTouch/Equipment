@@ -25,7 +25,7 @@ public interface AuditProcessService extends IService<AuditProcess> {
 
     public void processStatusAdjustment(List<AuditProcessVo> auditProcessVos);
 
-    R getKeyProcess(String no, String type, Long groupId);
+    R getKeyProcess(String no, String type, Long groupId, Boolean isAdmin);
 
     R putKeyProcess(KeyProcessQuery keyProcessQuery);
 }

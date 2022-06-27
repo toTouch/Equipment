@@ -17,7 +17,7 @@ public interface AuditEntryMapper extends BaseMapper<AuditEntry> {
 
     Long getCountByIdsAndRequired(@Param("entryIds") List<Long> entryIds, @Param("required")Integer required);
 
-    List<KeyProcessAuditEntryVo> queryByEntryIdsAndPid(@Param("entryIds")List<Long> entryIds, @Param("pid")Long pid);
+    List<KeyProcessAuditEntryVo> queryByEntryIdsAndPid(@Param("entryIds")List<Long> entryIds, @Param("pid")Long pid, @Param("isAdmin")Boolean isAdmin);
 
     List<AuditEntry> getByEntryIds(@Param("entryIds")List<Long> entryIds);
 
