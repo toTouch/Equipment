@@ -41,7 +41,7 @@
         </if>
         <where>
             <if test="isAdmin == null">
-                and e.del_flag = 0
+                and e.del_flag = 0 and e.group_id = #{groupId}
             </if>
             <if test="entryIds != null and entryIds.size() > 0">
                 and e.id in
