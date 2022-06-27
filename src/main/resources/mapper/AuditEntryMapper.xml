@@ -43,16 +43,15 @@
             <if test="isAdmin == null">
                 and e.del_flag = 0
             </if>
-            <if test="isAdmin != null">
-                and e.group_id = #{groupId}
-            </if>
             <if test="entryIds != null and entryIds.size() > 0">
                 and e.id in
                 <foreach collection="entryIds" item="e" open="(" close=")" separator=",">
                     #{e}
                 </foreach>
             </if>
-
+            <if test="isAdmin != null">
+                or e.group_id = #{groupId}
+            </if>
         </where>
         order by sort
     </select>
