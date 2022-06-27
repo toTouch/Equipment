@@ -17,7 +17,7 @@ import java.util.List;
  */
 public interface AuditGroupService extends IService<AuditGroup> {
 
-    List<AuditGroup> getByProcessId(Long id);
+    List<AuditGroup> getByProcessId(Long id, Integer isAdmin);
 
     AuditGroup getByName(String name);
 
