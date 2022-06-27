@@ -729,7 +729,8 @@ public class ProductNewServiceImpl implements ProductNewService {
             AuditProcessVo testVo = auditProcessService.createTestAuditProcessVo();
             testVo.setStatus(ProductNew.TEST_RESULT_SUCCESS.equals(productNew.getTestResult()) ? AuditProcessVo.STATUS_FINISHED : AuditProcessVo.STATUS_EXECUTING);
             AuditProcessVo deliverVo = auditProcessService.createDeliverAuditProcessVo();
-            deliverVo.setStatus(AuditProcessVo.STATUS_FINISHED.equals(testVo.getStatus()) ? ProductNewProcessInfoVo.STATUS_FINISHED : ProductNewProcessInfoVo.STATUS_UN_FINISHED);
+            boolean flag = ProductNewStatusSortConstants.acquireStatusValue(productNew.getStatus()) >= ProductNewStatusSortConstants.acquireStatusValue(ProductNewStatusSortConstants.STATUS_SHIPPED);
+            deliverVo.setStatus( flag ? ProductNewProcessInfoVo.STATUS_FINISHED : ProductNewProcessInfoVo.STATUS_UN_FINISHED);
             voList.add(testVo);
             voList.add(deliverVo);
 
@@ -770,15 +771,8 @@ public class ProductNewServiceImpl implements ProductNewService {
         auditProcessService.processStatusAdjustment(voList);
 
         AuditProcessVo deliverVo = auditProcessService.createDeliverAuditProcessVo();
-        if (statusSet.size() > 1 || statusSet.contains(AuditProcessVo.STATUS_UNFINISHED)) {
-            //如果状态有多个，那么发货状态一定置灰
-            deliverVo.setStatus(ProductNewProcessInfoVo.STATUS_UN_FINISHED);
-        } /*else if (statusSet.contains(AuditProcessVo.STATUS_UNFINISHED)) {
-            //如果流程中全部为未完成，
-            deliverVo.setStatus(ProductNewProcessInfoVo.STATUS_UN_FINISHED);
-        }*/ else {
-            deliverVo.setStatus(ProductNewProcessInfoVo.STATUS_FINISHED);
-        }
+        boolean flag = ProductNewStatusSortConstants.acquireStatusValue(productNew.getStatus()) >= ProductNewStatusSortConstants.acquireStatusValue(ProductNewStatusSortConstants.STATUS_SHIPPED);
+        deliverVo.setStatus( flag ? ProductNewProcessInfoVo.STATUS_FINISHED : ProductNewProcessInfoVo.STATUS_UN_FINISHED);
         voList.add(deliverVo);
 
         return R.ok(vo);
