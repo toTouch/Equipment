@@ -12,6 +12,6 @@ import java.util.List;
  * @mood
  */
 public interface AuditGroupMapper extends BaseMapper<AuditGroup> {
-    @Select("select id, name, entry_ids, sort, process_id from t_audit_group where process_id = #{id} order by sort")
+    @Select("select id, name, entry_ids, sort, process_id from t_audit_group where process_id = #{id} and del_flag = 0 order by sort")
     List<AuditGroup> getByProcessId(Long id);
 }
