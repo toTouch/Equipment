@@ -68,7 +68,7 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
 
     @Override
     public List<KeyProcessAuditEntryVo> getVoByEntryIds(List<Long> entryIds, Long pid,Long groupId, Integer isAdmin) {
-        if(CollectionUtils.isEmpty(entryIds)) {
+        if(CollectionUtils.isEmpty(entryIds) && isAdmin != null) {
             return  new ArrayList<>();
         }
 
