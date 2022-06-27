@@ -50,8 +50,8 @@ public class AuditGroupImpl extends ServiceImpl<AuditGroupMapper, AuditGroup> im
     GroupVersionService groupVersionService;
 
     @Override
-    public List<AuditGroup> getByProcessId(Long id) {
-        return auditGroupMapper.getByProcessId(id);
+    public List<AuditGroup> getByProcessId(Long id, Integer isAdmin) {
+        return auditGroupMapper.getByProcessId(id, isAdmin);
     }
 
     @Override

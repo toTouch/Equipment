@@ -84,7 +84,7 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
     @Override
     public Integer getAuditProcessStatus(AuditProcess auditProcess, ProductNew productNew) {
 
-        List<AuditGroup> auditGroupList = auditGroupService.getByProcessId(auditProcess.getId());
+        List<AuditGroup> auditGroupList = auditGroupService.getByProcessId(auditProcess.getId(), null);
         //如果分组为空或柜机非生产状态，那么流程状态根随柜机状态定
         if(CollectionUtils.isEmpty(auditGroupList) || !Objects.equals(productNew.getStatus(), ProductNewStatusSortConstants.STATUS_PRODUCTION)) {
             Integer status = getStatusFollowProductNewStatus(auditProcess.getType(), productNew.getStatus(), productNew.getTestResult());
@@ -171,7 +171,7 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
         keyProcessVo.setProductStatus(productNewService.getStatusName(productNew.getStatus()));
 
         //如果流程分组为空，直接返回
-        List<AuditGroup> byProcessId = auditGroupService.getByProcessId(auditProcess.getId());
+        List<AuditGroup> byProcessId = auditGroupService.getByProcessId(auditProcess.getId(), isAdmin);
         if(CollectionUtils.isEmpty(byProcessId)) {
             keyProcessVo.setKeyProcessAuditEntryList(new ArrayList<>());
             keyProcessVo.setKeyProcessAuditGroupList(new ArrayList<>());
