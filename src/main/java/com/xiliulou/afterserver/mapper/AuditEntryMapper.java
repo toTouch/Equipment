@@ -21,6 +21,6 @@ public interface AuditEntryMapper extends BaseMapper<AuditEntry> {
 
     List<AuditEntry> getByEntryIds(@Param("entryIds")List<Long> entryIds);
 
-    @Update("update t_audit_entry set del_flag = 0 where id = #{id}")
+    @Update("update t_audit_entry set del_flag = 1 where id = #{id}")
     boolean removeById(@Param("id")Long id);
 }
