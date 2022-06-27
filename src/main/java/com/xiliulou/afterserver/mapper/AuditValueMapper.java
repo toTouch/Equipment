@@ -16,6 +16,6 @@ public interface AuditValueMapper extends BaseMapper<AuditValue> {
 
     Long getCountByEntryIdsAndPid(@Param("entryIds") List<Long> entryIds, @Param("productNewId")Long productNewId, @Param("required")Integer required);
 
-    @Select("select id, pid, entry_id, value, update_time, create_time from t_audit_value where entry_id = #{entryId} and del_flag = 0 and  pid = #{pid}")
+    @Select("select id, pid, entry_id, value, update_time, create_time from t_audit_value where entry_id = #{entryId}  and  pid = #{pid}")
     AuditValue selectByEntryId(@Param("entryId")Long entryId,  @Param("pid")Long pid);
 }
