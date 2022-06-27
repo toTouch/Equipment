@@ -598,7 +598,7 @@ public class ProductNewServiceImpl implements ProductNewService {
 
         for (String no : compression.getNoList()) {
             ProductNew productOld = this.queryByNo(no);
-            if (Objects.nonNull(productOld)) {
+            if (Objects.isNull(productOld)) {
                 continue;
             }
 
