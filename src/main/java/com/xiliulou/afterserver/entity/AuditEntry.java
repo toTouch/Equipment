@@ -49,6 +49,7 @@ public class AuditEntry {
     private Integer delFlag;
     private Long updateTime;
     private Long createTime;
+    private Long groupId;
 
     public static final Integer DEL_NORMAL = 0;
     public static final Integer DEL_DEL = 1;

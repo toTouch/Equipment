@@ -17,7 +17,7 @@ import java.util.List;
 public interface AuditEntryService extends IService<AuditEntry> {
     Long getCountByIdsAndRequired(List<Long> entryIds, Integer required);
 
-    List<KeyProcessAuditEntryVo> getVoByEntryIds(List<Long> entryIds, Long pid, Integer isAdmin);
+    List<KeyProcessAuditEntryVo> getVoByEntryIds(List<Long> entryIds, Long pid,Long groupId, Integer isAdmin);
 
     List<AuditEntry> getByEntryIds(List<Long> entryIds);
 

@@ -67,12 +67,12 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
     }
 
     @Override
-    public List<KeyProcessAuditEntryVo> getVoByEntryIds(List<Long> entryIds, Long pid, Integer isAdmin) {
+    public List<KeyProcessAuditEntryVo> getVoByEntryIds(List<Long> entryIds, Long pid,Long groupId, Integer isAdmin) {
         if(CollectionUtils.isEmpty(entryIds)) {
             return  new ArrayList<>();
         }
 
-        List<KeyProcessAuditEntryVo> voList = auditEntryMapper.queryByEntryIdsAndPid(entryIds, pid, isAdmin);
+        List<KeyProcessAuditEntryVo> voList = auditEntryMapper.queryByEntryIdsAndPid(entryIds, pid,groupId ,isAdmin);
         if(CollectionUtils.isEmpty(voList)) {
             return new ArrayList<>();
         }
@@ -197,6 +197,7 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
         insertEntry.setDelFlag(AuditEntry.DEL_NORMAL);
         insertEntry.setCreateTime(System.currentTimeMillis());
         insertEntry.setUpdateTime(System.currentTimeMillis());
+        insertEntry.setGroupId(auditGroup.getId());
         if((this.baseMapper.insert(insertEntry) == 0)) {
             log.error("DB ERROR! save auditEntry sql error data={}", insertEntry.toString());
             throw new CustomBusinessException("数据库错误");

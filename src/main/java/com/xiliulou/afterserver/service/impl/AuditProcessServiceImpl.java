@@ -211,7 +211,7 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
         keyProcessVo.setGroupId(groupId);
         keyProcessVo.setGroupName(groupById.getName());
         //查询分组下的组件和值
-        List<KeyProcessAuditEntryVo> keyProcessAuditEntryVos = auditEntryService.getVoByEntryIds(JsonUtil.fromJsonArray(groupById.getEntryIds(), Long.class), productNew.getId(),  isAdmin);
+        List<KeyProcessAuditEntryVo> keyProcessAuditEntryVos = auditEntryService.getVoByEntryIds(JsonUtil.fromJsonArray(groupById.getEntryIds(), Long.class), productNew.getId(), groupById.getId(), isAdmin);
         keyProcessVo.setKeyProcessAuditEntryList(keyProcessAuditEntryVos);
 
         return R.ok(keyProcessVo);
