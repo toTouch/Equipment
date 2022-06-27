@@ -40,8 +40,8 @@
             and v.pid = #{pid}
         </if>
         <where>
-            <if test="not isAdmin">
-                e.del_flag = 0
+            <if test="isAdmin != null">
+                and e.del_flag = 0
             </if>
             <if test="entryIds != null and entryIds.size() > 0">
                 and e.id in

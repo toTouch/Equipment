@@ -134,7 +134,7 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
     }
 
     @Override
-    public R getKeyProcess(String no, String type, Long groupId, Boolean isAdmin) {
+    public R getKeyProcess(String no, String type, Long groupId, Integer isAdmin) {
         ProductNew productNew = productNewService.queryByNo(no);
         Long uid = SecurityUtils.getUid();
         if (Objects.isNull(uid)) {
