@@ -311,7 +311,7 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
             throw new CustomBusinessException("数据库错误");
         }
 
-        //添加group版本
+        //清空group版本
         groupVersionService.removeByGroupId(auditGroup.getId());
         return R.ok();
     }
