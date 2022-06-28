@@ -68,6 +68,7 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
     @Override
     public AuditProcessVo createTestAuditProcessVo() {
         AuditProcessVo auditProcessVo = new AuditProcessVo();
+        auditProcessVo.setId(-1L);
         auditProcessVo.setName("老化测试");
         auditProcessVo.setType("test");
         return auditProcessVo;
@@ -76,6 +77,7 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
     @Override
     public AuditProcessVo createDeliverAuditProcessVo() {
         AuditProcessVo auditProcessVo = new AuditProcessVo();
+        auditProcessVo.setId(-2L);
         auditProcessVo.setName("发货状态");
         auditProcessVo.setType("deliver");
         return auditProcessVo;
