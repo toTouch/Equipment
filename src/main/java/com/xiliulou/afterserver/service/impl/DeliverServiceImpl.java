@@ -32,6 +32,7 @@ import com.xiliulou.afterserver.web.query.DeliverFactoryProductQuery;
 import com.xiliulou.afterserver.web.query.DeliverFactoryQuery;
 import com.xiliulou.afterserver.web.query.DeliverQuery;
 import com.xiliulou.afterserver.web.vo.*;
+import com.xiliulou.core.json.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -567,12 +568,15 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             return R.fail(null, null,"请传入发货信息");
         }
 
-        ArrayList<Integer> productIds = JSON.parseObject(deliver.getProduct(), ArrayList.class);
-        ArrayList<String> quantityIds = JSON.parseObject(deliver.getQuantity(), ArrayList.class);
+        List<Integer> productIds = JsonUtil.fromJsonArray(deliver.getProduct(), Integer.class);
+        List<String> quantityIds = JsonUtil.fromJsonArray(deliver.getQuantity(), String.class);
         Map<Long, Integer> deliverInfo = new HashMap<>();
 
-        if(productIds.size() == quantityIds.size()){
+        if(CollectionUtils.isNotEmpty(productIds) && CollectionUtils.isNotEmpty(quantityIds) && productIds.size() == quantityIds.size()){
             for(int i = 0; i < productIds.size(); i++){
+                if(Objects.isNull(productIds.get(i)) || StringUtils.isBlank(quantityIds.get(i))) {
+                    continue;
+                }
                 deliverInfo.put(new Long(productIds.get(i)), Integer.parseInt(quantityIds.get(i)));
             }
         }
