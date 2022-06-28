@@ -568,13 +568,13 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             return R.fail(null, null,"请传入发货信息");
         }
 
-        List<Integer> productIds = JsonUtil.fromJsonArray(deliver.getProduct(), Integer.class);
+        List<String> productIds = JsonUtil.fromJsonArray(deliver.getProduct(), String.class);
         List<String> quantityIds = JsonUtil.fromJsonArray(deliver.getQuantity(), String.class);
         Map<Long, Integer> deliverInfo = new HashMap<>();
 
         if(CollectionUtils.isNotEmpty(productIds) && CollectionUtils.isNotEmpty(quantityIds) && productIds.size() == quantityIds.size()){
             for(int i = 0; i < productIds.size(); i++){
-                if(Objects.isNull(productIds.get(i)) || StringUtils.isBlank(quantityIds.get(i))) {
+                if(StringUtils.isBlank(productIds.get(i)) || Objects.equals("null", productIds.get(i)) || StringUtils.isBlank(quantityIds.get(i)) || Objects.equals("null", quantityIds.get(i))) {
                     continue;
                 }
                 deliverInfo.put(new Long(productIds.get(i)), Integer.parseInt(quantityIds.get(i)));
