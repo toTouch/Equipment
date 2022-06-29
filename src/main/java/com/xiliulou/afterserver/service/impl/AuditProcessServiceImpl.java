@@ -266,8 +266,8 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
 
         AuditProcess auditProcess = auditProcessMapper.selectById(groupById.getProcessId());
         //查看流程是否检验完成 未完成直接结束
-        Integer status = getAuditProcessStatus(auditProcess, productNew);
-        if(!Objects.equals(status, AuditProcessVo.STATUS_FINISHED)) {
+        Integer postStatus = getAuditProcessStatus(auditProcess, productNew);
+        if(!Objects.equals(postStatus, AuditProcessVo.STATUS_FINISHED)) {
             return R.ok();
         }
 
@@ -279,8 +279,16 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
             return R.ok();
         }
 
-        //如果为后置 需要判断压测是否完成
-        if(Objects.equals(productNew.getTestResult(), ProductNew.TEST_RESULT_FAIL)) {
+        //如果为后置
+        // 需要判断压测是否完成
+        if(!Objects.equals(productNew.getTestResult(), ProductNew.TEST_RESULT_SUCCESS)) {
+            return R.ok();
+        }
+
+        //需要判断前置检测是否完成
+        AuditProcess preAuditProcess = this.getByType(AuditProcess.TYPE_PRE);
+        Integer preStatus = getAuditProcessStatus(auditProcess, productNew);
+        if(!Objects.equals(preStatus, AuditProcessVo.STATUS_FINISHED)) {
             return R.ok();
         }
 
