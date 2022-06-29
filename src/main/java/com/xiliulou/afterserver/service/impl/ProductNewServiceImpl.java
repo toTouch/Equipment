@@ -844,6 +844,10 @@ public class ProductNewServiceImpl implements ProductNewService {
             return R.fail(null, null, "未查询到柜机类型，请联系管理员");
         }
 
+        if(!Objects.equals(productNew.getStatus(), ProductNewStatusSortConstants.STATUS_POST_DETECTION)) {
+            return R.fail(null, null, statusErrorMsg(productNew.getStatus()));
+        }
+
         AuditProcess pre = auditProcessService.getByType(AuditProcess.TYPE_PRE);
         Integer preStatus =  auditProcessService.getAuditProcessStatus(pre, productNew);
         if(!Objects.equals(preStatus, AuditProcessVo.STATUS_FINISHED)) {
@@ -860,9 +864,7 @@ public class ProductNewServiceImpl implements ProductNewService {
             return R.fail(null, "10002", "产品后置检查未完成");
         }
 
-        if(!Objects.equals(productNew.getStatus(), ProductNewStatusSortConstants.STATUS_POST_DETECTION)) {
-            return R.fail(null, null, statusErrorMsg(productNew.getStatus()));
-        }
+
 
         SimpleDateFormat sim = new SimpleDateFormat("hh:mm");
 
