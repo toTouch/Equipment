@@ -884,7 +884,7 @@ public class ProductNewServiceImpl implements ProductNewService {
             msg += "产品生产中，请检验柜机后发货";
         }
         if(Objects.equals(status, ProductNewStatusSortConstants.STATUS_PRE_DETECTION)) {
-            msg += "产品前置检测完成，请将其余检验完成发货";
+            msg += "前置检测完成，请将其余检验完成发货";
         }
         if(Objects.equals(status, ProductNewStatusSortConstants.STATUS_TESTED)) {
             msg += "产品已测试，请将其余检验完成发货";
