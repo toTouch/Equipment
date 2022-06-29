@@ -844,14 +844,10 @@ public class ProductNewServiceImpl implements ProductNewService {
             return R.fail(null, null, "未查询到柜机类型，请联系管理员");
         }
 
-        if(!Objects.equals(productNew.getStatus(), ProductNewStatusSortConstants.STATUS_POST_DETECTION)) {
-            return R.fail(null, null, "产品非后置检查状态");
-        }
-
         AuditProcess pre = auditProcessService.getByType(AuditProcess.TYPE_PRE);
         Integer preStatus =  auditProcessService.getAuditProcessStatus(pre, productNew);
         if(!Objects.equals(preStatus, AuditProcessVo.STATUS_FINISHED)) {
-            return R.fail(null, null, "产品前置检查未完成");
+            return R.fail(null, "10001", "产品前置检查未完成");
         }
 
         if(!Objects.equals(productNew.getTestResult(), ProductNew.TEST_RESULT_SUCCESS)) {
@@ -861,9 +857,12 @@ public class ProductNewServiceImpl implements ProductNewService {
         AuditProcess post = auditProcessService.getByType(AuditProcess.TYPE_POST);
         Integer status =  auditProcessService.getAuditProcessStatus(post, productNew);
         if(!Objects.equals(status, AuditProcessVo.STATUS_FINISHED)) {
-            return R.fail(null, null, "产品后置检查未完成");
+            return R.fail(null, "10002", "产品后置检查未完成");
         }
 
+        if(!Objects.equals(productNew.getStatus(), ProductNewStatusSortConstants.STATUS_POST_DETECTION)) {
+            return R.fail(null, null, statusErrorMsg(productNew.getStatus()));
+        }
 
         SimpleDateFormat sim = new SimpleDateFormat("hh:mm");
 
@@ -876,6 +875,24 @@ public class ProductNewServiceImpl implements ProductNewService {
         vo.setStatusName(getStatusName(productNew.getStatus()));
         vo.setInsertTime(sim.format(new Date()));
         return R.fail(vo);
+    }
+
+    private String statusErrorMsg(Integer status) {
+        String msg  = "";
+        if(Objects.equals(status, ProductNewStatusSortConstants.STATUS_PRODUCTION)) {
+            msg += "产品生产中，请检验柜机后发货";
+        }
+        if(Objects.equals(status, ProductNewStatusSortConstants.STATUS_PRE_DETECTION)) {
+            msg += "产品前置检测完成，请将其余检验完成发货";
+        }
+        if(Objects.equals(status, ProductNewStatusSortConstants.STATUS_TESTED)) {
+            msg += "产品已测试，请将其余检验完成发货";
+        }
+        boolean isDeliver = ProductNewStatusSortConstants.acquireStatusValue(status) > ProductNewStatusSortConstants.acquireStatusValue(ProductNewStatusSortConstants.STATUS_POST_DETECTION);
+        if(isDeliver) {
+            msg += "产品已发货";
+        }
+        return msg;
     }
 
     @Override
