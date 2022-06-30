@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiliulou.afterserver.mapper.AuditEntryMapper">
+
+    <resultMap id="AuditEntryMap" type="com.xiliulou.afterserver.entity.AuditEntry">
+        <result column="id" property="id" jdbcType="INTEGER"></result>
+        <result column="name" property="name" jdbcType="VARCHAR"></result>
+        <result column="type" property="type" jdbcType="INTEGER"></result>
+        <result column="json_content" property="jsonContent" jdbcType="VARCHAR"></result>
+        <result column="json_root" property="jsonRoot" jdbcType="VARCHAR"></result>
+        <result column="sort" property="sort" jdbcType="DECIMAL"></result>
+        <result column="required" property="required" jdbcType="INTEGER"></result>
+        <result column="del_flag" property="delFlag" jdbcType="INTEGER"></result>
+        <result column="update_time" property="updateTime" jdbcType="INTEGER"></result>
+        <result column="create_time" property="createTime" jdbcType="INTEGER"></result>
+    </resultMap>
+
+    <select id="getCountByIdsAndRequired" resultType="long">
+        select
+          count(*)
+        from t_audit_entry
+        <where>
+            del_flag = 0
+            <if test="entryIds != null and entryIds.size() > 0">
+                and id in
+                <foreach collection="entryIds" item="e" open="(" close=")" separator=",">
+                    #{e}
+                </foreach>
+            </if>
+            <if test="required != null">
+                and required = #{required}
+            </if>
+        </where>
+    </select>
+    
+    <select id="queryByEntryIdsAndPid" resultType="com.xiliulou.afterserver.web.vo.KeyProcessAuditEntryVo">
+        select e.id, e.name, e.type, e.json_content, e.json_root, e.sort, e.required, v.id as value_id, v.value
+        from t_audit_entry e left join t_audit_value v on e.id = v.entry_id
+        <if test="pid != null" >
+            and v.pid = #{pid}
+        </if>
+        <where>
+            <if test="isAdmin == null">
+                and e.del_flag = 0
+            </if>
+            <if test="entryIds != null and entryIds.size() > 0">
+                and e.id in
+                <foreach collection="entryIds" item="e" open="(" close=")" separator=",">
+                    #{e}
+                </foreach>
+            </if>
+            <if test="isAdmin != null">
+                or e.group_id = #{groupId}
+            </if>
+        </where>
+        order by sort
+    </select>
+
+    <select id="getByEntryIds" resultMap="AuditEntryMap">
+        select
+           id, name, type, json_content, json_root, sort, required, update_time, del_flag, create_time
+        from t_audit_entry
+        <where>
+            del_flag = 0
+            <if test="entryIds != null and entryIds.size() > 0">
+                and id in
+                <foreach collection="entryIds" item="e" open="(" close=")" separator=",">
+                    #{e}
+                </foreach>
+            </if>
+        </where>
+        order by sort
+    </select>
+</mapper>

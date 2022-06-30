@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiliulou.afterserver.mapper.AuditValueMapper">
+
+    <select id="getCountByEntryIdsAndPid" resultType="long">
+        select
+        count(*)
+        from t_audit_entry e , t_audit_value v
+        <where>
+            e.id = v.entry_id
+            and del_flag = 0
+            <if test="entryIds != null and entryIds.size() > 0">
+                and e.id in
+                <foreach collection="entryIds" item="e" open="(" close=")" separator=",">
+                    #{e}
+                </foreach>
+            </if>
+            <if test="productNewId != null">
+                and v.pid = #{productNewId}
+            </if>
+            <if test="required != null">
+                and e.required = #{required}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -8,6 +8,7 @@ import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.CompressionQuery;
 import com.xiliulou.afterserver.web.query.ProductNewDetailsQuery;
 import com.xiliulou.afterserver.web.query.ProductNewQuery;
+import com.xiliulou.afterserver.web.vo.OssUrlVo;
 import com.xiliulou.storage.config.StorageConfig;
 import com.xiliulou.storage.service.impl.AliyunOssService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,33 +28,33 @@ import java.util.*;
 public class AdminJsonProductNewController {
     @Autowired
     private ProductNewService productNewService;
-    @Autowired
-    private ProductService productService;
-    @Autowired
-    private BatchService batchService;
-    @Autowired
-    private PointProductBindService pointProductBindService;
-    @Autowired
-    private PointNewService pointNewService;
-    @Autowired
-    private SupplierService supplierService;
-    @Autowired
-    private WarehouseService warehouseService;
-    @Autowired
-    private IotCardService iotCardService;
-    @Autowired
-    private CameraService cameraService;
+//    @Autowired
+//    private ProductService productService;
+//    @Autowired
+//    private BatchService batchService;
+//    @Autowired
+//    private PointProductBindService pointProductBindService;
+//    @Autowired
+//    private PointNewService pointNewService;
+//    @Autowired
+//    private SupplierService supplierService;
+//    @Autowired
+//    private WarehouseService warehouseService;
+//    @Autowired
+//    private IotCardService iotCardService;
+//    @Autowired
+//    private CameraService cameraService;
     @Autowired
     private AliyunOssService aliyunOssService;
     @Autowired
     private StorageConfig StorageConfig;
-    @Autowired
-    private ColorCardService colorCardService;
+//    @Autowired
+//    private ColorCardService colorCardService;
 
     //@PostMapping("/admin/productNew")
-    public R saveAdminPointNew(@RequestBody ProductNew productNew){
-        return productNewService.saveAdminProductNew(productNew);
-    }
+//    public R saveAdminPointNew(@RequestBody ProductNew productNew){
+//        return productNewService.saveAdminProductNew(productNew);
+//    }
 
     @PutMapping("/admin/productNew")
     public R putAdminPointNew(@RequestBody ProductNewQuery query){
@@ -74,102 +75,14 @@ public class AdminJsonProductNewController {
                        @RequestParam(value = "pointType",required = false) Integer pointType,
                        @RequestParam(value = "startTime",required = false) Long startTime,
                        @RequestParam(value = "endTime",required = false) Long endTime){
-        List<Long> productIds = null;
-        if(Objects.nonNull(pointId) || Objects.nonNull(pointType)){
-            productIds = pointProductBindService.queryProductIdsByPidAndPtype(pointId, pointType);
-            //这里如果没查到就添加一个默认的，否则productIds为空，列表返回全部
-            if(CollectionUtils.isEmpty(productIds)) {
-                productIds = new ArrayList<>();
-                productIds.add(-1L);
-            }
-        }
+        return productNewService.pointList(offset, limit, no, modelId, pointId, pointType, startTime, endTime);
 
-        List<ProductNew> productNews = productNewService.queryAllByLimit(offset,limit,no,modelId,startTime,endTime,productIds);
-
-        productNews.parallelStream().forEach(item -> {
-
-            PointProductBind pointProductBind = pointProductBindService.queryByProductId(item.getId());
-            if(Objects.nonNull(pointProductBind)){
-                if(Objects.equals(pointProductBind.getPointType(), PointProductBind.TYPE_POINT)){
-                    PointNew pointNew = pointNewService.getById(pointProductBind.getPointId());
-                    if(Objects.nonNull(pointNew)){
-                        item.setPointId(pointNew.getId().intValue());
-                        item.setPointName(pointNew.getName());
-                        item.setPointType(PointProductBind.TYPE_POINT);
-                    }
-                }
-                if(Objects.equals(pointProductBind.getPointType(), PointProductBind.TYPE_WAREHOUSE)){
-                    WareHouse wareHouse = warehouseService.getById(pointProductBind.getPointId());
-                    if(Objects.nonNull(wareHouse)){
-                        item.setPointId(wareHouse.getId());
-                        item.setPointName(wareHouse.getWareHouses());
-                        item.setPointType(PointProductBind.TYPE_WAREHOUSE);
-                    }
-                }
-                if(Objects.equals(pointProductBind.getPointType(), PointProductBind.TYPE_SUPPLIER)){
-                    Supplier supplier = supplierService.getById(pointProductBind.getPointId());
-                    if(Objects.nonNull(supplier)){
-                        item.setPointId(supplier.getId().intValue());
-                        item.setPointName(supplier.getName());
-                        item.setPointType(PointProductBind.TYPE_SUPPLIER);
-                    }
-                }
-            }
-
-            if (Objects.nonNull(item.getModelId())){
-                Product product = productService.getBaseMapper().selectById(item.getModelId());
-                if (Objects.nonNull(product)){
-                    item.setModelName(product.getName());
-                }
-            }
-
-            if (Objects.nonNull(item.getBatchId())){
-                Batch batch = batchService.queryByIdFromDB(item.getBatchId());
-                if (Objects.nonNull(batch)){
-                    item.setBatchName(batch.getBatchNo());
-                }
-            }
-
-            if(Objects.nonNull(item.getSupplierId())){
-                Supplier supplier = supplierService.getById(item.getSupplierId());
-                if(Objects.nonNull(supplier)){
-                    item.setSupplierName(supplier.getName());
-                }
-            }
-
-            if(Objects.nonNull(item.getIotCardId())){
-                IotCard iotCard = iotCardService.getById(item.getIotCardId());
-                if(Objects.nonNull(iotCard)){
-                    item.setIotCardName(iotCard.getSn());
-                }
-            }
-
-            if(Objects.nonNull(item.getCameraId())){
-                Camera camera = cameraService.getById(item.getCameraId());
-                if(Objects.nonNull(camera)){
-                    item.setCameraSerialNum(camera.getSerialNum());
-                }
-            }
-
-            ColorCard colorCard = colorCardService.getById(item.getColor());
-            if(Objects.nonNull(colorCard)){
-                item.setColorName(colorCard.getName());
-            }
-        });
-
-
-        Integer count = productNewService.count(no,modelId,startTime,endTime,productIds);
-
-        HashMap<String, Object> stringObjectHashMap = new HashMap<>();
-        stringObjectHashMap.put("data",productNews);
-        stringObjectHashMap.put("count",count);
-        return R.ok(stringObjectHashMap);
     }
 
 
     @GetMapping("/admin/productNew/{id}")
     public R getProductFile(@PathVariable("id") Long id){
-        return productNewService.getProductFile(id);
+        return productNewService.getProductFile(id, File.FILE_TYPE_PRODUCT_PRODUCT);
     }
 
     @PutMapping("/admin/productNew/update/status")
@@ -204,7 +117,7 @@ public class AdminJsonProductNewController {
      * @param no
      * @return
      */
-    @GetMapping("/admin/productNew/findIotCard")
+    //@GetMapping("/admin/productNew/findIotCard")
     public R findIotCard(@RequestParam("no") String no){
         return productNewService.findIotCard(no);
     }

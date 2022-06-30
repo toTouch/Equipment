@@ -325,4 +325,11 @@ public class CameraServiceImpl extends ServiceImpl<CameraMapper, Camera> impleme
         }
         return R.ok(result);
     }
+
+    @Override
+    public Camera getBySn(String value) {
+        return this.baseMapper.selectOne(new QueryWrapper<Camera>()
+                .eq("serial_num", value)
+                .eq("del_flag", Camera.DEL_NORMAL));
+    }
 }

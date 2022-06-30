@@ -186,7 +186,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     }
 
     public PointNew queryByName(String name){
-        if(StringUtils.isBlank(name)) return null;
+        if(StringUtils.isBlank(name)) {return null;}
         return this.getBaseMapper().selectOne(new QueryWrapper<PointNew>().eq("name", name).eq("del_flag", 0));
     }
 
@@ -342,7 +342,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
                     productNew.setBatchName(batch.getBatchNo());
                 }
 
-                List<File> productFileList = fileService.queryByProductNewId(productNew.getId());
+                List<File> productFileList = fileService.queryByProductNewId(productNew.getId(), File.FILE_TYPE_PRODUCT_PRODUCT);
                 productNew.setFileList(productFileList);
                 productNews.add(productNew);
 

@@ -2,6 +2,8 @@ package com.xiliulou.afterserver.entity;
 
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.xiliulou.afterserver.constant.ProductNewStatusSortConstants;
+import com.xiliulou.afterserver.web.vo.OssUrlVo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -65,7 +67,16 @@ public class ProductNew {
      *         {
      *           value: 6,
      *           label: '已测试'
+     *         },
+     *         {
+     *           value: 7,
+     *           label: '前置检测完成'
+     *         },
+     *         {
+     *           value: 8,
+     *           label: '后置检查完成'
      *         }
+     * {@link ProductNewStatusSortConstants}
      */
     private Integer status;
     /**
@@ -92,14 +103,14 @@ public class ProductNew {
      * 删除状态 0正常 1 删除
      */
     private Integer delFlag;
-    /**
-     * 外观
-     */
-    private Integer surface;
-    /**
-     * 颜色
-     */
-    private Integer color;
+//    /**
+//     * 外观 0未选择 1小皱 2平光 3 橘纹
+//     */
+//    private Integer surface;
+//    /**
+//     * 颜色
+//     */
+//    private Integer color;
 
     public static final Integer DEL_NORMAL = 0;
     public static final Integer DEL_DEL = 1;
@@ -112,13 +123,15 @@ public class ProductNew {
     private String remarks;
     private Integer testResult;
     private String testFile;
-    private Long iotCardId;
-    private Long cameraId;
+//    private Long iotCardId;
+//    private Long cameraId;
     private String appVersion;
     private String sysVersion;
 
     public static final String TYPE_M = "M";
     public static final String TYPE_V = "V";
+    public static final Integer TEST_RESULT_FAIL = 0;
+    public static final Integer TEST_RESULT_SUCCESS = 1;
 
 //    //左区间
 //    @TableField(exist = false)
@@ -144,10 +157,16 @@ public class ProductNew {
     private String supplierName;
     @TableField(exist = false)
     private Integer pointType;
-    @TableField(exist = false)
-    private String iotCardName;
-    @TableField(exist = false)
-    private String cameraSerialNum;
-    @TableField(exist = false)
-    private String colorName;
+//    @TableField(exist = false)
+//    private String iotCardName;
+//    @TableField(exist = false)
+//    private String cameraSerialNum;
+//    @TableField(exist = false)
+//    private String colorName;
+//    @TableField(exist = false)
+//    private List<OssUrlVo> accessoryPackagingFileList;
+//    @TableField(exist = false)
+//    private List<OssUrlVo> outerPackagingFileList;
+//    @TableField(exist = false)
+//    private List<OssUrlVo> qualityInspectionFileList;
 }

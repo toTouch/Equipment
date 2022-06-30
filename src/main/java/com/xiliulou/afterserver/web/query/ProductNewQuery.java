@@ -26,22 +26,22 @@ public class ProductNewQuery {
      * 状态
      */
     private Integer status;
-    /**
-     * 外观
-     */
-    private Integer surface;
-    /**
-     * 颜色
-     */
-    private Integer color;
-    /**
-     * 物联网卡id
-     */
-    private Long iotCardId;
-    /**
-     * 摄像头物联网卡id
-     */
-    private Long cameraCardId;
+    ///**
+    // * 外观
+    // */
+    //private Integer surface;
+    ///**
+    // * 颜色
+    // */
+    //private Integer color;
+    ///**
+    // * 物联网卡id
+    // */
+    //private Long iotCardId;
+    ///**
+    // * 摄像头物联网卡id
+    // */
+    //private Long cameraCardId;
     /**
      * 备注
      */
