@@ -184,4 +184,9 @@ public class AdminJsonWorkOrderController {
     public R putAdminPointNewCreateUser(@RequestParam("id") Long id, @RequestParam("createrId") Long createrId){
         return workOrderService.putAdminPointNewCreateUser(id, createrId);
     }
+
+    @GetMapping("admin/workOrder/server/auditEntry")
+    public R workOrderServerAuditEntry(@RequestParam("id") Long id){
+        return workOrderService.workOrderServerAuditEntry(id);
+    }
 }

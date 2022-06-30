@@ -18,27 +18,27 @@ public interface CommonConstants {
 
 	String GEOCODE_URL = "http://restapi.amap.com/v3/geocode/geo?key=%s&address=%s";
 
-	//String OSS_IMG_WATERMARK_URL = "https://wm-xiliulou-test.oss-cn-beijing.aliyuncs.com/%s?x-oss-process=image/watermark,text_%s,type_%s,color_%s,size_%s,x_%s";
-	String OSS_IMG_WATERMARK_STYLE = "image/watermark,text_%s,type_%s,color_%s,size_%s,x_%s";
+    String OSS_IMG_WATERMARK_STYLE = "image/watermark,text_%s,type_%s,color_%s,size_%s,x_%s";
 
-	/**
-	 * oss水印文字类型 （文泉驿正黑）
-	 */
-	String OSS_IMG_WATERMARK_TYPE = "d3F5LXplbmhlaQ";
+    /**
+     * oss水印文字类型 （文泉驿正黑）
+     */
+    String OSS_IMG_WATERMARK_TYPE = "d3F5LXplbmhlaQ";
 
-	/**
-	 * oss水印文字颜色 （白色）
-	 */
-	String OSS_IMG_WATERMARK_COLOR = "FFFFFF";
+    /**
+     * oss水印文字颜色 （白色）
+     */
+    String OSS_IMG_WATERMARK_COLOR = "FFFFFF";
 
-	/**
-	 * oss水印文字大小（px)
-	 */
-	String OSS_IMG_WATERMARK_SIZE = "60";
+    /**
+     * oss水印文字大小（px)
+     */
+    String OSS_IMG_WATERMARK_SIZE = "60";
 
 
-	/**
-	 * oss水印文字偏移量（px)
-	 */
-	String OSS_IMG_WATERMARK_OFFSET = "40";
+    /**
+     * oss水印文字偏移量（px)
+     */
+    String OSS_IMG_WATERMARK_OFFSET = "40";
+
 }
