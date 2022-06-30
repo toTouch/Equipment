@@ -105,6 +105,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     RocketMqService rocketMqService;
     @Autowired
     MaintenanceUserNotifyConfigService maintenanceUserNotifyConfigService;
+    @Autowired
+    ServerAuditEntryService serverAuditEntryService;
 
 
     @Override
@@ -2154,7 +2156,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         return R.ok();
     }
 
-    private Boolean checkServerProcess(Long id) {
+    @Override
+    public Boolean checkServerProcess(Long id) {
         List<WorkOrderServerQuery> workOrderServerQueries = workOrderServerService.queryByWorkOrderIdAndServerId(id, null);
         boolean flag = true;
         if (!CollectionUtils.isEmpty(workOrderServerQueries)) {
@@ -2985,5 +2988,30 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     public R queryWarehousePull(String name) {
         return R.ok(warehouseService.queryWarehouseLikeNamePull(name));
+    }
+
+    @Override
+    public R workOrderServerAuditEntry(Long id) {
+        List<WorkOrderServerQuery> workOrderServerQueries = workOrderServerService.queryByWorkOrderId(id);
+        if(CollectionUtils.isEmpty(workOrderServerQueries)) {
+            return R.fail("未查询到工单服务商");
+        }
+
+        List<WorkOrderServerAuditEntryVo> data = new ArrayList<>();
+
+        workOrderServerQueries.forEach(item -> {
+            Server server = serverService.getById(item.getServerId());
+            if(Objects.isNull(server)) {
+                return;
+            }
+            List<WeChatServerAuditEntryVo> weChatServerAuditEntryVoList = serverAuditEntryService.getWeChatServerAuditEntryVoList(item.getWorkOrderId(), item.getServerId());
+
+            WorkOrderServerAuditEntryVo vo = new WorkOrderServerAuditEntryVo();
+            vo.setId(server.getId());
+            vo.setName(server.getName());
+            vo.setWeChatServerAuditEntryVos(weChatServerAuditEntryVoList);
+            data.add(vo);
+        });
+        return R.ok(data);
     }
 }

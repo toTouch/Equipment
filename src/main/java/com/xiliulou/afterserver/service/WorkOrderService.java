@@ -51,6 +51,8 @@ public interface WorkOrderService extends IService<WorkOrder> {
 
     R updateWorkOrder(WorkOrderQuery workOrder);
 
+    Boolean checkServerProcess(Long id);
+
     List<AfterCountVo> qualityCount(Long pointId, Integer cityId,Long startTime,Long endTime);
 
     List<AfterCountListVo> qualityCountList(Long pointId, Integer cityId, Long startTime,Long endTime);
@@ -96,4 +98,6 @@ public interface WorkOrderService extends IService<WorkOrder> {
     R queryPointNewPull(String name);
 
     R queryWarehousePull(String name);
+
+    R workOrderServerAuditEntry(Long id);
 }
