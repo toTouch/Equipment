@@ -36,4 +36,6 @@ public interface CameraService extends IService<Camera> {
     R cameraSnLike(Long offset, Long size, String sn);
 
     R queryCameraIotCardBySn(String sn);
+
+    Camera getBySn(String value);
 }

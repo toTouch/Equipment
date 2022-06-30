@@ -1,6 +1,9 @@
 package com.xiliulou.afterserver.web.vo;
 
+import com.xiliulou.afterserver.entity.File;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * @author Hardy
@@ -68,4 +71,16 @@ public class ProductNewDetailsVo {
     private Long cameraCardId;
 
     private String createTime;
+    /**
+     * 附件包
+     */
+    private List<OssUrlVo> accessoryPackagingFileUrl;
+    /**
+     * 外包装
+     */
+    private List<OssUrlVo> outerPackagingFileUrl;
+    /**
+     * 质检
+     */
+    private List<OssUrlVo> qualityInspectionFileUrl;
 }

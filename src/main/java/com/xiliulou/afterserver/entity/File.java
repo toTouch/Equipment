@@ -24,13 +24,19 @@ public class File {
     private String fileName;
     private Long createTime;
     private Long bindId;
+    /**
+     * 0:凭证
+     * 90000：视频
+     * 柜机：
+     * 1.后台
+     * 2.手持终端
+     */
     private Integer fileType;
     private Long serverId;
 
 
     /**
-     *    0:凭证
-     *    90000：视频
+     *
      *    安装类型：
      *    1:机柜、
      *    2:序列通讯 201 SN码 202 工控机物联网卡、
@@ -64,4 +70,8 @@ public class File {
     public static final Integer TYPE_POINTNEW = 2;
     public static final Integer TYPE_WORK_ORDER = 3;
 
+    public static final Integer FILE_TYPE_PRODUCT_PRODUCT = 1;
+//    public static final Integer FILE_TYPE_PRODUCT_ACCESSORY_PACKAGING  = 2;
+//    public static final Integer FILE_TYPE_PRODUCT_OUTER_PACKAGING  = 3;
+//    public static final Integer FILE_TYPE_PRODUCT_QUALITY_INSPECTION  = 4;
 }

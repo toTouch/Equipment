@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.service;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.entity.ProductNew;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ApiRequestQuery;
@@ -8,6 +9,7 @@ import com.xiliulou.afterserver.web.query.CompressionQuery;
 import com.xiliulou.afterserver.web.query.ProductNewDetailsQuery;
 import com.xiliulou.afterserver.web.query.ProductNewQuery;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -79,7 +81,7 @@ public interface ProductNewService {
 
     Integer count(String no,Long modelId,Long startTime,Long endTime, List<Long> list);
 
-    R getProductFile(Long id);
+    R getProductFile(Long id, Integer fileType);
 
     R updateStatusFromBatch(List<Long> ids, Integer status);
 
@@ -99,11 +101,21 @@ public interface ProductNewService {
 
     R queryByBatchAndSupplier(Long batchId,Long offset, Long size);
 
-    R queryProductNewInfoById(String no);
+    R queryProductNewProcessInfo(String no, HttpServletResponse response);
 
     BaseMapper<ProductNew> getBaseMapper();
 
     R updateProductNew(ProductNewDetailsQuery productNewDetailsQuery);
 
     R checkProperty(String no);
+
+    R factorySaveFile(File file);
+
+    R pointList(Integer offset, Integer limit, String no, Long modelId, Long pointId, Integer pointType, Long startTime, Long endTime);
+
+    public ProductNew queryByNo(String no);
+
+    String getStatusName(Integer status);
+
+    R delOssFileByName(String name);
 }

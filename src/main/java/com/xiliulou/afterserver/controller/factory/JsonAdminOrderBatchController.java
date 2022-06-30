@@ -1,15 +1,22 @@
 package com.xiliulou.afterserver.controller.factory;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.ProductNewDetailsQuery;
+import com.xiliulou.storage.service.impl.AliyunOssService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -33,8 +40,7 @@ public class JsonAdminOrderBatchController {
     @Autowired
     private CameraService cameraService;
     @Autowired
-    ColorCardService colorCardService;
-
+    private ColorCardService colorCardService;
 
     @GetMapping("/batch/list")
     public R queryByfactory(@RequestParam(value = "offset", required = false) Long offset,
@@ -87,13 +93,13 @@ public class JsonAdminOrderBatchController {
     }
 
     /**
-     * 手持终端获取 柜机详情
+     * 手持终端 获取柜机详情
      * @param no
      * @return
      */
     @GetMapping("/productNew/info")
-    public R queryProductNewInfoById(@RequestParam("no")String no){
-        return productNewService.queryProductNewInfoById(no);
+    public R queryProductNewInfoById(@RequestParam("no")String no, HttpServletResponse response){
+        return productNewService.queryProductNewProcessInfo(no, response);
     }
 
     /**
@@ -101,7 +107,7 @@ public class JsonAdminOrderBatchController {
      * @param productNewDetailsQuery
      * @return
      */
-    @PutMapping("/productNew")
+    //@PutMapping("/productNew")
     public R updateProductNew(@RequestBody ProductNewDetailsQuery productNewDetailsQuery){
         return productNewService.updateProductNew(productNewDetailsQuery);
     }
@@ -155,4 +161,5 @@ public class JsonAdminOrderBatchController {
     public R queryPull(@RequestParam(value = "name", required = false) String name){
         return  colorCardService.queryPull(name);
     }
+
 }

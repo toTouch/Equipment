@@ -22,4 +22,9 @@ public class ColorCardServiceImpl extends ServiceImpl<ColorCardMapper, ColorCard
     public R queryPull(String name){
         return R.ok(this.baseMapper.selectList(new LambdaQueryWrapper<ColorCard>().like(StringUtils.isNotBlank(name), ColorCard::getName, name).orderByDesc(ColorCard::getName)));
     }
+
+    @Override
+    public ColorCard getOneByName(String name){
+        return this.baseMapper.selectOne(new LambdaQueryWrapper<ColorCard>().eq(ColorCard::getName, name));
+    }
 }

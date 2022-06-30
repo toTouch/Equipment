@@ -86,6 +86,10 @@ public class JsonAdminOrderDeliverController {
         return deliverService.factoryDeliver(deliverFactoryQuery);
     }
 
+    /**
+     * 发货记录，还没用
+     * @return
+     */
     @GetMapping("/deliver/issue/list")
     public R queryIssueListByFactory(){
         if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)){
