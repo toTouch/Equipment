@@ -47,6 +47,7 @@ public class ServerServiceImpl extends ServiceImpl<ServerMapper, Server> impleme
                 .like(Objects.nonNull(server.getManager()),Server::getManager,server.getManager())
                 .like(Objects.nonNull(server.getPhone()),Server::getPhone,server.getPhone())
                 .like(Objects.nonNull(server.getArea()),Server::getArea,server.getArea())
+                .like(Objects.nonNull(server.getScope()),Server::getScope,server.getScope())
                 .eq(Objects.nonNull(server.getCreateUid()),Server::getCreateUid,server.getCreateUid())
                 .eq(Objects.nonNull(server.getStatus()),Server::getStatus,server.getStatus())
                 .orderByDesc(Server::getCreateTime);

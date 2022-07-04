@@ -28,7 +28,8 @@ public class Server {
      */
     private String satisfaction;
     /**
-     * 合作状态 1：首次接单 2：试用期 3：初级合作 4：中极合作 5：高级合作 6：淘汰
+     * <s>合作状态 1：首次接单 2：试用期 3：初级合作 4：中极合作 5：高级合作 6：淘汰</s>
+     * 新合作状态：1试用 2合作 3淘汰
      */
     private Integer status;
     /**
