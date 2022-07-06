@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.service.impl;
 import com.alibaba.excel.util.CollectionUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.Server;
@@ -43,11 +44,11 @@ public class ServerServiceImpl extends ServiceImpl<ServerMapper, Server> impleme
     public IPage getPage(Long offset, Long size, Server server) {
 
         LambdaQueryWrapper<Server> wrapper = new LambdaQueryWrapper<>();
-        wrapper.like(Objects.nonNull(server.getName()),Server::getName,server.getName())
-                .like(Objects.nonNull(server.getManager()),Server::getManager,server.getManager())
-                .like(Objects.nonNull(server.getPhone()),Server::getPhone,server.getPhone())
-                .like(Objects.nonNull(server.getArea()),Server::getArea,server.getArea())
-                .like(Objects.nonNull(server.getScope()),Server::getScope,server.getScope())
+        wrapper.like(StringUtils.isNotBlank(server.getName()),Server::getName,server.getName())
+                .like(StringUtils.isNotBlank(server.getManager()),Server::getManager,server.getManager())
+                .like(StringUtils.isNotBlank(server.getPhone()),Server::getPhone,server.getPhone())
+                .like(StringUtils.isNotBlank(server.getArea()),Server::getArea,server.getArea())
+                .like(StringUtils.isNotBlank(server.getScope()),Server::getScope,server.getScope())
                 .eq(Objects.nonNull(server.getCreateUid()),Server::getCreateUid,server.getCreateUid())
                 .eq(Objects.nonNull(server.getStatus()),Server::getStatus,server.getStatus())
                 .orderByDesc(Server::getCreateTime);
