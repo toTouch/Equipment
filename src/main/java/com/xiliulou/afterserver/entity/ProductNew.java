@@ -127,6 +127,7 @@ public class ProductNew {
 //    private Long cameraId;
     private String appVersion;
     private String sysVersion;
+    private String testType;
 
     public static final String TYPE_M = "M";
     public static final String TYPE_V = "V";

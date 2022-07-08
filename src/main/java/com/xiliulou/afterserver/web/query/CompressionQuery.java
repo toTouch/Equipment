@@ -14,4 +14,8 @@ public class CompressionQuery {
     private String iotCard;
     private String compressionFile;
     private List<String> noList;
+    private String testType;
+
+    public static final String TEST_TYPE_ELECTRICITY = "electricity";
+    public static final String TEST_TYPE_CUPBOARD = "cupboard";
 }
