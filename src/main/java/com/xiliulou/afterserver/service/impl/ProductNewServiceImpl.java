@@ -125,8 +125,8 @@ public class ProductNewServiceImpl implements ProductNewService {
      * @return 对象列表
      */
     @Override
-    public List<ProductNew> queryAllByLimit(int offset, int limit, String no, Long modelId, Long startTime, Long endTime, List<Long> list) {
-        return this.productNewMapper.queryAllByLimit(offset, limit, no, modelId, startTime, endTime, list);
+    public List<ProductNew> queryAllByLimit(int offset, int limit, String no, Long modelId, Long startTime, Long endTime, List<Long> list, String testType) {
+        return this.productNewMapper.queryAllByLimit(offset, limit, no, modelId, startTime, endTime, list, testType);
     }
 
     /**
@@ -926,7 +926,7 @@ public class ProductNewServiceImpl implements ProductNewService {
     }
 
     @Override
-    public R pointList(Integer offset, Integer limit, String no, Long modelId, Long pointId, Integer pointType, Long startTime, Long endTime) {
+    public R pointList(Integer offset, Integer limit, String no, Long modelId, Long pointId, Integer pointType, Long startTime, Long endTime, String testType) {
         List<Long> productIds = null;
         if (Objects.nonNull(pointId) || Objects.nonNull(pointType)) {
             productIds = pointProductBindService.queryProductIdsByPidAndPtype(pointId, pointType);
@@ -937,7 +937,7 @@ public class ProductNewServiceImpl implements ProductNewService {
             }
         }
 
-        List<ProductNew> productNews = this.queryAllByLimit(offset, limit, no, modelId, startTime, endTime, productIds);
+        List<ProductNew> productNews = this.queryAllByLimit(offset, limit, no, modelId, startTime, endTime, productIds, testType);
 
         productNews.parallelStream().forEach(item -> {
 

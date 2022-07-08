@@ -111,7 +111,7 @@ public interface ProductNewService {
 
     R factorySaveFile(File file);
 
-    R pointList(Integer offset, Integer limit, String no, Long modelId, Long pointId, Integer pointType, Long startTime, Long endTime);
+    R pointList(Integer offset, Integer limit, String no, Long modelId, Long pointId, Integer pointType, Long startTime, Long endTime, String testType);
 
     public ProductNew queryByNo(String no);
 
