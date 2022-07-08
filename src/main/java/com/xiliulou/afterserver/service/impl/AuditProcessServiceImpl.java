@@ -291,7 +291,7 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
 
         // 需要判断压测是否完成
         if(ProductNew.TEST_RESULT_SUCCESS.compareTo(productNew.getTestResult() == null ? 0 : productNew.getTestResult()) != 0) {
-            log.error("压测检测未完成");
+            log.error("压测检测未完成, " + ProductNew.TEST_RESULT_SUCCESS + ", " + productNew.getTestResult() + ", "+ (ProductNew.TEST_RESULT_SUCCESS.compareTo(productNew.getTestResult() == null ? 0 : productNew.getTestResult()) != 0));
             return R.ok();
         }
 
