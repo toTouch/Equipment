@@ -290,7 +290,7 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
         }
 
         // 需要判断压测是否完成
-        if(!Objects.equals(productNew.getTestResult(), ProductNew.TEST_RESULT_SUCCESS)) {
+        if(ProductNew.TEST_RESULT_SUCCESS.compareTo(productNew.getTestResult()) == 0) {
             log.error("压测检测未完成");
             return R.ok();
         }
