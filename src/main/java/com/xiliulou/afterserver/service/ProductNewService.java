@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.service;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.entity.ProductNew;
 import com.xiliulou.afterserver.util.R;
@@ -18,7 +19,7 @@ import java.util.List;
  * @author Hardy
  * @since 2021-08-17 10:29:14
  */
-public interface ProductNewService {
+public interface ProductNewService extends IService<ProductNew> {
 
     /**
      * 通过ID查询单条数据从数据库
@@ -102,8 +103,6 @@ public interface ProductNewService {
     R queryByBatchAndSupplier(Long batchId,Long offset, Long size);
 
     R queryProductNewProcessInfo(String no, HttpServletResponse response);
-
-    BaseMapper<ProductNew> getBaseMapper();
 
     R updateProductNew(ProductNewDetailsQuery productNewDetailsQuery);
 

@@ -226,7 +226,7 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
             return R.fail(null, "未查询到相关分组信息");
         }
 
-        ProductNew productNew = productNewService.queryByIdFromDB(keyProcessQuery.getPid());
+        ProductNew productNew = productNewService.getById(keyProcessQuery.getPid());
         if(Objects.isNull(productNew)){
             return R.fail(null, "未查询到相关柜机");
         }
@@ -268,7 +268,7 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
         //查看流程是否检验完成 未完成直接结束
         Integer status = getAuditProcessStatus(auditProcess, productNew);
         if(!Objects.equals(status, AuditProcessVo.STATUS_FINISHED)) {
-            log.error("未完成直接结束" + status);
+            //log.error("未完成直接结束" + status);
             return R.ok();
         }
 
@@ -285,19 +285,19 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
         AuditProcess preAuditProcess = this.getByType(AuditProcess.TYPE_PRE);
         Integer preStatus = getAuditProcessStatus(preAuditProcess, productNew);
         if(!Objects.equals(preStatus, AuditProcessVo.STATUS_FINISHED)) {
-            log.error("前置检测未完成" + status);
+            //log.error("前置检测未完成" + status);
             return R.ok();
         }
 
         // 需要判断压测是否完成
         if(ProductNew.TEST_RESULT_SUCCESS.compareTo(productNew.getTestResult() == null ? 0 : productNew.getTestResult()) != 0) {
-            log.error("压测检测未完成, " + ProductNew.TEST_RESULT_SUCCESS + ", " + productNew.getTestResult() + ", "+ (ProductNew.TEST_RESULT_SUCCESS.compareTo(productNew.getTestResult() == null ? 0 : productNew.getTestResult()) != 0));
+            //log.error("压测检测未完成, " + ProductNew.TEST_RESULT_SUCCESS + ", " + productNew.getTestResult() + ", "+ (ProductNew.TEST_RESULT_SUCCESS.compareTo(productNew.getTestResult() == null ? 0 : productNew.getTestResult()) != 0));
             return R.ok();
         }
 
         productNew.setStatus(ProductNewStatusSortConstants.STATUS_POST_DETECTION);
         productNewMapper.updateById(productNew);
-        log.error("全部完成" + status);
+        //log.error("全部完成" + status);
         return R.ok();
     }
 
