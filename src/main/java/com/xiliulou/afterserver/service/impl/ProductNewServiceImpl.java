@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.constant.AuditProcessConstans;
 import com.xiliulou.afterserver.constant.CommonConstants;
 import com.xiliulou.afterserver.constant.ProductNewStatusSortConstants;
@@ -54,7 +55,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service("productNewService")
 @Slf4j
-public class ProductNewServiceImpl implements ProductNewService {
+public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, ProductNew> implements ProductNewService {
     @Resource
     private ProductNewMapper productNewMapper;
     @Autowired
@@ -778,11 +779,6 @@ public class ProductNewServiceImpl implements ProductNewService {
         return R.ok(vo);
     }
 
-
-    @Override
-    public BaseMapper<ProductNew> getBaseMapper() {
-        return this.productNewMapper;
-    }
 
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
