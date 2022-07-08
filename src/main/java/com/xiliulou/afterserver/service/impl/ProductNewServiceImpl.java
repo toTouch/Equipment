@@ -606,6 +606,7 @@ public class ProductNewServiceImpl implements ProductNewService {
             product.setNo(no);
             product.setTestFile(compression.getCompressionFile());
             product.setTestResult(1);
+            product.setTestType(compression.getTestType());
 
             //更新物联网卡
             auditValueService.biandOrUnbindEntry(AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY, iotCard.getSn(), productOld.getId());
