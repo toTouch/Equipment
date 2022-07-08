@@ -280,15 +280,15 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
         }
 
         //如果为后置
-        // 需要判断压测是否完成
-        if(!Objects.equals(productNew.getTestResult(), ProductNew.TEST_RESULT_SUCCESS)) {
+        //需要判断前置检测是否完成
+        AuditProcess preAuditProcess = this.getByType(AuditProcess.TYPE_PRE);
+        Integer preStatus = getAuditProcessStatus(preAuditProcess, productNew);
+        if(!Objects.equals(preStatus, AuditProcessVo.STATUS_FINISHED)) {
             return R.ok();
         }
 
-        //需要判断前置检测是否完成
-        AuditProcess preAuditProcess = this.getByType(AuditProcess.TYPE_PRE);
-        Integer preStatus = getAuditProcessStatus(auditProcess, productNew);
-        if(!Objects.equals(preStatus, AuditProcessVo.STATUS_FINISHED)) {
+        // 需要判断压测是否完成
+        if(!Objects.equals(productNew.getTestResult(), ProductNew.TEST_RESULT_SUCCESS)) {
             return R.ok();
         }
 
