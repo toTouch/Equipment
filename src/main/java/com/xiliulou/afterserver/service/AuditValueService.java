@@ -14,4 +14,14 @@ public interface AuditValueService extends IService<AuditValue> {
     Long getCountByEntryIdsAndPid(List<Long> entryIds, Long productNewId, Integer required);
 
     boolean biandOrUnbindEntry(Long entryId, String value, Long pid);
+
+    boolean isValueEmpty(Long entryId, Long pid);
+
+    String getValue(Long entryId, Long pid);
+
+    public List<AuditValue> getByPidAndEntryIds(List<Long> entryIds, Long pid);
+
+    void copyValueToTargetValueIsNoll(List<AuditValue> source, List<AuditValue> target);
+
+    void copyValueToTargetValueIsNoll(AuditValue source, AuditValue target);
 }
