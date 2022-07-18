@@ -102,4 +102,5 @@ public class WorkOrderVo {
      * 派单时间
      */
     private Long assignmentTime;
+    private Integer productSeries;
 }
