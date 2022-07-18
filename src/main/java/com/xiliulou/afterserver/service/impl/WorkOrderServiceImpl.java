@@ -265,7 +265,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
 
-        String[] header = {"审核状态", "工单类型", "点位", "点位状态", "移机起点", "移机终点", "创建人",
+        String[] header = {"审核状态", "工单类型", "点位", "点位状态", "柜机系列","移机起点", "移机终点", "创建人",
                 "状态", "描述", "备注", "工单原因", "创建时间", "工单编号", "sn码", "审核内容","专员", "派单时间"};
 
         String[] serverHeader = {"服务商", "费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数", " 第三方类型", "第三方公司", "第三方费用", "支付状态", "第三方原因", "第三方对接人"};
@@ -324,6 +324,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
             //点位状态
             row.add(getPointStatusName(o.getPointStatus()));
+
+            //柜机系列
+            row.add(getPointProductSeries(o.getProductSeries()));
 
             //起点
             if ("1".equals(o.getSourceType())) {
@@ -642,6 +645,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         throw new CustomBusinessException("导出报表失败！请联系客服！");
     }
 
+
+
     private void exportExcelNotMoveMachine(WorkOrderQuery workOrder, List<WorkOrderVo> workOrderVoList, HttpServletResponse response) {
 
         //headerSet
@@ -651,7 +656,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
 
-        String[] header = {"审核状态", "工单类型", "点位", "点位状态", "创建人",
+        String[] header = {"审核状态", "工单类型", "点位", "点位状态", "柜机系列", "创建人",
                 "状态", "描述", "备注", "工单原因", "创建时间", "工单编号", "sn码", "审核内容", "专员", "派单时间"};
 
         String[] serverHeader = {"服务商", "费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数", " 第三方类型", "第三方公司", "第三方费用", "支付状态", "第三方原因", "第三方对接人"};
@@ -705,6 +710,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
 
             row.add(getPointStatusName(o.getPointStatus()));
+
+            //柜机系列
+            row.add(getPointProductSeries(o.getProductSeries()));
 
             //"创建人",
             if (Objects.nonNull(o.getCreaterId())) {
@@ -994,6 +1002,31 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             pointStatusName = "已过保";
         }
         return pointStatusName;
+    }
+
+    private String getPointProductSeries(Integer productSeries) {
+        String result = "";
+        switch (productSeries){
+            case 1:
+                result = "取餐柜";
+                break;
+            case 2:
+                result = "餐厅柜";
+                break;
+            case 3:
+                result = "换电柜";
+                break;
+            case 4:
+                result = "充电柜";
+                break;
+            case 5:
+                result = "寄存柜";
+                break;
+            case 6:
+                result = "生鲜柜";
+                break;
+        }
+        return result;
     }
 
     /*private void exportExcelNotMoveMachine(WorkOrderQuery workOrder, List<WorkOrderVo> workOrderVoList, HttpServletResponse response){

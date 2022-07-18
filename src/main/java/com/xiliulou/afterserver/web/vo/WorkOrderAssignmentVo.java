@@ -51,4 +51,5 @@ public class WorkOrderAssignmentVo {
     private File voucherVideoFile;
     private Integer auditStatus;
     private String auditRemarks;
+    private Integer productSeries;
 }

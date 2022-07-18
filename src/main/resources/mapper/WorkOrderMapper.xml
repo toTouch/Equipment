@@ -92,6 +92,7 @@
         <id property="assignmentTime" column="wo_assignment_time"/>
         <id property="auditStatus" column="wo_audit_status"/>
         <id property="auditRemarks" column="wo_audit_remarks"/>
+        <id property="productSeries" column="p_product_series"/>
     </resultMap>
 
     <select id="getPage" resultMap="pageMap">
@@ -136,7 +137,8 @@
 --         wor.name as wor_name,
         u.user_name as u_user_name,
         p.name as p_name,
-        p.status as p_status
+        p.status as p_status,
+        p.product_series as p_product_series
         <!--f.id as f_id,
         f.type as f_type,
         f.file_name as f_file_name,
@@ -181,24 +183,24 @@
             <if test="query.createTimeStart != null and query.createTimeEnd != null">
                 and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
             </if>
-            <if test="(query.thirdCompanyName != null and query.thirdCompanyName != '')
-                   or (query.thirdResponsiblePerson != null and query.thirdResponsiblePerson != '')
-                   or (query.serverName != null and query.serverName != '')">
-                and wo.id in (
-                    select work_order_id from t_work_order_server wos
-                    <where>
-                        <if test="query.thirdCompanyName != null and query.thirdCompanyName != ''">
-                           and wos.third_company_name like concat('%', #{query.thirdCompanyName}, '%')
-                        </if>
-                        <if test="query.thirdResponsiblePerson != null and query.thirdResponsiblePerson != ''">
-                            and wos.third_responsible_person like concat('%', #{query.thirdResponsiblePerson}, '%')
-                        </if>
-                        <if test="query.serverName != null and query.serverName != ''">
-                            and wos.server_name like concat('%',#{query.serverName},'%')
-                        </if>
-                    </where>
-                )
-            </if>
+<!--            <if test="(query.thirdCompanyName != null and query.thirdCompanyName != '')-->
+<!--                   or (query.thirdResponsiblePerson != null and query.thirdResponsiblePerson != '')-->
+<!--                   or (query.serverName != null and query.serverName != '')">-->
+<!--                and wo.id in (-->
+<!--                    select work_order_id from t_work_order_server wos-->
+<!--                    <where>-->
+<!--                        <if test="query.thirdCompanyName != null and query.thirdCompanyName != ''">-->
+<!--                           and wos.third_company_name like concat('%', #{query.thirdCompanyName}, '%')-->
+<!--                        </if>-->
+<!--                        <if test="query.thirdResponsiblePerson != null and query.thirdResponsiblePerson != ''">-->
+<!--                            and wos.third_responsible_person like concat('%', #{query.thirdResponsiblePerson}, '%')-->
+<!--                        </if>-->
+<!--                        <if test="query.serverName != null and query.serverName != ''">-->
+<!--                            and wos.server_name like concat('%',#{query.serverName},'%')-->
+<!--                        </if>-->
+<!--                    </where>-->
+<!--                )-->
+<!--            </if>-->
 
             <if test="query.workOrderReasonId != null">
                 and wo.work_order_reason_id = #{query.workOrderReasonId}
@@ -211,6 +213,9 @@
             </if>
             <if test="query.pointStatus != null">
                 and p.status = #{query.pointStatus}
+            </if>
+            <if test="query.productSeries != null">
+                and p.product_series = #{query.productSeries}
             </if>
             <if test="query.orderNo != null and query.orderNo != ''">
                 and wo.order_no like concat('%', #{query.orderNo}, '%')
@@ -262,7 +267,8 @@
         wor.name as wor_name,
         u.user_name as u_user_name,
         p.name as p_name,
-        p.status as p_status
+        p.status as p_status,
+        p.product_series as p_product_series
         FROM work_order as wo
         LEFT JOIN work_order_type as wot on wot.id = wo.id
         LEFT JOIN work_order_reason as wor on wor.id = wo.work_order_reason_id
@@ -319,6 +325,12 @@
             </if>
             <if test="query.pointStatus != null">
                 and p.status = #{query.pointStatus}
+            </if>
+            <if test="query.productSeries != null">
+                and p.product_series = #{query.productSeries}
+            </if>
+            <if test="query.orderNo != null and query.orderNo != ''">
+                and wo.order_no like concat('%', #{query.orderNo}, '%')
             </if>
             <if test="query.commissionerId != null">
                 and wo.commissioner_id = #{query.commissionerId}
