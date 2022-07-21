@@ -100,31 +100,31 @@
         wo.type as wo_type,
         wo.point_id as wo_point_id,
         wo.info as wo_info,
---         wo.fee as wo_fee,
---         wo.third_company_type as wo_third_company_type,
---         wo.third_company_id as wo_third_company_id,
---         wo.third_company_pay as wo_third_company_pay,
---         wo.third_reason as wo_third_reason,
+<!--         wo.fee as wo_fee, -->
+<!--         wo.third_company_type as wo_third_company_type, -->
+<!--         wo.third_company_id as wo_third_company_id,-->
+<!--         wo.third_company_pay as wo_third_company_pay,-->
+<!--         wo.third_reason as wo_third_reason,-->
         wo.work_order_reason_id as wo_work_order_reason_id,
---         wo.processor as wo_processor,
+<!--         wo.processor as wo_processor,-->
         wo.creater_id as wo_creater_id,
         wo.process_time as wo_process_time,
         wo.status as wo_status,
         wo.order_no as wo_order_no,
         wo.create_time as wo_create_time,
---         wo.server_id as wo_server_id,
---         wo.third_company_name as wo_third_company_name,
---         wo.server_name as wo_server_name,
+<!--         wo.server_id as wo_server_id,-->
+<!--         wo.third_company_name as wo_third_company_name,-->
+<!--         wo.server_name as wo_server_name,-->
         wo.transfer_source_point_id as wo_transfer_source_point_id,
         wo.transfer_destination_point_id as wo_transfer_destination_point_id,
         wo.product as wo_product,
         wo.code as wo_code,
         wo.reason as wo_reason,
         wo.describeinfo as wo_describeinfo,
---         wo.payment_method as wo_payment_method,
---         wo.third_payment_status as wo_third_payment_status,
+<!--         wo.payment_method as wo_payment_method,-->
+<!--         wo.third_payment_status as wo_third_payment_status,-->
         wo.destination_type as wo_destination_type,
---         wo.third_responsible_person as wo_third_responsible_person,
+<!--         wo.third_responsible_person as wo_third_responsible_person,-->
         wo.audit_status as wo_audit_status,
         wo.audit_remarks as wo_audit_remarks,
         wo.source_type as wo_source_type,
@@ -134,7 +134,7 @@
         (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
         wot.type as wot_type,
---         wor.name as wor_name,
+<!--         wor.name as wor_name,-->
         u.user_name as u_user_name,
         p.name as p_name,
         p.status as p_status,
@@ -231,11 +231,11 @@
         wo.type as wo_type,
         wo.point_id as wo_point_id,
         wo.info as wo_info,
---         wo.fee as wo_fee,
---         wo.third_company_id as wo_third_company_id,
---         wo.third_company_type as wo_third_company_type,
---         wo.third_company_pay as wo_third_company_pay,
---         wo.third_reason as wo_third_reason,
+<!--         wo.fee as wo_fee,
+         wo.third_company_id as wo_third_company_id,
+         wo.third_company_type as wo_third_company_type,
+         wo.third_company_pay as wo_third_company_pay,
+         wo.third_reason as wo_third_reason,-->
         wo.work_order_reason_id as wo_work_order_reason_id,
         wo.processor as wo_processor,
         wo.creater_id as wo_creater_id,
@@ -243,18 +243,18 @@
         wo.status as wo_status,
         wo.order_no as wo_order_no,
         wo.create_time as wo_create_time,
---         wo.server_id as wo_server_id,
---         wo.third_company_name as wo_third_company_name,
---         wo.server_name as wo_server_name,
+<!--         wo.server_id as wo_server_id,
+         wo.third_company_name as wo_third_company_name,
+         wo.server_name as wo_server_name, -->
         wo.transfer_source_point_id as wo_transfer_source_point_id,
         wo.transfer_destination_point_id as wo_transfer_destination_point_id,
         wo.product as wo_product,
         wo.code as wo_code,
         wo.describeinfo as wo_describeinfo,
---         wo.payment_method as wo_payment_method,
         wo.destination_type as wo_destination_type,
---         wo.third_payment_status as wo_third_payment_status,
---         wo.third_responsible_person as wo_third_responsible_person,
+        wo.payment_method as wo_payment_method,
+<!--         wo.third_payment_status as wo_third_payment_status,
+         wo.third_responsible_person as wo_third_responsible_person,-->
         wo.audit_status as wo_audit_status,
         wo.audit_remarks as wo_audit_remarks,
         wo.source_type as wo_source_type,

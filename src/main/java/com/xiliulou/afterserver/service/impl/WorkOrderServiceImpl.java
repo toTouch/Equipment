@@ -1005,6 +1005,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     private String getPointProductSeries(Integer productSeries) {
+        productSeries = productSeries == null ? -1 : productSeries;
         String result = "";
         switch (productSeries){
             case 1:
