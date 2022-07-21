@@ -1890,18 +1890,16 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         workOrder.setOrderNo("GD" + sdf.format(new Date()) + "-" + RandomUtil.randomInt(100000, 1000000));
 
-        if (!Objects.equals(workOrder.getType(), String.valueOf(WorkOrder.TYPE_AFTER))) {
-            if (Objects.nonNull(workOrder.getProductInfoList())) {
-                Iterator<ProductInfoQuery> iterator = workOrder.getProductInfoList().iterator();
-                while (iterator.hasNext()) {
-                    ProductInfoQuery productInfoQuery = iterator.next();
-                    if (Objects.isNull(productInfoQuery.getProductId()) || Objects.isNull(productInfoQuery.getNumber())) {
-                        iterator.remove();
-                    }
+        if (Objects.nonNull(workOrder.getProductInfoList())) {
+            Iterator<ProductInfoQuery> iterator = workOrder.getProductInfoList().iterator();
+            while (iterator.hasNext()) {
+                ProductInfoQuery productInfoQuery = iterator.next();
+                if (Objects.isNull(productInfoQuery.getProductId()) || Objects.isNull(productInfoQuery.getNumber())) {
+                    iterator.remove();
                 }
-                String productInfo = JSON.toJSONString(workOrder.getProductInfoList());
-                workOrder.setProductInfo(productInfo);
             }
+            String productInfo = JSON.toJSONString(workOrder.getProductInfoList());
+            workOrder.setProductInfo(productInfo);
         }
 
         int insert = this.baseMapper.insert(workOrder);
@@ -2104,18 +2102,16 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
 
-        if (!Objects.equals(workOrder.getType(), String.valueOf(WorkOrder.TYPE_AFTER))) {
-            if (Objects.nonNull(workOrder.getProductInfoList())) {
-                Iterator<ProductInfoQuery> iterator = workOrder.getProductInfoList().iterator();
-                while (iterator.hasNext()) {
-                    ProductInfoQuery productInfoQuery = iterator.next();
-                    if (Objects.isNull(productInfoQuery.getProductId()) || Objects.isNull(productInfoQuery.getNumber())) {
-                        iterator.remove();
-                    }
+        if (Objects.nonNull(workOrder.getProductInfoList())) {
+            Iterator<ProductInfoQuery> iterator = workOrder.getProductInfoList().iterator();
+            while (iterator.hasNext()) {
+                ProductInfoQuery productInfoQuery = iterator.next();
+                if (Objects.isNull(productInfoQuery.getProductId()) || Objects.isNull(productInfoQuery.getNumber())) {
+                    iterator.remove();
                 }
-                String productInfo = JSON.toJSONString(workOrder.getProductInfoList());
-                workOrder.setProductInfo(productInfo);
             }
+            String productInfo = JSON.toJSONString(workOrder.getProductInfoList());
+            workOrder.setProductInfo(productInfo);
         }
 
         //后台直接派单，添加派单时间
