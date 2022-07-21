@@ -48,4 +48,5 @@ public class WorkOrderQuery extends WorkOrder {
     private String thirdCompanyName;
     private String thirdResponsiblePerson;
     private String serverName;
+    private Integer productSeries;
 }
