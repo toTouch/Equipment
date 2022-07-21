@@ -65,6 +65,7 @@
         <id property="auditRemarks" column="wo_audit_remarks"/>
         <id property="commissionerId" column="wo_commissioner_id"/>
         <id property="assignmentTime" column="wo_assignment_time"/>
+        <id property="productSeries" column="p_product_series"/>
     </resultMap>
 
     <resultMap id="userMap" type="com.xiliulou.afterserver.web.vo.WorkOrderAssignmentVo">
