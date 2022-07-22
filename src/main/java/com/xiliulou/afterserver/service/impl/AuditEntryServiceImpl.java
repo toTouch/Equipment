@@ -98,7 +98,9 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
             }
 
             if(Objects.equals(AuditProcessConstans.PRODUCT_COLOR_AUDIT_ENTRY, item.getId())) {
-                item.setJsonRoot(JsonUtil.toJson(ColorCardService.getNameAll()));
+                List<String> nameAll = ColorCardService.getNameAll();
+                item.setJsonRoot(JsonUtil.toJson(nameAll));
+                item.setJsonRootList(nameAll);
             }
 
             //清除空键
