@@ -10,6 +10,8 @@ import com.xiliulou.afterserver.util.R;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @author zgw
  * @date 2022/3/30 19:21
@@ -26,5 +28,10 @@ public class ColorCardServiceImpl extends ServiceImpl<ColorCardMapper, ColorCard
     @Override
     public ColorCard getOneByName(String name){
         return this.baseMapper.selectOne(new LambdaQueryWrapper<ColorCard>().eq(ColorCard::getName, name));
+    }
+
+    @Override
+    public List<String> getNameAll(){
+        return this.baseMapper.getNameAll();
     }
 }
