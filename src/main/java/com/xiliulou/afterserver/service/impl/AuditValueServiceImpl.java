@@ -106,31 +106,22 @@ public class AuditValueServiceImpl extends ServiceImpl<AuditValueMapper, AuditVa
     }
 
     @Override
-    public void copyValueToTargetValueIsNoll(List<AuditValue> source, List<AuditValue> target){
-        if(CollectionUtils.isEmpty(source) || CollectionUtils.isEmpty(target)){
+    public void copyValueToTargetValueIsNoll(List<AuditValue> source, Long pid){
+        if(CollectionUtils.isEmpty(source)){
             return;
         }
 
         source.forEach(s -> {
-            for (AuditValue t : target) {
-                if(Objects.equals(s.getEntryId(), t.getEntryId())) {
-                    copyValueToTargetValueIsNoll(s, t);
-                    break;
-                }
+            if(Objects.isNull(s)){
+                return;
             }
+
+            biandOrUnbindEntry(s.getEntryId(), s.getValue(), pid);
         });
     }
 
     @Override
     public void copyValueToTargetValueIsNoll(AuditValue source, AuditValue target){
-        if(Objects.isNull(source)){
-            return;
-        }
 
-        if(Objects.nonNull(target) && StringUtils.isNotBlank(target.getValue())){
-            return;
-        }
-
-        biandOrUnbindEntry(target.getEntryId(), source.getValue(), target.getPid());
     }
 }

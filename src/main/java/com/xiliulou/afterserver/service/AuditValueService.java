@@ -21,7 +21,7 @@ public interface AuditValueService extends IService<AuditValue> {
 
     public List<AuditValue> getByPidAndEntryIds(List<Long> entryIds, Long pid);
 
-    void copyValueToTargetValueIsNoll(List<AuditValue> source, List<AuditValue> target);
+    void copyValueToTargetValueIsNoll(List<AuditValue> source, Long pid);
 
     void copyValueToTargetValueIsNoll(AuditValue source, AuditValue target);
 }
