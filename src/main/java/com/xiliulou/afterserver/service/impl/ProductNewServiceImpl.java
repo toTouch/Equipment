@@ -625,9 +625,9 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
 
             //这里需要将主柜的数据同步到副柜
             //获取副柜需要同步的值
-            List<AuditValue> productValues = auditValueService.getByPidAndEntryIds(copyLong, product.getId());
+            //List<AuditValue> productValues = auditValueService.getByPidAndEntryIds(copyLong, product.getId());
             //更新
-            auditValueService.copyValueToTargetValueIsNoll(mainValues, productValues);
+            auditValueService.copyValueToTargetValueIsNoll(mainValues, product.getId());
 
             //更新柜机状态
             Integer status = auditProcessService.getAuditProcessStatus(byType, productOld);
