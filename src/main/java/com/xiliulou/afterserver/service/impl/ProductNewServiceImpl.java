@@ -613,14 +613,19 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
                 continue;
             }
 
-            ProductNew product = new ProductNew();
-            product.setNo(no);
+            ProductNew product = productNewMapper.queryByNo(no);
+            if(Objects.isNull(product)) {
+                continue;
+            }
+
+            //ProductNew product = new ProductNew();
+            //product.setNo(no);
             product.setTestFile(compression.getCompressionFile());
             product.setTestResult(1);
 
             //这里需要将主柜的数据同步到副柜
             //获取副柜需要同步的值
-            List<AuditValue> productValues = auditValueService.getByPidAndEntryIds(copyLong, productOld.getId());
+            List<AuditValue> productValues = auditValueService.getByPidAndEntryIds(copyLong, product.getId());
             //更新
             auditValueService.copyValueToTargetValueIsNoll(mainValues, productValues);
 
