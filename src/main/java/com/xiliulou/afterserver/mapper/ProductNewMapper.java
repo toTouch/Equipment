@@ -88,4 +88,7 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
 
     @Update("update t_product_new set test_file = #{testFile}, test_result = #{testResult}, status = #{status} where no = #{no}")
     Integer updateByNo(ProductNew productNew);
+
+    @Select("select * from t_product_new where no = #{no} and del_flag = 0")
+    ProductNew queryByNo(@Param("no")String no);
 }
