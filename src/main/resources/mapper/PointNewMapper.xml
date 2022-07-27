@@ -330,7 +330,7 @@
                 <if test="pointNew.auditStatus != null">
                     audit_status = #{pointNew.auditStatus},
                 </if>
-                audit_remarks = #{pointNew.auditRemarks},
+                <!--audit_remarks = #{pointNew.auditRemarks},
                 customer_id = #{pointNew.customerId},
                 install_type = #{pointNew.installType},
                 address = #{pointNew.address},
@@ -347,7 +347,63 @@
                 product_series = #{pointNew.productSeries},
                 order_time = #{pointNew.orderTime},
                 operator = #{pointNew.operator},
-                logistics_info = #{pointNew.logisticsInfo}
+                logistics_info = #{pointNew.logisticsInfo}-->
+
+                <if test="pointNew.auditRemarks != null and pointNew.auditRemarks != ''">
+                    audit_remarks = #{pointNew.auditRemarks},
+                </if>
+                <if test="pointNew.customerId != null">
+                    customer_id = #{pointNew.customerId},
+                </if>
+                <if test="pointNew.installType != null">
+                    install_type = #{pointNew.installType},
+                </if>
+                <if test="pointNew.address != null and pointNew.address != ''">
+                    address = #{pointNew.address},
+                </if>
+                <if test="pointNew.cameraCount != null">
+                    camera_count = #{pointNew.cameraCount},
+                </if>
+                <if test="pointNew.cameraCount != null">
+                    canopy_count = #{pointNew.canopyCount},
+                </if>
+                <if test="pointNew.snNo != null and pointNew.snNo != ''">
+                    sn_no = #{pointNew.snNo},
+                </if>
+                <if test="pointNew.cardNumber != null and pointNew.cardNumber != ''">
+                    card_number = #{pointNew.cardNumber},
+                </if>
+                <if test="pointNew.cardSupplier != null and pointNew.cardSupplier != ''">
+                    card_supplier = #{pointNew.cardSupplier},
+                </if>
+                <if test="pointNew.remarks != null and pointNew.remarks != ''">
+                    remarks = #{pointNew.remarks},
+                </if>
+                <if test="pointNew.createUid != null ">
+                    create_uid = #{pointNew.createUid},
+                </if>
+                <if test="pointNew.completionTime != null ">
+                    completion_time = #{pointNew.completionTime},
+                </if>
+                <if test="pointNew.isEntry != null ">
+                    is_entry = #{pointNew.isEntry},
+                </if>
+                <if test="pointNew.isAcceptance != null ">
+                    is_acceptance = #{pointNew.isAcceptance},
+                </if>
+                <if test="pointNew.productSeries != null ">
+                    product_series = #{pointNew.productSeries},
+                </if>
+                <if test="pointNew.orderTime != null ">
+                    order_time = #{pointNew.orderTime},
+                </if>
+                <if test="pointNew.operator != null and pointNew.operator != ''">
+                    operator = #{pointNew.operator},
+                </if>
+                <if test="pointNew.logisticsInfo != null and pointNew.operator != ''">
+                    logistics_info = #{pointNew.logisticsInfo}
+                </if>
+
             </set>
             where id = #{pointNew.id};
         </foreach>
