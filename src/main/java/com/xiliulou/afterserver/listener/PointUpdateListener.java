@@ -17,6 +17,7 @@ import jdk.net.SocketFlow;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -148,7 +149,7 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
             }
         }
 
-        if( Objects.isNull(pointInfo.getInstallTime())){
+        /*if( Objects.isNull(pointInfo.getInstallTime())){
             log.error("insert PointInfo error! not calculation InstallTime pointName={}",pointInfo.getName());
             throw new RuntimeException("点位" + pointInfo.getName() + "没有添加安装时间");
         }
@@ -188,7 +189,7 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
         if( Objects.isNull(pointInfo.getIsAcceptance())){
             log.error("insert PointInfo error! is null IsAcceptance pointName={}",pointInfo.getName());
             throw new RuntimeException("点位" + pointInfo.getName() + "没有添加是否验收");
-        }
+        }*/
 
         list.add(pointInfo);
         if (list.size() >= BATCH_COUNT) {
@@ -214,6 +215,7 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
         List<PointNew> pointList = new ArrayList<>();
         this.list.forEach(item -> {
             PointNew point = new PointNew();
+            PointNew pointOld = pointService.getById(item.getId());
             //BeanUtils.copyProperties(item, point);
             point.setId(item.getId());
             point.setName(item.getName());
@@ -232,7 +234,7 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
             }
 
             point.setAddress(item.getAddress());
-            GeoCodeResultQuery geoCodeResultQuery = null;
+            /*GeoCodeResultQuery geoCodeResultQuery = null;
             try {
                 geoCodeResultQuery = AmapUtil.getLonLat(URLEncoder.encode(item.getAddress(), "UTF-8"));
             } catch (UnsupportedEncodingException e) {
@@ -242,11 +244,15 @@ public class PointUpdateListener extends AnalysisEventListener<PointUpdateInfo> 
             GeoCodeQuery geoCodeQuery = geoCodeResultQuery.getGeocodes().get(0);
             String[] lonlat = geoCodeQuery.getLocation().split(",");
             point.setCoordX(new BigDecimal(lonlat[1]));
-            point.setCoordY(new BigDecimal(lonlat[0]));
+            point.setCoordY(new BigDecimal(lonlat[0]));*/
 
             point.setCameraCount(item.getCameraCount());
             point.setCanopyCount(item.getCanopyCount());
-            point.setSnNo(item.getSnNo());
+            if(StringUtils.isEmpty(pointOld.getSnNo())) {
+                point.setSnNo(item.getSnNo());
+            } else {
+                point.setSnNo(pointOld.getSnNo());
+            }
             point.setCardNumber(item.getCardNumber());
             point.setCardSupplier(item.getCardSupplier());
 
