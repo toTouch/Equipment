@@ -37,7 +37,8 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
                                      @Param("modelId") Long modelId,
                                      @Param("startTime") Long startTime,
                                      @Param("endTime") Long endTime,
-                                     @Param("list")List<Long> list);
+                                     @Param("list")List<Long> list,
+                                     @Param("testType")String testType);
 
 
     /**
@@ -86,6 +87,6 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
     @Select("select id, no from t_product_new where del_flag = 0")
     List<ProductNew> selectNoPull();
 
-    @Update("update t_product_new set test_file = #{testFile}, test_result = #{testResult}, status = #{status} where no = #{no}")
+    @Update("update t_product_new set test_file = #{testFile}, test_result = #{testResult}, status = #{status}, test_type = #{testType} where no = #{no}")
     Integer updateByNo(ProductNew productNew);
 }

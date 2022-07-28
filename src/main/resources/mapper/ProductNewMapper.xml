@@ -21,6 +21,7 @@
 <!--        <result property="color" column="color" jdbcType="INTEGER"/>-->
         <result property="testResult" column="test_result" jdbcType="INTEGER"/>
         <result property="testFile" column="test_file"/>
+        <result property="testType" column="test_type"/>
     </resultMap>
 
     <!--查询单个-->
@@ -36,7 +37,7 @@
         select
           p.id, p.no, p.model_id, p.batch_id, p.status, p.expiration_start_time, p.years, p.expiration_end_time,
           p.create_time,p.update_time, p.del_flag, p.serial_num, p.type, p.supplier_id,p.remarks,p.iot_card_id,
-          p.camera_id,p.surface,p.color, p.test_result, p.test_file, p.app_version, p.sys_version
+          p.camera_id,p.surface,p.color, p.test_result, p.test_file, p.app_version, p.sys_version, p.test_type
         from t_product_new p
     <where>
         and p.del_flag = 0
@@ -58,6 +59,9 @@
         </if>
         <if test="endTime != null">
             and p.create_time &lt;= #{endTime}
+        </if>
+        <if test="testType != null and testType != ''">
+            and p.test_type = #{testType}
         </if>
     </where>
     order by create_time desc
