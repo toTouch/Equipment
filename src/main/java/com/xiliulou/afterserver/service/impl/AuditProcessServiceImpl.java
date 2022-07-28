@@ -333,12 +333,12 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
             }
         }
         //"柜机颜色"
-        if(Objects.equals(item.getId(), AuditProcessConstans.PRODUCT_COLOR_AUDIT_ENTRY)) {
+        /*if(Objects.equals(item.getId(), AuditProcessConstans.PRODUCT_COLOR_AUDIT_ENTRY)) {
             ColorCard oneByName = colorCardService.getOneByName(item.getValue());
             if(Objects.isNull(oneByName)) {
                 return R.fail(null,"未查询到相关色卡");
             }
-        }
+        }*/
         //"柜机外观"
         if(Objects.equals(item.getId(), AuditProcessConstans.PRODUCT_SURFACE_AUDIT_ENTRY)) {
             if(!Arrays.asList("小皱", "平光", "橘纹").contains(item.getValue())) {

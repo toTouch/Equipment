@@ -24,4 +24,5 @@ public class JsonAdminColorCardController {
         return  colorCardService.queryPull(name);
     }
 
+
 }

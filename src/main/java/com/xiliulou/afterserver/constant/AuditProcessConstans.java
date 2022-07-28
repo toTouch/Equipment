@@ -37,6 +37,11 @@ public class AuditProcessConstans {
      */
     public static final Long PRODUCT_SURFACE_AUDIT_ENTRY = 5L;
 
+    /**
+     * 摄像头序列号2 （双面柜有两个摄像头序列号）
+     */
+    public static final Long CAMERA_SN_AUDIT_ENTRY_TOW = 6L;
+
 
     public static boolean getFixedgGroup(Long id) {
         return id < 300;

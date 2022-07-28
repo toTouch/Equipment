@@ -1,5 +1,7 @@
 package com.xiliulou.afterserver.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.AuditEntry;
@@ -9,6 +11,7 @@ import com.xiliulou.afterserver.service.AuditEntryService;
 import com.xiliulou.afterserver.service.AuditGroupLogContentService;
 import com.xiliulou.afterserver.service.AuditValueService;
 import com.xiliulou.core.json.JsonUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -75,5 +78,50 @@ public class AuditValueServiceImpl extends ServiceImpl<AuditValueMapper, AuditVa
         auditValue.setUpdateTime(System.currentTimeMillis());
         auditValueMapper.insert(auditValue);
         return true;
+    }
+
+    @Override
+    public boolean isValueEmpty(Long entryId, Long pid){
+        AuditValue auditValue = auditValueMapper.selectByEntryId(entryId, pid);
+        if(Objects.isNull(auditValue)) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public String getValue(Long entryId, Long pid){
+        AuditValue auditValue = auditValueMapper.selectByEntryId(entryId, pid);
+        if(Objects.isNull(auditValue)) {
+            return null;
+        }
+        return auditValue.getValue();
+    }
+
+    @Override
+    public List<AuditValue> getByPidAndEntryIds(List<Long> entryIds, Long pid){
+        LambdaQueryWrapper<AuditValue> query = new LambdaQueryWrapper<>();
+        query.eq(AuditValue::getPid, pid).in(CollectionUtils.isNotEmpty(entryIds), AuditValue::getEntryId, entryIds);
+        return auditValueMapper.selectList(query);
+    }
+
+    @Override
+    public void copyValueToTargetValueIsNoll(List<AuditValue> source, Long pid){
+        if(CollectionUtils.isEmpty(source)){
+            return;
+        }
+
+        source.forEach(s -> {
+            if(Objects.isNull(s)){
+                return;
+            }
+
+            biandOrUnbindEntry(s.getEntryId(), s.getValue(), pid);
+        });
+    }
+
+    @Override
+    public void copyValueToTargetValueIsNoll(AuditValue source, AuditValue target){
+
     }
 }
