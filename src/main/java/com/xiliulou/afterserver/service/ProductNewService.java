@@ -43,7 +43,7 @@ public interface ProductNewService {
      * @param limit  查询条数
      * @return 对象列表
      */
-    List<ProductNew> queryAllByLimit(int offset, int limit,String no,Long modelId,Long startTime,Long endTime,List<Long> list);
+    List<ProductNew> queryAllByLimit(int offset, int limit, String no, Long modelId, Long startTime, Long endTime, List<Long> list, String testType);
 
     /**
      * 新增数据
