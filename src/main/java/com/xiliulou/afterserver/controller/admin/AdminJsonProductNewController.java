@@ -74,8 +74,9 @@ public class AdminJsonProductNewController {
                        @RequestParam(value = "pointId",required = false) Long pointId,
                        @RequestParam(value = "pointType",required = false) Integer pointType,
                        @RequestParam(value = "startTime",required = false) Long startTime,
-                       @RequestParam(value = "endTime",required = false) Long endTime){
-        return productNewService.pointList(offset, limit, no, modelId, pointId, pointType, startTime, endTime);
+                       @RequestParam(value = "endTime",required = false) Long endTime,
+                       @RequestParam(value = "testType",required = false) String testType){
+        return productNewService.pointList(offset, limit, no, modelId, pointId, pointType, startTime, endTime, testType);
 
     }
 
