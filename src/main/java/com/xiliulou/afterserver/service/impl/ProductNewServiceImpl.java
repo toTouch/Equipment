@@ -554,7 +554,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
 
         //更新物联网卡
         ProductNew mainProduct = mainProducts.get(0);
-        auditValueService.biandOrUnbindEntry(AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY, iotCard.getSn(), mainProduct.getId());
+        //auditValueService.biandOrUnbindEntry(AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY, iotCard.getSn(), mainProduct.getId());
         return R.ok(Arrays.asList(mainProduct.getNo()));
     }
 
@@ -597,6 +597,16 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         }
 
         AuditProcess byType = auditProcessService.getByType(AuditProcess.TYPE_POST);
+        ProductNew mainProduct = mainProducts.get(0);
+        //需要拷贝的值的组件id
+        List<Long> copyLong = Arrays.asList(AuditProcessConstans.CAMERA_SN_AUDIT_ENTRY,
+                AuditProcessConstans.CAMERA_IOT_AUDIT_ENTRY,
+                AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY,
+                AuditProcessConstans.PRODUCT_COLOR_AUDIT_ENTRY,
+                AuditProcessConstans.PRODUCT_SURFACE_AUDIT_ENTRY,
+                AuditProcessConstans.CAMERA_SN_AUDIT_ENTRY_TOW);
+        //获取主柜需要同步到副柜的值
+        List<AuditValue> mainValues = auditValueService.getByPidAndEntryIds(copyLong, mainProduct.getId());
 
         for (String no : compression.getNoList()) {
             ProductNew productOld = this.queryByNo(no);
@@ -604,14 +614,23 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
                 continue;
             }
 
-            ProductNew product = new ProductNew();
-            product.setNo(no);
+            ProductNew product = productNewMapper.queryByNo(no);
+            if(Objects.isNull(product)) {
+                continue;
+            }
+
+            //ProductNew product = new ProductNew();
+            //product.setNo(no);
             product.setTestFile(compression.getCompressionFile());
             product.setTestResult(1);
             product.setTestType(compression.getTestType());
 
-            //更新物联网卡
-            auditValueService.biandOrUnbindEntry(AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY, iotCard.getSn(), productOld.getId());
+            //这里需要将主柜的数据同步到副柜
+            //获取副柜需要同步的值
+            //List<AuditValue> productValues = auditValueService.getByPidAndEntryIds(copyLong, product.getId());
+            //更新
+            auditValueService.copyValueToTargetValueIsNoll(mainValues, product.getId());
+
             //更新柜机状态
             Integer status = auditProcessService.getAuditProcessStatus(byType, productOld);
             if(Objects.equals(status, AuditProcessVo.STATUS_FINISHED)){

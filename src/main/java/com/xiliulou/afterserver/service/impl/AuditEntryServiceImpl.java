@@ -6,14 +6,12 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.constant.AuditProcessConstans;
 import com.xiliulou.afterserver.constant.CommonConstants;
+import com.xiliulou.afterserver.constant.ProductNewStatusSortConstants;
 import com.xiliulou.afterserver.entity.AuditEntry;
 import com.xiliulou.afterserver.entity.AuditGroup;
 import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.mapper.AuditEntryMapper;
-import com.xiliulou.afterserver.service.AuditEntryService;
-import com.xiliulou.afterserver.service.AuditGroupService;
-import com.xiliulou.afterserver.service.AuditValueService;
-import com.xiliulou.afterserver.service.GroupVersionService;
+import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.AuditEntryStrawberryQuery;
 import com.xiliulou.afterserver.web.vo.AuditEntryStrawberryVo;
@@ -57,6 +55,8 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
     StorageConfig storageConfig;
     @Autowired
     GroupVersionService groupVersionService;
+    @Autowired
+    ColorCardService ColorCardService;
 
     private static final String RADIO = "(单选)";
     private static final String CHECKBOX = "(多选)";
@@ -96,6 +96,13 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
             } else {
                 item.setOssUrlMap(new HashMap<>());
             }
+
+            if(Objects.equals(AuditProcessConstans.PRODUCT_COLOR_AUDIT_ENTRY, item.getId())) {
+                List<String> nameAll = ColorCardService.getNameAll();
+                item.setJsonRoot(JsonUtil.toJson(nameAll));
+                item.setJsonRootList(nameAll);
+            }
+
             //清除空键
             clearEmptyKey(item.getOssUrlMap());
         });
@@ -155,8 +162,13 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
         entrys.forEach(item -> {
             AuditEntryStrawberryVo vo = new AuditEntryStrawberryVo();
             BeanUtils.copyProperties(item, vo);
-            vo.setJsonRoot(JsonUtil.fromJsonArray(item.getJsonRoot(), String.class));
             data.add(vo);
+
+            vo.setJsonRoot(JsonUtil.fromJsonArray(item.getJsonRoot(), String.class));
+            if(Objects.equals(AuditProcessConstans.PRODUCT_COLOR_AUDIT_ENTRY, item.getId())) {
+                vo.setJsonRoot(ColorCardService.getNameAll());
+            }
+
         });
         return R.ok(data);
     }
