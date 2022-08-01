@@ -266,7 +266,7 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
 
     @Override
     public R snLike(String sn) {
-        List<IotCard> list = iotCardMapper.selectList(new LambdaQueryWrapper<IotCard>().like(StringUtils.isBlank(sn), IotCard::getSn, sn).eq(IotCard::getDelFlag, IotCard.DEL_NORMAL));
+        List<IotCard> list = iotCardMapper.selectList(new LambdaQueryWrapper<IotCard>().like(!StringUtils.isBlank(sn), IotCard::getSn, sn).eq(IotCard::getDelFlag, IotCard.DEL_NORMAL));
         List<Map> result = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(list)){
             list.forEach(item -> {
