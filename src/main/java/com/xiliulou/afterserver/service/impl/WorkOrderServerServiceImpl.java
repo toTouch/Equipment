@@ -34,7 +34,7 @@ public class WorkOrderServerServiceImpl extends ServiceImpl<WorkOrderServerMappe
     @Override
     public List<WorkOrderServerQuery> queryByWorkOrderIdAndServerId(Long workOrderId, Long serverId) {
         List<WorkOrderServerQuery> WorkOrderServerList =  this.baseMapper.queryByWorkOrderId(workOrderId, serverId);
-        WorkOrderServerList.stream().forEach(item -> {
+        WorkOrderServerList.parallelStream().forEach(item -> {
             BaseMapper<File> fileMapper = fileService.getBaseMapper();
             LambdaQueryWrapper<File> fileLambdaQueryWrapper = new LambdaQueryWrapper<>();
             fileLambdaQueryWrapper.eq(File::getBindId, item.getWorkOrderId());

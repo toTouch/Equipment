@@ -55,7 +55,9 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service("productNewService")
 @Slf4j
-public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, ProductNew> implements ProductNewService {
+public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, ProductNew> implements
+    ProductNewService {
+
     @Resource
     private ProductNewMapper productNewMapper;
     @Autowired
@@ -118,7 +120,6 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     }
 
 
-
     /**
      * 查询多条数据
      *
@@ -127,8 +128,10 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
      * @return 对象列表
      */
     @Override
-    public List<ProductNew> queryAllByLimit(int offset, int limit, String no, Long modelId, Long startTime, Long endTime, List<Long> list, String testType) {
-        return this.productNewMapper.queryAllByLimit(offset, limit, no, modelId, startTime, endTime, list, testType);
+    public List<ProductNew> queryAllByLimit(int offset, int limit, String no, Long modelId,
+        Long startTime, Long endTime, List<Long> list, String testType) {
+        return this.productNewMapper
+            .queryAllByLimit(offset, limit, no, modelId, startTime, endTime, list, testType);
     }
 
     /**
@@ -215,11 +218,10 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             StringBuilder sb = new StringBuilder();
             sb.append(product.getCode()).append("-");
             sb.append(supplier.getCode()).append(batch.getBatchNo())
-                    .append(serialNumStr);
+                .append(serialNumStr);
             if (Objects.nonNull(productNew.getType())) {
                 sb.append(productNew.getType());
             }
-
 
             productNew.setSerialNum(serialNumStr);
             productNew.setNo(sb.toString());
@@ -246,7 +248,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
 //            }
 //        }
 
-        Double statusValueOld = ProductNewStatusSortConstants.acquireStatusValue(productNewOld.getStatus());
+        Double statusValueOld = ProductNewStatusSortConstants
+            .acquireStatusValue(productNewOld.getStatus());
         if (Objects.isNull(statusValueOld)) {
             return R.fail("产品状态不合法");
         }
@@ -269,7 +272,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         //这里状态改成已收货 位置要发生改变 利用发货日志表查询
         if (Objects.equals(3, query.getStatus())) {
             DeliverLog deliverLog = deliverLogService.getBaseMapper().selectOne(
-                    new QueryWrapper<DeliverLog>().eq("product_id", query.getId()));
+                new QueryWrapper<DeliverLog>().eq("product_id", query.getId()));
 
             if (Objects.nonNull(deliverLog)) {
                 Deliver deliver = deliverService.getById(deliverLog.getId());
@@ -277,20 +280,22 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
                     Integer destinationType = deliver.getDestinationType();
                     if (Objects.equals(destinationType, 1)) {
                         PointNew pointNew = pointNewMapper.selectOne(
-                                new QueryWrapper<PointNew>().eq("name", deliver.getDestination()));
+                            new QueryWrapper<PointNew>().eq("name", deliver.getDestination()));
                         if (Objects.nonNull(pointNew)) {
                             this.bindPoint(query.getId(), pointNew.getId(), 1);
                         }
                     }
                     if (Objects.equals(destinationType, 2)) {
                         WareHouse wareHouse = warehouseService.getBaseMapper().selectOne(
-                                new QueryWrapper<WareHouse>().eq("ware_houses", deliver.getDestination()));
+                            new QueryWrapper<WareHouse>()
+                                .eq("ware_houses", deliver.getDestination()));
                         if (Objects.nonNull(wareHouse)) {
                             this.bindPoint(query.getId(), new Long(wareHouse.getId()), 2);
                         }
                     }
                     if (Objects.equals(destinationType, 3)) {
-                        Supplier supplier = supplierService.querySupplierName(deliver.getDestination());
+                        Supplier supplier = supplierService
+                            .querySupplierName(deliver.getDestination());
                         if (Objects.nonNull(supplier)) {
                             this.bindPoint(query.getId(), supplier.getId(), 3);
                         }
@@ -350,7 +355,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
 
     @Override
     public ProductNew prdouctInfoByNo(String no) {
-        LambdaQueryWrapper<ProductNew> eq = new LambdaQueryWrapper<ProductNew>().eq(ProductNew::getNo, no).eq(ProductNew::getDelFlag, ProductNew.DEL_NORMAL);
+        LambdaQueryWrapper<ProductNew> eq = new LambdaQueryWrapper<ProductNew>()
+            .eq(ProductNew::getNo, no).eq(ProductNew::getDelFlag, ProductNew.DEL_NORMAL);
         ProductNew productNew = this.productNewMapper.selectOne(eq);
         if (Objects.nonNull(productNew)) {
             Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
@@ -426,7 +432,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         }
 
         if (map.size() < 3 && map.size() > 1) {
-            log.error("查询结果有误，请重新录入: name={}, batchNo={}, no={}", map.get("name"), map.get("batchNo"), map.get("no"));
+            log.error("查询结果有误，请重新录入: name={}, batchNo={}, no={}", map.get("name"),
+                map.get("batchNo"), map.get("no"));
             return R.fail("查询结果有误，请重新录入");
         }
 
@@ -460,8 +467,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         this.update(productNew);
 
         PointProductBind pointProductBind = pointProductBindMapper
-                .selectOne(new QueryWrapper<PointProductBind>()
-                        .eq("product_id", productId));
+            .selectOne(new QueryWrapper<PointProductBind>()
+                .eq("product_id", productId));
 
         if (ObjectUtils.isNotNull(pointProductBind)) {
             pointProductBindMapper.deleteById(pointProductBind.getId());
@@ -519,7 +526,6 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
 
         ArrayList<ProductNew> mainProducts = new ArrayList<>(1);
 
-
         for (String no : compression.getNoList()) {
             ProductNew product = this.queryByNo(no);
             if (Objects.isNull(product)) {
@@ -533,8 +539,9 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
                 //统计是否有前置检测未通过柜机
                 AuditProcess auditProcess = auditProcessService.getByType(AuditProcess.TYPE_PRE);
                 Integer status = auditProcessService.getAuditProcessStatus(auditProcess, product);
-                if(!Objects.equals(status, AuditProcessVo.STATUS_FINISHED)
-                        || !Objects.equals(product.getStatus(), ProductNewStatusSortConstants.STATUS_PRE_DETECTION)){
+                if (!Objects.equals(status, AuditProcessVo.STATUS_FINISHED)
+                    || !Objects.equals(product.getStatus(),
+                    ProductNewStatusSortConstants.STATUS_PRE_DETECTION)) {
                     errorStatus.add(product.getNo());
                 }
             }
@@ -548,7 +555,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             return R.fail(mainProducts, null, "主柜不存在或存在多个，请核对");
         }
 
-        if(CollectionUtils.isNotEmpty(errorStatus)) {
+        if (CollectionUtils.isNotEmpty(errorStatus)) {
             return R.fail(errorStatus, null, "柜机前置检测未通过或非前置检测完成状态,请核对");
         }
 
@@ -600,13 +607,14 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         ProductNew mainProduct = mainProducts.get(0);
         //需要拷贝的值的组件id
         List<Long> copyLong = Arrays.asList(AuditProcessConstans.CAMERA_SN_AUDIT_ENTRY,
-                AuditProcessConstans.CAMERA_IOT_AUDIT_ENTRY,
-                AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY,
-                AuditProcessConstans.PRODUCT_COLOR_AUDIT_ENTRY,
-                AuditProcessConstans.PRODUCT_SURFACE_AUDIT_ENTRY,
-                AuditProcessConstans.CAMERA_SN_AUDIT_ENTRY_TOW);
+            AuditProcessConstans.CAMERA_IOT_AUDIT_ENTRY,
+            AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY,
+            AuditProcessConstans.PRODUCT_COLOR_AUDIT_ENTRY,
+            AuditProcessConstans.PRODUCT_SURFACE_AUDIT_ENTRY,
+            AuditProcessConstans.CAMERA_SN_AUDIT_ENTRY_TOW);
         //获取主柜需要同步到副柜的值
-        List<AuditValue> mainValues = auditValueService.getByPidAndEntryIds(copyLong, mainProduct.getId());
+        List<AuditValue> mainValues = auditValueService
+            .getByPidAndEntryIds(copyLong, mainProduct.getId());
 
         for (String no : compression.getNoList()) {
             ProductNew productOld = this.queryByNo(no);
@@ -615,7 +623,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             }
 
             ProductNew product = productNewMapper.queryByNo(no);
-            if(Objects.isNull(product)) {
+            if (Objects.isNull(product)) {
                 continue;
             }
 
@@ -633,7 +641,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
 
             //更新柜机状态
             Integer status = auditProcessService.getAuditProcessStatus(byType, productOld);
-            if(Objects.equals(status, AuditProcessVo.STATUS_FINISHED)){
+            if (Objects.equals(status, AuditProcessVo.STATUS_FINISHED)) {
                 product.setStatus(ProductNewStatusSortConstants.STATUS_POST_DETECTION);
             } else {
                 product.setStatus(ProductNewStatusSortConstants.STATUS_TESTED);
@@ -682,7 +690,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         }
 
         Page page = PageUtil.getPage(offset, size);
-        page = productNewMapper.selectPage(page, new QueryWrapper<ProductNew>().eq("batch_id", batchId)
+        page = productNewMapper
+            .selectPage(page, new QueryWrapper<ProductNew>().eq("batch_id", batchId)
                 .eq("supplier_id", user.getThirdId())
                 .eq("del_flag", ProductNew.DEL_NORMAL));
 
@@ -701,7 +710,6 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             data.add(batchProductNewVo);
         });
 
-
         Map result = new HashMap(2);
         result.put("data", data);
         result.put("total", page.getTotal());
@@ -715,22 +723,25 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         User user = userService.getUserById(SecurityUtils.getUid());
         if (Objects.isNull(user)) {
             log.error("QUERY PROCESS INFO ERROR! not found uid! uid={}", SecurityUtils.getUid());
-            return R.fail(null,"未查询到相关用户");
+            return R.fail(null, "未查询到相关用户");
         }
 
         if (Objects.isNull(productNew)) {
             log.error("QUERY PROCESS INFO ERROR! not found no! no={}", no);
-            return R.fail(null,"资产编码不存在");
+            return R.fail(null, "资产编码不存在");
         }
 
         if (!Objects.equals(productNew.getSupplierId(), user.getThirdId())) {
-            log.error("QUERY PROCESS INFO ERROR! current user inconsistent  factory! supplierId={}, userThirdId", productNew.getSupplierId(), user.getThirdId());
+            log.error(
+                "QUERY PROCESS INFO ERROR! current user inconsistent  factory! supplierId={}, userThirdId",
+                productNew.getSupplierId(), user.getThirdId());
             return R.fail(null, "柜机厂家与登录厂家不一致，请重新登陆");
         }
 
         Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
         if (Objects.isNull(batch)) {
-            log.error("QUERY PROCESS INFO ERROR! not found batch! batch={}", productNew.getBatchId());
+            log.error("QUERY PROCESS INFO ERROR! not found batch! batch={}",
+                productNew.getBatchId());
             return R.fail(null, "柜机未绑定批次，请检查");
         }
 
@@ -745,14 +756,19 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         vo.setCreateTime(simp.format(new Date(productNew.getCreateTime())));
         vo.setProductStatus(getStatusName(productNew.getStatus()));
 
-        List<AuditProcess> auditProcessList = auditProcessService.getBaseMapper().selectList(new QueryWrapper<AuditProcess>().orderByAsc("id"));
+        List<AuditProcess> auditProcessList = auditProcessService.getBaseMapper()
+            .selectList(new QueryWrapper<AuditProcess>().orderByAsc("id"));
         //如果搜索页面配置为空，则只获取压测状态，发货状态随压测状态改变
         if (CollectionUtils.isEmpty(auditProcessList)) {
             AuditProcessVo testVo = auditProcessService.createTestAuditProcessVo();
-            testVo.setStatus(ProductNew.TEST_RESULT_SUCCESS.equals(productNew.getTestResult()) ? AuditProcessVo.STATUS_FINISHED : AuditProcessVo.STATUS_EXECUTING);
+            testVo.setStatus(ProductNew.TEST_RESULT_SUCCESS.equals(productNew.getTestResult())
+                ? AuditProcessVo.STATUS_FINISHED : AuditProcessVo.STATUS_EXECUTING);
             AuditProcessVo deliverVo = auditProcessService.createDeliverAuditProcessVo();
-            boolean flag = ProductNewStatusSortConstants.acquireStatusValue(productNew.getStatus()) >= ProductNewStatusSortConstants.acquireStatusValue(ProductNewStatusSortConstants.STATUS_SHIPPED);
-            deliverVo.setStatus( flag ? ProductNewProcessInfoVo.STATUS_FINISHED : ProductNewProcessInfoVo.STATUS_UN_FINISHED);
+            boolean flag = ProductNewStatusSortConstants.acquireStatusValue(productNew.getStatus())
+                >= ProductNewStatusSortConstants
+                .acquireStatusValue(ProductNewStatusSortConstants.STATUS_SHIPPED);
+            deliverVo.setStatus(flag ? ProductNewProcessInfoVo.STATUS_FINISHED
+                : ProductNewProcessInfoVo.STATUS_UN_FINISHED);
             voList.add(testVo);
             voList.add(deliverVo);
 
@@ -776,25 +792,30 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         //获取压测状态
         AuditProcessVo testAuditProcessVo = auditProcessService.createTestAuditProcessVo();
         //获取当前压测状态，
-        if(Objects.equals(productNew.getTestResult(), ProductNew.TEST_RESULT_SUCCESS)) {
+        if (Objects.equals(productNew.getTestResult(), ProductNew.TEST_RESULT_SUCCESS)) {
             //如果测试完成 那么压测状态一定是绿灯
             testAuditProcessVo.setStatus(AuditProcessVo.STATUS_FINISHED);
         } else {
             //如果测试未完成，需要看前置检查是否完成：完成则压测正在执行，未完则置灰
             voList.forEach(item -> {
-                if(Objects.equals(AuditProcess.TYPE_PRE, item.getType())) {
-                    testAuditProcessVo.setStatus(Objects.equals(item.getStatus(), AuditProcessVo.STATUS_FINISHED)? AuditProcessVo.STATUS_EXECUTING : AuditProcessVo.STATUS_UNFINISHED);
+                if (Objects.equals(AuditProcess.TYPE_PRE, item.getType())) {
+                    testAuditProcessVo.setStatus(
+                        Objects.equals(item.getStatus(), AuditProcessVo.STATUS_FINISHED)
+                            ? AuditProcessVo.STATUS_EXECUTING : AuditProcessVo.STATUS_UNFINISHED);
                 }
             });
         }
-        voList.add(1,testAuditProcessVo);
+        voList.add(1, testAuditProcessVo);
         statusSet.add(testAuditProcessVo.getStatus());
 
         auditProcessService.processStatusAdjustment(voList);
 
         AuditProcessVo deliverVo = auditProcessService.createDeliverAuditProcessVo();
-        boolean flag = ProductNewStatusSortConstants.acquireStatusValue(productNew.getStatus()) >= ProductNewStatusSortConstants.acquireStatusValue(ProductNewStatusSortConstants.STATUS_SHIPPED);
-        deliverVo.setStatus( flag ? ProductNewProcessInfoVo.STATUS_FINISHED : ProductNewProcessInfoVo.STATUS_UN_FINISHED);
+        boolean flag = ProductNewStatusSortConstants.acquireStatusValue(productNew.getStatus())
+            >= ProductNewStatusSortConstants
+            .acquireStatusValue(ProductNewStatusSortConstants.STATUS_SHIPPED);
+        deliverVo.setStatus(flag ? ProductNewProcessInfoVo.STATUS_FINISHED
+            : ProductNewProcessInfoVo.STATUS_UN_FINISHED);
         voList.add(deliverVo);
 
         return R.ok(vo);
@@ -862,25 +883,25 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         }
 
         AuditProcess pre = auditProcessService.getByType(AuditProcess.TYPE_PRE);
-        Integer preStatus =  auditProcessService.getAuditProcessStatus(pre, productNew);
-        if(!Objects.equals(preStatus, AuditProcessVo.STATUS_FINISHED)) {
+        Integer preStatus = auditProcessService.getAuditProcessStatus(pre, productNew);
+        if (!Objects.equals(preStatus, AuditProcessVo.STATUS_FINISHED)) {
             return R.fail(null, "10001", "产品前置检查未完成");
         }
 
-        if(!Objects.equals(productNew.getTestResult(), ProductNew.TEST_RESULT_SUCCESS)) {
+        if (!Objects.equals(productNew.getTestResult(), ProductNew.TEST_RESULT_SUCCESS)) {
             return R.fail(null, "00000", "产品老化测试未完成");
         }
 
         AuditProcess post = auditProcessService.getByType(AuditProcess.TYPE_POST);
-        Integer status =  auditProcessService.getAuditProcessStatus(post, productNew);
-        if(!Objects.equals(status, AuditProcessVo.STATUS_FINISHED)) {
+        Integer status = auditProcessService.getAuditProcessStatus(post, productNew);
+        if (!Objects.equals(status, AuditProcessVo.STATUS_FINISHED)) {
             return R.fail(null, "10002", "产品后置检查未完成");
         }
 
-        if(!Objects.equals(productNew.getStatus(), ProductNewStatusSortConstants.STATUS_POST_DETECTION)) {
+        if (!Objects
+            .equals(productNew.getStatus(), ProductNewStatusSortConstants.STATUS_POST_DETECTION)) {
             return R.fail(null, "00000", statusErrorMsg(productNew.getStatus()));
         }
-
 
         SimpleDateFormat sim = new SimpleDateFormat("hh:mm");
 
@@ -896,18 +917,20 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     }
 
     private String statusErrorMsg(Integer status) {
-        String msg  = "";
-        if(Objects.equals(status, ProductNewStatusSortConstants.STATUS_PRODUCTION)) {
+        String msg = "";
+        if (Objects.equals(status, ProductNewStatusSortConstants.STATUS_PRODUCTION)) {
             msg += "产品生产中，请检验柜机后发货";
         }
-        if(Objects.equals(status, ProductNewStatusSortConstants.STATUS_PRE_DETECTION)) {
+        if (Objects.equals(status, ProductNewStatusSortConstants.STATUS_PRE_DETECTION)) {
             msg += "前置检测完成，请将其余检验完成发货";
         }
-        if(Objects.equals(status, ProductNewStatusSortConstants.STATUS_TESTED)) {
+        if (Objects.equals(status, ProductNewStatusSortConstants.STATUS_TESTED)) {
             msg += "产品已测试，请将其余检验完成发货";
         }
-        boolean isDeliver = ProductNewStatusSortConstants.acquireStatusValue(status) > ProductNewStatusSortConstants.acquireStatusValue(ProductNewStatusSortConstants.STATUS_POST_DETECTION);
-        if(isDeliver) {
+        boolean isDeliver =
+            ProductNewStatusSortConstants.acquireStatusValue(status) > ProductNewStatusSortConstants
+                .acquireStatusValue(ProductNewStatusSortConstants.STATUS_POST_DETECTION);
+        if (isDeliver) {
             msg += "产品已发货";
         }
         return msg;
@@ -942,7 +965,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     }
 
     @Override
-    public R pointList(Integer offset, Integer limit, String no, Long modelId, Long pointId, Integer pointType, Long startTime, Long endTime, String testType) {
+    public R pointList(Integer offset, Integer limit, String no, Long modelId, Long pointId,
+        Integer pointType, Long startTime, Long endTime, String testType) {
         List<Long> productIds = null;
         if (Objects.nonNull(pointId) || Objects.nonNull(pointType)) {
             productIds = pointProductBindService.queryProductIdsByPidAndPtype(pointId, pointType);
@@ -953,21 +977,25 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             }
         }
 
-        List<ProductNew> productNews = this.queryAllByLimit(offset, limit, no, modelId, startTime, endTime, productIds, testType);
+        List<ProductNew> productNews = this
+            .queryAllByLimit(offset, limit, no, modelId, startTime, endTime, productIds, testType);
 
         productNews.parallelStream().forEach(item -> {
 
-            PointProductBind pointProductBind = pointProductBindService.queryByProductId(item.getId());
+            PointProductBind pointProductBind = pointProductBindService
+                .queryByProductId(item.getId());
             if (Objects.nonNull(pointProductBind)) {
                 if (Objects.equals(pointProductBind.getPointType(), PointProductBind.TYPE_POINT)) {
-                    PointNew pointNew = this.pointNewMapper.selectById(pointProductBind.getPointId());
+                    PointNew pointNew = this.pointNewMapper
+                        .selectById(pointProductBind.getPointId());
                     if (Objects.nonNull(pointNew)) {
                         item.setPointId(pointNew.getId().intValue());
                         item.setPointName(pointNew.getName());
                         item.setPointType(PointProductBind.TYPE_POINT);
                     }
                 }
-                if (Objects.equals(pointProductBind.getPointType(), PointProductBind.TYPE_WAREHOUSE)) {
+                if (Objects
+                    .equals(pointProductBind.getPointType(), PointProductBind.TYPE_WAREHOUSE)) {
                     WareHouse wareHouse = warehouseService.getById(pointProductBind.getPointId());
                     if (Objects.nonNull(wareHouse)) {
                         item.setPointId(wareHouse.getId());
@@ -975,7 +1003,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
                         item.setPointType(PointProductBind.TYPE_WAREHOUSE);
                     }
                 }
-                if (Objects.equals(pointProductBind.getPointType(), PointProductBind.TYPE_SUPPLIER)) {
+                if (Objects
+                    .equals(pointProductBind.getPointType(), PointProductBind.TYPE_SUPPLIER)) {
                     Supplier supplier = supplierService.getById(pointProductBind.getPointId());
                     if (Objects.nonNull(supplier)) {
                         item.setPointId(supplier.getId().intValue());
