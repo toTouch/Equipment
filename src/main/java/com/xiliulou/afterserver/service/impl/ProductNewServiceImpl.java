@@ -539,9 +539,10 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
                 //统计是否有前置检测未通过柜机
                 AuditProcess auditProcess = auditProcessService.getByType(AuditProcess.TYPE_PRE);
                 Integer status = auditProcessService.getAuditProcessStatus(auditProcess, product);
-                if (!Objects.equals(status, AuditProcessVo.STATUS_FINISHED)
+                if ((!Objects.equals(status, AuditProcessVo.STATUS_FINISHED)
                     || !Objects.equals(product.getStatus(),
-                    ProductNewStatusSortConstants.STATUS_PRE_DETECTION)) {
+                    ProductNewStatusSortConstants.STATUS_PRE_DETECTION))
+                    && !Objects.equals(product.getStatus(), ProductNewStatusSortConstants.STATUS_TESTED)) {
                     errorStatus.add(product.getNo());
                 }
             }
@@ -556,7 +557,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         }
 
         if (CollectionUtils.isNotEmpty(errorStatus)) {
-            return R.fail(errorStatus, null, "柜机前置检测未通过或非前置检测完成状态,请核对");
+            return R.fail(errorStatus, null, "柜机前置检测未通过或非前置检测完成、已测试状态,请核对");
         }
 
         //更新物联网卡
