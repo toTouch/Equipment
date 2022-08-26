@@ -133,6 +133,9 @@ public class AdminJsonProductNewController {
     public R getTestFile(@RequestParam("fileName") String fileName){
         String url = null;
         String testFileName = "";
+        final String HTTP = "http";
+        final String HTTPS = "https";
+
         if(StringUtils.isNotBlank(StorageConfig.getTestFileDir())){
             testFileName = StorageConfig.getTestFileDir();
         }
@@ -144,6 +147,11 @@ public class AdminJsonProductNewController {
 
         if(Objects.isNull(url)){
             return R.fail("oss error");
+        }
+
+        int index = url.indexOf(":");
+        if(url.contains(HTTP) &&  index == HTTP.length()) {
+            url = HTTPS + url.substring(4);
         }
 
         Map<String, String> result = new HashMap<>(1);
