@@ -203,12 +203,17 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             return R.fail("数据库错误");
         }
 
+        log.info("点未绑定测试 1");
+
         if (pointNew.getProductIds().isEmpty()) {
             return R.fail("请传入点位id");
         }
 
+        log.info("点未绑定测试 2");
 
         pointNew.getProductIds().forEach(item -> {
+
+            log.info("点未绑定测试 3");
 
             PointProductBind oldPointProductBind = pointProductBindMapper
                     .selectOne(new QueryWrapper<PointProductBind>()
@@ -217,6 +222,8 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             if(ObjectUtils.isNotNull(oldPointProductBind)){
                 pointProductBindMapper.deleteById(oldPointProductBind.getId());
             }
+
+            log.info("点未绑定测试 4");
 
             PointProductBind pointProductBind = new PointProductBind();
             pointProductBind.setPointId(pointNew.getId());
