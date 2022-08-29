@@ -221,9 +221,8 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             PointProductBind pointProductBind = new PointProductBind();
             pointProductBind.setPointId(pointNew.getId());
             pointProductBind.setProductId(item);
+            pointProductBind.setPointType(PointProductBind.TYPE_POINT);
             pointProductBindService.insert(pointProductBind);
-
-
         });
 
         return R.ok();
@@ -320,7 +319,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         List<File> pointFileList = fileService.queryByPointId(pid);
         pointNewInfoVo.setPointFileList(pointFileList);
 
-        List<PointProductBind> pointProductBindList = pointProductBindService.queryByPointNewId(pid);
+        List<PointProductBind> pointProductBindList = pointProductBindService.queryByPointNewIdAndBindType(pid, PointProductBind.TYPE_POINT);
         ArrayList<ProductNew> productNews = new ArrayList<>();
         Map<String, Long> map = new HashMap<>();
         List<Map> productTypeAndNumList = new ArrayList<>();
@@ -567,8 +566,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
                                 .eq("product_id", entry.getKey()));
 
                 if(ObjectUtils.isNotNull(pointProductBind)){
-                    ProductNew productNew = productNewService.queryByIdFromDB(entry.getKey());
-                    return R.fail("柜机【" + (productNew == null?"未知":productNew.getNo() )+ "】已绑定位置");
+                    pointProductBindService.deleteById(pointProductBind.getId());
                 }
             }
         }

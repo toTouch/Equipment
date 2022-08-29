@@ -62,7 +62,7 @@ public interface PointProductBindService {
      */
     Boolean deleteById(Long id);
 
-    List<PointProductBind> queryByPointNewId(Long pid);
+    List<PointProductBind> queryByPointNewIdAndBindType(Long pid, Integer type);
 
     List<PointProductBind> queryByPointNewIdAndProductId(Long id, Long item);
 
