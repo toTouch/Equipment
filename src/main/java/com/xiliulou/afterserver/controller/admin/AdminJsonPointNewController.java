@@ -154,7 +154,7 @@ public class AdminJsonPointNewController {
 
 
                 //是否录入资产编码
-                List<PointProductBind> pointProductBinds = pointProductBindService.queryByPointNewId(item.getId());
+                List<PointProductBind> pointProductBinds = pointProductBindService.queryByPointNewIdAndBindType(item.getId(), PointProductBind.TYPE_POINT);
                 if(CollectionUtil.isEmpty(pointProductBinds)){
                     item.setIsbindProduct(PointNew.UNBIND_PRODUCT);
                     item.setBindProductCount(0);
@@ -459,7 +459,7 @@ public class AdminJsonPointNewController {
             list.add(item.getCanopyCount() == null ? "" : item.getCanopyCount());
 
             //是否录入资产编码
-            List<PointProductBind> pointProductBinds = pointProductBindService.queryByPointNewId(item.getId());
+            List<PointProductBind> pointProductBinds = pointProductBindService.queryByPointNewIdAndBindType(item.getId(), PointProductBind.TYPE_POINT);
             if(CollectionUtil.isEmpty(pointProductBinds)){
                 list.add("否");
             }else{

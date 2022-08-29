@@ -6,6 +6,7 @@ import com.xiliulou.afterserver.entity.PointNew;
 import com.xiliulou.afterserver.entity.PointProductBind;
 import com.xiliulou.afterserver.mapper.PointProductBindMapper;
 import com.xiliulou.afterserver.service.PointProductBindService;
+import java.util.Objects;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -101,8 +102,10 @@ public class PointProductBindServiceImpl implements PointProductBindService {
     }
 
     @Override
-    public List<PointProductBind> queryByPointNewId(Long pid) {
-        LambdaQueryWrapper<PointProductBind> queryWrapper = new LambdaQueryWrapper<PointProductBind>().eq(PointProductBind::getPointId, pid);
+    public List<PointProductBind> queryByPointNewIdAndBindType(Long pid, Integer type) {
+        LambdaQueryWrapper<PointProductBind> queryWrapper = new LambdaQueryWrapper<PointProductBind>()
+            .eq(PointProductBind::getPointId, pid)
+            .eq(Objects.nonNull(type), PointProductBind::getPointType, type);
         return this.pointProductBindMapper.selectList(queryWrapper);
     }
 
