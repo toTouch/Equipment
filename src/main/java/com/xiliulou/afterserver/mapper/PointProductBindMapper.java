@@ -1,10 +1,12 @@
 package com.xiliulou.afterserver.mapper;
 
+import com.xiliulou.afterserver.entity.PointNew;
 import java.util.List;
 
 import com.xiliulou.afterserver.entity.PointProductBind;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Update;
 
 /**
  * (PointProductBind)表数据库访问层
@@ -65,4 +67,7 @@ public interface PointProductBindMapper extends BaseMapper<PointProductBind> {
     int deleteById(Long id);
 
     List<Long> queryProductIdsByPidAndPtype(@Param("pointId") Long pointId, @Param("pointType")Integer pointType);
+
+    @Update("update t_point_new set audit_status = #{auditStatus}, audit_remarks = #{auditRemarks} where id = #{id}")
+    int updateAuditStatus(PointNew pointNewUpdate);
 }
