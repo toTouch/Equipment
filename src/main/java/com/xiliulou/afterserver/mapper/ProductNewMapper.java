@@ -81,7 +81,7 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
 
     int updateStatusFromBatch(@Param("ids") List<Long> ids, @Param("status") Integer status);
 
-    @Select("select max(serial_num) from t_product_new where code = #{code}")
+    @Select("select max(serial_num) from t_product_new where code = #{code} and del_flag = 0")
     Integer queryMaxSerialNum(String code);
 
     @Select("select id, no from t_product_new where del_flag = 0")
