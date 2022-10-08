@@ -445,7 +445,7 @@
             DATE_FORMAT(FROM_UNIXTIME( ANY_VALUE(o.create_time) / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
 --         count( a.work_order_reason_id ) AS count,
 --             FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ) AS date,
-            sum( wos.fee ) AS sumCount,
+            sum( wos.artificial_fee + wos.material_fee ) AS sumCount,
             count(1) as numCount,
             ANY_VALUE(b.city_id) as city
         FROM
