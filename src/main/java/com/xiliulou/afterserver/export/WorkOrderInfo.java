@@ -73,58 +73,63 @@ public class WorkOrderInfo {
     private String serverName;
 
     /**
-     * 費用
+     * 人工費用
      */
     @ExcelProperty(index = 12)
-    private Double fee;
+    private Double artificialFee;
+    /**
+     * 物料費用
+     */
+    @ExcelProperty(index = 13)
+    private Double materialFee;
 
     /**
      * 结算方式
      */
-    @ExcelProperty(index = 13)
+    @ExcelProperty(index = 14)
     private String paymentMethod;
 
     /**
      * 解决方案
      */
-    @ExcelProperty(index = 14)
+    @ExcelProperty(index = 15)
     private String solution;
 
-    @ExcelProperty(index = 15)
+    @ExcelProperty(index = 16)
     private String isUseThird;
 
     /**
      * 公司类别
      */
-    @ExcelProperty(index = 16)
+    @ExcelProperty(index = 17)
     private String thirdCompanyType ;
     /**
      * 第三方公司
      */
-    @ExcelProperty(index = 17)
+    @ExcelProperty(index = 18)
     private String thirdCompanyName;
 
     /**
      * 第三方承擔費用
      */
-    @ExcelProperty(index = 18)
+    @ExcelProperty(index = 19)
     private Double thirdCompanyPay;
 
     /**
      * 第三方结算状态
      */
-    @ExcelProperty(index = 19)
+    @ExcelProperty(index = 20)
     private String thirdPaymentStatus;
 
     /**
      * 第三方原因
      */
-    @ExcelProperty(index = 20)
+    @ExcelProperty(index = 21)
     private String thirdReason;
 
     /**
      * 第三方责任对接人
      */
-    @ExcelProperty(index = 21)
+    @ExcelProperty(index = 22)
     private String thirdResponsiblePerson;
 }
