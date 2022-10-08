@@ -183,8 +183,12 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
                     workOrderServer.setServerId(server.getId());
                 }
 
-                if(Objects.nonNull(item.getFee())){
-                    workOrderServer.setFee(new BigDecimal(item.getFee()));
+                if(Objects.nonNull(item.getArtificialFee())){
+                    workOrderServer.setArtificialFee(new BigDecimal(item.getArtificialFee()));
+                }
+
+                if(Objects.nonNull(item.getMaterialFee())){
+                    workOrderServer.setMaterialFee(new BigDecimal(item.getMaterialFee()));
                 }
 
                 if(Objects.nonNull(item.getPaymentMethod())){
