@@ -22,9 +22,13 @@ public class WorkOrderServer {
 
     private String serverName;
     /**
-     * 工单费用
+     * 人工工单费用
      */
-    private BigDecimal fee;
+    private BigDecimal artificialFee;
+    /**
+     * 物料工单费用
+     */
+    private BigDecimal materialFee;
     /**
      * 结算方式 1--月结 2--现结
      */
