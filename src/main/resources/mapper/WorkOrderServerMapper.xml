@@ -17,7 +17,7 @@
         <result column="third_company_type" property="thirdCompanyType" jdbcType="INTEGER"></result>
         <result column="third_company_id" property="thirdCompanyId" jdbcType="VARCHAR"></result>
         <result column="third_company_name" property="thirdCompanyName" jdbcType="VARCHAR"></result>
-        <result column="third_company_pay" property="thirdCompanyPay" jdbcType="DECIMAL"></result>
+        <result column="fee" property="fee" jdbcType="DECIMAL"></result>
         <result column="third_payment_status" property="thirdPaymentStatus" jdbcType="INTEGER"></result>
         <result column="third_reason" property="thirdReason" jdbcType="VARCHAR"></result>
         <result column="third_responsible_person" property="thirdResponsiblePerson" jdbcType="VARCHAR"></result>
@@ -25,7 +25,7 @@
 
     <select id="queryByWorkOrderId" resultMap="workOrderServerMap">
         select id, work_order_id, server_id, `server_name`, artificial_fee,material_fee, payment_method, solution, solution_time, prescription, is_use_third, third_company_type,
-        third_company_id, third_company_name, third_company_pay, third_payment_status, third_reason, third_responsible_person
+        third_company_id, third_company_name, fee, third_payment_status, third_reason, third_responsible_person
         from t_work_order_server
         <where>
             <if test="workOrderId != null">
