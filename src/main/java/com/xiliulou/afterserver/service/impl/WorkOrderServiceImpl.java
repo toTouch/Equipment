@@ -515,10 +515,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     } else {
                         row.add("");
                     }
-                    // "人工费用",
-                    row.add(item.getArtificialFee() == null ? "" : item.getArtificialFee());
-                    //物料费用
-                    row.add(item.getMaterialFee() == null ? "" : item.getMaterialFee());
+
+                    // "第三方费用",
+                    row.add(item.getFee() == null ? "" : item.getFee());
                     // "结算方式",
                     row.add(this.getPaymentMethod(item.getPaymentMethod()));
                     // "解决方案",
@@ -548,8 +547,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     row.add(this.getThirdCompanyType(item.getThirdCompanyType()));
                     // "第三方公司",
                     row.add(item.getThirdCompanyName() == null ? "" : item.getThirdCompanyName());
-                    // "第三方费用",
-                    row.add(item.getThirdCompanyPay() == null ? "" : item.getThirdCompanyPay());
+                    // "人工费用",
+                    row.add(item.getArtificialFee() == null ? "" : item.getArtificialFee());
+                    //物料费用
+                    row.add(item.getMaterialFee() == null ? "" : item.getMaterialFee());
                     // "支付状态",
                     row.add(this.getThirdPaymentStatus(item.getThirdPaymentStatus()));
                     // "第三方原因",
@@ -864,15 +865,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     } else {
                         row.add("");
                     }
-                    // "人工费用",
-                    row.add(item.getArtificialFee() == null ? "" : item.getArtificialFee());
-                    //物料费用
-                    row.add(item.getMaterialFee() == null ? "" : item.getMaterialFee());
+
                     // "结算方式",
                     row.add(this.getPaymentMethod(item.getPaymentMethod()));
                     // "解决方案",
                     row.add(item.getSolution() == null ? "" : item.getSolution());
-                    // "解决时间",
+                    // "第三方费用",
+                    row.add(item.getFee() == null ? "" : item.getFee());
 
                     if (Objects.nonNull(item.getSolutionTime())) {
                         row.add(simpleDateFormat.format(new Date(item.getSolutionTime())));
@@ -896,8 +895,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     row.add(this.getThirdCompanyType(item.getThirdCompanyType()));
                     // "第三方公司",
                     row.add(item.getThirdCompanyName() == null ? "" : item.getThirdCompanyName());
-                    // "第三方费用",
-                    row.add(item.getThirdCompanyPay() == null ? "" : item.getThirdCompanyPay());
+                    // "人工费用",
+                    row.add(item.getArtificialFee() == null ? "" : item.getArtificialFee());
+                    //物料费用
+                    row.add(item.getMaterialFee() == null ? "" : item.getMaterialFee());
                     // "支付状态",
                     row.add(this.getThirdPaymentStatus(item.getThirdPaymentStatus()));
                     // "第三方原因",
@@ -1336,8 +1337,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if (!CollectionUtils.isEmpty(workOrderServerQueryList)) {
                 BigDecimal totalFee = new BigDecimal("0");
                 for (WorkOrderServerQuery item : workOrderServerQueryList) {
-                    totalFee = totalFee.add(Optional.ofNullable(item.getArtificialFee()).orElse(zero));
-                    totalFee = totalFee.add(Optional.ofNullable(item.getMaterialFee()).orElse(zero));
+                    totalFee = totalFee.add(Optional.ofNullable(item.getFee()).orElse(zero));
                 }
                 o.setTotalFee(totalFee);
             }
@@ -1479,8 +1479,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
                 for (WorkOrderServerQuery item : workOrderServerQueryList) {
                     //计算总费用
-                    totalFee = totalFee.add(Optional.ofNullable(item.getArtificialFee()).orElse(zero));
-                    totalFee = totalFee.add(Optional.ofNullable(item.getMaterialFee()).orElse(zero));
+                    totalFee = totalFee.add(Optional.ofNullable(item.getFee()).orElse(zero));
 
                     //服务商",
                     Server server = serverService.getById(item.getServerId());
@@ -1489,11 +1488,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     } else {
                         row.add("");
                     }
-                    // "人工费用",
-                    row.add(item.getArtificialFee() == null ? "" : item.getArtificialFee());
-                    //物料费用
-                    row.add(item.getMaterialFee() == null ? "" : item.getMaterialFee());
 
+                    // "第三方费用",
+                    row.add(item.getFee() == null ? "" : item.getFee());
                     // "解决时间",
                     if (Objects.nonNull(item.getSolutionTime())) {
                         row.add(simpleDateFormat.format(new Date(item.getSolutionTime())));
@@ -1507,9 +1504,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     row.add(this.getThirdCompanyType(item.getThirdCompanyType()));
                     // "第三方公司",
                     row.add(item.getThirdCompanyName() == null ? "" : item.getThirdCompanyName());
-                    // "第三方费用",
-                    row.add(item.getThirdCompanyPay() == null ? "" : item.getThirdCompanyPay());
-
+                    // "人工费用",
+                    row.add(item.getArtificialFee() == null ? "" : item.getArtificialFee());
+                    //物料费用
+                    row.add(item.getMaterialFee() == null ? "" : item.getMaterialFee());
                 }
 
                 //给服务商不够最大服务商个数的的补充空白
@@ -1860,16 +1858,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     return R.fail("工单必须添加服务商");
                 }
 
-                if (Objects.isNull(item.getPaymentMethod())) {
-                    return R.fail("工单必须添加结算方式");
-                }
-
-                if (Objects.isNull(item.getArtificialFee())) {
+                if (Objects.isNull(item.getFee())) {
                     return R.fail("工单必须添加应收第三方人工费");
-                }
-
-                if (Objects.isNull(item.getMaterialFee())) {
-                    return R.fail("工单必须添加应收第三方物料费");
                 }
 
                 if (item.getIsUseThird()) {
@@ -1881,8 +1871,16 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         return R.fail("工单必须添加第三方公司");
                     }
 
-                    if (Objects.isNull(item.getThirdCompanyPay())) {
-                        return R.fail("工单必须添加第三方支付金额");
+                    if (Objects.isNull(item.getPaymentMethod())) {
+                        return R.fail("工单必须添加结算方式");
+                    }
+
+                    if (Objects.isNull(item.getFee())) {
+                        return R.fail("工单必须添加工单费用");
+                    }
+
+                    if (Objects.isNull(item.getMaterialFee())) {
+                        return R.fail("工单必须添加应收第三方物料费");
                     }
 
                     if (Objects.isNull(item.getThirdPaymentStatus())) {
@@ -2067,12 +2065,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     return R.fail("工单必须添加结算方式");
                 }
 
-                if (Objects.isNull(item.getArtificialFee())) {
-                    return R.fail("工单必须添加应收第三方人工费");
-                }
-
-                if (Objects.isNull(item.getMaterialFee())) {
-                    return R.fail("工单必须添加应收第三方物料费");
+                if (Objects.isNull(item.getFee())) {
+                    return R.fail("工单必须添加工单费用");
                 }
 
                 if (item.getIsUseThird()) {
@@ -2084,9 +2078,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         return R.fail("工单必须添加第三方公司");
                     }
 
-                    if (Objects.isNull(item.getThirdCompanyPay())) {
-                        return R.fail("工单必须添加第三方支付金额");
+                    if (Objects.isNull(item.getArtificialFee())) {
+                        return R.fail("工单必须添加应收第三方人工费");
                     }
+
+                    if (Objects.isNull(item.getMaterialFee())) {
+                        return R.fail("工单必须添加应收第三方物料费");
+                    }
+
 
                     if (Objects.isNull(item.getThirdPaymentStatus())) {
                         return R.fail("工单必须添加第三方支付状态");
@@ -2461,12 +2460,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 return R.fail("工单必须添加结算方式");
             }
 
-            if (Objects.isNull(item.getArtificialFee())) {
-                return R.fail("工单必须添加应收第三方人工费");
-            }
-
-            if (Objects.isNull(item.getMaterialFee())) {
-                return R.fail("工单必须添加应收第三方物料费");
+            if (Objects.isNull(item.getFee())) {
+                return R.fail("工单必须添加工单费用");
             }
 
             if (item.getIsUseThird()) {
@@ -2478,8 +2473,12 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     return R.fail("工单必须添加第三方公司");
                 }
 
-                if (Objects.isNull(item.getThirdCompanyPay())) {
-                    return R.fail("工单必须添加第三方支付金额");
+                if (Objects.isNull(item.getArtificialFee())) {
+                    return R.fail("工单必须添加应收第三方人工费");
+                }
+
+                if (Objects.isNull(item.getMaterialFee())) {
+                    return R.fail("工单必须添加应收第三方物料费");
                 }
 
                 if (Objects.isNull(item.getThirdPaymentStatus())) {
@@ -2829,8 +2828,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         workOrderServer.setServerName(server.getName());
                     }
                 }
-                workOrderServer.setArtificialFee(item.getArtificialFee());
-                workOrderServer.setMaterialFee(item.getMaterialFee());
+                workOrderServer.setFee(item.getFee());
                 workOrderServer.setPaymentMethod(item.getPaymentMethod());
                 workOrderServer.setSolution(item.getSolution());
                 workOrderServer.setSolutionTime(item.getSolutionTime());
@@ -2861,7 +2859,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         }
                     }
                 }
-                workOrderServer.setThirdCompanyPay(item.getThirdCompanyPay());
+
+                workOrderServer.setArtificialFee(item.getArtificialFee());
+                workOrderServer.setMaterialFee(item.getMaterialFee());
                 workOrderServer.setThirdPaymentStatus(item.getThirdPaymentStatus());
                 workOrderServer.setThirdReason(item.getThirdReason());
                 workOrderServer.setThirdResponsiblePerson(item.getThirdResponsiblePerson());

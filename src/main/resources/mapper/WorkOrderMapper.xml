@@ -387,7 +387,7 @@
             count( 1 ) AS numCount,
                 ( CASE
                 WHEN ANY_VALUE(wos.third_company_pay) IS NOT NULL THEN
-                sum( wos.artificial_fee + wos.material_fee - wos.third_company_pay ) ELSE sum( wos.artificial_fee + wos.material_fee )
+                sum( wos.fee - wos.third_company_pay ) ELSE sum( wos.fee )
                 END )
             AS sumCount
         FROM
@@ -417,7 +417,7 @@
             count(1) as numCount,
             ( CASE
             WHEN ANY_VALUE(wos.third_company_pay) IS NOT NULL THEN
-            sum( wos.artificial_fee + wos.material_fee - wos.third_company_pay ) ELSE sum( wos.artificial_fee + wos.material_fee )
+            sum( wos.fee - wos.third_company_pay ) ELSE sum( wos.fee )
             END )
             AS sumCount
         FROM
@@ -445,7 +445,7 @@
             DATE_FORMAT(FROM_UNIXTIME( ANY_VALUE(o.create_time) / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
 --         count( a.work_order_reason_id ) AS count,
 --             FROM_UNIXTIME( o.create_time / 1000, '%Y-%m-%d' ) AS date,
-            sum( wos.artificial_fee + wos.material_fee ) AS sumCount,
+            sum( wos.fee ) AS sumCount,
             count(1) as numCount,
             ANY_VALUE(b.city_id) as city
         FROM
@@ -470,7 +470,7 @@
             ANY_VALUE(p.name) as pointName, ANY_VALUE(p.city_id) as city,count(1) as numCount,
             ( CASE
             WHEN ANY_VALUE(wos.third_company_pay) IS NOT NULL THEN
-            sum( wos.artificial_fee + wos.material_fee - wos.third_company_pay ) ELSE sum( wos.artificial_fee + wos.material_fee )
+            sum( wos.fee - wos.third_company_pay ) ELSE sum( wos.fee )
             END )
             AS sumCount
         FROM
@@ -500,7 +500,7 @@
         o.type,
         ( CASE
         WHEN ANY_VALUE(wos.third_company_pay) IS NOT NULL THEN
-        sum( wos.artificial_fee + wos.material_fee - wos.third_company_pay ) ELSE sum( wos.artificial_fee + wos.material_fee )
+        sum( wos.fee - wos.third_company_pay ) ELSE sum( wos.fee )
         END )
         AS sumCount
         FROM
@@ -531,7 +531,7 @@
             DATE_FORMAT(FROM_UNIXTIME(  ANY_VALUE(o.create_time) / 1000, '%Y-%m-%d' ),'%X第%V周') AS date,
             ( CASE
             WHEN  ANY_VALUE(wos.third_company_pay) IS NOT NULL THEN
-            sum( wos.artificial_fee + wos.material_fee - wos.third_company_pay ) ELSE sum( wos.artificial_fee + wos.material_fee )
+            sum( wos.fee - wos.third_company_pay ) ELSE sum( wos.fee )
             END )
             AS sumCount
         FROM

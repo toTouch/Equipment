@@ -63,9 +63,9 @@ public class WorkOrderServerQuery {
      */
     private String thirdCompanyName;
     /**
-     * 第三方费用
+     * 工单费用
      */
-    private BigDecimal thirdCompanyPay;
+    private BigDecimal fee;
     /**
      * 无需结算 1，未结算 2，已结算 3
      */

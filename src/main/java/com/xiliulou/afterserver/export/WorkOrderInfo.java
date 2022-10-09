@@ -110,10 +110,10 @@ public class WorkOrderInfo {
     private String thirdCompanyName;
 
     /**
-     * 第三方承擔費用
+     * 工单费用
      */
     @ExcelProperty(index = 19)
-    private Double thirdCompanyPay;
+    private Double fee;
 
     /**
      * 第三方结算状态

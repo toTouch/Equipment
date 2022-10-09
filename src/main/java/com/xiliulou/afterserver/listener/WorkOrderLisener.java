@@ -243,8 +243,8 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
                 }
 
 
-                if(Objects.nonNull(item.getThirdCompanyPay())){
-                    workOrderServer.setThirdCompanyPay(new BigDecimal(item.getThirdCompanyPay()));
+                if(Objects.nonNull(item.getFee())){
+                    workOrderServer.setFee(new BigDecimal(item.getFee()));
                 }
 
                 if(Objects.nonNull(item.getThirdPaymentStatus())){
