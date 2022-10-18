@@ -159,7 +159,8 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
 
             workOrder.setCreateTime(System.currentTimeMillis());
 
-            workOrder.setOrderNo(RandomUtil.randomString(10));
+            WorkOrderType workOrderType = workOrderTypeService.getById(type);
+            workOrder.setOrderNo(workOrderService.generateWorkOrderNo(workOrderType));
 
             workOrder.setCreaterId(SecurityUtils.getUid());
 

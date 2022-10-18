@@ -34,7 +34,9 @@ public class Product implements Serializable {
     private String state;//产品状态
     private BigDecimal price;//价格
     private String remarks;//备注
-
+    //产品系列
+    // 取餐柜 1、餐厅柜 2、换电柜 3、充电柜 4、寄存柜 5、生鲜柜 6
+    private Integer productSeries;
 
 
     public static final Integer MAIN_LOCKER = 1;

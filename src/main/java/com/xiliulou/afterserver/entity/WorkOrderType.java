@@ -16,6 +16,7 @@ public class WorkOrderType {
     private Long id;
     private String type;
     private String remark;
+    private String no;
 
 
     //安装
