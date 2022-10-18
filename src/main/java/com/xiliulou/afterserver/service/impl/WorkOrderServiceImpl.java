@@ -1908,7 +1908,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         //
        // workOrder.setOrderNo("GD" + sdf.format(new Date()) + "-" + RandomUtil.randomInt(100000, 1000000));
 
-        WorkOrderType workOrderType = workOrderTypeService.getById(workOrder.getWorkOrderType());
+        WorkOrderType workOrderType = workOrderTypeService.getById(workOrder.getType());
         workOrder.setOrderNo(generateWorkOrderNo(workOrderType));
 
         if (Objects.nonNull(workOrder.getProductInfoList())) {
