@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.WorkOrder;
+import com.xiliulou.afterserver.entity.WorkOrderType;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.*;
 import com.xiliulou.afterserver.web.vo.AfterCountListVo;
@@ -46,6 +47,8 @@ public interface WorkOrderService extends IService<WorkOrder> {
     R pointBindSerialNumber(WorkOrderQuery workOrderQuery);
 
     R saveWorkerOrder(WorkOrderQuery workOrder);
+
+    String generateWorkOrderNo(WorkOrderType type);
 
     R updateWorkOrderStatus(WorkerOrderUpdateStatusQuery query);
 

@@ -77,6 +77,8 @@ public class WorkOrderVo {
     //private String prescription;
     private Integer auditStatus;
     private String auditRemarks;
+    private Long auditUid;
+    private String auditUserName;
     private Integer fileCount;
     //private Long prescriptionMillis;
     private String parentWorkOrderReason;
@@ -103,4 +105,5 @@ public class WorkOrderVo {
      */
     private Long assignmentTime;
     private Integer productSeries;
+
 }

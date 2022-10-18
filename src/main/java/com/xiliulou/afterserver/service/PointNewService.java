@@ -92,6 +92,8 @@ public interface PointNewService extends IService<PointNew> {
 
     R updateAuditStatus(PointAuditStatusQuery pointAuditStatusQuery);
 
+    R batchUpdateAuditStatus(PointAuditStatusQuery pointAuditStatusQuery);
+
     //R saveCache(Long pointId, Long modelId, String no, Long batch);
 
     //R deleteProduct(Long pointId, Long producutId);
@@ -105,4 +107,6 @@ public interface PointNewService extends IService<PointNew> {
     R pointNewMapProvinceCount();
 
     R pointNewMapCityCount(Long pid);
+
+
 }

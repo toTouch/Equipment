@@ -598,7 +598,17 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         pointNewUpdate.setId(pointAuditStatusQuery.getId());
         pointNewUpdate.setAuditStatus(pointAuditStatusQuery.getAuditStatus());
         pointNewUpdate.setAuditRemarks(pointAuditStatusQuery.getAuditRemarks());
-        pointProductBindMapper.updateAuditStatus(pointNewUpdate);
+        pointNewMapper.updateAuditStatus(pointNewUpdate);
+        return R.ok();
+    }
+
+    @Override
+    public R batchUpdateAuditStatus(PointAuditStatusQuery pointAuditStatusQuery) {
+        if(CollectionUtils.isEmpty(pointAuditStatusQuery.getIds()) || Objects.isNull(pointAuditStatusQuery.getAuditStatus())){
+            return R.fail("参数不合法");
+        }
+
+        pointNewMapper.batchUpdateAuditStatus(pointAuditStatusQuery);
         return R.ok();
     }
 }
