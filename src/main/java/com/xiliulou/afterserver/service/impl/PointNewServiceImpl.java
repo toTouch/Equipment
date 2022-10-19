@@ -472,6 +472,16 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         return R.ok(pointNewMapper.pointNewMapCityCount(pid));
     }
 
+    @Override
+    public R batchUpdateAuditStatus(PointAuditStatusQuery pointAuditStatusQuery) {
+        if(CollectionUtils.isEmpty(pointAuditStatusQuery.getIds()) || Objects.isNull(pointAuditStatusQuery.getAuditStatus())){
+            return R.fail("参数不合法");
+        }
+
+        pointNewMapper.batchUpdateAuditStatus(pointAuditStatusQuery);
+        return R.ok();
+    }
+
     /*@Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public R saveCache(Long pointId, Long modelId, String no, Long batch) {

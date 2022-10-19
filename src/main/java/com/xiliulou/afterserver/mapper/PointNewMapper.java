@@ -2,6 +2,7 @@ package com.xiliulou.afterserver.mapper;
 
 import com.xiliulou.afterserver.entity.PointNew;
 
+import com.xiliulou.afterserver.web.query.PointAuditStatusQuery;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -124,4 +125,6 @@ public interface PointNewMapper extends BaseMapper<PointNew> {
     List<PointNewMapCountVo> pointNewMapProvinceCount();
 
     List<PointNewMapCountVo> pointNewMapCityCount(@Param("pid") Long pid);
+
+    void batchUpdateAuditStatus(PointAuditStatusQuery pointAuditStatusQuery);
 }
