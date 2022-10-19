@@ -628,11 +628,6 @@ public class AdminJsonPointNewController {
         return pointNewService.updateAuditStatus(pointAuditStatusQuery);
     }
 
-    @PostMapping("admin/pointNew/batch/update/auditStatus")
-    public R batchUpdateAuditStatus(@RequestBody PointAuditStatusQuery pointAuditStatusQuery) {
-        return pointNewService.batchUpdateAuditStatus(pointAuditStatusQuery);
-    }
-
     @GetMapping("admin/pointNew/map/statistics")
     public R pointNewMapStatistics(@RequestParam(value = "cityId",required = false) Long cityId,
                                    @RequestParam(value = "provinceId", required = false) Long provinceId,
