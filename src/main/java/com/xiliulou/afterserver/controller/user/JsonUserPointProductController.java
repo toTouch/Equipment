@@ -143,7 +143,7 @@ public class JsonUserPointProductController {
     @GetMapping("/user/batch/list")
     public R selectOne(@RequestParam(value = "name",required = false) String name) {
 
-        return R.ok(this.batchService.queryAllByLimit(name,0,20, null, null));
+        return R.ok(this.batchService.queryAllByLimit(name,0,20, null, null, null));
     }
 
     /**
