@@ -60,12 +60,19 @@ public class Batch {
      * 创建时间
      */
     private Long createTime;
+    /**
+     * 购买类型 1--集采 2--非集采
+     */
+    private Integer buyType;
 
     public static final Integer DEL_NORMAL = 0;
     public static final Integer DEL_DEL = 1;
 
     public static  final Integer TYPE_STOCK = 1;
     public static  final Integer TYPE_ORDER = 2;
+
+    public static final Integer BUY_TYPE_CENTRALIZED = 1;
+    public static final Integer BUY_TYPE_NOT_CENTRALIZED = 2;
 
 
     @TableField(exist = false)
