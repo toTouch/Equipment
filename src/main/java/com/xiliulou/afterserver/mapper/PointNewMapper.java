@@ -129,5 +129,5 @@ public interface PointNewMapper extends BaseMapper<PointNew> {
     @Update("update t_point_new set audit_status = #{auditStatus}, audit_remarks = #{auditRemarks} where id = #{id}")
     Integer updateAuditStatus(PointNew pointNewUpdate);
 
-    Integer batchUpdateAuditStatus(PointAuditStatusQuery pointAuditStatusQuery);
+    void batchUpdateAuditStatus(PointAuditStatusQuery pointAuditStatusQuery);
 }
