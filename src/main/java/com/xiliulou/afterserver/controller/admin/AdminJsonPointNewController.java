@@ -612,19 +612,10 @@ public class AdminJsonPointNewController {
         return pointNewService.pointInfo(pid);
     }
 
-    /*@PostMapping("/admin/pointNew/saveCache")
-    public R saveCache(Long pointId,
-                       @RequestParam(value = "modelId", required = false) Long modelId,
-                       @RequestParam(value = "no", required = false) String no,
-                       @RequestParam(value = "batch", required = false, defaultValue = "16") Long batch){
-
-            return pointNewService.saveCache(pointId, modelId, no, batch);
+    @GetMapping("/admin/pointNew/queryFiles/{pid}")
+    public R queryFiles(@PathVariable("pid") Long pid){
+        return pointNewService.queryFiles(pid);
     }
-
-    @DeleteMapping("/admin/pointNew/deleteProduct")
-    public R deleteProduct(Long pointId, Long producutId){
-        return pointNewService.deleteProduct(pointId, producutId);
-    }*/
 
     @PostMapping("admin/point/bindSerialNumber")
     public R pointBindSerialNumber(@RequestBody PointQuery pointQuery) {

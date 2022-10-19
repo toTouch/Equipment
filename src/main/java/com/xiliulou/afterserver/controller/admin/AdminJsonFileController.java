@@ -13,6 +13,8 @@ import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.FileQuery;
 import com.xiliulou.storage.service.impl.AliyunOssService;
+import io.prometheus.client.Collector;
+import java.util.ArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -92,29 +94,35 @@ public class AdminJsonFileController {
             }
         }
 
-//        if (Objects.equals(File.FILE_TYPE_PRODUCT_ACCESSORY_PACKAGING, file.getFileType()) && Objects.equals(File.TYPE_PRODUCT, file.getType())) {
-//            List<File> fileList = fileService.queryByProductNewId(file.getBindId(), File.FILE_TYPE_PRODUCT_ACCESSORY_PACKAGING);
-//            if (Objects.nonNull(fileList) && fileList.size() >= 4) {
-//                return R.fail("附件包上传数量已达上限");
-//            }
-//        }
-//
-//        if (Objects.equals(File.FILE_TYPE_PRODUCT_OUTER_PACKAGING, file.getFileType()) && Objects.equals(File.TYPE_PRODUCT, file.getType())) {
-//            List<File> fileList = fileService.queryByProductNewId(file.getBindId(), File.FILE_TYPE_PRODUCT_OUTER_PACKAGING);
-//            if (Objects.nonNull(fileList) && fileList.size() >= 4) {
-//                return R.fail("外包装上传数量已达上限");
-//            }
-//        }
-//
-//        if (Objects.equals(File.FILE_TYPE_PRODUCT_QUALITY_INSPECTION, file.getFileType()) && Objects.equals(File.TYPE_PRODUCT, file.getType())) {
-//            List<File> fileSheepList = fileService.queryByProductNewId(file.getBindId(), File.FILE_TYPE_PRODUCT_QUALITY_INSPECTION);
-//            if (Objects.nonNull(fileSheepList) && fileSheepList.size() == 1) {
-//                fileService.removeFile(file.getId(), 0);
-//            }
-//        }
-
         file.setCreateTime(System.currentTimeMillis());
         return R.ok(fileService.save(file));
+    }
+
+    @PostMapping("/admin/batch/file")
+    public R saveFile(@RequestParam("bindId")Long bindId, @RequestParam("fileNames")List<String> fileNames, @RequestParam("type")Integer type){
+        if(CollectionUtils.isEmpty(fileNames)) {
+            return R.failMsg("上传图片为空");
+        }
+
+        final int maxSize = 20;
+
+        Integer pointFileCount = fileService.queryCountByPointId(bindId);
+        if((pointFileCount + fileNames.size()) > maxSize) {
+            return R.failMsg("超出图片上限，最大可上传20张图片");
+        }
+
+        List<File> files = new ArrayList<>();
+        fileNames.parallelStream().forEach(item -> {
+            File file = new File();
+            file.setFileName(item);
+            file.setBindId(bindId);
+            file.setType(type);
+            file.setCreateTime(System.currentTimeMillis());
+            files.add(file);
+        });
+
+        fileService.saveBatchFile(files);
+        return R.ok();
     }
 
     /**
