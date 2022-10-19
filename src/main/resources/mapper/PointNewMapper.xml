@@ -456,8 +456,8 @@
 
 
     <update id="batchUpdateAuditStatus">
-        <foreach collection="ids" item="id" close=";">
-            update t_point_new set audit_status = #{auditStatus}, audit_remarks = #{auditRemarks} where id = #{id}
+        <foreach collection="ids" item="id">
+            update t_point_new set audit_status = #{auditStatus}, audit_remarks = #{auditRemarks} where id = #{id};
         </foreach>
     </update>
 </mapper>
