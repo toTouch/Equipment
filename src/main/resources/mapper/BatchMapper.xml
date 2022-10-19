@@ -38,6 +38,9 @@
             <if test="supplierId != null">
                 and supplier_id = #{supplierId}
             </if>
+            <if test="buyType != null">
+                and buy_type = #{buyType}
+            </if>
         </where>
         order by create_time desc
         limit #{offset}, #{limit}
@@ -75,6 +78,9 @@
             </if>
             <if test="supplierId != null">
                 and supplier_id = #{supplierId}
+            </if>
+            <if test="buyType != null">
+                and buy_type = #{buyType}
             </if>
         </where>
     </select>
