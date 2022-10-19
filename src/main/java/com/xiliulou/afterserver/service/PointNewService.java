@@ -105,4 +105,6 @@ public interface PointNewService extends IService<PointNew> {
     R pointNewMapProvinceCount();
 
     R pointNewMapCityCount(Long pid);
+
+    R batchUpdateAuditStatus(PointAuditStatusQuery pointAuditStatusQuery);
 }
