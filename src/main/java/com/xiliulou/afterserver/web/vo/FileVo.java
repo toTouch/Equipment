@@ -11,4 +11,5 @@ import lombok.Data;
 public class FileVo {
     private Long id;
     private String url;
+    private Integer fileType;
 }
