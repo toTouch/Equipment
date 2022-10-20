@@ -494,6 +494,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             FileVo vo = new FileVo();
             vo.setId(item.getId());
             vo.setUrl(url);
+            vo.setFileType(item.getFileType());
             return vo;
         }).collect(Collectors.toList());
 
