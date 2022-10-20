@@ -4,6 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.server.HttpServerResponse;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.xiliulou.afterserver.constant.FileConstant;
 import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.entity.ProductFile;
@@ -11,10 +12,7 @@ import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.service.FileService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
-import com.xiliulou.afterserver.web.query.FileQuery;
 import com.xiliulou.storage.service.impl.AliyunOssService;
-import io.prometheus.client.Collector;
-import java.util.ArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -99,29 +97,24 @@ public class AdminJsonFileController {
     }
 
     @PostMapping("/admin/batch/file")
-    public R saveFile(@RequestParam("bindId")Long bindId, @RequestParam("fileNames")List<String> fileNames, @RequestParam("type")Integer type){
-        if(CollectionUtils.isEmpty(fileNames)) {
+    public R saveFile(@RequestParam("bindId")Long bindId, @RequestParam("fileNames")String fileName, @RequestParam("type")Integer type){
+        if(StringUtils.isBlank(fileName)) {
             return R.failMsg("上传图片为空");
         }
 
         final int maxSize = 20;
 
         Integer pointFileCount = fileService.queryCountByPointId(bindId);
-        if((pointFileCount + fileNames.size()) > maxSize) {
+        if((pointFileCount) >= maxSize) {
             return R.failMsg("超出图片上限，最大可上传20张图片");
         }
 
-        List<File> files = new ArrayList<>();
-        fileNames.parallelStream().forEach(item -> {
-            File file = new File();
-            file.setFileName(item);
-            file.setBindId(bindId);
-            file.setType(type);
-            file.setCreateTime(System.currentTimeMillis());
-            files.add(file);
-        });
-
-        fileService.saveBatchFile(files);
+        File file = new File();
+        file.setFileName(fileName);
+        file.setBindId(bindId);
+        file.setType(type);
+        file.setCreateTime(System.currentTimeMillis());
+        fileService.save(file);
         return R.ok();
     }
 
