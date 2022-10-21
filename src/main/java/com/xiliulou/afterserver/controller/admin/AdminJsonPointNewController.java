@@ -591,10 +591,14 @@ public class AdminJsonPointNewController {
                 } else {
                     for (int i = 0; i < finalMax; i++) {
                         list.add("");
+                        list.add("");
+                        list.add("");
                     }
                 }
             }else{
                 for (int i = 0; i < finalMax; i++) {
+                    list.add("");
+                    list.add("");
                     list.add("");
                 }
             }
