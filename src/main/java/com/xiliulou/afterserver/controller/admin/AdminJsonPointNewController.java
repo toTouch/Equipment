@@ -580,6 +580,7 @@ public class AdminJsonPointNewController {
             if(Objects.nonNull(item.getCameraInfo())){
                 List<CameraInfoQuery> cameraInfoQuery = JSON.parseArray(item.getCameraInfo(), CameraInfoQuery.class);;
                 if(!CollectionUtils.isEmpty(cameraInfoQuery)){
+                    int len = 0;
                     for(CameraInfoQuery cameraInfo : cameraInfoQuery){
                         //摄像头运营商
                         list.add(cameraInfo.getCameraSupplier() == null ? "" : cameraInfo.getCameraSupplier());
@@ -587,6 +588,16 @@ public class AdminJsonPointNewController {
                         list.add(cameraInfo.getCameraSn() == null ? "" : cameraInfo.getCameraSn());
                         //摄像头卡号
                         list.add(cameraInfo.getCameraNumber() == null ? "" : cameraInfo.getCameraNumber());
+
+                        len++;
+                    }
+                    //填补
+                    int finalMaxTemp = finalMax;
+                    finalMaxTemp -= len;
+                    for (int i = 0; i < finalMaxTemp; i++) {
+                        list.add("");
+                        list.add("");
+                        list.add("");
                     }
                 } else {
                     for (int i = 0; i < finalMax; i++) {
