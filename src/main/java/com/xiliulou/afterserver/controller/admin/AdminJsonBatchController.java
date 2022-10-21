@@ -97,11 +97,10 @@ public class AdminJsonBatchController {
     public R selectOne(@RequestParam(value = "batchNo",required = false) String batchNo,
                        @RequestParam(value = "modelId",required = false)Long modelId,
                        @RequestParam(value = "supplierId",required = false)Long supplierId,
-                       @RequestParam(value = "buyType",required = false)Integer buyType,
                        @RequestParam(value = "offset") int offset,
                        @RequestParam(value = "limit") int limit) {
 
-        List<Batch> batches = this.batchService.queryAllByLimit(batchNo, offset, limit, modelId, supplierId, buyType);
+        List<Batch> batches = this.batchService.queryAllByLimit(batchNo, offset, limit, modelId, supplierId);
         if (Objects.nonNull(batches)){
             batches.forEach(item -> {
                 List<ProductFile> productFiles = productFileMapper.selectList(new LambdaQueryWrapper<ProductFile>().eq(ProductFile::getProductId, item.getId()));
@@ -120,7 +119,7 @@ public class AdminJsonBatchController {
         }
 
 
-        Long count = this.batchService.count(batchNo, modelId, supplierId, buyType);
+        Long count = this.batchService.count(batchNo, modelId, supplierId);
 
         HashMap<String, Object> stringObjectHashMap = new HashMap<>(2);
         stringObjectHashMap.put("data",batches);

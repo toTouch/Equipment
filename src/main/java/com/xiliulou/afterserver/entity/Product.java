@@ -37,9 +37,14 @@ public class Product implements Serializable {
     //产品系列
     // 取餐柜 1、餐厅柜 2、换电柜 3、充电柜 4、寄存柜 5、生鲜柜 6
     private Integer productSeries;
-
+    /**
+     * 购买类型 1--集采 2--非集采
+     */
+    private Integer buyType;
 
     public static final Integer MAIN_LOCKER = 1;
     public static final Integer VICE_LOCKER = 2;
 
+    public static final Integer BUY_TYPE_CENTRALIZED = 1;
+    public static final Integer BUY_TYPE_NOT_CENTRALIZED = 2;
 }

@@ -26,7 +26,7 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="BatchMap">
         select
-          id, batch_no, remarks, create_time, type, model_id, product_type, product_num, supplier_id, update_time, buy_type
+          id, batch_no, remarks, create_time, type, model_id, product_type, product_num, supplier_id, update_time
         from t_batch
         <where>
             <if test="batchNo != null and batchNo != '' ">
@@ -37,9 +37,6 @@
             </if>
             <if test="supplierId != null">
                 and supplier_id = #{supplierId}
-            </if>
-            <if test="buyType != null">
-                and buy_type = #{buyType}
             </if>
         </where>
         order by create_time desc
@@ -78,9 +75,6 @@
             </if>
             <if test="supplierId != null">
                 and supplier_id = #{supplierId}
-            </if>
-            <if test="buyType != null">
-                and buy_type = #{buyType}
             </if>
         </where>
     </select>
