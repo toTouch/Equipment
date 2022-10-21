@@ -177,6 +177,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 item.setWorkOrderReasonName(this.getWorkOrderReasonStr(item.getWorkOrderReasonId(), ""));
             }
 
+            User userById = userService.getUserById(item.getAuditUid());
+            if(Objects.nonNull(userById)) {
+                item.setAuditUserName(userById.getUserName());
+            }
+
             //处理图片
             List<WorkOrderServerQuery> workOrderServers = workOrderServerService.queryByWorkOrderIdAndServerId(item.getId(), null);
             item.setWorkOrderServerList(workOrderServers);
@@ -1900,8 +1905,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             workOrder.setAssignmentTime(workOrder.getCreateTime());
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        workOrder.setOrderNo("GD" + sdf.format(new Date()) + "-" + RandomUtil.randomInt(100000, 1000000));
+        //
+       // workOrder.setOrderNo("GD" + sdf.format(new Date()) + "-" + RandomUtil.randomInt(100000, 1000000));
+
+        WorkOrderType workOrderType = workOrderTypeService.getById(workOrder.getType());
+        workOrder.setOrderNo(generateWorkOrderNo(workOrderType));
 
         if (Objects.nonNull(workOrder.getProductInfoList())) {
             Iterator<ProductInfoQuery> iterator = workOrder.getProductInfoList().iterator();
@@ -1967,6 +1975,18 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         return R.ok();
+    }
+
+    @Override
+    public String generateWorkOrderNo(WorkOrderType type){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(Objects.isNull(type) ? "UNKNOWN" : type.getNo());
+        sb.append(sdf.format(new Date()));
+        sb.append("-").append(RandomUtil.randomInt(100000, 1000000));
+
+        return sb.toString();
     }
 
 
@@ -2293,6 +2313,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             return R.fail("参数不合法");
         }
 
+        Long uid = SecurityUtils.getUid();
+        if(Objects.isNull(uid)) {
+            return R.fail("未查询到相关用户");
+        }
+
         WorkOrder workOrder = this.getById(workOrderAuditStatusQuery.getId());
         if (Objects.isNull(workOrder)) {
             return R.fail("未查询到相关工单");
@@ -2313,6 +2338,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         workOrderUpdate.setId(workOrderAuditStatusQuery.getId());
         workOrderUpdate.setAuditStatus(workOrderAuditStatusQuery.getAuditStatus());
         workOrderUpdate.setAuditRemarks(workOrderAuditStatusQuery.getAuditRemarks());
+        workOrderUpdate.setAuditUid(uid);
         if(Objects.equals(workOrderAuditStatusQuery.getAuditStatus(), WorkOrder.AUDIT_STATUS_PASSED)) {
             workOrderUpdate.setStatus(WorkOrder.STATUS_FINISHED);
         }

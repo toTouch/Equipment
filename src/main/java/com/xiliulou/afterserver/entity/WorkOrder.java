@@ -80,6 +80,7 @@ public class WorkOrder implements Serializable {
    // private String thirdResponsiblePerson;
     private Integer auditStatus;
     private String auditRemarks;
+    private Long auditUid;
     /**
      * 产品信息
      */

@@ -8,14 +8,19 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.*;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.vo.PointNewInfoVo;
 import com.xiliulou.afterserver.web.query.*;
+import com.xiliulou.afterserver.web.vo.FileVo;
 import com.xiliulou.afterserver.web.vo.PointNewMapStatisticsVo;
 import com.xiliulou.afterserver.web.vo.PointNewPullVo;
+import com.xiliulou.storage.config.StorageConfig;
+import com.xiliulou.storage.service.impl.AliyunOssService;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,14 +63,12 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     private PointProductBindMapper pointProductBindMapper;
     @Autowired
     private ProductSerialNumberMapper productSerialNumberMapper;
-    //@Autowired
-    //private ProductNewMapper productNewMapper;
-    //@Autowired
-    //private PointProductBindMapper pointProductBindMapper;
-    //@Autowired
-    //private FileMapper fileMapper;
     @Autowired
     private UserService userService;
+    @Autowired
+    private StorageConfig storageConfig;
+    @Autowired
+    private AliyunOssService aliyunOssService;
 
     /**
      * 通过ID查询单条数据从DB
@@ -482,78 +485,32 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         return R.ok();
     }
 
-    /*@Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public R saveCache(Long pointId, Long modelId, String no, Long batch) {
-        if(modelId == null && no == null){
-            log.warn("柜机型号和产品编号不能都为空，请填入至少一项");
-            return R.fail("柜机型号和产品编号不能都为空，请填入至少一项");
-        }
-        if(no != null){
-            if(modelId != null){
-                log.warn("选择产品编号后，请不要选择柜机型号或批次号");
-                return R.fail("选择产品编号后，请不要选择柜机型号或批次号");
-            }
-            QueryWrapper<ProductNew> wrapper = new QueryWrapper<>();
-            wrapper.eq("no", no);
-            ProductNew productNew = productNewMapper.selectOne(wrapper);
-            if(ObjectUtils.isNotNull(productNew)){
-                PointProductBind pointProductBind = new PointProductBind();
-                pointProductBind.setPointId(pointId);
-                pointProductBind.setProductId(productNew.getId());
-                pointProductBindService.insert(pointProductBind);
-            }else{
-                log.info("查无此产品编号：no={}",no);
-                return R.fail("查无此产品编号，请检查");
-            }
-        }else{
-            ProductNew productNew = new ProductNew();
-            productNew.setModelId(modelId);
-            productNew.setBatchId(batch);
-            productNew.setStatus(3);
-            productNew.setCreateTime(System.currentTimeMillis());
-            productNew.setDelFlag(0);
-            productNew.setCache(1);
-            ProductNew productNewId = productNewService.insert(productNew);
 
-            PointProductBind pointProductBind = new PointProductBind();
-            pointProductBind.setProductId(productNewId.getId());
-            pointProductBind.setPointId(pointId);
-            pointProductBindService.insert(pointProductBind);
-        }
-        return R.ok();
-    }*/
-
-    /*@Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public R deleteProduct(Long pointId, Long producutId) {
-        if(pointId == null){
-            return R.fail("请输入点位");
-        }
-        if(producutId == null){
-            return R.fail("请输入柜机类型");
+    @Override
+    public R queryFiles(Long pid) {
+        List<File> pointFileList = fileService.queryByPointId(pid);
+        if(CollectionUtils.isEmpty(pointFileList)) {
+            return R.ok();
         }
 
-        ProductNew productNew = productNewService.queryByIdFromDB(producutId);
-        if(ObjectUtils.isNotNull(productNew)){
-            if(productNew.getCache() != null){
-                productNewMapper.delete(new UpdateWrapper<ProductNew>().eq("id", producutId));
-            }else{
-                LambdaUpdateWrapper<File> wrapper = new LambdaUpdateWrapper<File>().eq(File::getType, File.TYPE_PRODUCT).eq(File::getBindId, producutId);
-                fileMapper.delete(wrapper);
+        List<FileVo> fileVos = pointFileList.parallelStream().map(item -> {
+            String url = null;
+            try{
+                long expiration = Optional.ofNullable(storageConfig.getExpiration()).orElse(1000L * 60L * 3L) + System.currentTimeMillis();
+                url = aliyunOssService.getOssFileUrl(storageConfig.getBucketName(), storageConfig.getDir() + item.getFileName(), expiration);
+            }catch (Exception e){
+                log.error("aliyunOss down File Error!", e);
             }
 
-            UpdateWrapper<PointProductBind> wrapper = new UpdateWrapper<>();
-            wrapper.eq("product_id", producutId);
-            wrapper.eq("point_id", pointId);
-            pointProductBindMapper.delete(wrapper);
-        }else{
-            log.info("查无此产品：producutId={}",producutId);
-            return R.fail("查无此产品，请检查");
-        }
+            FileVo vo = new FileVo();
+            vo.setId(item.getId());
+            vo.setUrl(url);
+            vo.setFileType(item.getFileType());
+            return vo;
+        }).collect(Collectors.toList());
 
-        return R.ok();
-    }*/
+        return R.ok(fileVos);
+    }
 
     @Override
     public void updateMany(List<PointNew> pointNew){
@@ -608,7 +565,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         pointNewUpdate.setId(pointAuditStatusQuery.getId());
         pointNewUpdate.setAuditStatus(pointAuditStatusQuery.getAuditStatus());
         pointNewUpdate.setAuditRemarks(pointAuditStatusQuery.getAuditRemarks());
-        pointProductBindMapper.updateAuditStatus(pointNewUpdate);
+        pointNewMapper.updateAuditStatus(pointNewUpdate);
         return R.ok();
     }
 }

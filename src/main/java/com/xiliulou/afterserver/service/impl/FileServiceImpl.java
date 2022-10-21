@@ -157,6 +157,12 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     }
 
     @Override
+    public Integer queryCountByPointId(Long pid) {
+        LambdaQueryWrapper<File> queryWrapper = new LambdaQueryWrapper<File>().eq(File::getType, File.TYPE_POINTNEW).eq(File::getBindId, pid);
+        return this.baseMapper.selectCount(queryWrapper);
+    }
+
+    @Override
     public List<File> queryByProductNewId(Long productId, Integer fileType) {
         LambdaQueryWrapper<File> queryWrapper = new LambdaQueryWrapper<File>().eq(File::getType, File.TYPE_PRODUCT).eq(File::getBindId, productId).eq(File::getFileType, fileType);
         return this.baseMapper.selectList(queryWrapper);
@@ -207,5 +213,10 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
 
         return R.ok();
 
+    }
+
+    @Override
+    public void saveBatchFile(List<File> files) {
+        this.baseMapper.saveBatchFile(files);
     }
 }

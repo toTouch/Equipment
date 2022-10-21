@@ -66,9 +66,8 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
     @Override
     public IPage getPage(Long offset, Long size, Product product) {
-
         Page page = PageUtil.getPage(offset, size);
-        Page selectPage = baseMapper.selectPage(page, Wrappers.lambdaQuery(product).orderByDesc(Product::getCreateTime));
+        Page selectPage = baseMapper.selectPage(page, Wrappers.lambdaQuery(product).eq(Objects.nonNull(product.getProductSeries()), Product::getProductSeries, product.getProductSeries()).orderByDesc(Product::getCreateTime));
         return  selectPage;
     }
 

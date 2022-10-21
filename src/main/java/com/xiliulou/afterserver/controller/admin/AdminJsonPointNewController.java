@@ -166,7 +166,7 @@ public class AdminJsonPointNewController {
                 //文件个数
                 BaseMapper<File> fileMapper = fileService.getBaseMapper();
                 LambdaQueryWrapper<File> fileLambdaQueryWrapper = new LambdaQueryWrapper<>();
-                LambdaQueryWrapper<File> eq = fileLambdaQueryWrapper.eq(File::getBindId, item.getId());
+                LambdaQueryWrapper<File> eq = fileLambdaQueryWrapper.eq(File::getBindId, item.getId()).eq(File::getType, File.TYPE_POINTNEW);
                 List<File> files = fileMapper.selectList(eq);
                 if(CollectionUtil.isEmpty(files)){
                     item.setFileCount(0);
@@ -335,6 +335,15 @@ public class AdminJsonPointNewController {
                 headList.add(headTitle3);
             }
         }
+
+        List<String> noTitle = new ArrayList<>();
+        noTitle.add("资产编码");
+        headList.add(noTitle);
+
+        List<String> buyTitle = new ArrayList<>();
+        buyTitle.add("是否集采");
+        headList.add(buyTitle);
+
         table.setHead(headList);
 
         ArrayList<List<Object>> pointExcelVos = new ArrayList<>();
@@ -579,14 +588,46 @@ public class AdminJsonPointNewController {
                         //摄像头卡号
                         list.add(cameraInfo.getCameraNumber() == null ? "" : cameraInfo.getCameraNumber());
                     }
+                } else {
+                    for (int i = 0; i < finalMax; i++) {
+                        list.add("");
+                        list.add("");
+                        list.add("");
+                    }
                 }
             }else{
                 for (int i = 0; i < finalMax; i++) {
                     list.add("");
+                    list.add("");
+                    list.add("");
                 }
             }
 
-            pointExcelVos.add(list);
+            if(CollectionUtils.isEmpty(pointProductBinds)) {
+                pointExcelVos.add(list);
+            } else {
+                pointProductBinds.parallelStream().forEach(pointProductBind -> {
+                    List<Object> lineList = new ArrayList<>(list);
+                    ProductNew productNew = productNewMapper
+                        .queryById(pointProductBind.getProductId());
+                    if(Objects.isNull(productNew)) {
+                        lineList.add("");
+                        lineList.add("");
+                        return;
+                    }
+
+                    Product byId = productService.getById(productNew.getModelId());
+                    if(Objects.isNull(byId)) {
+                        lineList.add("");
+                        lineList.add("");
+                        return;
+                    }
+
+                    lineList.add(Objects.isNull(productNew.getNo())? "" : productNew.getNo());
+                    lineList.add(Objects.equals(byId.getBuyType(), Product.BUY_TYPE_CENTRALIZED)? "集采" : "非集采");
+                    pointExcelVos.add(lineList);
+                });
+            }
 
         });
 
@@ -612,19 +653,10 @@ public class AdminJsonPointNewController {
         return pointNewService.pointInfo(pid);
     }
 
-    /*@PostMapping("/admin/pointNew/saveCache")
-    public R saveCache(Long pointId,
-                       @RequestParam(value = "modelId", required = false) Long modelId,
-                       @RequestParam(value = "no", required = false) String no,
-                       @RequestParam(value = "batch", required = false, defaultValue = "16") Long batch){
-
-            return pointNewService.saveCache(pointId, modelId, no, batch);
+    @GetMapping("/admin/pointNew/queryFiles/{pid}")
+    public R queryFiles(@PathVariable("pid") Long pid){
+        return pointNewService.queryFiles(pid);
     }
-
-    @DeleteMapping("/admin/pointNew/deleteProduct")
-    public R deleteProduct(Long pointId, Long producutId){
-        return pointNewService.deleteProduct(pointId, producutId);
-    }*/
 
     @PostMapping("admin/point/bindSerialNumber")
     public R pointBindSerialNumber(@RequestBody PointQuery pointQuery) {

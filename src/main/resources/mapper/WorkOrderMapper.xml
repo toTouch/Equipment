@@ -63,6 +63,7 @@
         <id property="productInfo" column="wo_product_info"></id>
         <id property="auditStatus" column="wo_audit_status"/>
         <id property="auditRemarks" column="wo_audit_remarks"/>
+        <id property="auditUid" column="wo_audit_uid"/>
         <id property="commissionerId" column="wo_commissioner_id"/>
         <id property="assignmentTime" column="wo_assignment_time"/>
         <id property="productSeries" column="p_product_series"/>
@@ -128,6 +129,7 @@
 <!--         wo.third_responsible_person as wo_third_responsible_person,-->
         wo.audit_status as wo_audit_status,
         wo.audit_remarks as wo_audit_remarks,
+        wo.audit_uid as wo_audit_uid,
         wo.source_type as wo_source_type,
         wo.product_info as wo_product_info,
         wo.assignment_time as wo_assignment_time,
