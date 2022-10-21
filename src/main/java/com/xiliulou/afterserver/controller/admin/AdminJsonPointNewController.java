@@ -166,7 +166,7 @@ public class AdminJsonPointNewController {
                 //文件个数
                 BaseMapper<File> fileMapper = fileService.getBaseMapper();
                 LambdaQueryWrapper<File> fileLambdaQueryWrapper = new LambdaQueryWrapper<>();
-                LambdaQueryWrapper<File> eq = fileLambdaQueryWrapper.eq(File::getBindId, item.getId());
+                LambdaQueryWrapper<File> eq = fileLambdaQueryWrapper.eq(File::getBindId, item.getId()).eq(File::getType, File.TYPE_POINTNEW);
                 List<File> files = fileMapper.selectList(eq);
                 if(CollectionUtil.isEmpty(files)){
                     item.setFileCount(0);
