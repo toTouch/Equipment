@@ -19,9 +19,13 @@ public interface FileService extends IService<File> {
 
     List<File> queryByPointId(Long pid);
 
+    Integer queryCountByPointId(Long pid);
+
     List<File> queryByProductNewId(Long productId, Integer fileType);
 
     R removeFile(Long fileId, Integer fileType);
 
     R removeOssOrMinio(String name, Integer fileType);
+
+    void saveBatchFile(List<File> files);
 }

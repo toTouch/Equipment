@@ -106,5 +106,8 @@ public interface PointNewService extends IService<PointNew> {
 
     R pointNewMapCityCount(Long pid);
 
+
+    R queryFiles(Long pid);
+
     R batchUpdateAuditStatus(PointAuditStatusQuery pointAuditStatusQuery);
 }

@@ -127,4 +127,7 @@ public interface PointNewMapper extends BaseMapper<PointNew> {
     List<PointNewMapCountVo> pointNewMapCityCount(@Param("pid") Long pid);
 
     void batchUpdateAuditStatus(PointAuditStatusQuery pointAuditStatusQuery);
+
+    @Update("update t_point_new set audit_status = #{auditStatus}, audit_remarks = #{auditRemarks} where id = #{id}")
+    Integer updateAuditStatus(PointNew pointNewUpdate);
 }
