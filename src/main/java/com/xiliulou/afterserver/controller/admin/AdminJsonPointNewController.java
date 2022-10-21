@@ -335,6 +335,15 @@ public class AdminJsonPointNewController {
                 headList.add(headTitle3);
             }
         }
+
+        List<String> headTitle1 = new ArrayList<>();
+        headTitle1.add("资产编码");
+        List<String> headTitle2 = new ArrayList<>();
+        headTitle1.add("是否集采");
+
+        headList.add(headTitle1);
+        headList.add(headTitle2);
+
         table.setHead(headList);
 
         ArrayList<List<Object>> pointExcelVos = new ArrayList<>();
@@ -586,7 +595,31 @@ public class AdminJsonPointNewController {
                 }
             }
 
-            pointExcelVos.add(list);
+            if(CollectionUtils.isEmpty(pointProductBinds)) {
+                pointExcelVos.add(list);
+            } else {
+                pointProductBinds.parallelStream().forEach(pointProductBind -> {
+                    List<Object> lineList = new ArrayList<>(list);
+                    ProductNew productNew = productNewMapper
+                        .queryById(pointProductBind.getProductId());
+                    if(Objects.isNull(productNew)) {
+                        lineList.add("");
+                        lineList.add("");
+                        return;
+                    }
+
+                    Product byId = productService.getById(productNew.getModelId());
+                    if(Objects.isNull(byId)) {
+                        lineList.add("");
+                        lineList.add("");
+                        return;
+                    }
+
+                    lineList.add(Objects.isNull(productNew.getNo())? "" : productNew.getNo());
+                    lineList.add(Objects.equals(byId.getBuyType(), Product.BUY_TYPE_CENTRALIZED)? "集采" : "非集采");
+                    pointExcelVos.add(lineList);
+                });
+            }
 
         });
 

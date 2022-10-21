@@ -82,8 +82,8 @@ public class BatchServiceImpl implements BatchService {
      * @return 对象列表
      */
     @Override
-    public List<Batch> queryAllByLimit(String batchNo,int offset, int limit, Long modelId, Long supplierId, Integer buyType) {
-        return this.batchMapper.queryAllByLimit(batchNo,offset, limit,modelId , supplierId, buyType);
+    public List<Batch> queryAllByLimit(String batchNo,int offset, int limit, Long modelId, Long supplierId) {
+        return this.batchMapper.queryAllByLimit(batchNo,offset, limit,modelId , supplierId);
     }
 
     /**
@@ -124,8 +124,8 @@ public class BatchServiceImpl implements BatchService {
     }
 
     @Override
-    public Long count(String batchNo, Long modelId, Long supplierId, Integer buyType) {
-        return this.batchMapper.count(batchNo, modelId, supplierId, buyType);
+    public Long count(String batchNo, Long modelId, Long supplierId) {
+        return this.batchMapper.count(batchNo, modelId, supplierId);
     }
 
     @Override
