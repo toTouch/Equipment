@@ -336,13 +336,13 @@ public class AdminJsonPointNewController {
             }
         }
 
-        List<String> headTitle1 = new ArrayList<>();
-        headTitle.add("资产编码");
-        headList.add(headTitle1);
+        List<String> noTitle = new ArrayList<>();
+        noTitle.add("资产编码");
+        headList.add(noTitle);
 
-        List<String> headTitle2 = new ArrayList<>();
-        headTitle.add("是否集采");
-        headList.add(headTitle2);
+        List<String> buyTitle = new ArrayList<>();
+        buyTitle.add("是否集采");
+        headList.add(buyTitle);
 
         table.setHead(headList);
 
