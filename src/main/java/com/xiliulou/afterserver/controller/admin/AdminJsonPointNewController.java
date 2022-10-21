@@ -595,31 +595,31 @@ public class AdminJsonPointNewController {
                 }
             }
 
-//            if(CollectionUtils.isEmpty(pointProductBinds)) {
-//                pointExcelVos.add(list);
-//            } else {
-//                pointProductBinds.parallelStream().forEach(pointProductBind -> {
-//                    List<Object> lineList = new ArrayList<>(list);
-//                    ProductNew productNew = productNewMapper
-//                        .queryById(pointProductBind.getProductId());
-//                    if(Objects.isNull(productNew)) {
-//                        lineList.add("");
-//                        lineList.add("");
-//                        return;
-//                    }
-//
-//                    Product byId = productService.getById(productNew.getModelId());
-//                    if(Objects.isNull(byId)) {
-//                        lineList.add("");
-//                        lineList.add("");
-//                        return;
-//                    }
-//
-//                    lineList.add(Objects.isNull(productNew.getNo())? "" : productNew.getNo());
-//                    lineList.add(Objects.equals(byId.getBuyType(), Product.BUY_TYPE_CENTRALIZED)? "集采" : "非集采");
-//                    pointExcelVos.add(lineList);
-//                });
-//            }
+            if(CollectionUtils.isEmpty(pointProductBinds)) {
+                pointExcelVos.add(list);
+            } else {
+                pointProductBinds.parallelStream().forEach(pointProductBind -> {
+                    List<Object> lineList = new ArrayList<>(list);
+                    ProductNew productNew = productNewMapper
+                        .queryById(pointProductBind.getProductId());
+                    if(Objects.isNull(productNew)) {
+                        lineList.add("");
+                        lineList.add("");
+                        return;
+                    }
+
+                    Product byId = productService.getById(productNew.getModelId());
+                    if(Objects.isNull(byId)) {
+                        lineList.add("");
+                        lineList.add("");
+                        return;
+                    }
+
+                    lineList.add(Objects.isNull(productNew.getNo())? "" : productNew.getNo());
+                    lineList.add(Objects.equals(byId.getBuyType(), Product.BUY_TYPE_CENTRALIZED)? "集采" : "非集采");
+                    pointExcelVos.add(lineList);
+                });
+            }
 
         });
 
