@@ -6,6 +6,7 @@ import com.xiliulou.afterserver.entity.WorkOrder;
 import com.xiliulou.afterserver.web.query.WorkOrderQuery;
 import com.xiliulou.afterserver.web.vo.*;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
@@ -58,4 +59,7 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
                                                           @Param("createTimeEnd")Long createTimeEnd,
                                                           @Param("serverName")String serverName,
                                                           @Param("pointName")String pointName);
+
+    @Select("select max(day_sum_no) from work_order where create_time > #{startTime} and create_time < #{endTime} and type= #{id}")
+    Long queryMaxDaySumNoByType(@Param("startTime")Long startTime, @Param("endTime")Long endTime, @Param("id")Long id);
 }

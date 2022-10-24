@@ -48,7 +48,7 @@ public interface WorkOrderService extends IService<WorkOrder> {
 
     R saveWorkerOrder(WorkOrderQuery workOrder);
 
-    String generateWorkOrderNo(WorkOrderType type);
+    String generateWorkOrderNo(WorkOrderType type, String no);
 
     R updateWorkOrderStatus(WorkerOrderUpdateStatusQuery query);
 

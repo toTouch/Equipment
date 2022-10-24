@@ -98,6 +98,8 @@ public class WorkOrder implements Serializable {
     //派单时间
     private Long assignmentTime;
 
+    private Long daySumNo;
+
 
     /**
      * 第三方结算状态 无需结算 1，未结算 2，已结算 3
