@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.listener;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
@@ -15,6 +16,7 @@ import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.WorkOrderQuery;
 import com.xiliulou.core.json.JsonUtil;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 
@@ -160,8 +162,12 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
             workOrder.setCreateTime(System.currentTimeMillis());
 
             WorkOrderType workOrderType = workOrderTypeService.getById(type);
-            workOrder.setOrderNo(workOrderService.generateWorkOrderNo(workOrderType));
-
+            long startTime = DateUtil.beginOfDay(DateUtil.date()).toInstant().toEpochMilli();
+            long endTime = System.currentTimeMillis();
+            long maxDaySumNo = workOrderService.queryMaxDaySumNoByType(startTime, endTime, workOrderType.getId());
+            maxDaySumNo++;
+            workOrder.setDaySumNo(maxDaySumNo);
+            workOrder.setOrderNo(workOrderService.generateWorkOrderNo(workOrderType, String.format("%05d", maxDaySumNo)));
             workOrder.setCreaterId(SecurityUtils.getUid());
 
             if(StringUtils.isNotBlank(item.getCommissioner())) {
