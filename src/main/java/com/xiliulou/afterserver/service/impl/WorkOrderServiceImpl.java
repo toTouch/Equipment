@@ -1909,7 +1909,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         WorkOrderType workOrderType = workOrderTypeService.getById(workOrder.getType());
         long startTime = DateUtil.beginOfDay(DateUtil.date()).toInstant().toEpochMilli();
         long endTime = System.currentTimeMillis();
-        long maxDaySumNo = Optional.ofNullable(this.baseMapper.queryMaxDaySumNoByType(startTime, endTime, workOrderType.getId())).orElse(0L);
+        long maxDaySumNo = queryMaxDaySumNoByType(startTime, endTime, workOrderType.getId());
         maxDaySumNo++;
         workOrder.setDaySumNo(maxDaySumNo);
         workOrder.setOrderNo(generateWorkOrderNo(workOrderType, String.format("%05d", maxDaySumNo)));
@@ -1990,6 +1990,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         sb.append(no);
 
         return sb.toString();
+    }
+
+    @Override
+    public Long queryMaxDaySumNoByType(Long startTime, Long endTime, Long id) {
+        return Optional.ofNullable(this.baseMapper.queryMaxDaySumNoByType(startTime, endTime, id)).orElse(0L);
     }
 
 
