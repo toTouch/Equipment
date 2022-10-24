@@ -2,6 +2,7 @@ package com.xiliulou.afterserver.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
@@ -1905,11 +1906,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             workOrder.setAssignmentTime(workOrder.getCreateTime());
         }
 
-        //
-       // workOrder.setOrderNo("GD" + sdf.format(new Date()) + "-" + RandomUtil.randomInt(100000, 1000000));
-
         WorkOrderType workOrderType = workOrderTypeService.getById(workOrder.getType());
-        workOrder.setOrderNo(generateWorkOrderNo(workOrderType));
+        long startTime = DateUtil.beginOfDay(DateUtil.date()).toInstant().toEpochMilli();
+        long endTime = System.currentTimeMillis();
+        long maxDaySumNo = Optional.ofNullable(this.baseMapper.queryMaxDaySumNoByType(startTime, endTime, workOrderType.getId())).orElse(0L);
+        maxDaySumNo++;
+        workOrder.setDaySumNo(maxDaySumNo);
+        workOrder.setOrderNo(generateWorkOrderNo(workOrderType, String.format("%05d", maxDaySumNo)));
 
         if (Objects.nonNull(workOrder.getProductInfoList())) {
             Iterator<ProductInfoQuery> iterator = workOrder.getProductInfoList().iterator();
@@ -1978,13 +1981,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     @Override
-    public String generateWorkOrderNo(WorkOrderType type){
+    public String generateWorkOrderNo(WorkOrderType type, String no){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
         StringBuilder sb = new StringBuilder();
-        sb.append(Objects.isNull(type) ? "UNKNOWN" : type.getNo());
-        sb.append(sdf.format(new Date()));
-        sb.append("-").append(RandomUtil.randomInt(100000, 1000000));
+        sb.append(Objects.isNull(type) ? "UNKNOWN" : type.getNo()).append("-");
+        sb.append(sdf.format(new Date())).append("-");
+        sb.append(no);
 
         return sb.toString();
     }
