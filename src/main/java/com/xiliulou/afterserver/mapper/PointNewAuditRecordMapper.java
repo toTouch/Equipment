@@ -65,5 +65,5 @@ public interface PointNewAuditRecordMapper  extends BaseMapper<PointNewAuditReco
      */
     int deleteById(Long id);
 
-    PointNewAuditRecord queryList(Long offset, Long size, Long pointId);
+    PointNewAuditRecord queryList(@Param("offset") Long offset, @Param("size")Long size, @Param("pointId")Long pointId);
 }
