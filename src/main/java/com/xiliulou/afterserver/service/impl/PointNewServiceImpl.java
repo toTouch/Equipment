@@ -520,7 +520,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         pointNewMapper.batchUpdateAuditStatus(pointAuditStatusQuery);
 
         pointAuditStatusQuery.getIds().parallelStream().forEach(id -> {
-            generateAuditRecord(id, pointAuditStatusQuery.getAuditStatus(), user);
+            generateAuditRecord(id, pointAuditStatusQuery.getAuditStatus(),pointAuditStatusQuery.getAuditRemarks(), user);
         });
 
         return R.ok();
@@ -623,7 +623,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         pointNewMapper.updateAuditStatus(pointNewUpdate);
 
         //生成记录
-        generateAuditRecord(pointNew.getId(), pointNewUpdate.getAuditStatus(), user);
+        generateAuditRecord(pointNew.getId(), pointNewUpdate.getAuditStatus(),pointNewUpdate.getAuditRemarks(), user);
         //发送Mq消息
         pointNewUpdate.setName(pointNew.getName());
         this.sendAuditStatusNotifyMq(pointNewUpdate);
@@ -666,13 +666,14 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         }
     }
 
-    private void generateAuditRecord(Long id, Integer status, User user){
+    private void generateAuditRecord(Long id, Integer status, String remark, User user){
         PointNewAuditRecord pointNewAuditRecord = new PointNewAuditRecord();
         pointNewAuditRecord.setUid(user.getId());
         pointNewAuditRecord.setUserName(user.getUserName());
         pointNewAuditRecord.setPointId(id);
         pointNewAuditRecord.setAuditStatus(status);
         pointNewAuditRecord.setCreateTime(System.currentTimeMillis());
+        pointNewAuditRecord.setRemark(remark);
         pointNewAuditRecordService.insert(pointNewAuditRecord);
     }
 }
