@@ -9,18 +9,27 @@ import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
+import com.xiliulou.afterserver.constant.MqConstant;
 import com.xiliulou.afterserver.entity.*;
+import com.xiliulou.afterserver.entity.mq.notify.MqNotifyCommon;
+import com.xiliulou.afterserver.entity.mq.notify.MqPointNewAuditNotify;
+import com.xiliulou.afterserver.entity.mq.notify.MqWorkOrderAuditNotify;
 import com.xiliulou.afterserver.mapper.*;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.vo.PointNewInfoVo;
 import com.xiliulou.afterserver.web.query.*;
 import com.xiliulou.afterserver.web.vo.FileVo;
 import com.xiliulou.afterserver.web.vo.PointNewMapStatisticsVo;
 import com.xiliulou.afterserver.web.vo.PointNewPullVo;
+import com.xiliulou.core.json.JsonUtil;
+import com.xiliulou.mq.service.RocketMqService;
 import com.xiliulou.storage.config.StorageConfig;
 import com.xiliulou.storage.service.impl.AliyunOssService;
+import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -69,6 +78,12 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     private StorageConfig storageConfig;
     @Autowired
     private AliyunOssService aliyunOssService;
+    @Autowired
+    private PointNewAuditRecordService pointNewAuditRecordService;
+    @Autowired
+    private RocketMqService rocketMqService;
+    @Autowired
+    private MaintenanceUserNotifyConfigService maintenanceUserNotifyConfigService;
 
     /**
      * 通过ID查询单条数据从DB
@@ -201,6 +216,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             return R.fail("请传入点位id");
         }
 
+        pointNew.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
         //Integer row = this.update(pointNew);
         if (!this.updateById(pointNew)) {
             return R.fail("数据库错误");
@@ -253,6 +269,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         if(Objects.nonNull(r)){
             return r;
         }
+        //清除空的产品信息
         if(Objects.nonNull(pointNew.getProductInfoList())) {
             Iterator<ProductInfoQuery> iterator = pointNew.getProductInfoList().iterator();
             while (iterator.hasNext()){
@@ -264,6 +281,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             String productInfo = JSON.toJSONString(pointNew.getProductInfoList());
             pointNew.setProductInfo(productInfo);
         }
+        //清除空的摄像头信息
         if(Objects.nonNull(pointNew.getCameraInfoList())) {
             Iterator<CameraInfoQuery> iterator = pointNew.getCameraInfoList().iterator();
             while(iterator.hasNext()){
@@ -277,15 +295,20 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             String cameraInfo = JSON.toJSONString(pointNew.getCameraInfoList());
             pointNew.setCameraInfo(cameraInfo);
         }
+
+
         PointNew pointNewOld = queryByName(pointNew.getName());
         if(Objects.nonNull(pointNewOld) && !Objects.equals(pointNew.getId(), pointNewOld.getId())){
             return R.fail("该点位已存在");
         }
+
+
         if(Objects.isNull(pointNew.getInstallTime()) || Objects.isNull(pointNew.getWarrantyPeriod())){
             pointNew.setWarrantyTime(null);
         }
+        pointNew.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
+
         int update = this.pointNewMapper.update(pointNew);
-        //pointNew.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
         if (update>0){
             return R.ok();
         }
@@ -481,7 +504,25 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             return R.fail("参数不合法");
         }
 
+        Long uid = SecurityUtils.getUid();
+        if(Objects.isNull(uid)) {
+            return R.fail("未查询到用户信息");
+        }
+
+        User user = userService.getUserById(uid);
+        if(Objects.isNull(user)) {
+            return R.fail("未查询到用户信息");
+        }
+
+        pointAuditStatusQuery.setAuditUid(uid);
+        pointAuditStatusQuery.setAuditUserName(user.getUserName());
+        pointAuditStatusQuery.setAuditTime(System.currentTimeMillis());
         pointNewMapper.batchUpdateAuditStatus(pointAuditStatusQuery);
+
+        pointAuditStatusQuery.getIds().parallelStream().forEach(id -> {
+            generateAuditRecord(id, pointAuditStatusQuery.getAuditStatus(), user);
+        });
+
         return R.ok();
     }
 
@@ -553,6 +594,16 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
     @Override
     public R updateAuditStatus(PointAuditStatusQuery pointAuditStatusQuery) {
+        Long uid = SecurityUtils.getUid();
+        if(Objects.isNull(uid)) {
+            return R.fail("未查询到用户信息");
+        }
+
+        User user = userService.getUserById(uid);
+        if(Objects.isNull(user)) {
+            return R.fail("未查询到用户信息");
+        }
+
         if(Objects.isNull(pointAuditStatusQuery.getId()) || Objects.isNull(pointAuditStatusQuery.getAuditStatus())){
             return R.fail("参数不合法");
         }
@@ -561,11 +612,67 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         if(Objects.isNull(pointNew)){
             return R.fail("未查询到相关点位");
         }
+
         PointNew pointNewUpdate = new PointNew();
         pointNewUpdate.setId(pointAuditStatusQuery.getId());
+        pointNewUpdate.setAuditUid(uid);
+        pointNewUpdate.setAuditUserName(user.getUserName());
+        pointNewUpdate.setAuditTime(System.currentTimeMillis());
         pointNewUpdate.setAuditStatus(pointAuditStatusQuery.getAuditStatus());
         pointNewUpdate.setAuditRemarks(pointAuditStatusQuery.getAuditRemarks());
         pointNewMapper.updateAuditStatus(pointNewUpdate);
+
+        //生成记录
+        generateAuditRecord(pointNew.getId(), pointNewUpdate.getAuditStatus(), user);
+        //发送Mq消息
+        pointNewUpdate.setName(pointNew.getName());
+        this.sendAuditStatusNotifyMq(pointNewUpdate);
         return R.ok();
+    }
+
+    private void sendAuditStatusNotifyMq(PointNew pointNewUpdate) {
+        MaintenanceUserNotifyConfig maintenanceUserNotifyConfig = maintenanceUserNotifyConfigService.queryByPermissions(MaintenanceUserNotifyConfig.TYPE_REVIEW, null);
+        if(Objects.isNull(maintenanceUserNotifyConfig) || org.springframework.util.StringUtils.isEmpty(maintenanceUserNotifyConfig.getPhones())) {
+            return;
+        }
+        List<String> phones = JsonUtil.fromJsonArray(maintenanceUserNotifyConfig.getPhones(), String.class);
+
+        if(CollectionUtils.isEmpty(phones)) {
+            return;
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        if(Objects.equals(maintenanceUserNotifyConfig.getPermissions() & MaintenanceUserNotifyConfig.P_AUDIT_FAILED, MaintenanceUserNotifyConfig.P_AUDIT_FAILED)) {
+            phones.forEach(p -> {
+                MqNotifyCommon<MqPointNewAuditNotify> query = new MqNotifyCommon<>();
+                query.setType(MqNotifyCommon.TYPE_AFTER_SALES_AUDIT);
+                query.setTime(System.currentTimeMillis());
+                query.setPhone(p);
+
+                MqPointNewAuditNotify mqPointNewAuditNotify = new MqPointNewAuditNotify();
+                mqPointNewAuditNotify.setPointName(pointNewUpdate.getName());
+                mqPointNewAuditNotify.setAuditUserName(pointNewUpdate.getAuditUserName());
+                mqPointNewAuditNotify.setAuditRemark(pointNewUpdate.getAuditRemarks());
+                mqPointNewAuditNotify.setAuditTime(sdf.format(new Date(pointNewUpdate.getAuditTime())));
+                query.setData(mqPointNewAuditNotify);
+
+                Pair<Boolean, String> result = rocketMqService.sendSyncMsg(MqConstant.TOPIC_MAINTENANCE_NOTIFY, JsonUtil
+                    .toJson(query), MqConstant.TAG_AFTER_SALES, "", 0);
+                if (!result.getLeft()) {
+                    log.error("SEND WORKORDER AUDIT MQ ERROR! pointName={}, msg={}", pointNewUpdate.getName(), result.getRight());
+                }
+            });
+        }
+    }
+
+    private void generateAuditRecord(Long id, Integer status, User user){
+        PointNewAuditRecord pointNewAuditRecord = new PointNewAuditRecord();
+        pointNewAuditRecord.setUid(user.getId());
+        pointNewAuditRecord.setUserName(user.getUserName());
+        pointNewAuditRecord.setPointId(id);
+        pointNewAuditRecord.setAuditStatus(status);
+        pointNewAuditRecord.setCreateTime(System.currentTimeMillis());
+        pointNewAuditRecordService.insert(pointNewAuditRecord);
     }
 }

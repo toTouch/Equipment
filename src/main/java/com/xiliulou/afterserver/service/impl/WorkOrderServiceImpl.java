@@ -2795,8 +2795,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 return;
             }
 
-            log.error("mq测试 -->" + (Objects.equals(maintenanceUserNotifyConfig.getPermissions() & MaintenanceUserNotifyConfig.P_SERVER, MaintenanceUserNotifyConfig.P_SERVER)));
-
             if(Objects.equals(maintenanceUserNotifyConfig.getPermissions() & MaintenanceUserNotifyConfig.P_SERVER, MaintenanceUserNotifyConfig.P_SERVER)) {
                 serverPhones.parallelStream().forEach( p -> {
                     MqNotifyCommon<MqWorkOrderServerNotify> query = new MqNotifyCommon<>();

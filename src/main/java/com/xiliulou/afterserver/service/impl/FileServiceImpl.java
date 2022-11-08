@@ -11,8 +11,10 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.constant.FileConstant;
 import com.xiliulou.afterserver.entity.File;
+import com.xiliulou.afterserver.entity.PointNew;
 import com.xiliulou.afterserver.mapper.FileMapper;
 import com.xiliulou.afterserver.service.FileService;
+import com.xiliulou.afterserver.service.PointNewService;
 import com.xiliulou.afterserver.util.MinioUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.storage.config.StorageConfig;
@@ -43,6 +45,8 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     AliyunOssService aliyunOssService;
     @Autowired
     StorageConfig storageConfig;
+    @Autowired
+    PointNewService pointNewService;
 
     @Override
     public R uploadFile(MultipartFile file, Integer fileType) {
@@ -171,12 +175,22 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     @Override
     public R removeFile(Long fileId, Integer fileType) {
         File file = this.baseMapper.selectOne(new LambdaQueryWrapper<File>().eq(File::getId, fileId));
-        R r = R.ok();
-        if(Objects.nonNull(file)){
-            this.removeById(fileId);
-            r = removeOssOrMinio(file.getFileName(), fileType);
+        if(Objects.isNull(file)){
+           return R.failMsg("删除文件失败！");
         }
-       return r;
+
+        if(Objects.equals(file.getType(), File.TYPE_POINTNEW)) {
+            PointNew pointNew = pointNewService.getById(file.getBindId());
+            if(Objects.nonNull(pointNew)) {
+                PointNew update = new PointNew();
+                update.setId(pointNew.getId());
+                update.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
+                pointNewService.update(update);
+            }
+        }
+
+        this.removeById(fileId);
+        return removeOssOrMinio(file.getFileName(), fileType);
     }
 
     @Override

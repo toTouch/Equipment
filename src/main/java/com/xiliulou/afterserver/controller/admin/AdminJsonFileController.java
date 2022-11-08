@@ -7,9 +7,11 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.xiliulou.afterserver.constant.FileConstant;
 import com.xiliulou.afterserver.entity.File;
+import com.xiliulou.afterserver.entity.PointNew;
 import com.xiliulou.afterserver.entity.ProductFile;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.service.FileService;
+import com.xiliulou.afterserver.service.PointNewService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.storage.service.impl.AliyunOssService;
@@ -39,6 +41,8 @@ public class AdminJsonFileController {
     ProductFileMapper productFileMapper;
     @Autowired
     AliyunOssService aliyunOssService;
+    @Autowired
+    PointNewService pointNewService;
 
 
     @GetMapping("/admin/file/info/{id}")
@@ -62,6 +66,14 @@ public class AdminJsonFileController {
 
             if(!(file.getFileType() % 100 == 0)){
                 fileService.getBaseMapper().delete(wrapper);
+            }
+
+            PointNew pointNew = pointNewService.getById(file.getBindId());
+            if(Objects.nonNull(pointNew)) {
+                PointNew update = new PointNew();
+                update.setId(pointNew.getId());
+                update.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
+                pointNewService.update(update);
             }
         }
 

@@ -33,7 +33,7 @@ public class MaintenanceUserNotifyConfig {
      */
     private Integer permissions;
     /**
-     * 类型 1：服务商 2：审核
+     * 类型 1：服务商 2：专员
      */
     private Integer type;
 
@@ -42,19 +42,24 @@ public class MaintenanceUserNotifyConfig {
     public static final Integer DEL_NORMAL = 0;
     public static final Integer DEL_DEL = 1;
     /**
-     * 审核
+     * 点位审核未通过通知
+     */
+    public static Integer P_AUDIT_FAILED = 4;
+    /**
+     * 审核通知
      */
     public static Integer P_REVIEW = 2;
     /**
-     * 服务商
+     * 派单通知
      */
     public static Integer P_SERVER = 1;
+
     /**
      * 服务商
      */
     public static Integer TYPE_SERVER = 1;
     /**
-     * 审核
+     * 专员
      */
     public static Integer TYPE_REVIEW = 2;
 }

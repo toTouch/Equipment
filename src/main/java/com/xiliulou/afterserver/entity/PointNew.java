@@ -152,6 +152,18 @@ public class PointNew {
      * 经度
      */
     private BigDecimal coordY;
+    /**
+     * 审核人id
+     */
+    private Long auditUid;
+    /**
+     * 审核人
+     */
+    private String auditUserName;
+    /**
+     * 审核时间
+     */
+    private Long auditTime;
 
 
     public static final Integer DEL_NORMAL = 0;

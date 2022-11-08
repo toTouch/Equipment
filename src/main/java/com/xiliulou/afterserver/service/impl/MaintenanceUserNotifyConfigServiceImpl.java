@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.xiliulou.afterserver.constant.MqConstant;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.entity.mq.notify.MqNotifyCommon;
+import com.xiliulou.afterserver.entity.mq.notify.MqPointNewAuditNotify;
 import com.xiliulou.afterserver.entity.mq.notify.MqWorkOrderAuditNotify;
 import com.xiliulou.afterserver.entity.mq.notify.MqWorkOrderServerNotify;
 import com.xiliulou.afterserver.mapper.LoginInfoMapper;
@@ -209,7 +210,7 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
                 mqWorkOrderServerNotify.setWorkOrderNo("test");
                 mqWorkOrderServerNotify.setOrderTypeName("test");
                 mqWorkOrderServerNotify.setPointName("test");
-                mqWorkOrderServerNotify.setAssignmentTime("1970-01-01 0:0:0");
+                mqWorkOrderServerNotify.setAssignmentTime("1970-01-01 00:00:00");
                 query.setData(mqWorkOrderServerNotify);
 
                 Pair<Boolean, String> result = rocketMqService.sendSyncMsg(MqConstant.TOPIC_MAINTENANCE_NOTIFY, JsonUtil.toJson(query), MqConstant.TAG_AFTER_SALES, "", 0);
@@ -230,11 +231,32 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
 
                 MqWorkOrderAuditNotify mqWorkOrderAuditNotify = new MqWorkOrderAuditNotify();
                 mqWorkOrderAuditNotify.setWorkOrderNo("test");
-                mqWorkOrderAuditNotify.setSubmitTime("1970-01-01 0:0:0");
+                mqWorkOrderAuditNotify.setSubmitTime("1970-01-01 00:00:00");
                 mqWorkOrderAuditNotify.setOrderTypeName("test");
                 mqWorkOrderAuditNotify.setPointName("test");
                 mqWorkOrderAuditNotify.setSubmitUName("test");
                 query.setData(mqWorkOrderAuditNotify);
+
+                Pair<Boolean, String> result = rocketMqService.sendSyncMsg(MqConstant.TOPIC_MAINTENANCE_NOTIFY, JsonUtil.toJson(query), MqConstant.TAG_AFTER_SALES, "", 0);
+                if (!result.getLeft()) {
+                    log.error("SEND WORKORDER AUDIT MQ ERROR! no={}, msg={}", "test", result.getRight());
+                }
+            });
+        }
+
+        if(Objects.equals(permissions & MaintenanceUserNotifyConfig.P_AUDIT_FAILED, MaintenanceUserNotifyConfig.P_AUDIT_FAILED)) {
+            phones.forEach(p -> {
+                MqNotifyCommon<MqPointNewAuditNotify> query = new MqNotifyCommon<>();
+                query.setType(MqNotifyCommon.TYPE_AFTER_SALES_POINT_AUDIT);
+                query.setTime(System.currentTimeMillis());
+                query.setPhone(p);
+
+                MqPointNewAuditNotify mqPointNewAuditNotify = new MqPointNewAuditNotify();
+                mqPointNewAuditNotify.setPointName("test");
+                mqPointNewAuditNotify.setAuditUserName("test");
+                mqPointNewAuditNotify.setRemark("test");
+                mqPointNewAuditNotify.setAuditTime("1970-01-01 00:00:00");
+                query.setData(mqPointNewAuditNotify);
 
                 Pair<Boolean, String> result = rocketMqService.sendSyncMsg(MqConstant.TOPIC_MAINTENANCE_NOTIFY, JsonUtil.toJson(query), MqConstant.TAG_AFTER_SALES, "", 0);
                 if (!result.getLeft()) {
