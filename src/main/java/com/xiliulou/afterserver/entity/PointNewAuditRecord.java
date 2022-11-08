@@ -33,6 +33,8 @@ public class PointNewAuditRecord {
     
     private Long createTime;
 
+    private String remark;
+
     public static final Integer DEL_NORMAL = 0;
     public static final Integer DEL_DEL = 1;
 
