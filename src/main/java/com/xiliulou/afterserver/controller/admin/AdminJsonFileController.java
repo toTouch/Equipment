@@ -64,7 +64,7 @@ public class AdminJsonFileController {
                 }
             }
 
-            if(!(file.getFileType() % 100 == 0)){
+            if(!(Objects.nonNull(file.getFileType()) && file.getFileType() % 100 == 0)){
                 fileService.getBaseMapper().delete(wrapper);
             }
 
