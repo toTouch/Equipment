@@ -90,7 +90,7 @@ public class JsonUserPointProductController {
                 PointNew update = new PointNew();
                 update.setId(pointNew.getId());
                 update.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
-                pointNewService.updateById(pointNew);
+                pointNewService.updateById(update);
             }
         }
 
