@@ -254,7 +254,7 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
                 MqPointNewAuditNotify mqPointNewAuditNotify = new MqPointNewAuditNotify();
                 mqPointNewAuditNotify.setPointName("test");
                 mqPointNewAuditNotify.setAuditUserName("test");
-                mqPointNewAuditNotify.setRemark("test");
+                mqPointNewAuditNotify.setAuditRemark("test");
                 mqPointNewAuditNotify.setAuditTime("1970-01-01 00:00:00");
                 query.setData(mqPointNewAuditNotify);
 
