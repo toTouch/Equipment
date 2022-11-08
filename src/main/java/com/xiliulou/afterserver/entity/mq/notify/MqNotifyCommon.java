@@ -27,11 +27,15 @@ public class MqNotifyCommon<T> {
     private T data;
 
     /**
-     * 硬件消息
+     * 专员审核通知
      */
     public static final Integer  TYPE_AFTER_SALES_AUDIT = 4;
     /**
-     * 设备消息
+     * 服务商派单通知
      */
     public static final Integer TYPE_AFTER_SALES_SERVER = 3;
+    /**
+     * 专员点位审合通知
+     */
+    public static final Integer TYPE_AFTER_SALES_POINT_AUDIT = 7;
 }

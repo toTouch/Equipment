@@ -84,6 +84,14 @@ public class JsonUserPointProductController {
             if(!(file.getFileType() % 100 == 0)){
                 fileService.getBaseMapper().delete(wrapper);
             }
+
+            PointNew pointNew = pointNewService.getById(file.getBindId());
+            if(Objects.nonNull(pointNew)) {
+                PointNew update = new PointNew();
+                update.setId(pointNew.getId());
+                update.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
+                pointNewService.update(update);
+            }
         }
 
         if(Objects.equals(File.TYPE_WORK_ORDER, file.getType())){

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiliulou.afterserver.mapper.PointNewAuditRecordMapper">
+
+  <resultMap type="com.xiliulou.afterserver.entity.PointNewAuditRecord" id="PointNewAuditRecordMap">
+    <result property="id" column="id" jdbcType="INTEGER"/>
+    <result property="pointId" column="point_id" jdbcType="INTEGER"/>
+    <result property="uid" column="uid" jdbcType="INTEGER"/>
+    <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+    <result property="auditStatus" column="audit_status" jdbcType="INTEGER"/>
+    <result property="createTime" column="create_time" jdbcType="INTEGER"/>
+  </resultMap>
+
+  <!--查询单个-->
+  <select id="queryById" resultMap="PointNewAuditRecordMap">
+        select
+          id, point_id, uid, user_name, audit_status, create_time
+        from t_point_new_audit_record
+        where id = #{id}
+    </select>
+
+  <!--查询指定行数据-->
+  <select id="queryAllByLimit" resultMap="PointNewAuditRecordMap">
+        select
+          id, point_id, uid, user_name, audit_status, create_time
+        from t_point_new_audit_record
+        limit #{offset}, #{limit}
+    </select>
+
+  <!--通过实体作为筛选条件查询-->
+  <select id="queryAll" resultMap="PointNewAuditRecordMap">
+    select
+    id, point_id, uid, user_name, audit_status, create_time
+    from t_point_new_audit_record
+    <where>
+      <if test="id != null">
+        and id = #{id}
+      </if>
+      <if test="pointId != null">
+        and point_id = #{pointId}
+      </if>
+      <if test="uid != null">
+        and uid = #{uid}
+      </if>
+      <if test="userName != null and userName != ''">
+        and user_name = #{userName}
+      </if>
+      <if test="auditStatus != null">
+        and audit_status = #{auditStatus}
+      </if>
+      <if test="createTime != null">
+        and create_time = #{createTime}
+      </if>
+    </where>
+  </select>
+
+  <!--新增所有列-->
+  <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
+        insert into t_point_new_audit_record(point_id, uid, user_name, audit_status, create_time)
+        values (#{pointId}, #{uid}, #{userName}, #{auditStatus}, #{createTime})
+    </insert>
+
+  <!--通过主键修改数据-->
+  <update id="update">
+    update t_point_new_audit_record
+    <set>
+      <if test="pointId != null">
+        point_id = #{pointId},
+      </if>
+      <if test="uid != null">
+        uid = #{uid},
+      </if>
+      <if test="userName != null and userName != ''">
+        user_name = #{userName},
+      </if>
+      <if test="auditStatus != null">
+        audit_status = #{auditStatus},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+
+  <!--通过主键删除-->
+  <delete id="deleteById">
+        delete from t_point_new_audit_record where id = #{id}
+    </delete>
+
+  <select id="queryList" resultMap="PointNewAuditRecordMap">
+    select
+    id, point_id, uid, user_name, audit_status, create_time
+    from t_point_new_audit_record
+    where point_id = #{pointId}
+    limit #{offset}, #{size}
+  </select>
+</mapper>

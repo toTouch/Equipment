@@ -34,6 +34,9 @@
         <result property="warrantyTime" column="warranty_time" jdbcType="INTEGER"/>
         <result property="coordX" column="coord_x" jdbcType="DECIMAL"/>
         <result property="coordY" column="coord_y" jdbcType="DECIMAL"/>
+        <result property="auditUid" column="audit_uid" jdbcType="BIGINT"/>
+        <result property="auditUserName" column="audit_user_name" jdbcType="VARCHAR"/>
+        <result property="auditTime" column="audit_time" jdbcType="BIGINT"/>
     </resultMap>
 
     <!--查询单个-->
@@ -53,7 +56,7 @@
         id, name , customer_id, status, city_id, install_type, address, camera_count, canopy_count, sn_no, card_number,
         remarks,create_uid,create_time, del_flag, card_supplier, completion_time, is_entry, is_acceptance, product_series,
         order_time, operator, logistics_info, product_info, camera_info, install_time, audit_status, audit_remarks,
-        warranty_period, warranty_time, coord_x, coord_y
+        warranty_period, warranty_time, coord_x, coord_y, audit_uid, audit_time ,audit_user_name
         from t_point_new
         <where>
         and del_flag = 0
@@ -455,7 +458,32 @@
 
     <update id="batchUpdateAuditStatus">
         <foreach collection="ids" item="id">
-            update t_point_new set audit_status = #{auditStatus}, audit_remarks = #{auditRemarks} where id = #{id};
+            update t_point_new
+            <set>
+                audit_status = #{auditStatus},
+                audit_uid = #{auditUid},
+                audit_user_name = #{auditUserName},
+                audit_time = #{auditTime},
+                <if test="auditRemarks != null and auditRemarks != ''">
+                    audit_remarks = #{auditRemarks},
+                </if>
+            </set>
+            where id = #{id};
         </foreach>
     </update>
+
+    <update id="updateAuditStatus">
+        update t_point_new
+        <set>
+            audit_status = #{auditStatus},
+            audit_uid = #{auditUid},
+            audit_user_name = #{auditUserName},
+            audit_time = #{auditTime},
+            <if test="auditRemarks != null and auditRemarks != ''">
+                audit_remarks = #{auditRemarks},
+            </if>
+        </set>
+        where id = #{id};
+    </update>
+
 </mapper>

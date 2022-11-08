@@ -290,7 +290,7 @@ public class AdminJsonPointNewController {
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
 
-        String[] header = {"审核状态", "产品系列", "城市名称", "客户名称", "柜机名称", "点位状态", "创建人", "创建时间", "安装类型", "雨棚数量", "是否录入资产编码", "照片数量", "SN码", "物联网卡号", "物联网卡供应商","详细地址", "安装时间", "质保有效期","质保结束时间","施工完成时间",  "入账","验收","下单时间","运营商","物流信息","审核内容","备注" };
+        String[] header = {"审核状态", "产品系列", "城市名称", "客户名称", "柜机名称", "点位状态", "创建人", "创建时间", "安装类型", "雨棚数量", "是否录入资产编码", "照片数量", "SN码", "物联网卡号", "物联网卡供应商","详细地址", "安装时间", "质保有效期","质保结束时间","施工完成时间",  "入账","验收","下单时间","运营商","物流信息","审核人","审核时间","审核内容","备注" };
         List<Product> productAll = productService.list();
         Integer max = 0;
 
@@ -534,7 +534,17 @@ public class AdminJsonPointNewController {
             list.add(item.getOperator() == null ? "" : item.getOperator());
 
             //物流信息
-            list.add(item.getLogisticsInfo() == null ? "" : item.getOperator());
+            list.add(item.getLogisticsInfo() == null ? "" : item.getLogisticsInfo());
+
+            //审核人
+            list.add(item.getAuditUserName() == null ? "" : item.getAuditUserName());
+
+            //审核时间
+            if (item.getAuditTime() != null) {
+                list.add(DateUtils.stampToDate(item.getAuditTime().toString()));
+            }else{
+                list.add("");
+            }
 
             //审核内容
             list.add(item.getAuditRemarks() == null ? "" : item.getAuditRemarks());
