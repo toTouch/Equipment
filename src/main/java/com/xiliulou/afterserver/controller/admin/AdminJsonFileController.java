@@ -52,7 +52,7 @@ public class AdminJsonFileController {
 
     @PostMapping("/admin/file")
     public R saveFile(@RequestBody File file){
-        if(Objects.equals(File.TYPE_POINTNEW, file.getFileType())){
+        if(Objects.equals(File.TYPE_POINTNEW, file.getType())){
             QueryWrapper<File> wrapper = new QueryWrapper<>();
             wrapper.eq("type", File.TYPE_POINTNEW);
             wrapper.eq("file_type", file.getFileType());
@@ -73,7 +73,7 @@ public class AdminJsonFileController {
                 PointNew update = new PointNew();
                 update.setId(pointNew.getId());
                 update.setAuditStatus(PointNew.AUDIT_STATUS_WAIT);
-                pointNewService.update(update);
+                pointNewService.updateById(update);
             }
         }
 
