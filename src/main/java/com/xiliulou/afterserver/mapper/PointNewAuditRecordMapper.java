@@ -67,5 +67,5 @@ public interface PointNewAuditRecordMapper  extends BaseMapper<PointNewAuditReco
 
     List<PointNewAuditRecord> queryList(@Param("offset") Long offset, @Param("size")Long size, @Param("pointId")Long pointId);
 
-    Long queryCount(Long offset, Long size, Long pointId);
+    Long queryCount(@Param("offset") Long offset, @Param("size")Long size, @Param("pointId")Long pointId);
 }
