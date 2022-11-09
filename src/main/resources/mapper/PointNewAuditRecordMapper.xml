@@ -103,4 +103,13 @@
     where point_id = #{pointId}
     limit #{offset}, #{size}
   </select>
+
+  <select id="queryCount" resultType="long">
+    select
+        count(*)
+    from t_point_new_audit_record
+    where point_id = #{pointId}
+    limit #{offset}, #{size}
+  </select>
+
 </mapper>
