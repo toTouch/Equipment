@@ -4,6 +4,9 @@ import com.xiliulou.afterserver.entity.PointNewAuditRecord;
 import com.xiliulou.afterserver.mapper.PointNewAuditRecordMapper;
 import com.xiliulou.afterserver.service.PointNewAuditRecordService;
 import com.xiliulou.core.web.R;
+import java.util.HashMap;
+import java.util.Map;
+import net.sf.jsqlparser.expression.operators.relational.OldOracleJoinBinaryExpression;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -97,6 +100,12 @@ public class PointNewAuditRecordServiceImpl implements PointNewAuditRecordServic
 
     @Override
     public R queryList(Long offset, Long size, Long pointId) {
-        return R.ok(pointNewAuditRecordMapper.queryList(offset, size, pointId));
+        List<PointNewAuditRecord> pointNewAuditRecords = pointNewAuditRecordMapper.queryList(offset, size, pointId);
+        Long count = pointNewAuditRecordMapper.queryCount(offset, size, pointId);
+
+        Map<String, Object> result = new HashMap<>(2);
+        result.put("data", pointNewAuditRecords);
+        result.put("count", count);
+        return R.ok(result);
     }
 }
