@@ -255,7 +255,7 @@ public class MaintenanceUserNotifyConfigServiceImpl extends ServiceImpl<Maintena
                 mqPointNewAuditNotify.setPointName("test");
                 mqPointNewAuditNotify.setAuditUserName("test");
                 mqPointNewAuditNotify.setAuditRemark("test");
-                mqPointNewAuditNotify.setAuditTime("1970-01-01 00:00:00");
+                mqPointNewAuditNotify.setAuditResult("test");
                 query.setData(mqPointNewAuditNotify);
 
                 Pair<Boolean, String> result = rocketMqService.sendSyncMsg(MqConstant.TOPIC_MAINTENANCE_NOTIFY, JsonUtil.toJson(query), MqConstant.TAG_AFTER_SALES, "", 0);
