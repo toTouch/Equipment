@@ -519,9 +519,24 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         pointAuditStatusQuery.setAuditTime(System.currentTimeMillis());
         pointNewMapper.batchUpdateAuditStatus(pointAuditStatusQuery);
 
+
         pointAuditStatusQuery.getIds().parallelStream().forEach(id -> {
+            PointNew pointNew = this.queryByIdFromDB(id);
+            if(Objects.isNull(pointNew)) {
+                return;
+            }
+            //生成操作记录
             generateAuditRecord(id, pointAuditStatusQuery.getAuditStatus(),pointAuditStatusQuery.getAuditRemarks(), user);
+
+            //发送Mq消息
+            PointNew pointNewMq = new PointNew();
+            pointNewMq.setName(pointNew.getName());
+            pointNewMq.setAuditStatus(pointAuditStatusQuery.getAuditStatus());
+            pointNewMq.setAuditRemarks(pointAuditStatusQuery.getAuditRemarks());
+            pointNewMq.setAuditUserName(pointAuditStatusQuery.getAuditUserName());
+            this.sendAuditStatusNotifyMq(pointNewMq);
         });
+
 
         return R.ok();
     }
@@ -625,8 +640,10 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         //生成记录
         generateAuditRecord(pointNew.getId(), pointNewUpdate.getAuditStatus(),pointNewUpdate.getAuditRemarks(), user);
         //发送Mq消息
-        pointNewUpdate.setName(pointNew.getName());
-        this.sendAuditStatusNotifyMq(pointNewUpdate);
+        if(Objects.equals(pointNewUpdate.getAuditStatus(), PointNew.AUDIT_STATUS_FAIL)){
+            pointNewUpdate.setName(pointNew.getName());
+            this.sendAuditStatusNotifyMq(pointNewUpdate);
+        }
         return R.ok();
     }
 
@@ -641,8 +658,6 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             return;
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
         if(Objects.equals(maintenanceUserNotifyConfig.getPermissions() & MaintenanceUserNotifyConfig.P_AUDIT_FAILED, MaintenanceUserNotifyConfig.P_AUDIT_FAILED)) {
             phones.forEach(p -> {
                 MqNotifyCommon<MqPointNewAuditNotify> query = new MqNotifyCommon<>();
@@ -654,7 +669,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
                 mqPointNewAuditNotify.setPointName(pointNewUpdate.getName());
                 mqPointNewAuditNotify.setAuditUserName(pointNewUpdate.getAuditUserName());
                 mqPointNewAuditNotify.setAuditRemark(pointNewUpdate.getAuditRemarks());
-                mqPointNewAuditNotify.setAuditTime(sdf.format(new Date(pointNewUpdate.getAuditTime())));
+                mqPointNewAuditNotify.setAuditResult("未通过");
                 query.setData(mqPointNewAuditNotify);
 
                 Pair<Boolean, String> result = rocketMqService.sendSyncMsg(MqConstant.TOPIC_MAINTENANCE_NOTIFY, JsonUtil
