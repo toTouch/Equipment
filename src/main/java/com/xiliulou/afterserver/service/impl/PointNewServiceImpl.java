@@ -661,7 +661,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         if(Objects.equals(maintenanceUserNotifyConfig.getPermissions() & MaintenanceUserNotifyConfig.P_AUDIT_FAILED, MaintenanceUserNotifyConfig.P_AUDIT_FAILED)) {
             phones.forEach(p -> {
                 MqNotifyCommon<MqPointNewAuditNotify> query = new MqNotifyCommon<>();
-                query.setType(MqNotifyCommon.TYPE_AFTER_SALES_AUDIT);
+                query.setType(MqNotifyCommon.TYPE_AFTER_SALES_POINT_AUDIT);
                 query.setTime(System.currentTimeMillis());
                 query.setPhone(p);
 
