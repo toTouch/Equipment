@@ -12,5 +12,5 @@ public class MqPointNewAuditNotify {
     private String pointName;
     private String auditUserName;
     private String auditRemark;
-    private String auditTime;
+    private String auditResult;
 }
