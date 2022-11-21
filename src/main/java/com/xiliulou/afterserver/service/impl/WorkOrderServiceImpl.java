@@ -667,13 +667,19 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     if(Objects.nonNull(product)) {
                         lineItem.add(product.getName());
                         lineItem.add(entry.getNumber());
+                        lineItem.add(Objects.equals(product.getBuyType(), Product.BUY_TYPE_CENTRALIZED)? "集采" : "非集采");
                     } else {
+                        lineItem.add("");
                         lineItem.add("");
                         lineItem.add("");
                     }
                     data.add(lineItem);
                 });
-
+            } else {
+                row.add("");
+                row.add("");
+                row.add("");
+                data.add(row);
             }
 
             //data.add(row);
@@ -1056,13 +1062,19 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     if(Objects.nonNull(product)) {
                         lineItem.add(product.getName());
                         lineItem.add(entry.getNumber());
+                        lineItem.add(Objects.equals(product.getBuyType(), Product.BUY_TYPE_CENTRALIZED)? "集采" : "非集采");
                     } else {
+                        lineItem.add("");
                         lineItem.add("");
                         lineItem.add("");
                     }
                     data.add(lineItem);
                 });
-
+            } else {
+                row.add("");
+                row.add("");
+                row.add("");
+                data.add(row);
             }
         }
 
