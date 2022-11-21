@@ -648,6 +648,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 for(int i = 0 ; i < paddingItem; i++) {
                     row.add("");
                 }
+            } else {
+                for(int i = 0 ; i < codeMaxSize; i++) {
+                    row.add("");
+                }
             }
 
 
