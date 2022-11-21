@@ -715,6 +715,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         countTitle.add("数量");
         headList.add(countTitle);
 
+        List<String> typeTitle = new ArrayList<>();
+        typeTitle.add("是否集采");
+        headList.add(typeTitle);
+
         String fileName = "工单列表.xlsx";
         try {
             ServletOutputStream outputStream = response.getOutputStream();
@@ -1093,6 +1097,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         List<String> countTitle = new ArrayList<>();
         countTitle.add("数量");
         headList.add(countTitle);
+
+        List<String> typeTitle = new ArrayList<>();
+        typeTitle.add("是否集采");
+        headList.add(typeTitle);
 
 //        if (productAll != null && !productAll.isEmpty()) {
 //            for (Product p : productAll) {
