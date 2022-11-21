@@ -108,6 +108,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     MaintenanceUserNotifyConfigService maintenanceUserNotifyConfigService;
     @Autowired
     ServerAuditEntryService serverAuditEntryService;
+    @Autowired
+    CityService cityService;
+    @Autowired
+    private ProvinceService provinceService;
 
 
     @Override
@@ -271,7 +275,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
 
-        String[] header = {"审核状态", "工单类型", "点位", "点位状态", "柜机系列","移机起点", "移机终点", "创建人",
+        String[] header = {"审核状态", "工单类型", "点位", "点位状态","省份","城市", "柜机系列","移机起点", "移机终点", "创建人",
                 "状态", "描述", "备注", "工单原因", "创建时间", "工单编号", "sn码", "审核内容","专员", "派单时间"};
 
         String[] serverHeader = {"服务商", "工单费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数", " 第三方类型", "第三方公司", "应收第三方人工费", "应收第三方物料费", "支付状态", "第三方原因", "第三方对接人"};
@@ -330,6 +334,28 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
             //点位状态
             row.add(getPointStatusName(o.getPointStatus()));
+
+            PointNew point = pointNewService.getById(o.getPointId());
+            //省份
+            if (Objects.nonNull(point)){
+                City byId = cityService.getById(point.getCityId());
+                if (Objects.nonNull(byId)){
+                    Province province = provinceService.queryByIdFromDB(byId.getPid());
+                    if(Objects.nonNull(province)) {
+                        row.add(province.getName());
+                        row.add(byId.getName());
+                    }else {
+                        row.add("");
+                        row.add(byId.getName());
+                    }
+                }else{
+                    row.add("");
+                    row.add("");
+                }
+            }else{
+                row.add("");
+                row.add("");
+            }
 
             //柜机系列
             row.add(getPointProductSeries(o.getProductSeries()));
@@ -665,12 +691,12 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
 
-        String[] header = {"审核状态", "工单类型", "点位", "点位状态", "柜机系列", "创建人",
+        String[] header = {"审核状态", "工单类型", "点位", "点位状态", "省份","城市", "柜机系列", "创建人",
                 "状态", "描述", "备注", "工单原因", "创建时间", "工单编号", "sn码", "审核内容", "专员", "派单时间"};
 
         String[] serverHeader = {"服务商", "工单费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数", " 第三方类型", "第三方公司", "应收第三方人工费", "应收第三方物料费", "支付状态", "第三方原因", "第三方对接人"};
 
-        List<Product> productAll = productService.list();
+        //List<Product> productAll = productService.list();
 
         for (String s : header) {
             List<String> headTitle = new ArrayList<String>();
@@ -719,6 +745,28 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
 
             row.add(getPointStatusName(o.getPointStatus()));
+
+            PointNew point = pointNewService.getById(o.getPointId());
+            //省份
+            if (Objects.nonNull(point)){
+                City byId = cityService.getById(point.getCityId());
+                if (Objects.nonNull(byId)){
+                    Province province = provinceService.queryByIdFromDB(byId.getPid());
+                    if(Objects.nonNull(province)) {
+                        row.add(province.getName());
+                        row.add(byId.getName());
+                    }else {
+                        row.add("");
+                        row.add(byId.getName());
+                    }
+                }else{
+                    row.add("");
+                    row.add("");
+                }
+            }else{
+                row.add("");
+                row.add("");
+            }
 
             //柜机系列
             row.add(getPointProductSeries(o.getProductSeries()));
@@ -925,34 +973,52 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
 
             //产品个数
-            if (productAll != null && !productAll.isEmpty()) {
-                List<ProductInfoQuery> productInfoQueries = null;
-                if (Objects.nonNull(o.getProductInfo())) {
-                    productInfoQueries = JSON.parseArray(o.getProductInfo(), ProductInfoQuery.class);
-                }
-                if (!CollectionUtil.isEmpty(productInfoQueries)) {
-                    for (Product p : productAll) {
-                        ProductInfoQuery index = null;
-                        for (ProductInfoQuery entry : productInfoQueries) {
-                            if (Objects.equals(p.getId(), entry.getProductId())) {
-                                index = entry;
-                            }
-                        }
-
-                        if (index != null) {
-                            row.add(index.getNumber());
-                        } else {
-                            row.add("");
-                        }
-                    }
-                } else {
-                    for (Product p : productAll) {
-                        row.add("");
-                    }
-                }
+//            if (productAll != null && !productAll.isEmpty()) {
+//                List<ProductInfoQuery> productInfoQueries = null;
+//                if (Objects.nonNull(o.getProductInfo())) {
+//                    productInfoQueries = JSON.parseArray(o.getProductInfo(), ProductInfoQuery.class);
+//                }
+//                if (!CollectionUtil.isEmpty(productInfoQueries)) {
+//                    for (Product p : productAll) {
+//                        ProductInfoQuery index = null;
+//                        for (ProductInfoQuery entry : productInfoQueries) {
+//                            if (Objects.equals(p.getId(), entry.getProductId())) {
+//                                index = entry;
+//                            }
+//                        }
+//
+//                        if (index != null) {
+//                            row.add(index.getNumber());
+//                        } else {
+//                            row.add("");
+//                        }
+//                    }
+//                } else {
+//                    for (Product p : productAll) {
+//                        row.add("");
+//                    }
+//                }
+//            }
+            List<ProductInfoQuery> productInfoQueries = null;
+            if (Objects.nonNull(o.getProductInfo())) {
+                productInfoQueries = JSON.parseArray(o.getProductInfo(), ProductInfoQuery.class);
             }
 
-            data.add(row);
+            if (!CollectionUtil.isEmpty(productInfoQueries)) {
+                productInfoQueries.forEach(entry -> {
+                    List<Object> lineItem = new ArrayList<>(row);
+                    Product product = productService.getById(entry.getProductId());
+                    if(Objects.nonNull(product)) {
+                        lineItem.add(product.getName());
+                        lineItem.add(entry.getNumber());
+                    } else {
+                        lineItem.add("");
+                        lineItem.add("");
+                    }
+                    data.add(lineItem);
+                });
+
+            }
         }
 
         for (int i = 0; i < serverMaxLen; i++) {
@@ -963,13 +1029,21 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
         }
 
-        if (productAll != null && !productAll.isEmpty()) {
-            for (Product p : productAll) {
-                List<String> headTitle = new ArrayList<>();
-                headTitle.add(p.getName());
-                headList.add(headTitle);
-            }
-        }
+        List<String> modeTitle = new ArrayList<>();
+        modeTitle.add("产品型号");
+        headList.add(modeTitle);
+
+        List<String> countTitle = new ArrayList<>();
+        countTitle.add("数量");
+        headList.add(countTitle);
+
+//        if (productAll != null && !productAll.isEmpty()) {
+//            for (Product p : productAll) {
+//                List<String> headTitle = new ArrayList<>();
+//                headTitle.add(p.getName());
+//                headList.add(headTitle);
+//            }
+//        }
 
         String fileName = "工单列表.xlsx";
         try {
