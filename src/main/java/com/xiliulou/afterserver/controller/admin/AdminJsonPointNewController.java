@@ -38,6 +38,7 @@ import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -290,8 +291,8 @@ public class AdminJsonPointNewController {
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
 
-        String[] header = {"审核状态", "产品系列", "城市名称", "客户名称", "柜机名称", "点位状态", "创建人", "创建时间", "安装类型", "雨棚数量", "是否录入资产编码", "照片数量", "SN码", "物联网卡号", "物联网卡供应商","详细地址", "安装时间", "质保有效期","质保结束时间","施工完成时间",  "入账","验收","下单时间","运营商","物流信息","审核人","审核时间","审核内容","备注" };
-        List<Product> productAll = productService.list();
+        String[] header = {"审核状态", "产品系列", "省份", "城市", "客户名称", "柜机名称", "点位状态", "创建人", "创建时间", "安装类型", "雨棚数量", "是否录入资产编码", "照片数量", "SN码", "物联网卡号", "物联网卡供应商","详细地址", "安装时间", "质保有效期","质保结束时间","施工完成时间",  "入账","验收","下单时间","运营商","物流信息","审核人","审核时间","审核内容","备注" };
+        //List<Product> productAll = productService.list();
         Integer max = 0;
 
         for(PointNew pointNew: pointNews){
@@ -309,13 +310,13 @@ public class AdminJsonPointNewController {
             headTitle.add(s);
             headList.add(headTitle);
         }
-        if(productAll != null && !productAll.isEmpty()){
-            for (Product p : productAll){
-                List<String> headTitle = new ArrayList<>();
-                headTitle.add(p.getName());
-                headList.add(headTitle);
-            }
-        }
+//        if(productAll != null && !productAll.isEmpty()){
+//            for (Product p : productAll){
+//                List<String> headTitle = new ArrayList<>();
+//                headTitle.add(p.getName());
+//                headList.add(headTitle);
+//            }
+//        }
 
         List<String> headTitle = new ArrayList<>();
         headTitle.add("摄像头数量");
@@ -335,6 +336,10 @@ public class AdminJsonPointNewController {
                 headList.add(headTitle3);
             }
         }
+
+        List<String> modeTitle = new ArrayList<>();
+        modeTitle.add("产品型号");
+        headList.add(modeTitle);
 
         List<String> noTitle = new ArrayList<>();
         noTitle.add("资产编码");
@@ -383,11 +388,20 @@ public class AdminJsonPointNewController {
             if (Objects.nonNull(item.getCityId())){
                 City byId = cityService.getById(item.getCityId());
                 if (Objects.nonNull(byId)){
-                    list.add(byId.getName());
+                    Province province = provinceService.queryByIdFromDB(byId.getPid());
+                    if(Objects.nonNull(province)) {
+                        list.add(province.getName());
+                        list.add(byId.getName());
+                    }else {
+                        list.add("");
+                        list.add(byId.getName());
+                    }
                 }else{
+                    list.add("");
                     list.add("");
                 }
             }else{
+                list.add("");
                 list.add("");
             }
 
@@ -553,35 +567,35 @@ public class AdminJsonPointNewController {
             list.add(item.getRemarks() == null ? "" : item.getRemarks());
 
             //产品个数
-            if(productAll != null && !productAll.isEmpty()) {
-                List<ProductInfoQuery> productInfoQueries = null;
-                if(Objects.nonNull(item.getProductInfo())){
-                    productInfoQueries = JSON.parseArray(item.getProductInfo(), ProductInfoQuery.class);
-                }
-                if (!CollectionUtil.isEmpty(productInfoQueries)) {
-
-                    for (Product p : productAll) {
-                        //boolean falg = false;
-                        ProductInfoQuery index = null;
-                        for (ProductInfoQuery entry : productInfoQueries) {
-                            if (Objects.equals(p.getId(), entry.getProductId())) {
-                                //falg = true;
-                                index = entry;
-                            }
-                        }
-
-                        if (index != null) {
-                            list.add(index.getNumber());
-                        } else {
-                            list.add("");
-                        }
-                    }
-                }else{
-                    for (Product p : productAll) {
-                        list.add("");
-                    }
-                }
-            }
+//            if(productAll != null && !productAll.isEmpty()) {
+//                List<ProductInfoQuery> productInfoQueries = null;
+//                if(Objects.nonNull(item.getProductInfo())){
+//                    productInfoQueries = JSON.parseArray(item.getProductInfo(), ProductInfoQuery.class);
+//                }
+//                if (!CollectionUtil.isEmpty(productInfoQueries)) {
+//
+//                    for (Product p : productAll) {
+//                        //boolean falg = false;
+//                        ProductInfoQuery index = null;
+//                        for (ProductInfoQuery entry : productInfoQueries) {
+//                            if (Objects.equals(p.getId(), entry.getProductId())) {
+//                                //falg = true;
+//                                index = entry;
+//                            }
+//                        }
+//
+//                        if (index != null) {
+//                            list.add(index.getNumber());
+//                        } else {
+//                            list.add("");
+//                        }
+//                    }
+//                }else{
+//                    for (Product p : productAll) {
+//                        list.add("");
+//                    }
+//                }
+//            }
             //摄像头数量
             list.add(item.getCameraCount() == null ? "" : item.getCameraCount());
 
@@ -634,6 +648,7 @@ public class AdminJsonPointNewController {
                     if(Objects.isNull(productNew)) {
                         lineList.add("");
                         lineList.add("");
+                        lineList.add("");
                         return;
                     }
 
@@ -641,11 +656,14 @@ public class AdminJsonPointNewController {
                     if(Objects.isNull(byId)) {
                         lineList.add("");
                         lineList.add("");
+                        lineList.add("");
                         return;
                     }
 
+                    lineList.add(StringUtils.isEmpty(byId.getName()) ? "" : byId.getName());
                     lineList.add(Objects.isNull(productNew.getNo())? "" : productNew.getNo());
                     lineList.add(Objects.equals(byId.getBuyType(), Product.BUY_TYPE_CENTRALIZED)? "集采" : "非集采");
+
                     pointExcelVos.add(lineList);
                 });
             }
