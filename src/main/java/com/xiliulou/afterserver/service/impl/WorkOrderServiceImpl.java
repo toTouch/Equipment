@@ -302,6 +302,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         Integer serverMaxLen = workOrderServerService.queryMaxCountByWorkOrderId(workOrderIds);
         for (WorkOrderVo o : workOrderVoList) {
+            List<String> codes = JSON.parseArray(o.getCode(), String.class);
+            if (!CollectionUtils.isEmpty(codes)) {
+                codeMaxSize = codeMaxSize > codes.size() ? codeMaxSize : codes.size();
+            }
+        }
+
+        for (WorkOrderVo o : workOrderVoList) {
             List<Object> row = new ArrayList<>();
             //审核状态
             row.add(this.getAuditStatus(o.getAuditStatus()));
@@ -602,44 +609,70 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
 
 
-            //产品个数
-            if (productAll != null && !productAll.isEmpty()) {
-                List<ProductInfoQuery> productInfoQueries = null;
-                if (Objects.nonNull(o.getProductInfo())) {
-                    productInfoQueries = JSON.parseArray(o.getProductInfo(), ProductInfoQuery.class);
-                }
-                if (!CollectionUtil.isEmpty(productInfoQueries)) {
-                    for (Product p : productAll) {
-                        ProductInfoQuery index = null;
-                        for (ProductInfoQuery entry : productInfoQueries) {
-                            if (Objects.equals(p.getId(), entry.getProductId())) {
-                                index = entry;
-                            }
-                        }
-
-                        if (index != null) {
-                            row.add(index.getNumber());
-                        } else {
-                            row.add("");
-                        }
-                    }
-                } else {
-                    for (Product p : productAll) {
-                        row.add("");
-                    }
-                }
-            }
+//            //产品个数
+//            if (productAll != null && !productAll.isEmpty()) {
+//                List<ProductInfoQuery> productInfoQueries = null;
+//                if (Objects.nonNull(o.getProductInfo())) {
+//                    productInfoQueries = JSON.parseArray(o.getProductInfo(), ProductInfoQuery.class);
+//                }
+//                if (!CollectionUtil.isEmpty(productInfoQueries)) {
+//                    for (Product p : productAll) {
+//                        ProductInfoQuery index = null;
+//                        for (ProductInfoQuery entry : productInfoQueries) {
+//                            if (Objects.equals(p.getId(), entry.getProductId())) {
+//                                index = entry;
+//                            }
+//                        }
+//
+//                        if (index != null) {
+//                            row.add(index.getNumber());
+//                        } else {
+//                            row.add("");
+//                        }
+//                    }
+//                } else {
+//                    for (Product p : productAll) {
+//                        row.add("");
+//                    }
+//                }
+//            }
 
 
             List<String> codes = JSON.parseArray(o.getCode(), String.class);
             if (!CollectionUtils.isEmpty(codes)) {
-                codeMaxSize = codeMaxSize > codes.size() ? codeMaxSize : codes.size();
+                int paddingItem = codeMaxSize - codes.size();
                 for (String code : codes) {
-                    row.add(code);
+                    row.add(StringUtils.isBlank(code) ? "" : code);
+                }
+
+                for(int i = 0 ; i < paddingItem; i++) {
+                    row.add("");
                 }
             }
 
-            data.add(row);
+
+            List<ProductInfoQuery> productInfoQueries = null;
+            if (Objects.nonNull(o.getProductInfo())) {
+                productInfoQueries = JSON.parseArray(o.getProductInfo(), ProductInfoQuery.class);
+            }
+
+            if (!CollectionUtil.isEmpty(productInfoQueries)) {
+                productInfoQueries.forEach(entry -> {
+                    List<Object> lineItem = new ArrayList<>(row);
+                    Product product = productService.getById(entry.getProductId());
+                    if(Objects.nonNull(product)) {
+                        lineItem.add(product.getName());
+                        lineItem.add(entry.getNumber());
+                    } else {
+                        lineItem.add("");
+                        lineItem.add("");
+                    }
+                    data.add(lineItem);
+                });
+
+            }
+
+            //data.add(row);
         }
 
         for (int i = 0; i < serverMaxLen; i++) {
@@ -650,19 +683,27 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
         }
 
-        if (productAll != null && !productAll.isEmpty()) {
-            for (Product p : productAll) {
-                List<String> headTitle = new ArrayList<>();
-                headTitle.add(p.getName());
-                headList.add(headTitle);
-            }
-        }
+//        if (productAll != null && !productAll.isEmpty()) {
+//            for (Product p : productAll) {
+//                List<String> headTitle = new ArrayList<>();
+//                headTitle.add(p.getName());
+//                headList.add(headTitle);
+//            }
+//        }
 
         for (int i = 1; i < codeMaxSize + 1; i++) {
             List<String> headTitle = new ArrayList<String>();
             headTitle.add("产品编码" + i);
             headList.add(headTitle);
         }
+
+        List<String> modeTitle = new ArrayList<>();
+        modeTitle.add("产品型号");
+        headList.add(modeTitle);
+
+        List<String> countTitle = new ArrayList<>();
+        countTitle.add("数量");
+        headList.add(countTitle);
 
         String fileName = "工单列表.xlsx";
         try {
