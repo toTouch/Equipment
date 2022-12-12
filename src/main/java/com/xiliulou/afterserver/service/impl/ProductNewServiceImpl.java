@@ -611,6 +611,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             AuditProcessConstans.CAMERA_IOT_AUDIT_ENTRY,
             AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY,
             AuditProcessConstans.PRODUCT_COLOR_AUDIT_ENTRY,
+            AuditProcessConstans.DOOR_COLOR_AUDIT_ENTRY,
             AuditProcessConstans.PRODUCT_SURFACE_AUDIT_ENTRY,
             AuditProcessConstans.CAMERA_SN_AUDIT_ENTRY_TOW);
         //获取主柜需要同步到副柜的值

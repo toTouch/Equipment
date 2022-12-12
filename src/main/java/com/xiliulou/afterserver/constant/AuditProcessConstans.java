@@ -29,7 +29,7 @@ public class AuditProcessConstans {
      */
     public static final Long PRODUCT_IOT_AUDIT_ENTRY = 3L;
     /**
-     * 颜色
+     * 柜机颜色
      */
     public static final Long PRODUCT_COLOR_AUDIT_ENTRY = 4L;
     /**
@@ -41,6 +41,11 @@ public class AuditProcessConstans {
      * 摄像头序列号2 （双面柜有两个摄像头序列号）
      */
     public static final Long CAMERA_SN_AUDIT_ENTRY_TOW = 6L;
+
+    /**
+     *仓门颜色
+     */
+    public static final Long DOOR_COLOR_AUDIT_ENTRY = 7L;
 
 
     public static boolean getFixedgGroup(Long id) {

@@ -103,6 +103,12 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
                 item.setJsonRootList(nameAll);
             }
 
+            if(Objects.equals(AuditProcessConstans.DOOR_COLOR_AUDIT_ENTRY, item.getId())) {
+                List<String> nameAll = ColorCardService.getNameAll();
+                item.setJsonRoot(JsonUtil.toJson(nameAll));
+                item.setJsonRootList(nameAll);
+            }
+
             //清除空键
             clearEmptyKey(item.getOssUrlMap());
         });
@@ -166,6 +172,10 @@ public class AuditEntryServiceImpl extends ServiceImpl<AuditEntryMapper, AuditEn
 
             vo.setJsonRoot(JsonUtil.fromJsonArray(item.getJsonRoot(), String.class));
             if(Objects.equals(AuditProcessConstans.PRODUCT_COLOR_AUDIT_ENTRY, item.getId())) {
+                vo.setJsonRoot(ColorCardService.getNameAll());
+            }
+
+            if(Objects.equals(AuditProcessConstans.DOOR_COLOR_AUDIT_ENTRY, item.getId())) {
                 vo.setJsonRoot(ColorCardService.getNameAll());
             }
 
