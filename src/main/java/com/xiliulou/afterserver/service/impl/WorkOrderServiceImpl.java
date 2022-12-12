@@ -2447,6 +2447,29 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
         }
 
+        //如果已处理需要重新排序
+        //1.未通过（按创建时间倒序） 2.未审核（按创建时间倒序）3.待审核（创建时间正序）
+        if(Objects.equals(status, WorkOrder.STATUS_PROCESSING)) {
+            List<WorkOrderAssignmentVo> newData = new ArrayList<>();
+            Map<Integer, List<WorkOrderAssignmentVo>> collect = data.parallelStream().collect(Collectors.groupingBy(WorkOrderAssignmentVo::getAuditStatus));
+
+            newData.addAll(Optional
+                .ofNullable(collect.get(WorkOrder.AUDIT_STATUS_FAIL)).orElse(new ArrayList<>())
+                .parallelStream().sorted(Comparator.comparing(WorkOrderAssignmentVo::getCreateTime))
+                .collect(Collectors.toList()));
+            newData.addAll(Optional
+                .ofNullable(collect.get(WorkOrder.AUDIT_STATUS_NOT)).orElse(new ArrayList<>())
+                .parallelStream().sorted(Comparator.comparing(WorkOrderAssignmentVo::getCreateTime).reversed())
+                .collect(Collectors.toList()));
+            newData.addAll(Optional
+                .ofNullable(collect.get(WorkOrder.AUDIT_STATUS_WAIT)).orElse(new ArrayList<>())
+                .parallelStream().sorted(Comparator.comparing(WorkOrderAssignmentVo::getCreateTime))
+                .collect(Collectors.toList()));
+            //重新赋值
+            data = newData;
+        }
+
+
         Map<String, Object> result = new HashMap<>();
         result.put("data", data);
         result.put("total", page.getTotal());
