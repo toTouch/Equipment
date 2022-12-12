@@ -2455,7 +2455,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
             newData.addAll(Optional
                 .ofNullable(collect.get(WorkOrder.AUDIT_STATUS_FAIL)).orElse(new ArrayList<>())
-                .parallelStream().sorted(Comparator.comparing(WorkOrderAssignmentVo::getCreateTime))
+                .parallelStream().sorted(Comparator.comparing(WorkOrderAssignmentVo::getCreateTime).reversed())
                 .collect(Collectors.toList()));
             newData.addAll(Optional
                 .ofNullable(collect.get(WorkOrder.AUDIT_STATUS_NOT)).orElse(new ArrayList<>())
@@ -2463,7 +2463,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 .collect(Collectors.toList()));
             newData.addAll(Optional
                 .ofNullable(collect.get(WorkOrder.AUDIT_STATUS_WAIT)).orElse(new ArrayList<>())
-                .parallelStream().sorted(Comparator.comparing(WorkOrderAssignmentVo::getCreateTime))
+                .parallelStream().sorted(Comparator.comparing(WorkOrderAssignmentVo::getCreateTime).reversed())
                 .collect(Collectors.toList()));
             //重新赋值
             data = newData;
