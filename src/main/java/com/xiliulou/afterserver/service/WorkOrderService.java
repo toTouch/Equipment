@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.WorkOrder;
+import com.xiliulou.afterserver.entity.WorkOrderParts;
 import com.xiliulou.afterserver.entity.WorkOrderType;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.*;
@@ -105,4 +106,8 @@ public interface WorkOrderService extends IService<WorkOrder> {
     R queryWarehousePull(String name);
 
     R workOrderServerAuditEntry(Long id);
+
+    boolean checkAndclearEntry(List<WorkOrderParts> workOrderParts);
+
+    void clareAndAddWorkOrderParts(Long oid, Long sid, List<WorkOrderParts> WorkOrderParts);
 }

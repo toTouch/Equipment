@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.web.query;
 
 import com.xiliulou.afterserver.entity.WorkOrder;
+import com.xiliulou.afterserver.entity.WorkOrderParts;
 import lombok.Data;
 
 import java.math.BigDecimal;

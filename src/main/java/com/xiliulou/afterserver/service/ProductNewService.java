@@ -106,7 +106,7 @@ public interface ProductNewService extends IService<ProductNew> {
 
     R updateProductNew(ProductNewDetailsQuery productNewDetailsQuery);
 
-    R checkProperty(String no);
+    R checkProperty(String no, String deliverNo);
 
     R factorySaveFile(File file);
 
