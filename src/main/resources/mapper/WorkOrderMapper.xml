@@ -666,6 +666,9 @@
             <if test="commissionerId != null">
                 commissioner_id = #{commissionerId},
             </if>
+            <if test="auditStatus != null">
+                audit_status = #{auditStatus}
+            </if>
         </set>
         where id = #{id}
     </update>
