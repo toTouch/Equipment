@@ -2029,7 +2029,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrderServer.setCreateTime(System.currentTimeMillis());
                 workOrderServerService.save(workOrderServer);
 
-                clareAndAddWorkOrderParts(workOrder.getId(), workOrderServer.getId(), item.getWorkOrderParts());
+                clareAndAddWorkOrderParts(workOrder.getId(), workOrderServer.getServerId(), item.getWorkOrderParts());
             });
         }
 
@@ -2298,7 +2298,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
                     workOrderServerService.save(workOrderServer);
 
-                    clareAndAddWorkOrderParts(workOrder.getId(), workOrderServer.getId(), item.getWorkOrderParts());
+                    clareAndAddWorkOrderParts(workOrder.getId(), workOrderServer.getServerId(), item.getWorkOrderParts());
                 });
             }
         } else {
