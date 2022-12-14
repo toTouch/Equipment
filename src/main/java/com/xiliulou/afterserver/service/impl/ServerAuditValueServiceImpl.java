@@ -119,6 +119,8 @@ public class ServerAuditValueServiceImpl extends ServiceImpl<ServerAuditValueMap
             workOrderService.updateById(workOrder);
         }
 
+        workOrderService.clareAndAddWorkOrderParts(query.getWorkOrderId(), user.getThirdId(), query.getWorkOrderParts());
+
         if(Collections.isEmpty(query.getWechatServerEntryValueQueryList())) {
             return R.ok();
         }
@@ -126,8 +128,6 @@ public class ServerAuditValueServiceImpl extends ServiceImpl<ServerAuditValueMap
         query.getWechatServerEntryValueQueryList().forEach(item -> {
             biandOrUnbindEntry(item.getEntryId(), item.getValue(), user.getThirdId(), query.getWorkOrderId());
         });
-
-        workOrderService.clareAndAddWorkOrderParts(query.getWorkOrderId(), user.getThirdId(), query.getWorkOrderParts());
         return R.ok();
     }
 
