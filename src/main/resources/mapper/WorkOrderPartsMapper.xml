@@ -100,14 +100,7 @@
     select
     id, work_order_id, server_id, name, sum, create_time, update_time
     from t_work_order_parts
-    <where>
-      <if test="workOrderId != null">
-        and work_order_id = #{workOrderId}
-      </if>
-      <if test="serverId != null">
-        and server_id = #{serverId}
-      </if>
-    </where>
+    where work_order_id = #{workOrderId}  and server_id = #{serverId}
   </select>
 
   <delete id="deleteByOidAndServerId">
