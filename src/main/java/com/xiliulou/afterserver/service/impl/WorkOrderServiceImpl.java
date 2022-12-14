@@ -2305,10 +2305,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             updateWorkOrderServer(workOrder.getWorkOrderServerList());
         }
 
+
         if(Objects.equals(oldWorkOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_PASSED)
             || Objects.equals(oldWorkOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_FAIL)) {
             workOrder.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
         }
+
+        log.info("xll test -----> " + JsonUtil.toJson(workOrder));
         this.baseMapper.updateOne(workOrder);
 
         //发送Mq通知
