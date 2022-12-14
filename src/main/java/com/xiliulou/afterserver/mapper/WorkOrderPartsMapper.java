@@ -63,7 +63,7 @@ public interface WorkOrderPartsMapper  extends BaseMapper<WorkOrderParts>{
      */
     int deleteById(Long id);
 
-    List<WorkOrderParts> queryByWorkOrderIdAndServerId(Long workOrderId, Long serverId);
+    List<WorkOrderParts> queryByWorkOrderIdAndServerId(@Param("workOrderId")Long workOrderId, @Param("serverId")Long serverId);
 
     Integer deleteByOidAndServerId(@Param("oid")Long oid, @Param("sid")Long sid);
 }
