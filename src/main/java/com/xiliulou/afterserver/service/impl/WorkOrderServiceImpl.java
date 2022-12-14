@@ -1954,14 +1954,16 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         return R.fail("工单必须添加第三方责任人");
                     }
                 }
-
-                if (Objects.equals(item.getHasParts(), WorkOrderServer.HAS_PARTS)) {
-                    if (!checkAndclearEntry(item.getWorkOrderParts())) {
-                        return R.fail("请添加相关物件");
-                    }
-                }
             }
             workOrder.setAssignmentTime(workOrder.getCreateTime());
+        }
+
+        for (WorkOrderServerQuery item : workOrder.getWorkOrderServerList()) {
+            if (Objects.equals(item.getHasParts(), WorkOrderServer.HAS_PARTS)) {
+                if (!checkAndclearEntry(item.getWorkOrderParts())) {
+                    return R.fail("请添加相关物件");
+                }
+            }
         }
 
         WorkOrderType workOrderType = workOrderTypeService.getById(workOrder.getType());
@@ -2206,14 +2208,16 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         return R.fail("工单必须添加第三方责任人");
                     }
                 }
-
-                if (Objects.equals(item.getHasParts(), WorkOrderServer.HAS_PARTS)) {
-                    if (!checkAndclearEntry(item.getWorkOrderParts())) {
-                        return R.fail("请添加相关物件");
-                    }
-                }
             }
             //workOrder.setAssignmentTime(workOrder.getCreateTime());
+        }
+
+        for (WorkOrderServerQuery item : workOrder.getWorkOrderServerList()) {
+            if (Objects.equals(item.getHasParts(), WorkOrderServer.HAS_PARTS)) {
+                if (!checkAndclearEntry(item.getWorkOrderParts())) {
+                    return R.fail("请添加相关物件");
+                }
+            }
         }
 
         //非待派发状态 不可修添加或删除服务商
@@ -2663,14 +2667,15 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     return R.fail("工单必须添加第三方责任人");
                 }
             }
+        }
 
+        for (WorkOrderServerQuery item : workOrderServerList) {
             if (Objects.equals(item.getHasParts(), WorkOrderServer.HAS_PARTS)) {
                 if (!checkAndclearEntry(item.getWorkOrderParts())) {
                     return R.fail("请添加相关物件");
                 }
             }
         }
-
 
         /*if(workOrderAssignmentQuery.getStatus() >= WorkOrder.STATUS_PROCESSING && workOrderAssignmentQuery.getStatus() <= WorkOrder.STATUS_FINISHED){
             for(WorkOrderServerQuery item : workOrderServerList){
