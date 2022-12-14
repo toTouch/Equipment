@@ -2311,7 +2311,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             workOrder.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
         }
 
-        log.info("xll test -----> " + JsonUtil.toJson(workOrder));
         this.baseMapper.updateOne(workOrder);
 
         //发送Mq通知
