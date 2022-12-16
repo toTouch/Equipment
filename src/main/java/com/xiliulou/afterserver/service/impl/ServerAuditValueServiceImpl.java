@@ -119,7 +119,7 @@ public class ServerAuditValueServiceImpl extends ServiceImpl<ServerAuditValueMap
             workOrderService.updateById(workOrder);
         }
 
-        workOrderService.clareAndAddWorkOrderParts(query.getWorkOrderId(), user.getThirdId(), query.getWorkOrderParts());
+        workOrderService.clareAndAddWorkOrderParts(query.getWorkOrderId(), user.getThirdId(), query.getWorkOrderParts(), WorkOrderParts.TYPE_SERVER_PARTS);
 
         if(Collections.isEmpty(query.getWechatServerEntryValueQueryList())) {
             return R.ok();

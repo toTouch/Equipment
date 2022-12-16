@@ -11,6 +11,7 @@ import com.xiliulou.afterserver.web.vo.AfterCountListVo;
 import com.xiliulou.afterserver.web.vo.AfterCountVo;
 import com.xiliulou.afterserver.web.vo.AfterOrderVo;
 import com.xiliulou.afterserver.web.vo.WorkOrderVo;
+import java.math.BigDecimal;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
@@ -109,5 +110,5 @@ public interface WorkOrderService extends IService<WorkOrder> {
 
     boolean checkAndclearEntry(List<WorkOrderParts> workOrderParts);
 
-    void clareAndAddWorkOrderParts(Long oid, Long sid, List<WorkOrderParts> WorkOrderParts);
+    BigDecimal clareAndAddWorkOrderParts(Long oid, Long sid, List<WorkOrderParts> WorkOrderParts, Integer type);
 }

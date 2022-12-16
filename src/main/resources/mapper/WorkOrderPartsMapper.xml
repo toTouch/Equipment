@@ -11,12 +11,14 @@
     <result property="sum" column="sum" jdbcType="INTEGER"/>
     <result property="createTime" column="create_time" jdbcType="INTEGER"/>
     <result property="updateTime" column="update_time" jdbcType="INTEGER"/>
+    <result property="type" column="type" jdbcType="INTEGER"/>
+    <result property="amount" column="amount" jdbcType="DECIMAL"/>
   </resultMap>
 
   <!--查询单个-->
   <select id="queryById" resultMap="WorkOrderPartsMap">
         select
-          id, work_order_id, server_id, name, sum, create_time, update_time
+          id, work_order_id, server_id, name, sum, create_time, update_time, type, amount
         from t_work_order_parts
         where id = #{id}
     </select>
@@ -24,7 +26,7 @@
   <!--查询指定行数据-->
   <select id="queryAllByLimit" resultMap="WorkOrderPartsMap">
         select
-          id, work_order_id, server_id, name, sum, create_time, update_time
+          id, work_order_id, server_id, name, sum, create_time, update_time, type, amount
         from t_work_order_parts
         limit #{offset}, #{limit}
     </select>
@@ -32,7 +34,7 @@
   <!--通过实体作为筛选条件查询-->
   <select id="queryAll" resultMap="WorkOrderPartsMap">
     select
-    id, work_order_id, server_id, name, sum, create_time, update_time
+    id, work_order_id, server_id, name, sum, create_time, update_time, type, amount
     from t_work_order_parts
     <where>
       <if test="id != null">
@@ -56,13 +58,19 @@
       <if test="updateTime != null">
         and update_time = #{updateTime}
       </if>
+      <if test="type != null">
+        and type = #{type}
+      </if>
+      <if test="amount != null">
+        and amount = #{amount}
+      </if>
     </where>
   </select>
 
   <!--新增所有列-->
   <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
-        insert into t_work_order_parts(work_order_id, server_id, name, sum, create_time, update_time)
-        values (#{workOrderId}, #{serverId}, #{name}, #{sum}, #{createTime}, #{updateTime})
+        insert into t_work_order_parts(work_order_id, server_id, name, sum, create_time, update_time, type, amount)
+        values (#{workOrderId}, #{serverId}, #{name}, #{sum}, #{createTime}, #{updateTime}, #{type}, #{amount})
     </insert>
 
   <!--通过主键修改数据-->
@@ -87,6 +95,12 @@
       <if test="updateTime != null">
         update_time = #{updateTime},
       </if>
+      <if test="type != null">
+        type = #{type},
+      </if>
+      <if test="amount != null">
+        amount = #{amount},
+      </if>
     </set>
     where id = #{id}
   </update>
@@ -98,12 +112,12 @@
 
   <select id="queryByWorkOrderIdAndServerId" resultMap="WorkOrderPartsMap">
     select
-    id, work_order_id, server_id, name, sum, create_time, update_time
+    id, work_order_id, server_id, name, sum, create_time, update_time, type, amount
     from t_work_order_parts
-    where work_order_id = #{workOrderId}  and server_id = #{serverId}
+    where work_order_id = #{workOrderId}  and server_id = #{serverId} and type = #{type}
   </select>
 
   <delete id="deleteByOidAndServerId">
-        delete from t_work_order_parts where work_order_id = #{oid} and server_id = #{sid}
+        delete from t_work_order_parts where work_order_id = #{oid} and server_id = #{sid} and type = #{type}
     </delete>
 </mapper>
