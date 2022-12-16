@@ -1959,10 +1959,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         return R.fail("工单必须添加第三方责任人");
                     }
 
-                    for (WorkOrderServerQuery e : workOrder.getWorkOrderServerList()) {
-                        if (!checkAndclearEntry(e.getWorkOrderParts())) {
-                            return R.fail("请添加相关物件信息");
-                        }
+                    if (!checkAndclearEntry(item.getThirdWorkOrderParts())) {
+                        return R.fail("请添加相关物件信息");
                     }
                 }
             }
@@ -2066,7 +2064,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         Iterator<WorkOrderParts> iterator = workOrderParts.iterator();
         while (iterator.hasNext()) {
             WorkOrderParts next = iterator.next();
-            if(StrUtil.isEmpty(next.getName()) || Objects.isNull(next.getSum())) {
+            if(Objects.isNull(next.getPartsId()) || Objects.isNull(next.getSum())) {
                 iterator.remove();
             }
         }
@@ -2222,6 +2220,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     if (Objects.isNull(item.getThirdResponsiblePerson())) {
                         return R.fail("工单必须添加第三方责任人");
                     }
+
+                    if (!checkAndclearEntry(item.getThirdWorkOrderParts())) {
+                        return R.fail("请添加相关物件信息");
+                    }
                 }
             }
             //workOrder.setAssignmentTime(workOrder.getCreateTime());
@@ -2230,7 +2232,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         for (WorkOrderServerQuery item : workOrder.getWorkOrderServerList()) {
             if (Objects.equals(item.getHasParts(), WorkOrderServer.HAS_PARTS)) {
                 if (!checkAndclearEntry(item.getWorkOrderParts())) {
-                    return R.fail("请添加相关物件");
+                    return R.fail("请添加相关物件信息");
                 }
             }
         }
@@ -2708,6 +2710,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
                 if (Objects.isNull(item.getThirdResponsiblePerson())) {
                     return R.fail("工单必须添加第三方责任人");
+                }
+
+                if (!checkAndclearEntry(item.getWorkOrderParts())) {
+                    return R.fail("请添加相关物件信息");
                 }
             }
         }
