@@ -117,6 +117,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     private ProvinceService provinceService;
     @Autowired
     private WorkOrderPartsService workOrderPartsService;
+    @Autowired
+    private PartsService partsService;
+    
 
 
     @Override
@@ -237,7 +240,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     return;
                 }
                 t.setWorkOrderParts(workOrderPartsService
-                    .queryByWorkOrderIdAndServerId(t.getWorkOrderId(), t.getServerId()));
+                    .queryByWorkOrderIdAndServerId(t.getWorkOrderId(), t.getServerId(), WorkOrderParts.TYPE_SERVER_PARTS));
+                t.setThirdWorkOrderParts(workOrderPartsService
+                    .queryByWorkOrderIdAndServerId(t.getWorkOrderId(), t.getServerId(), WorkOrderParts.TYPE_THIRD_PARTS));
             });
         });
         page.setRecords(list);
@@ -1953,6 +1958,12 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     if (Objects.isNull(item.getThirdResponsiblePerson())) {
                         return R.fail("工单必须添加第三方责任人");
                     }
+
+                    for (WorkOrderServerQuery e : workOrder.getWorkOrderServerList()) {
+                        if (!checkAndclearEntry(e.getWorkOrderParts())) {
+                            return R.fail("请添加相关物件信息");
+                        }
+                    }
                 }
             }
             workOrder.setAssignmentTime(workOrder.getCreateTime());
@@ -1961,7 +1972,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         for (WorkOrderServerQuery item : workOrder.getWorkOrderServerList()) {
             if (Objects.equals(item.getHasParts(), WorkOrderServer.HAS_PARTS)) {
                 if (!checkAndclearEntry(item.getWorkOrderParts())) {
-                    return R.fail("请添加相关物件");
+                    return R.fail("请添加相关物件信息");
                 }
             }
         }
@@ -2029,9 +2040,12 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     }
                 }
                 workOrderServer.setCreateTime(System.currentTimeMillis());
-                workOrderServerService.save(workOrderServer);
 
-                clareAndAddWorkOrderParts(workOrder.getId(), workOrderServer.getServerId(), item.getWorkOrderParts());
+                clareAndAddWorkOrderParts(workOrder.getId(), workOrderServer.getServerId(), item.getWorkOrderParts(), WorkOrderParts.TYPE_SERVER_PARTS);
+                BigDecimal totalMaterialFee = clareAndAddWorkOrderParts(workOrder.getId(), workOrderServer.getServerId(), item.getThirdWorkOrderParts(), WorkOrderParts.TYPE_THIRD_PARTS);
+
+                workOrderServer.setMaterialFee(totalMaterialFee);
+                workOrderServerService.save(workOrderServer);
             });
         }
 
@@ -2041,6 +2055,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         return R.ok();
     }
+
 
     @Override
     public boolean checkAndclearEntry(List<WorkOrderParts> workOrderParts) {
@@ -2300,9 +2315,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
                     workOrderServer.setCreateTime(System.currentTimeMillis());
 
-                    workOrderServerService.save(workOrderServer);
+                    clareAndAddWorkOrderParts(workOrder.getId(), workOrderServer.getServerId(), item.getWorkOrderParts(), WorkOrderParts.TYPE_SERVER_PARTS);
+                    BigDecimal totalMaterialFee = clareAndAddWorkOrderParts(workOrder.getId(), workOrderServer.getServerId(), item.getThirdWorkOrderParts(), WorkOrderParts.TYPE_THIRD_PARTS);
 
-                    clareAndAddWorkOrderParts(workOrder.getId(), workOrderServer.getServerId(), item.getWorkOrderParts());
+                    workOrderServer.setMaterialFee(totalMaterialFee);
+                    workOrderServerService.save(workOrderServer);
                 });
             }
         } else {
@@ -2327,22 +2344,41 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     @Override
-    public void clareAndAddWorkOrderParts(Long oid, Long sid, List<WorkOrderParts> WorkOrderParts){
-        workOrderPartsService.deleteByOidAndServerId(oid, sid);
+    public BigDecimal clareAndAddWorkOrderParts(Long oid, Long sid, List<WorkOrderParts> WorkOrderParts, Integer type){
+        workOrderPartsService.deleteByOidAndServerId(oid, sid, type);
 
-        Optional.ofNullable(WorkOrderParts).orElse(new ArrayList<>())
-            .forEach(e -> {
-                WorkOrderParts workOrderParts = new WorkOrderParts();
-                workOrderParts.setServerId(sid);
-                workOrderParts.setWorkOrderId(oid);
-                workOrderParts.setName(e.getName());
-                workOrderParts.setSum(e.getSum());
-                workOrderParts.setCreateTime(System.currentTimeMillis());
-                workOrderParts.setUpdateTime(System.currentTimeMillis());
-                workOrderPartsService.insert(workOrderParts);
-            });
+        BigDecimal totalResult = BigDecimal.valueOf(0);
+        if(CollectionUtils.isEmpty(WorkOrderParts)) {
+            return totalResult;
+        }
+
+        for(WorkOrderParts e : WorkOrderParts) {
+            Parts parts = partsService.queryByIdFromDB(e.getPartsId());
+            if(Objects.isNull(parts)) {
+                continue;
+            }
+
+            WorkOrderParts workOrderParts = new WorkOrderParts();
+            workOrderParts.setServerId(sid);
+            workOrderParts.setWorkOrderId(oid);
+            workOrderParts.setName(parts.getName());
+            workOrderParts.setSum(e.getSum());
+            workOrderParts.setType(type);
+            BigDecimal amount = qeuryAmount(e.getSum(), parts.getPrice());
+            workOrderParts.setAmount(amount);
+            workOrderParts.setCreateTime(System.currentTimeMillis());
+            workOrderParts.setUpdateTime(System.currentTimeMillis());
+            workOrderPartsService.insert(workOrderParts);
+
+            totalResult = totalResult.add(amount);
+        }
+
+        return totalResult;
     }
 
+    private BigDecimal qeuryAmount(Integer sum, BigDecimal price){
+        return BigDecimal.valueOf(Optional.ofNullable(sum).orElse(0)).multiply(price).setScale(2,BigDecimal.ROUND_HALF_UP);
+    }
 
     @Override
     public Boolean checkServerProcess(Long id) {
@@ -2554,11 +2590,18 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     .queryByWorkOrderIdAndServerId(item.getId(), serverId);
                 item.setWorkOrderServerList(workOrderServerList);
 
-                //物件信息
+                //服务商物件信息
                 Optional.ofNullable(workOrderServerList).orElse(new ArrayList<>()).forEach(e -> {
                     List<WorkOrderParts> workOrderParts = workOrderPartsService
-                        .queryByWorkOrderIdAndServerId(e.getWorkOrderId(), e.getServerId());
+                        .queryByWorkOrderIdAndServerId(e.getWorkOrderId(), e.getServerId(), WorkOrderParts.TYPE_SERVER_PARTS);
                     e.setWorkOrderParts(workOrderParts);
+                });
+
+                //第三方物件信息
+                Optional.ofNullable(workOrderServerList).orElse(new ArrayList<>()).forEach(e -> {
+                    List<WorkOrderParts> workOrderParts = workOrderPartsService
+                        .queryByWorkOrderIdAndServerId(e.getWorkOrderId(), e.getServerId(), WorkOrderParts.TYPE_THIRD_PARTS);
+                    e.setThirdWorkOrderParts(workOrderParts);
                 });
 
                 //凭证
@@ -3002,8 +3045,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 if (Objects.nonNull(old)) {
                     WorkOrderServer workOrderServer = new WorkOrderServer();
                     BeanUtils.copyProperties(item, workOrderServer);
+                    clareAndAddWorkOrderParts(old.getWorkOrderId(), old.getServerId(), item.getWorkOrderParts(), WorkOrderParts.TYPE_SERVER_PARTS);
+                    BigDecimal totalAmount = clareAndAddWorkOrderParts(old.getWorkOrderId(), old.getServerId(), item.getThirdWorkOrderParts(), WorkOrderParts.TYPE_THIRD_PARTS);
+                    workOrderServer.setMaterialFee(totalAmount);
                     workOrderServerService.updateById(workOrderServer);
-                    clareAndAddWorkOrderParts(old.getWorkOrderId(), old.getServerId(), item.getWorkOrderParts());
                 }
             }
         }

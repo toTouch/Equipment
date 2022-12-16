@@ -95,12 +95,12 @@ public class WorkOrderPartsServiceImpl implements WorkOrderPartsService {
     }
 
     @Override
-    public List<WorkOrderParts> queryByWorkOrderIdAndServerId(Long workOrderId, Long serverId) {
-        return this.workOrderPartsMapper.queryByWorkOrderIdAndServerId(workOrderId, serverId);
+    public List<WorkOrderParts> queryByWorkOrderIdAndServerId(Long workOrderId, Long serverId, Integer type) {
+        return this.workOrderPartsMapper.queryByWorkOrderIdAndServerId(workOrderId, serverId, type);
     }
 
     @Override
-    public Integer deleteByOidAndServerId(Long oid, Long sid) {
-        return this.workOrderPartsMapper.deleteByOidAndServerId(oid, sid);
+    public Integer deleteByOidAndServerId(Long oid, Long sid, Integer type) {
+        return this.workOrderPartsMapper.deleteByOidAndServerId(oid, sid, type);
     }
 }

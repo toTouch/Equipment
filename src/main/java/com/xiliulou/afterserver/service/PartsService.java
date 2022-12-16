@@ -1,15 +1,17 @@
 package com.xiliulou.afterserver.service;
 
-import com.xiliulou.afterserver.entity.WorkOrderParts;
+import com.xiliulou.afterserver.entity.Parts;
+import com.xiliulou.afterserver.web.query.PartsQuery;
+import com.xiliulou.core.web.R;
 import java.util.List;
 
 /**
- * (WorkOrderParts)表服务接口
+ * (Parts)表服务接口
  *
  * @author Hardy
- * @since 2022-12-13 15:50:11
+ * @since 2022-12-15 15:02:05
  */
-public interface WorkOrderPartsService {
+public interface PartsService {
 
     /**
      * 通过ID查询单条数据从数据库
@@ -17,7 +19,7 @@ public interface WorkOrderPartsService {
      * @param id 主键
      * @return 实例对象
      */
-    WorkOrderParts queryByIdFromDB(Long id);
+    Parts queryByIdFromDB(Long id);
     
       /**
      * 通过ID查询单条数据从缓存
@@ -25,7 +27,7 @@ public interface WorkOrderPartsService {
      * @param id 主键
      * @return 实例对象
      */
-    WorkOrderParts queryByIdFromCache(Long id);
+    Parts queryByIdFromCache(Long id);
 
     /**
      * 查询多条数据
@@ -34,23 +36,23 @@ public interface WorkOrderPartsService {
      * @param limit 查询条数
      * @return 对象列表
      */
-    List<WorkOrderParts> queryAllByLimit(int offset, int limit);
+    List<Parts> queryAllByLimit(int offset, int limit);
 
     /**
      * 新增数据
      *
-     * @param workOrderParts 实例对象
+     * @param parts 实例对象
      * @return 实例对象
      */
-    WorkOrderParts insert(WorkOrderParts workOrderParts);
+    Parts insert(Parts parts);
 
     /**
      * 修改数据
      *
-     * @param workOrderParts 实例对象
+     * @param parts 实例对象
      * @return 实例对象
      */
-    Integer update(WorkOrderParts workOrderParts);
+    Integer update(Parts parts);
 
     /**
      * 通过主键删除数据
@@ -60,7 +62,13 @@ public interface WorkOrderPartsService {
      */
     Boolean deleteById(Long id);
 
-    List<WorkOrderParts> queryByWorkOrderIdAndServerId(Long workOrderId, Long serverId, Integer type);
+    R queryList(Integer size, Integer offset, String name);
 
-    Integer deleteByOidAndServerId(Long id, Long id1, Integer type);
+    R saveOne(PartsQuery partsQuery);
+
+    R updateOne(PartsQuery partsQuery);
+
+    R deleteOne(Long id);
+
+    R queryPull(Integer size, Integer offset, String name);
 }

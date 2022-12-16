@@ -93,4 +93,6 @@ public class WorkOrderServerQuery {
     private Integer hasParts;
 
     private List<WorkOrderParts> workOrderParts;
+
+    private List<WorkOrderParts> thirdWorkOrderParts;
 }
