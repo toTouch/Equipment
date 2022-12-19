@@ -103,4 +103,9 @@ public class WorkOrderPartsServiceImpl implements WorkOrderPartsService {
     public Integer deleteByOidAndServerId(Long oid, Long sid, Integer type) {
         return this.workOrderPartsMapper.deleteByOidAndServerId(oid, sid, type);
     }
+
+    @Override
+    public Long queryPartsMaxCountByWorkOrderId(Long id, Integer type) {
+        return this.workOrderPartsMapper.queryPartsMaxCountByWorkOrderId(id, type);
+    }
 }
