@@ -642,7 +642,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                             row.add("");
                         }
                     } else {
-                        for (int i = 0; i < partsMaxLen; i++) {
+                        for (int i = 0; i < thirdPartsMaxLen; i++) {
                             row.add("");
                             row.add("");
                             row.add("");
@@ -1054,6 +1054,28 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     // "第三方对接人"
                     row.add(item.getThirdResponsiblePerson() == null ? ""
                         : item.getThirdResponsiblePerson());
+
+                    List<WorkOrderParts> thirdWorkOrderParts = workOrderPartsService.queryByWorkOrderIdAndServerId(o.getId(), item.getServerId(), WorkOrderParts.TYPE_THIRD_PARTS);
+                    if(!CollectionUtils.isEmpty(thirdWorkOrderParts)) {
+                        thirdWorkOrderParts.forEach(e -> {
+                            row.add(e.getName());
+                            row.add(e.getSum());
+                            row.add(e.getAmount());
+                        });
+
+                        Long maxLine = thirdPartsMaxLen - thirdWorkOrderParts.size();
+                        for (int i = 0; i < maxLine; i++) {
+                            row.add("");
+                            row.add("");
+                            row.add("");
+                        }
+                    } else {
+                        for (int i = 0; i < thirdPartsMaxLen; i++) {
+                            row.add("");
+                            row.add("");
+                            row.add("");
+                        }
+                    }
                 }
 
                 //给服务商不够最大服务商个数的的补充空白
