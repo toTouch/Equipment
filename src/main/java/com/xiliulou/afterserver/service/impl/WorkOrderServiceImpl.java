@@ -42,6 +42,7 @@ import io.micrometer.core.instrument.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.rocketmq.common.filter.impl.Op;
+import org.checkerframework.checker.nullness.Opt;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -332,8 +333,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         for(WorkOrderVo item : workOrderVoList) {
             workOrderIds.add(item.getId());
-            Long tempPartsMaxLen = workOrderPartsService.queryPartsMaxCountByWorkOrderId(item.getId(), WorkOrderParts.TYPE_SERVER_PARTS);
-            Long tempThirdPartsMaxLen = workOrderPartsService.queryPartsMaxCountByWorkOrderId(item.getId(), WorkOrderParts.TYPE_THIRD_PARTS);
+            Long tempPartsMaxLen = Optional.ofNullable(workOrderPartsService.queryPartsMaxCountByWorkOrderId(item.getId(), WorkOrderParts.TYPE_SERVER_PARTS)).orElse(0L);
+            Long tempThirdPartsMaxLen = Optional.ofNullable(workOrderPartsService.queryPartsMaxCountByWorkOrderId(item.getId(), WorkOrderParts.TYPE_THIRD_PARTS)).orElse(0L);
 
             partsMaxLen = partsMaxLen > tempPartsMaxLen ? partsMaxLen : tempPartsMaxLen;
             thirdPartsMaxLen = thirdPartsMaxLen > tempThirdPartsMaxLen ? thirdPartsMaxLen : tempThirdPartsMaxLen;
