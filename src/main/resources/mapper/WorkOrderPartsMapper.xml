@@ -120,4 +120,10 @@
   <delete id="deleteByOidAndServerId">
         delete from t_work_order_parts where work_order_id = #{oid} and server_id = #{sid} and type = #{type}
     </delete>
+
+  <select id="queryPartsMaxCountByWorkOrderId" resultType="long">
+     select max(count)
+     from
+     (select count(*) as count from t_work_order_parts where work_order_id = #{oid}  and type = #{type} group by server_id)t
+  </select>
 </mapper>

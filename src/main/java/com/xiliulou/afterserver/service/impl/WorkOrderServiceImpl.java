@@ -326,12 +326,20 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+        Long partsMaxLen = 0L;
+        Long thirdPartsMaxLen = 0L;
         List<Long> workOrderIds = new ArrayList<>();
-        workOrderVoList.forEach(item -> {
-            workOrderIds.add(item.getId());
-        });
 
+        for(WorkOrderVo item : workOrderVoList) {
+            workOrderIds.add(item.getId());
+            Long tempPartsMaxLen = workOrderPartsService.queryPartsMaxCountByWorkOrderId(item.getId(), WorkOrderParts.TYPE_SERVER_PARTS);
+            Long tempThirdPartsMaxLen = workOrderPartsService.queryPartsMaxCountByWorkOrderId(item.getId(), WorkOrderParts.TYPE_THIRD_PARTS);
+
+            partsMaxLen = partsMaxLen > tempPartsMaxLen ? partsMaxLen : tempPartsMaxLen;
+            thirdPartsMaxLen = thirdPartsMaxLen > tempThirdPartsMaxLen ? thirdPartsMaxLen : tempThirdPartsMaxLen;
+        }
         Integer serverMaxLen = workOrderServerService.queryMaxCountByWorkOrderId(workOrderIds);
+
         for (WorkOrderVo o : workOrderVoList) {
             List<Object> row = new ArrayList<>();
             //审核状态
@@ -583,6 +591,25 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
                     row.add(fileCount);
 
+                    List<WorkOrderParts> workOrderParts = workOrderPartsService.queryByWorkOrderIdAndServerId(o.getId(), item.getServerId(), WorkOrderParts.TYPE_SERVER_PARTS);
+                    if(!CollectionUtils.isEmpty(workOrderParts)) {
+                        workOrderParts.forEach(e -> {
+                            row.add(e.getName());
+                            row.add(e.getSum());
+                        });
+
+                        Long maxLine = partsMaxLen - workOrderParts.size();
+                        for (int i = 0; i < maxLine; i++) {
+                            row.add("");
+                            row.add("");
+                        }
+                    } else {
+                        for (int i = 0; i < partsMaxLen; i++) {
+                            row.add("");
+                            row.add("");
+                        }
+                    }
+
                     //" 第三方类型",
                     row.add(this.getThirdCompanyType(item.getThirdCompanyType()));
                     // "第三方公司",
@@ -598,6 +625,28 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     // "第三方对接人"
                     row.add(item.getThirdResponsiblePerson() == null ? ""
                         : item.getThirdResponsiblePerson());
+
+                    List<WorkOrderParts> thirdWorkOrderParts = workOrderPartsService.queryByWorkOrderIdAndServerId(o.getId(), item.getServerId(), WorkOrderParts.TYPE_THIRD_PARTS);
+                    if(!CollectionUtils.isEmpty(thirdWorkOrderParts)) {
+                        thirdWorkOrderParts.forEach(e -> {
+                            row.add(e.getName());
+                            row.add(e.getSum());
+                            row.add(e.getAmount());
+                        });
+
+                        Long maxLine = thirdPartsMaxLen - thirdWorkOrderParts.size();
+                        for (int i = 0; i < maxLine; i++) {
+                            row.add("");
+                            row.add("");
+                            row.add("");
+                        }
+                    } else {
+                        for (int i = 0; i < partsMaxLen; i++) {
+                            row.add("");
+                            row.add("");
+                            row.add("");
+                        }
+                    }
 
                 }
 
@@ -655,6 +704,32 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 List<String> headTitle = new ArrayList<>();
                 headTitle.add(item + (i + 1));
                 headList.add(headTitle);
+                if(Objects.equals("文件个数", item)) {
+                    for(int p = 1; p <= partsMaxLen; p++) {
+                        List<String> partsTitle1 = new ArrayList<>();
+                        partsTitle1.add("物件" + p);
+                        List<String> partsTitle2 = new ArrayList<>();
+                        partsTitle2.add("数量" + p);
+
+                        headList.add(partsTitle1);
+                        headList.add(partsTitle2);
+                    }
+                }
+
+                if(Objects.equals("第三方对接人", item)) {
+                    for(int p = 1; p <= thirdPartsMaxLen ; p++) {
+                        List<String> partsTitle1 = new ArrayList<>();
+                        partsTitle1.add("物件" + p);
+                        List<String> partsTitle2 = new ArrayList<>();
+                        partsTitle2.add("数量" + p);
+                        List<String> partsTitle3 = new ArrayList<>();
+                        partsTitle3.add("价格" + p);
+
+                        headList.add(partsTitle1);
+                        headList.add(partsTitle2);
+                        headList.add(partsTitle3);
+                    }
+                }
             }
         }
 

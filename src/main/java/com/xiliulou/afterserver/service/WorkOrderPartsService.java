@@ -63,4 +63,6 @@ public interface WorkOrderPartsService {
     List<WorkOrderParts> queryByWorkOrderIdAndServerId(Long workOrderId, Long serverId, Integer type);
 
     Integer deleteByOidAndServerId(Long id, Long id1, Integer type);
+
+    Long queryPartsMaxCountByWorkOrderId(Long id, Integer typeServerParts);
 }
