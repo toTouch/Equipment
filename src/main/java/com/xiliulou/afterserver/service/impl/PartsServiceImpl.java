@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.Parts;
 import com.xiliulou.afterserver.mapper.PartsMapper;
 import com.xiliulou.afterserver.service.PartsService;
@@ -26,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service("partsService")
 @Slf4j
-public class PartsServiceImpl implements PartsService {
+public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements PartsService {
     @Resource
     private PartsMapper partsMapper;
 
@@ -110,6 +111,11 @@ public class PartsServiceImpl implements PartsService {
 
     @Override
     public R saveOne(PartsQuery partsQuery) {
+        Parts partsBySn = queryBySn(partsQuery.getSn());
+        if(Objects.nonNull(partsBySn)) {
+            return R.fail("物料编码已存在，请检查");
+        }
+
         Parts parts = new Parts();
         BeanUtils.copyProperties(partsQuery, parts);
         parts.setCreateTime(System.currentTimeMillis());
@@ -122,7 +128,12 @@ public class PartsServiceImpl implements PartsService {
     public R updateOne(PartsQuery partsQuery) {
         Parts parts = queryByIdFromDB(partsQuery.getId());
         if(Objects.isNull(parts)) {
-            return R.fail("未查询到相关物件");
+            return R.fail("未查询到相关物料");
+        }
+
+        Parts partsBySn = queryBySn(partsQuery.getSn());
+        if(Objects.nonNull(partsBySn) && !Objects.equals(parts.getSn(), partsBySn.getSn())) {
+            return R.fail("物料编码已存在，请检查");
         }
 
         Parts updateParts = new Parts();
@@ -144,5 +155,10 @@ public class PartsServiceImpl implements PartsService {
             BeanUtils.copyProperties(item, vo);
             return vo;
         }).collect(Collectors.toList()));
+    }
+
+    @Override
+    public Parts queryBySn(String sn) {
+        return this.partsMapper.queryBySn(sn);
     }
 }

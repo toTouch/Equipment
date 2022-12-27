@@ -65,4 +65,6 @@ public interface PartsMapper  extends BaseMapper<Parts>{
     int deleteById(Long id);
 
     List<Parts> queryList(Integer size, Integer offset, String name);
+
+    Parts queryBySn(String sn);
 }

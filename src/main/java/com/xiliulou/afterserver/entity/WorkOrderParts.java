@@ -31,6 +31,8 @@ public class WorkOrderParts {
     
     private Integer sum;
 
+    private String sn;
+
     /**
      * 类型 1--服务商物件  2--第三方物件
      */

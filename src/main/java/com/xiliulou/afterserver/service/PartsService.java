@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.Parts;
 import com.xiliulou.afterserver.web.query.PartsQuery;
 import com.xiliulou.core.web.R;
@@ -11,7 +12,7 @@ import java.util.List;
  * @author Hardy
  * @since 2022-12-15 15:02:05
  */
-public interface PartsService {
+public interface PartsService extends IService<Parts> {
 
     /**
      * 通过ID查询单条数据从数据库
@@ -71,4 +72,6 @@ public interface PartsService {
     R deleteOne(Long id);
 
     R queryPull(Integer size, Integer offset, String name);
+
+    Parts queryBySn(String sn);
 }

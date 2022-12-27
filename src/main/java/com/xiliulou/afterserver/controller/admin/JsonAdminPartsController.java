@@ -1,13 +1,22 @@
 package com.xiliulou.afterserver.controller.admin;
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelReader;
+import com.alibaba.excel.read.metadata.ReadSheet;
 import com.xiliulou.afterserver.entity.Parts;
+import com.xiliulou.afterserver.export.PartsInfo;
+import com.xiliulou.afterserver.export.ServiceInfo;
+import com.xiliulou.afterserver.listener.PartsListener;
+import com.xiliulou.afterserver.listener.ServiceListener;
 import com.xiliulou.afterserver.service.PartsService;
 import com.xiliulou.afterserver.web.query.PartsQuery;
 import com.xiliulou.core.web.R;
+import java.io.IOException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * (Parts)表控制层
@@ -16,7 +25,7 @@ import javax.annotation.Resource;
  * @since 2022-12-15 15:02:06
  */
 @RestController
-public class PartsController {
+public class JsonAdminPartsController {
     /**
      * 服务对象
      */
@@ -50,5 +59,17 @@ public class PartsController {
         @RequestParam("offset") Integer offset,
         @RequestParam(value = "name", required = false) String name){
         return  partsService.queryPull(size, offset, name);
+    }
+
+    /**
+     * 导入
+     */
+    @PostMapping("admin/parts/upload")
+    public R upload(MultipartFile file) throws IOException {
+        ExcelReader excelReader = EasyExcel.read(file.getInputStream(), PartsInfo.class,new PartsListener(partsService)).build();
+        ReadSheet readSheet = EasyExcel.readSheet(0).build();
+        excelReader.read(readSheet);
+        excelReader.finish();
+        return R.ok();
     }
 }
