@@ -23,8 +23,16 @@ public class Parts {
     private Long id;
     
     private String name;
-    
-    private BigDecimal price;
+    /**
+     * 采购价
+     */
+    private BigDecimal purchasePrice;
+    /**
+     * 出售价
+     */
+    private BigDecimal sellPrice;
+
+    private String sn;
     
     private Long createTime;
     

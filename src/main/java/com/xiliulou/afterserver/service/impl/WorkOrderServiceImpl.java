@@ -2114,7 +2114,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     }
 
                     if (!checkAndclearEntry(item.getThirdWorkOrderParts())) {
-                        return R.fail("请添加相关物件信息");
+                        return R.fail("请添加相关物料信息");
                     }
                 }
             }
@@ -2124,7 +2124,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         for (WorkOrderServerQuery item : workOrder.getWorkOrderServerList()) {
             if (Objects.equals(item.getHasParts(), WorkOrderServer.HAS_PARTS)) {
                 if (!checkAndclearEntry(item.getWorkOrderParts())) {
-                    return R.fail("请添加相关物件信息");
+                    return R.fail("请添加相关物料信息");
                 }
             }
         }
@@ -2500,31 +2500,40 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     @Override
-    public BigDecimal clareAndAddWorkOrderParts(Long oid, Long sid, List<WorkOrderParts> WorkOrderParts, Integer type){
+    public BigDecimal clareAndAddWorkOrderParts(Long oid, Long sid, List<WorkOrderParts> workOrderParts, Integer type){
         workOrderPartsService.deleteByOidAndServerId(oid, sid, type);
 
         BigDecimal totalResult = BigDecimal.valueOf(0);
-        if(CollectionUtils.isEmpty(WorkOrderParts)) {
+        if(CollectionUtils.isEmpty(workOrderParts)) {
             return totalResult;
         }
 
-        for(WorkOrderParts e : WorkOrderParts) {
+        for(WorkOrderParts e : workOrderParts) {
             Parts parts = partsService.queryByIdFromDB(e.getPartsId());
             if(Objects.isNull(parts)) {
                 continue;
             }
 
-            WorkOrderParts workOrderParts = new WorkOrderParts();
-            workOrderParts.setServerId(sid);
-            workOrderParts.setWorkOrderId(oid);
-            workOrderParts.setName(parts.getName());
-            workOrderParts.setSum(e.getSum());
-            workOrderParts.setType(type);
-            BigDecimal amount = qeuryAmount(e.getSum(), parts.getPrice());
-            workOrderParts.setAmount(amount);
-            workOrderParts.setCreateTime(System.currentTimeMillis());
-            workOrderParts.setUpdateTime(System.currentTimeMillis());
-            workOrderPartsService.insert(workOrderParts);
+            WorkOrderParts insert = new WorkOrderParts();
+            insert.setServerId(sid);
+            insert.setWorkOrderId(oid);
+            insert.setName(parts.getName());
+            insert.setSum(e.getSum());
+            insert.setType(type);
+            insert.setSn(parts.getSn());
+            BigDecimal amount = BigDecimal.valueOf(0);
+            if(Objects.equals(WorkOrderParts.TYPE_SERVER_PARTS, type)) {
+                amount = qeuryAmount(e.getSum(), parts.getPurchasePrice());
+            }
+
+            if(Objects.equals(WorkOrderParts.TYPE_THIRD_PARTS, type)) {
+                amount = qeuryAmount(e.getSum(), parts.getSellPrice());
+            }
+
+            insert.setAmount(amount);
+            insert.setCreateTime(System.currentTimeMillis());
+            insert.setUpdateTime(System.currentTimeMillis());
+            workOrderPartsService.insert(insert);
 
             totalResult = totalResult.add(amount);
         }
@@ -2875,7 +2884,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         for (WorkOrderServerQuery item : workOrderServerList) {
             if (Objects.equals(item.getHasParts(), WorkOrderServer.HAS_PARTS)) {
                 if (!checkAndclearEntry(item.getWorkOrderParts())) {
-                    return R.fail("请添加相关物件");
+                    return R.fail("请添加相关物料");
                 }
             }
         }
