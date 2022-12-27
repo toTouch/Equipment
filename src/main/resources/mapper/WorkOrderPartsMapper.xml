@@ -13,12 +13,13 @@
     <result property="updateTime" column="update_time" jdbcType="INTEGER"/>
     <result property="type" column="type" jdbcType="INTEGER"/>
     <result property="amount" column="amount" jdbcType="DECIMAL"/>
+    <result property="sn" column="sn" jdbcType="VARCHAR"/>
   </resultMap>
 
   <!--查询单个-->
   <select id="queryById" resultMap="WorkOrderPartsMap">
         select
-          id, work_order_id, server_id, name, sum, create_time, update_time, type, amount
+          id, work_order_id, server_id, name, sum, create_time, update_time, type, amount, sn
         from t_work_order_parts
         where id = #{id}
     </select>
@@ -26,7 +27,7 @@
   <!--查询指定行数据-->
   <select id="queryAllByLimit" resultMap="WorkOrderPartsMap">
         select
-          id, work_order_id, server_id, name, sum, create_time, update_time, type, amount
+          id, work_order_id, server_id, name, sum, create_time, update_time, type, amount, sn
         from t_work_order_parts
         limit #{offset}, #{limit}
     </select>
@@ -34,7 +35,7 @@
   <!--通过实体作为筛选条件查询-->
   <select id="queryAll" resultMap="WorkOrderPartsMap">
     select
-    id, work_order_id, server_id, name, sum, create_time, update_time, type, amount
+    id, work_order_id, server_id, name, sum, create_time, update_time, type, amount, sn
     from t_work_order_parts
     <where>
       <if test="id != null">
@@ -69,8 +70,8 @@
 
   <!--新增所有列-->
   <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
-        insert into t_work_order_parts(work_order_id, server_id, name, sum, create_time, update_time, type, amount)
-        values (#{workOrderId}, #{serverId}, #{name}, #{sum}, #{createTime}, #{updateTime}, #{type}, #{amount})
+        insert into t_work_order_parts(work_order_id, server_id, name, sum, create_time, update_time, type, amount, sn)
+        values (#{workOrderId}, #{serverId}, #{name}, #{sum}, #{createTime}, #{updateTime}, #{type}, #{amount}, #{sn})
     </insert>
 
   <!--通过主键修改数据-->
@@ -101,6 +102,9 @@
       <if test="amount != null">
         amount = #{amount},
       </if>
+      <if test="sn != null and sn != ''">
+        sn = #{sn},
+      </if>
     </set>
     where id = #{id}
   </update>
@@ -112,7 +116,7 @@
 
   <select id="queryByWorkOrderIdAndServerId" resultMap="WorkOrderPartsMap">
     select
-    id, work_order_id, server_id, name, sum, create_time, update_time, type, amount
+    id, work_order_id, server_id, name, sum, create_time, update_time, type, amount, sn
     from t_work_order_parts
     where work_order_id = #{workOrderId}  and server_id = #{serverId} and type = #{type}
   </select>
