@@ -12,5 +12,7 @@ import lombok.Data;
 public class PartsVo {
     private Long id;
     private String name;
-    private BigDecimal price;
+    private String sn;
+    private BigDecimal purchasePrice;
+    private BigDecimal sellPrice;
 }
