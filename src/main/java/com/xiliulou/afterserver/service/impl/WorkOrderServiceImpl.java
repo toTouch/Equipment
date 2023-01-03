@@ -552,21 +552,27 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
                     row.add(fileCount);
 
+                    if(item.getIsUseThird()) {
+                        //" 第三方类型",
+                        row.add(this.getThirdCompanyType(item.getThirdCompanyType()));
+                        // "第三方公司",
+                        row.add(item.getThirdCompanyName() == null ? "" : item.getThirdCompanyName());
+                        // "人工费用",
+                        row.add(item.getArtificialFee() == null ? "" : item.getArtificialFee());
+                        //物料费用
+                        row.add(item.getMaterialFee() == null ? "" : item.getMaterialFee());
+                        // "支付状态",
+                        row.add(this.getThirdPaymentStatus(item.getThirdPaymentStatus()));
+                        // "第三方原因",
+                        row.add(item.getThirdReason() == null ? "" : item.getThirdReason());
+                        // "第三方对接人"
+                        row.add(item.getThirdResponsiblePerson() == null ? "" : item.getThirdResponsiblePerson());
+                    } else {
+                        for (int i = 0; i < 7; i++) {
+                            row.add("");
+                        }
+                    }
 
-                    //" 第三方类型",
-                    row.add(this.getThirdCompanyType(item.getThirdCompanyType()));
-                    // "第三方公司",
-                    row.add(item.getThirdCompanyName() == null ? "" : item.getThirdCompanyName());
-                    // "人工费用",
-                    row.add(item.getArtificialFee() == null ? "" : item.getArtificialFee());
-                    //物料费用
-                    row.add(item.getMaterialFee() == null ? "" : item.getMaterialFee());
-                    // "支付状态",
-                    row.add(this.getThirdPaymentStatus(item.getThirdPaymentStatus()));
-                    // "第三方原因",
-                    row.add(item.getThirdReason() == null ? "" : item.getThirdReason());
-                    // "第三方对接人"
-                    row.add(item.getThirdResponsiblePerson() == null ? "" : item.getThirdResponsiblePerson());
 
                 }
 
@@ -902,20 +908,26 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
                     row.add(fileCount);
 
-                    //" 第三方类型",
-                    row.add(this.getThirdCompanyType(item.getThirdCompanyType()));
-                    // "第三方公司",
-                    row.add(item.getThirdCompanyName() == null ? "" : item.getThirdCompanyName());
-                    // "人工费用",
-                    row.add(item.getArtificialFee() == null ? "" : item.getArtificialFee());
-                    //物料费用
-                    row.add(item.getMaterialFee() == null ? "" : item.getMaterialFee());
-                    // "支付状态",
-                    row.add(this.getThirdPaymentStatus(item.getThirdPaymentStatus()));
-                    // "第三方原因",
-                    row.add(item.getThirdReason() == null ? "" : item.getThirdReason());
-                    // "第三方对接人"
-                    row.add(item.getThirdResponsiblePerson() == null ? "" : item.getThirdResponsiblePerson());
+                    if(item.getIsUseThird()){
+                        //" 第三方类型",
+                        row.add(this.getThirdCompanyType(item.getThirdCompanyType()));
+                        // "第三方公司",
+                        row.add(item.getThirdCompanyName() == null ? "" : item.getThirdCompanyName());
+                        // "人工费用",
+                        row.add(item.getArtificialFee() == null ? "" : item.getArtificialFee());
+                        //物料费用
+                        row.add(item.getMaterialFee() == null ? "" : item.getMaterialFee());
+                        // "支付状态",
+                        row.add(this.getThirdPaymentStatus(item.getThirdPaymentStatus()));
+                        // "第三方原因",
+                        row.add(item.getThirdReason() == null ? "" : item.getThirdReason());
+                        // "第三方对接人"
+                        row.add(item.getThirdResponsiblePerson() == null ? "" : item.getThirdResponsiblePerson());
+                    } else {
+                        for (int i = 0; i < 7; i++) {
+                            row.add("");
+                        }
+                    }
                 }
 
                 //给服务商不够最大服务商个数的的补充空白
