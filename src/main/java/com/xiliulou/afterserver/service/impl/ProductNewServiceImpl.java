@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import com.xiliulou.afterserver.constant.AuditProcessConstans;
 import com.xiliulou.afterserver.constant.CommonConstants;
 import com.xiliulou.afterserver.constant.ProductNewStatusSortConstants;
@@ -31,6 +32,7 @@ import com.xiliulou.afterserver.web.vo.*;
 import com.xiliulou.core.json.JsonUtil;
 import com.xiliulou.storage.config.StorageConfig;
 import com.xiliulou.storage.service.impl.AliyunOssService;
+import javax.annotation.Nullable;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +98,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     private AuditProcessService auditProcessService;
     @Autowired
     private AuditValueService auditValueService;
+    @Autowired
+    private CustomerService customerService;
 
     /**
      * 通过ID查询单条数据从DB
@@ -611,6 +615,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             AuditProcessConstans.CAMERA_IOT_AUDIT_ENTRY,
             AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY,
             AuditProcessConstans.PRODUCT_COLOR_AUDIT_ENTRY,
+            AuditProcessConstans.DOOR_COLOR_AUDIT_ENTRY,
             AuditProcessConstans.PRODUCT_SURFACE_AUDIT_ENTRY,
             AuditProcessConstans.CAMERA_SN_AUDIT_ENTRY_TOW);
         //获取主柜需要同步到副柜的值
@@ -790,6 +795,18 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             statusSet.add(status);
         });
 
+        AuditProcessVo preAuditProcessVo = null;
+        AuditProcessVo postAuditProcessVo = null;
+        for(AuditProcessVo item : voList) {
+            if (Objects.equals(AuditProcess.TYPE_PRE, item.getType())) {
+                preAuditProcessVo = item;
+            }
+
+            if (Objects.equals(AuditProcess.TYPE_POST, item.getType())) {
+                postAuditProcessVo = item;
+            }
+        }
+
         //获取压测状态
         AuditProcessVo testAuditProcessVo = auditProcessService.createTestAuditProcessVo();
         //获取当前压测状态，
@@ -798,13 +815,11 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             testAuditProcessVo.setStatus(AuditProcessVo.STATUS_FINISHED);
         } else {
             //如果测试未完成，需要看前置检查是否完成：完成则压测正在执行，未完则置灰
-            voList.forEach(item -> {
-                if (Objects.equals(AuditProcess.TYPE_PRE, item.getType())) {
-                    testAuditProcessVo.setStatus(
-                        Objects.equals(item.getStatus(), AuditProcessVo.STATUS_FINISHED)
-                            ? AuditProcessVo.STATUS_EXECUTING : AuditProcessVo.STATUS_UNFINISHED);
-                }
-            });
+            if(Objects.nonNull(preAuditProcessVo)) {
+                testAuditProcessVo.setStatus(
+                    Objects.equals(preAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED)
+                        ? AuditProcessVo.STATUS_EXECUTING : AuditProcessVo.STATUS_UNFINISHED);
+            }
         }
         voList.add(1, testAuditProcessVo);
         statusSet.add(testAuditProcessVo.getStatus());
@@ -819,6 +834,12 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             : ProductNewProcessInfoVo.STATUS_UN_FINISHED);
         voList.add(deliverVo);
 
+
+        if(Objects.equals(preAuditProcessVo, AuditProcessVo.STATUS_FINISHED)
+            && Objects.equals(testAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED)
+            && !Objects.equals(postAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED)) {
+            postAuditProcessVo.setStatus(AuditProcessVo.STATUS_EXECUTING);
+        }
         return R.ok(vo);
     }
 
@@ -867,7 +888,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     }
 
     @Override
-    public R checkProperty(String no) {
+    public R checkProperty(String no, String deliverNo) {
         ProductNew productNew = this.queryByNo(no);
         if (Objects.isNull(productNew)) {
             return R.fail(null, "00000", "柜机资产编码不存在，请核对");
@@ -899,12 +920,12 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             return R.fail(null, "10002", "产品后置检查未完成");
         }
 
-        if (!Objects
-            .equals(productNew.getStatus(), ProductNewStatusSortConstants.STATUS_POST_DETECTION)) {
+        if (!Objects.equals(productNew.getStatus(), ProductNewStatusSortConstants.STATUS_POST_DETECTION)) {
             return R.fail(null, "00000", statusErrorMsg(productNew.getStatus()));
         }
 
-        SimpleDateFormat sim = new SimpleDateFormat("hh:mm");
+        SimpleDateFormat sim = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat dataTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         DeliverProductNewInfoVo vo = new DeliverProductNewInfoVo();
         vo.setId(productNew.getId());
@@ -914,7 +935,39 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         vo.setNo(productNew.getNo());
         vo.setStatusName(getStatusName(productNew.getStatus()));
         vo.setInsertTime(sim.format(new Date()));
-        return R.fail(vo);
+
+        Deliver deliver = deliverService.queryByNo(deliverNo);
+        if(Objects.isNull(deliver)) {
+            vo.setCanPrint(false);
+            return R.ok(vo);
+        }
+
+        vo.setCanPrint(true);
+        vo.setCustomerName(queryCustomerName(deliver));
+        vo.setSum(Optional.ofNullable(JsonUtil.fromJsonArray(deliver.getQuantity(), Integer.class)).orElse(Lists.newArrayList()).stream().reduce(0, Integer::sum));
+        vo.setType(Objects.equals(productNew.getType(), ProductNew.TYPE_M) ? "主柜" :"副柜");
+        vo.setProductionTime(dataTimeFormat.format(new Date()));
+        vo.setProductColor(auditValueService.getValue(AuditProcessConstans.PRODUCT_COLOR_AUDIT_ENTRY, productNew.getId()));
+        vo.setDoorColor(auditValueService.getValue(AuditProcessConstans.DOOR_COLOR_AUDIT_ENTRY, productNew.getId()));
+        return R.ok(vo);
+    }
+
+    private String queryCustomerName(@Nullable Deliver deliver) {
+        if(Objects.equals(deliver.getDestinationType(), Deliver.DESTINATION_TYPE_FACTORY)
+            || Objects.equals(deliver.getDestinationType(), Deliver.DESTINATION_TYPE_WAREHOUSE)) {
+            return deliver.getDestination();
+        }
+
+        PointNew pointNew = pointNewMapper.queryById(deliver.getDestinationId());
+        if(Objects.isNull(pointNew)) {
+            return null;
+        }
+
+        Customer customer = customerService.getById(pointNew.getCustomerId());
+        if(Objects.isNull(customer)) {
+            return null;
+        }
+        return customer.getName();
     }
 
     private String statusErrorMsg(Integer status) {

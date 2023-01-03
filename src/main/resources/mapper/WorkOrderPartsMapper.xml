@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiliulou.afterserver.mapper.WorkOrderPartsMapper">
+
+  <resultMap type="com.xiliulou.afterserver.entity.WorkOrderParts" id="WorkOrderPartsMap">
+    <result property="id" column="id" jdbcType="INTEGER"/>
+    <result property="workOrderId" column="work_order_id" jdbcType="INTEGER"/>
+    <result property="serverId" column="server_id" jdbcType="INTEGER"/>
+    <result property="name" column="name" jdbcType="VARCHAR"/>
+    <result property="sum" column="sum" jdbcType="INTEGER"/>
+    <result property="createTime" column="create_time" jdbcType="INTEGER"/>
+    <result property="updateTime" column="update_time" jdbcType="INTEGER"/>
+    <result property="type" column="type" jdbcType="INTEGER"/>
+    <result property="amount" column="amount" jdbcType="DECIMAL"/>
+    <result property="sn" column="sn" jdbcType="VARCHAR"/>
+  </resultMap>
+
+  <!--查询单个-->
+  <select id="queryById" resultMap="WorkOrderPartsMap">
+        select
+          id, work_order_id, server_id, name, sum, create_time, update_time, type, amount, sn
+        from t_work_order_parts
+        where id = #{id}
+    </select>
+
+  <!--查询指定行数据-->
+  <select id="queryAllByLimit" resultMap="WorkOrderPartsMap">
+        select
+          id, work_order_id, server_id, name, sum, create_time, update_time, type, amount, sn
+        from t_work_order_parts
+        limit #{offset}, #{limit}
+    </select>
+
+  <!--通过实体作为筛选条件查询-->
+  <select id="queryAll" resultMap="WorkOrderPartsMap">
+    select
+    id, work_order_id, server_id, name, sum, create_time, update_time, type, amount, sn
+    from t_work_order_parts
+    <where>
+      <if test="id != null">
+        and id = #{id}
+      </if>
+      <if test="workOrderId != null">
+        and work_order_id = #{workOrderId}
+      </if>
+      <if test="serverId != null">
+        and server_id = #{serverId}
+      </if>
+      <if test="name != null and name != ''">
+        and name = #{name}
+      </if>
+      <if test="sum != null">
+        and sum = #{sum}
+      </if>
+      <if test="createTime != null">
+        and create_time = #{createTime}
+      </if>
+      <if test="updateTime != null">
+        and update_time = #{updateTime}
+      </if>
+      <if test="type != null">
+        and type = #{type}
+      </if>
+      <if test="amount != null">
+        and amount = #{amount}
+      </if>
+    </where>
+  </select>
+
+  <!--新增所有列-->
+  <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
+        insert into t_work_order_parts(work_order_id, server_id, name, sum, create_time, update_time, type, amount, sn)
+        values (#{workOrderId}, #{serverId}, #{name}, #{sum}, #{createTime}, #{updateTime}, #{type}, #{amount}, #{sn})
+    </insert>
+
+  <!--通过主键修改数据-->
+  <update id="update">
+    update t_work_order_parts
+    <set>
+      <if test="workOrderId != null">
+        work_order_id = #{workOrderId},
+      </if>
+      <if test="serverId != null">
+        server_id = #{serverId},
+      </if>
+      <if test="name != null and name != ''">
+        name = #{name},
+      </if>
+      <if test="sum != null">
+        sum = #{sum},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime},
+      </if>
+      <if test="type != null">
+        type = #{type},
+      </if>
+      <if test="amount != null">
+        amount = #{amount},
+      </if>
+      <if test="sn != null and sn != ''">
+        sn = #{sn},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+
+  <!--通过主键删除-->
+  <delete id="deleteById">
+        delete from t_work_order_parts where id = #{id}
+    </delete>
+
+  <select id="queryByWorkOrderIdAndServerId" resultMap="WorkOrderPartsMap">
+    select
+    id, work_order_id, server_id, name, sum, create_time, update_time, type, amount, sn
+    from t_work_order_parts
+    where work_order_id = #{workOrderId}  and server_id = #{serverId} and type = #{type}
+  </select>
+
+  <delete id="deleteByOidAndServerId">
+        delete from t_work_order_parts where work_order_id = #{oid} and server_id = #{sid} and type = #{type}
+    </delete>
+
+  <select id="queryPartsMaxCountByWorkOrderId" resultType="long">
+     select max(count)
+     from
+     (select count(*) as count from t_work_order_parts where work_order_id = #{oid}  and type = #{type} group by server_id)t
+  </select>
+</mapper>

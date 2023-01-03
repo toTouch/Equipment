@@ -9,9 +9,12 @@ import com.xiliulou.afterserver.constant.FileConstant;
 import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.entity.PointNew;
 import com.xiliulou.afterserver.entity.ProductFile;
+import com.xiliulou.afterserver.entity.WorkOrder;
+import com.xiliulou.afterserver.entity.WorkOrderServer;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.service.FileService;
 import com.xiliulou.afterserver.service.PointNewService;
+import com.xiliulou.afterserver.service.WorkOrderService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.storage.service.impl.AliyunOssService;
@@ -43,6 +46,8 @@ public class AdminJsonFileController {
     AliyunOssService aliyunOssService;
     @Autowired
     PointNewService pointNewService;
+    @Autowired
+    WorkOrderService workOrderService;
 
 
     @GetMapping("/admin/file/info/{id}")
@@ -102,6 +107,11 @@ public class AdminJsonFileController {
                     this.delFile(item.getId(), 1);//1为视频
                 });
             }
+
+            WorkOrder update = new WorkOrder();
+            update.setId(file.getBindId());
+            update.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
+            workOrderService.updateById(update);
         }
 
         file.setCreateTime(System.currentTimeMillis());

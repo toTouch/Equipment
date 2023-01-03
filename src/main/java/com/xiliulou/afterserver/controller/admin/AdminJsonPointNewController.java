@@ -513,7 +513,7 @@ public class AdminJsonPointNewController {
 
             //安装时间
             if (item.getCreateTime() != null) {
-                list.add(DateUtils.stampToDate(item.getCreateTime().toString()));
+                list.add(DateUtils.stampToDate(item.getInstallTime().toString()));
             }else{
                 list.add("");
             }

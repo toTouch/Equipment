@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.web.query;
 
 import com.xiliulou.afterserver.entity.File;
+import com.xiliulou.afterserver.entity.WorkOrderParts;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -86,4 +87,12 @@ public class WorkOrderServerQuery {
      * 文件个数
      */
     private Integer fileCount;
+    /**
+     * 是否有配件 0--否 1--是
+     */
+    private Integer hasParts;
+
+    private List<WorkOrderParts> workOrderParts;
+
+    private List<WorkOrderParts> thirdWorkOrderParts;
 }

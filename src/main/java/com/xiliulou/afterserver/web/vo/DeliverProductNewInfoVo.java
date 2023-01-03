@@ -16,4 +16,12 @@ public class DeliverProductNewInfoVo {
     private String no;
     private String statusName;
     private String insertTime;
+
+    private Boolean canPrint;
+    private String customerName;
+    private Integer sum;
+    private String productColor;
+    private String doorColor;
+    private String type;
+    private String productionTime;
 }
