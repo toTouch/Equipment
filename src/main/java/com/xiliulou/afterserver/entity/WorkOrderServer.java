@@ -79,7 +79,14 @@ public class WorkOrderServer {
     private String thirdResponsiblePerson;
 
     private Long createTime;
+    /**
+     * 是否有配件  0--无  1--有
+     */
+    private Integer hasParts;
 
     public static final Integer USE_THIRD = 1;
     public static final Integer NOT_USE_THIRD = 0;
+
+    public static final Integer NOT_HAS_PARTS = 0;
+    public static final Integer HAS_PARTS = 1;
 }

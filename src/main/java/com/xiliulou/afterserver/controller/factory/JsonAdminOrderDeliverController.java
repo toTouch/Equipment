@@ -72,8 +72,8 @@ public class JsonAdminOrderDeliverController {
      * @return
      */
     @PostMapping("productNew/check/property")
-    public R checkProperty(@RequestParam("no") String no){
-        return productNewService.checkProperty(no);
+    public R checkProperty(@RequestParam("no") String no, @RequestParam("deliverNo")String deliverNo){
+        return productNewService.checkProperty(no, deliverNo);
     }
 
     /**

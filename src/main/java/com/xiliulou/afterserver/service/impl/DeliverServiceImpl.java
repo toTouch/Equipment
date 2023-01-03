@@ -732,8 +732,8 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     }
 
 
-
-    private Deliver queryByNo(String no){
+    @Override
+    public Deliver queryByNo(String no){
         if(StringUtils.isBlank(no)) {return null;}
         return this.baseMapper.selectOne(new QueryWrapper<Deliver>().eq("no", no));
     }

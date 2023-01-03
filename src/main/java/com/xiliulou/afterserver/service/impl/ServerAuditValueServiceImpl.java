@@ -12,6 +12,8 @@ import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.WechatServerAuditEntryQuery;
 import com.xiliulou.afterserver.web.query.WorkOrderServerQuery;
 import io.jsonwebtoken.lang.Collections;
+import java.util.ArrayList;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -95,6 +97,12 @@ public class ServerAuditValueServiceImpl extends ServiceImpl<ServerAuditValueMap
             return R.fail("请上传处理图片");
         }
 
+        if (Objects.equals(query.getHasParts(), WorkOrderServer.HAS_PARTS)) {
+            if (!workOrderService.checkAndclearEntry(query.getWorkOrderParts())) {
+                return R.fail("请添加相关物件");
+            }
+        }
+
         WorkOrderServer updateWorkOrderServer = new WorkOrderServer();
         updateWorkOrderServer.setId(workOrderServer.get(0).getId());
         updateWorkOrderServer.setSolution(query.getSolution());
@@ -111,6 +119,8 @@ public class ServerAuditValueServiceImpl extends ServiceImpl<ServerAuditValueMap
             workOrderService.updateById(workOrder);
         }
 
+        workOrderService.clareAndAddWorkOrderParts(query.getWorkOrderId(), user.getThirdId(), query.getWorkOrderParts(), WorkOrderParts.TYPE_SERVER_PARTS);
+
         if(Collections.isEmpty(query.getWechatServerEntryValueQueryList())) {
             return R.ok();
         }
@@ -118,7 +128,6 @@ public class ServerAuditValueServiceImpl extends ServiceImpl<ServerAuditValueMap
         query.getWechatServerEntryValueQueryList().forEach(item -> {
             biandOrUnbindEntry(item.getEntryId(), item.getValue(), user.getThirdId(), query.getWorkOrderId());
         });
-        
         return R.ok();
     }
 
