@@ -1226,6 +1226,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         auditStatus = auditStatus == null ? -1 : auditStatus;
 
         switch (auditStatus) {
+            case 0:
+                auditStatusStr = "未审核";
+                break;
             case 1:
                 auditStatusStr = "待审核";
                 break;
