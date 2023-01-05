@@ -12,6 +12,7 @@ import com.xiliulou.afterserver.service.PartsService;
 import com.xiliulou.afterserver.web.query.PartsQuery;
 import com.xiliulou.core.web.R;
 import java.io.IOException;
+import java.util.Objects;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,6 +59,13 @@ public class JsonAdminPartsController {
     public R queryPull(@RequestParam("size") Integer size,
         @RequestParam("offset") Integer offset,
         @RequestParam(value = "name", required = false) String name){
+        if(Objects.isNull(offset) || offset < 0) {
+            offset = 0;
+        }
+
+        if(Objects.isNull(size) || size < 0 || size > 50) {
+            size = 50;
+        }
         return  partsService.queryPull(size, offset, name);
     }
 
