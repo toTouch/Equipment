@@ -109,6 +109,17 @@
         limit #{offset}, #{size}
     </select>
 
+    <select id="queryCount" resultType="integer">
+        select
+            count(*)
+        from t_parts
+        <where>
+            <if test="name != null and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+        </where>
+    </select>
+
     <select id="queryBySn" resultMap="PartsMap">
         select id, name, purchase_price, sell_price, sn, create_time, update_time
         from t_parts
