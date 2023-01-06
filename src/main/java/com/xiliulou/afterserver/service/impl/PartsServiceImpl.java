@@ -8,6 +8,8 @@ import com.xiliulou.afterserver.web.query.PartsQuery;
 import com.xiliulou.afterserver.web.vo.PartsVo;
 import com.xiliulou.core.web.R;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -106,7 +108,13 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
     @Override
     public R queryList(Integer size, Integer offset, String name) {
-        return R.ok(this.partsMapper.queryList(size, offset, name));
+        List<Parts> parts = this.partsMapper.queryList(size, offset, name);
+        Integer count = this.partsMapper.queryCount(size, offset, name);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("data", parts);
+        result.put("count", count);
+        return R.ok(result);
     }
 
     @Override
