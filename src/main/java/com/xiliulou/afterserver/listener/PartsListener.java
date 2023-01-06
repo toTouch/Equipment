@@ -27,6 +27,8 @@ public class PartsListener extends AnalysisEventListener<PartsInfo> {
     private static final int BATCH_COUNT = 2000;
     List<PartsInfo> list = new ArrayList<>();
 
+    List<String> repeatSn = new ArrayList<>();
+
     public PartsListener(PartsService partsService){
         this.partsService = partsService;
     }
@@ -37,6 +39,7 @@ public class PartsListener extends AnalysisEventListener<PartsInfo> {
 
         Parts parts = partsService.queryBySn(partsInfo.getSn());
         if(Objects.nonNull(parts)) {
+            repeatSn.add(partsInfo.getSn());
             return;
         }
 
@@ -67,5 +70,9 @@ public class PartsListener extends AnalysisEventListener<PartsInfo> {
     public void doAfterAllAnalysed(AnalysisContext context) {
         saveData();
         log.info("物料表导入=====所有数据解析完成！");
+    }
+
+    public List<String> getRepeatSn(){
+        return  this.repeatSn;
     }
 }
