@@ -105,7 +105,7 @@ public class WorkOrderPartsServiceImpl implements WorkOrderPartsService {
     @Override
     public List<WorkOrderParts> queryByWorkOrderIdAndServerId(Long workOrderId, Long serverId, Integer type) {
         List<WorkOrderParts> workOrderParts = this.workOrderPartsMapper.queryByWorkOrderIdAndServerId(workOrderId, serverId, type);
-        if(CollectionUtils.isNotEmpty(workOrderParts)){
+        if(CollectionUtils.isEmpty(workOrderParts)){
             return new ArrayList<>();
         }
         workOrderParts.forEach(item -> {
