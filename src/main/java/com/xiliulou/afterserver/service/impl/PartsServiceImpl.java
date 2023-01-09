@@ -128,6 +128,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         BeanUtils.copyProperties(partsQuery, parts);
         parts.setCreateTime(System.currentTimeMillis());
         parts.setUpdateTime(System.currentTimeMillis());
+        parts.setDelFlag(Parts.DEL_NORMAL);
         this.partsMapper.insert(parts);
         return R.ok();
     }
@@ -153,7 +154,10 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
     @Override
     public R deleteOne(Long id) {
-        return R.ok(deleteById(id));
+        Parts updateParts = new Parts();
+        updateParts.setUpdateTime(System.currentTimeMillis());
+        updateParts.setDelFlag(Parts.DEL_DEL);
+        return R.ok(update(updateParts));
     }
 
     @Override
