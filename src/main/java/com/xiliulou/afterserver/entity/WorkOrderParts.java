@@ -33,6 +33,8 @@ public class WorkOrderParts {
 
     private String sn;
 
+    private Long partsId;
+
     /**
      * 类型 1--服务商物件  2--第三方物件
      */
@@ -49,7 +51,8 @@ public class WorkOrderParts {
 
     public static final Integer TYPE_SERVER_PARTS = 1;
     public static final Integer TYPE_THIRD_PARTS = 2;
-
     @TableField(exist = false)
-    private Long partsId;
+    private BigDecimal purchasePrice;
+    @TableField(exist = false)
+    private BigDecimal sellPrice;
 }
