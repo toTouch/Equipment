@@ -155,6 +155,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Override
     public R deleteOne(Long id) {
         Parts updateParts = new Parts();
+        updateParts.setId(id);
         updateParts.setUpdateTime(System.currentTimeMillis());
         updateParts.setDelFlag(Parts.DEL_DEL);
         return R.ok(update(updateParts));
