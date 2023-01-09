@@ -1,8 +1,14 @@
 package com.xiliulou.afterserver.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.xiliulou.afterserver.entity.Parts;
 import com.xiliulou.afterserver.entity.WorkOrderParts;
 import com.xiliulou.afterserver.mapper.WorkOrderPartsMapper;
+import com.xiliulou.afterserver.service.PartsService;
 import com.xiliulou.afterserver.service.WorkOrderPartsService;
+import java.util.ArrayList;
+import java.util.Objects;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +26,8 @@ import lombok.extern.slf4j.Slf4j;
 public class WorkOrderPartsServiceImpl implements WorkOrderPartsService {
     @Resource
     private WorkOrderPartsMapper workOrderPartsMapper;
+    @Autowired
+    private PartsService partsService;
 
     /**
      * 通过ID查询单条数据从DB
@@ -96,7 +104,20 @@ public class WorkOrderPartsServiceImpl implements WorkOrderPartsService {
 
     @Override
     public List<WorkOrderParts> queryByWorkOrderIdAndServerId(Long workOrderId, Long serverId, Integer type) {
-        return this.workOrderPartsMapper.queryByWorkOrderIdAndServerId(workOrderId, serverId, type);
+        List<WorkOrderParts> workOrderParts = this.workOrderPartsMapper.queryByWorkOrderIdAndServerId(workOrderId, serverId, type);
+        if(CollectionUtils.isNotEmpty(workOrderParts)){
+            return new ArrayList<>();
+        }
+        workOrderParts.forEach(item -> {
+            Parts parts = partsService.queryByIdFromDB(item.getPartsId());
+            if(Objects.isNull(parts)) {
+                return;
+            }
+
+            item.setPurchasePrice(parts.getPurchasePrice());
+            item.setSellPrice(parts.getSellPrice());
+        });
+        return workOrderParts;
     }
 
     @Override
