@@ -1075,7 +1075,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         if (Objects.isNull(no)) {
             return null;
         }
-        return this.productNewMapper.selectOne(new QueryWrapper<ProductNew>().eq("no", no));
+        return this.productNewMapper.selectOne(new QueryWrapper<ProductNew>().eq("no", no).eq("del_flag", 0));
     }
 
     @Override
