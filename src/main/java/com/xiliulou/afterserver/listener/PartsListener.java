@@ -60,6 +60,7 @@ public class PartsListener extends AnalysisEventListener<PartsInfo> {
             parts.setSellPrice(item.getSellPrice());
             parts.setCreateTime(System.currentTimeMillis());
             parts.setUpdateTime(System.currentTimeMillis());
+            parts.setDelFlag(Parts.DEL_NORMAL);
             partsList.add(parts);
         });
 
