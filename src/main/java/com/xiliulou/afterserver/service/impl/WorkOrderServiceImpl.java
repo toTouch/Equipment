@@ -2563,6 +2563,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             insert.setSum(e.getSum());
             insert.setType(type);
             insert.setSn(parts.getSn());
+            insert.setPartsId(parts.getId());
             BigDecimal amount = BigDecimal.valueOf(0);
             if(Objects.equals(WorkOrderParts.TYPE_SERVER_PARTS, type)) {
                 amount = qeuryAmount(e.getSum(), parts.getPurchasePrice());
