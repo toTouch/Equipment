@@ -2551,6 +2551,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         for(WorkOrderParts e : workOrderParts) {
+            if(Objects.isNull(e.getSum())) {
+                continue;
+            }
+
+            if(Objects.isNull(e.getPartsId())) {
+                continue;
+            }
+
             Parts parts = partsService.queryByIdFromDB(e.getPartsId());
             if(Objects.isNull(parts)) {
                 continue;
