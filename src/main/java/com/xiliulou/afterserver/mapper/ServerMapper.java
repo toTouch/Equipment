@@ -18,4 +18,7 @@ public interface ServerMapper extends BaseMapper<Server> {
 
     @Select("select id, name from server where name like concat('%', #{name}, '%') limit 0, 20")
     List<ServerPullVo> queryServerPull(String name);
+
+    @Select("select id from server where name like concat('%', #{name}, '%')")
+    List<Integer> getByIdsByName(String serverName);
 }

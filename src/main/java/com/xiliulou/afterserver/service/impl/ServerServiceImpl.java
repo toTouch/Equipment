@@ -72,4 +72,9 @@ public class ServerServiceImpl extends ServiceImpl<ServerMapper, Server> impleme
     public R queryServerPull(String name) {
         return R.ok(baseMapper.queryServerPull(name));
     }
+
+    @Override
+    public List<Integer> getByIdsByName(String serverName) {
+        return baseMapper.getByIdsByName(serverName);
+    }
 }
