@@ -2900,7 +2900,19 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 File files = fileService.getBaseMapper().selectOne(eq);
                 item.setVoucherVideoFile(files);
             }
+
+            if(Objects.equals(status, WorkOrder.STATUS_PROCESSING)) {
+                Map<Integer, List<WorkOrderAssignmentVo>> collect = data.parallelStream().collect(Collectors.groupingBy(WorkOrderAssignmentVo::getAuditStatus));
+                List<WorkOrderAssignmentVo> result = new ArrayList<>();
+                result.addAll(Optional.ofNullable(collect.get(2)).orElse(new ArrayList<>()).stream().sorted(Comparator.comparing(WorkOrderAssignmentVo::getCreateTime)).collect(Collectors.toList()));
+                result.addAll(Optional.ofNullable(collect.get(0)).orElse(new ArrayList<>()).stream().sorted(Comparator.comparing(WorkOrderAssignmentVo::getCreateTime)).collect(Collectors.toList()));
+                result.addAll(Optional.ofNullable(collect.get(1)).orElse(new ArrayList<>()).stream().sorted(Comparator.comparing(WorkOrderAssignmentVo::getCreateTime)).collect(Collectors.toList()));
+                result.addAll(Optional.ofNullable(collect.get(3)).orElse(new ArrayList<>()).stream().sorted(Comparator.comparing(WorkOrderAssignmentVo::getCreateTime)).collect(Collectors.toList()));
+                data = result;
+            }
         }
+
+
 
         Map<String, Object> result = new HashMap<>();
         result.put("data", data);
@@ -3069,6 +3081,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         WorkOrderServer workOrderServer = new WorkOrderServer();
                         workOrderServer.setId(old.getId());
                         workOrderServer.setSolution(item.getSolution());
+                        workOrderServer.setHasParts(item.getHasParts());
                         clareAndAddWorkOrderParts(workOrder.getId(), old.getServerId(), item.getWorkOrderParts(), WorkOrderParts.TYPE_SERVER_PARTS);
                         BigDecimal totalMaterialFee = clareAndAddWorkOrderParts(workOrder.getId(), old.getServerId(), item.getThirdWorkOrderParts(), WorkOrderParts.TYPE_THIRD_PARTS);
 
@@ -3396,6 +3409,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrderServer.setThirdPaymentStatus(item.getThirdPaymentStatus());
                 workOrderServer.setThirdReason(item.getThirdReason());
                 workOrderServer.setThirdResponsiblePerson(item.getThirdResponsiblePerson());
+                workOrderServer.setHasParts(item.getHasParts());
                 workOrderServer.setCreateTime(System.currentTimeMillis());
 
                 workOrderServerService.save(workOrderServer);
