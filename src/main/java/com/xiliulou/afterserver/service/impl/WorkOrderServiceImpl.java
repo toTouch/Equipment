@@ -2990,7 +2990,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     return R.fail("工单必须添加第三方责任人");
                 }
 
-                if (!checkAndclearEntry(item.getWorkOrderParts())) {
+                if (!checkAndclearEntry(item.getThirdWorkOrderParts())) {
                     return R.fail("请添加相关物件信息");
                 }
             }
@@ -3069,8 +3069,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         WorkOrderServer workOrderServer = new WorkOrderServer();
                         workOrderServer.setId(old.getId());
                         workOrderServer.setSolution(item.getSolution());
-                        clareAndAddWorkOrderParts(workOrder.getId(), workOrderServer.getServerId(), item.getWorkOrderParts(), WorkOrderParts.TYPE_SERVER_PARTS);
-                        BigDecimal totalMaterialFee = clareAndAddWorkOrderParts(workOrder.getId(), workOrderServer.getServerId(), item.getThirdWorkOrderParts(), WorkOrderParts.TYPE_THIRD_PARTS);
+                        clareAndAddWorkOrderParts(workOrder.getId(), old.getServerId(), item.getWorkOrderParts(), WorkOrderParts.TYPE_SERVER_PARTS);
+                        BigDecimal totalMaterialFee = clareAndAddWorkOrderParts(workOrder.getId(), old.getServerId(), item.getThirdWorkOrderParts(), WorkOrderParts.TYPE_THIRD_PARTS);
 
                         workOrderServer.setMaterialFee(totalMaterialFee);
                         workOrderServerService.updateById(workOrderServer);
