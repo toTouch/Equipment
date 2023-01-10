@@ -28,4 +28,6 @@ public interface WorkOrderServerMapper extends BaseMapper<WorkOrderServer> {
     Long queryPrescriptionAvgByServerId(@Param("curtMonthTime") Long curtMonthTime, @Param("id")Long id);
 
     Integer queryMaxCountByWorkOrderId(@Param("workOrderIds") List<Long> workOrderIds);
+
+    List<Integer> getIdsByserverIds(@Param("serverIds")List<Integer> serverIds);
 }
