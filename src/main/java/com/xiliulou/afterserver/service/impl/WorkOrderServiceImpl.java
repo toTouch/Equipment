@@ -130,6 +130,26 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
         //检查质保过期点位
         pointNewService.updatePastWarrantyStatus();
+        //获取服务商id
+        if(StrUtil.isNotBlank(workOrder.getServerName())) {
+            List<Integer> serverIds = serverService.getByIdsByName(workOrder.getServerName());
+            if(CollectionUtils.isEmpty(serverIds)) {
+                Page result = new Page();
+                result.setRecords(new ArrayList());
+                result.setTotal(0);
+                return result;
+            }
+
+            List<Integer> workOrderIds = workOrderServerService.getIdsByserverIds(serverIds);
+            if(CollectionUtils.isEmpty(workOrderIds)) {
+                Page result = new Page();
+                result.setRecords(new ArrayList());
+                result.setTotal(0);
+                return result;
+            }
+            workOrder.setWorkOrderIds(workOrderIds);
+        }
+
 
         Page page = PageUtil.getPage(offset, size);
         page = baseMapper.getPage(page, workOrder);
@@ -309,7 +329,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         String[] header = {"审核状态", "工单类型", "点位", "点位状态", "柜机系列", "移机起点", "移机终点", "创建人",
             "状态", "描述", "备注", "工单原因", "创建时间", "工单编号", "sn码", "审核内容", "专员", "派单时间"};
 
-        String[] serverHeader = {"服务商", "工单费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数", " 第三方类型",
+        String[] serverHeader = {"服务商", "工单费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数","是否更换配件", "是否需要第三方承把费用", " 第三方类型",
             "第三方公司", "应收第三方人工费", "应收第三方物料费", "支付状态", "第三方原因", "第三方对接人"};
 
         List<Product> productAll = productService.list();
@@ -592,21 +612,32 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
                     row.add(fileCount);
 
-                    List<WorkOrderParts> workOrderParts = workOrderPartsService.queryByWorkOrderIdAndServerId(o.getId(), item.getServerId(), WorkOrderParts.TYPE_SERVER_PARTS);
-                    if(!CollectionUtils.isEmpty(workOrderParts)) {
-                        workOrderParts.forEach(e -> {
-                            row.add(e.getSn());
-                            row.add(e.getName());
-                            row.add(e.getSum());
-                            //row.add(e.getAmount());
-                        });
+                    row.add(Objects.equals(WorkOrderServer.HAS_PARTS, item.getHasParts())?"是":"否");
 
-                        Long maxLine = partsMaxLen - workOrderParts.size();
-                        for (int i = 0; i < maxLine; i++) {
-                            row.add("");
-                            row.add("");
-                            row.add("");
-                            //row.add("");
+                    if(Objects.equals(WorkOrderServer.HAS_PARTS, item.getHasParts())){
+                        List<WorkOrderParts> workOrderParts = workOrderPartsService.queryByWorkOrderIdAndServerId(o.getId(), item.getServerId(), WorkOrderParts.TYPE_SERVER_PARTS);
+                        if(!CollectionUtils.isEmpty(workOrderParts)) {
+                            workOrderParts.forEach(e -> {
+                                row.add(e.getSn());
+                                row.add(e.getName());
+                                row.add(e.getSum());
+                                //row.add(e.getAmount());
+                            });
+
+                            Long maxLine = partsMaxLen - workOrderParts.size();
+                            for (int i = 0; i < maxLine; i++) {
+                                row.add("");
+                                row.add("");
+                                row.add("");
+                                //row.add("");
+                            }
+                        } else {
+                            for (int i = 0; i < partsMaxLen; i++) {
+                                row.add("");
+                                row.add("");
+                                row.add("");
+                                //row.add("");
+                            }
                         }
                     } else {
                         for (int i = 0; i < partsMaxLen; i++) {
@@ -616,6 +647,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                             //row.add("");
                         }
                     }
+
+                    row.add(item.getIsUseThird() ? "是" : "否");
 
                     if(item.getIsUseThird()){
                         //" 第三方类型",
@@ -720,14 +753,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 List<String> headTitle = new ArrayList<>();
                 headTitle.add(item + (i + 1));
                 headList.add(headTitle);
-                if(Objects.equals("文件个数", item)) {
+                if(Objects.equals("是否更换配件", item)) {
                     for(int p = 1; p <= partsMaxLen; p++) {
                         List<String> partsTitle1 = new ArrayList<>();
-                        partsTitle1.add("配料编号" + p);
+                        partsTitle1.add("配件编号" + p);
                         List<String> partsTitle2 = new ArrayList<>();
-                        partsTitle2.add("配料名称" + p);
+                        partsTitle2.add("配件名称" + p);
                         List<String> partsTitle3 = new ArrayList<>();
-                        partsTitle3.add("配料数量" + p);
+                        partsTitle3.add("配件数量" + p);
 
                         headList.add(partsTitle1);
                         headList.add(partsTitle2);
@@ -738,13 +771,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 if(Objects.equals("第三方对接人", item)) {
                     for(int p = 1; p <= thirdPartsMaxLen ; p++) {
                         List<String> partsTitle1 = new ArrayList<>();
-                        partsTitle1.add("配料编号" + p);
+                        partsTitle1.add("配件编号" + p);
                         List<String> partsTitle2 = new ArrayList<>();
-                        partsTitle2.add("配料名称" + p);
+                        partsTitle2.add("配件名称" + p);
                         List<String> partsTitle3 = new ArrayList<>();
-                        partsTitle3.add("配料数量" + p);
+                        partsTitle3.add("配件数量" + p);
                         List<String> partsTitle4 = new ArrayList<>();
-                        partsTitle4.add("配料总售价" + p);
+                        partsTitle4.add("配件总售价" + p);
 
                         headList.add(partsTitle1);
                         headList.add(partsTitle2);
@@ -800,7 +833,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         String[] header = {"审核状态", "工单类型", "点位", "点位状态", "柜机系列", "创建人",
             "状态", "描述", "备注", "工单原因", "创建时间", "工单编号", "sn码", "审核内容", "专员", "派单时间"};
 
-        String[] serverHeader = {"服务商", "工单费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数", " 第三方类型",
+        String[] serverHeader = {"服务商", "工单费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数","是否更换配件", "是否需要第三方承把费用", " 第三方类型",
             "第三方公司", "应收第三方人工费", "应收第三方物料费", "支付状态", "第三方原因", "第三方对接人"};
 
         List<Product> productAll = productService.list();
@@ -1040,21 +1073,32 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
                     row.add(fileCount);
 
-                    List<WorkOrderParts> workOrderParts = workOrderPartsService.queryByWorkOrderIdAndServerId(o.getId(), item.getServerId(), WorkOrderParts.TYPE_SERVER_PARTS);
-                    if(!CollectionUtils.isEmpty(workOrderParts)) {
-                        workOrderParts.forEach(e -> {
-                            row.add(e.getSn());
-                            row.add(e.getName());
-                            row.add(e.getSum());
-                            //row.add(e.getAmount());
-                        });
+                    row.add(Objects.equals(WorkOrderServer.HAS_PARTS, item.getHasParts())?"是":"否");
 
-                        Long maxLine = partsMaxLen - workOrderParts.size();
-                        for (int i = 0; i < maxLine; i++) {
-                            row.add("");
-                            row.add("");
-                            row.add("");
-                            //row.add("");
+                    if(Objects.equals(WorkOrderServer.HAS_PARTS, item.getHasParts())) {
+                        List<WorkOrderParts> workOrderParts = workOrderPartsService.queryByWorkOrderIdAndServerId(o.getId(), item.getServerId(), WorkOrderParts.TYPE_SERVER_PARTS);
+                        if(!CollectionUtils.isEmpty(workOrderParts)) {
+                            workOrderParts.forEach(e -> {
+                                row.add(e.getSn());
+                                row.add(e.getName());
+                                row.add(e.getSum());
+                                //row.add(e.getAmount());
+                            });
+
+                            Long maxLine = partsMaxLen - workOrderParts.size();
+                            for (int i = 0; i < maxLine; i++) {
+                                row.add("");
+                                row.add("");
+                                row.add("");
+                                //row.add("");
+                            }
+                        } else {
+                            for (int i = 0; i < partsMaxLen; i++) {
+                                row.add("");
+                                row.add("");
+                                row.add("");
+                                //row.add("");
+                            }
                         }
                     } else {
                         for (int i = 0; i < partsMaxLen; i++) {
@@ -1065,7 +1109,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         }
                     }
 
-
+                    row.add(item.getIsUseThird() ? "是" : "否");
                    if(item.getIsUseThird()){
                        //" 第三方类型",
                        row.add(this.getThirdCompanyType(item.getThirdCompanyType()));
@@ -1161,14 +1205,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 headTitle.add(item + (i + 1));
                 headList.add(headTitle);
 
-                if(Objects.equals("文件个数", item)) {
+                if(Objects.equals("是否更换配件", item)) {
                     for(int p = 1; p <= partsMaxLen; p++) {
                         List<String> partsTitle1 = new ArrayList<>();
-                        partsTitle1.add("配料编号" + p);
+                        partsTitle1.add("配件编号" + p);
                         List<String> partsTitle2 = new ArrayList<>();
-                        partsTitle2.add("配料名称" + p);
+                        partsTitle2.add("配件名称" + p);
                         List<String> partsTitle3 = new ArrayList<>();
-                        partsTitle3.add("配料数量" + p);
+                        partsTitle3.add("配件数量" + p);
 
                         headList.add(partsTitle1);
                         headList.add(partsTitle2);
@@ -1179,13 +1223,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 if(Objects.equals("第三方对接人", item)) {
                     for(int p = 1; p <= thirdPartsMaxLen ; p++) {
                         List<String> partsTitle1 = new ArrayList<>();
-                        partsTitle1.add("配料编号" + p);
+                        partsTitle1.add("配件编号" + p);
                         List<String> partsTitle2 = new ArrayList<>();
-                        partsTitle2.add("配料名称" + p);
+                        partsTitle2.add("配件名称" + p);
                         List<String> partsTitle3 = new ArrayList<>();
-                        partsTitle3.add("配料数量" + p);
+                        partsTitle3.add("配件数量" + p);
                         List<String> partsTitle4 = new ArrayList<>();
-                        partsTitle4.add("配料总售价" + p);
+                        partsTitle4.add("配件总售价" + p);
 
                         headList.add(partsTitle1);
                         headList.add(partsTitle2);

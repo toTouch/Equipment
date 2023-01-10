@@ -51,4 +51,15 @@
           group by work_order_id
         ) c
     </select>
+
+    <select id="getIdsByserverIds" resultType="integer">
+        select work_order_id
+        from t_work_order_server
+        <where>
+            server_id in
+            <foreach collection="serverIds" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </select>
 </mapper>
