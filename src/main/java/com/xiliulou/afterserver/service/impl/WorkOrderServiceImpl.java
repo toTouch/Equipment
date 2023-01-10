@@ -321,7 +321,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if (Objects.nonNull(o.getPointId())) {
                 PointNew pointNew = pointNewService.getById(o.getPointId());
                 if (Objects.nonNull(pointNew)) {
-                    row.add(pointNew.getName());
+                    row.add(StrUtil.isBlank(pointNew.getName())? "" : pointNew.getName());
                     //row.add(pointNew.getSnNo());
                 } else {
                     row.add("");
@@ -737,7 +737,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if (Objects.nonNull(o.getPointId())) {
                 PointNew pointNew = pointNewService.getById(o.getPointId());
                 if (Objects.nonNull(pointNew)) {
-                    row.add(pointNew.getName())
+                    row.add(StrUtil.isBlank(pointNew.getName())? "" : pointNew.getName());
                 } else {
                     row.add("");
                 }
