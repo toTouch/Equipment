@@ -339,7 +339,12 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if(Objects.nonNull(o.getPointId())) {
                 PointNew pointNew = pointNewService.queryByIdFromDB(o.getPointId());
                 if(Objects.nonNull(pointNew)) {
-                    row.add(StrUtil.isBlank(pointNew.getName())? "" : pointNew.getName());
+                    Customer byId = customerService.getById(pointNew.getCustomerId());
+                    if(Objects.nonNull(byId)){
+                        row.add(StrUtil.isBlank(byId.getName())? "" : byId.getName());
+                    } else {
+                        row.add("");
+                    }
                 }else {
                     row.add("");
                 }
@@ -732,7 +737,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if (Objects.nonNull(o.getPointId())) {
                 PointNew pointNew = pointNewService.getById(o.getPointId());
                 if (Objects.nonNull(pointNew)) {
-                    row.add(pointNew.getName());
+                    row.add(pointNew.getName())
                 } else {
                     row.add("");
                 }
@@ -746,7 +751,12 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if(Objects.nonNull(o.getPointId())) {
                 PointNew pointNew = pointNewService.queryByIdFromDB(o.getPointId());
                 if(Objects.nonNull(pointNew)) {
-                    row.add(StrUtil.isBlank(pointNew.getName())? "" : pointNew.getName());
+                    Customer byId = customerService.getById(pointNew.getCustomerId());
+                    if(Objects.nonNull(byId)){
+                        row.add(StrUtil.isBlank(byId.getName())? "" : byId.getName());
+                    } else {
+                        row.add("");
+                    }
                 }else {
                     row.add("");
                 }
