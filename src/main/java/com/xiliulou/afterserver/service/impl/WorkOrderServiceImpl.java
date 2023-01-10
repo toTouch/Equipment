@@ -346,7 +346,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         String[] header = {"审核状态", "工单类型", "点位", "点位状态", "柜机系列", "移机起点", "移机终点", "创建人",
             "状态", "描述", "备注", "工单原因", "创建时间", "工单编号", "sn码", "审核内容", "专员", "派单时间"};
 
-        String[] serverHeader = {"服务商", "工单费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数","是否更换配件", "是否需要第三方承把费用", " 第三方类型",
+        String[] serverHeader = {"服务商", "工单费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数","是否更换配件", "是否需要第三方承担费用", " 第三方类型",
             "第三方公司", "应收第三方人工费", "应收第三方物料费", "支付状态", "第三方原因", "第三方对接人"};
 
         List<Product> productAll = productService.list();
@@ -850,7 +850,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         String[] header = {"审核状态", "工单类型", "点位", "点位状态", "柜机系列", "创建人",
             "状态", "描述", "备注", "工单原因", "创建时间", "工单编号", "sn码", "审核内容", "专员", "派单时间"};
 
-        String[] serverHeader = {"服务商", "工单费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数","是否更换配件", "是否需要第三方承把费用", " 第三方类型",
+        String[] serverHeader = {"服务商", "工单费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数","是否更换配件", "是否需要第三方承担费用", " 第三方类型",
             "第三方公司", "应收第三方人工费", "应收第三方物料费", "支付状态", "第三方原因", "第三方对接人"};
 
         List<Product> productAll = productService.list();
