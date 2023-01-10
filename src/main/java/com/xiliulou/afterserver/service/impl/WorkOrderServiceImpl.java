@@ -723,27 +723,33 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 if(Objects.equals("文件个数", item)) {
                     for(int p = 1; p <= partsMaxLen; p++) {
                         List<String> partsTitle1 = new ArrayList<>();
-                        partsTitle1.add("物件" + p);
+                        partsTitle1.add("配料编号" + p);
                         List<String> partsTitle2 = new ArrayList<>();
-                        partsTitle2.add("数量" + p);
+                        partsTitle2.add("配料名称" + p);
+                        List<String> partsTitle3 = new ArrayList<>();
+                        partsTitle3.add("配料数量" + p);
 
                         headList.add(partsTitle1);
                         headList.add(partsTitle2);
+                        headList.add(partsTitle3);
                     }
                 }
 
                 if(Objects.equals("第三方对接人", item)) {
                     for(int p = 1; p <= thirdPartsMaxLen ; p++) {
                         List<String> partsTitle1 = new ArrayList<>();
-                        partsTitle1.add("物件" + p);
+                        partsTitle1.add("配料编号" + p);
                         List<String> partsTitle2 = new ArrayList<>();
-                        partsTitle2.add("数量" + p);
+                        partsTitle2.add("配料名称" + p);
                         List<String> partsTitle3 = new ArrayList<>();
-                        partsTitle3.add("价格" + p);
+                        partsTitle3.add("配料数量" + p);
+                        List<String> partsTitle4 = new ArrayList<>();
+                        partsTitle4.add("配料总售价" + p);
 
                         headList.add(partsTitle1);
                         headList.add(partsTitle2);
                         headList.add(partsTitle3);
+                        headList.add(partsTitle4);
                     }
                 }
             }
