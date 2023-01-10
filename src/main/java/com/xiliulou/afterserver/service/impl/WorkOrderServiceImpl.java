@@ -3069,6 +3069,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         WorkOrderServer workOrderServer = new WorkOrderServer();
                         workOrderServer.setId(old.getId());
                         workOrderServer.setSolution(item.getSolution());
+                        clareAndAddWorkOrderParts(workOrder.getId(), workOrderServer.getServerId(), item.getWorkOrderParts(), WorkOrderParts.TYPE_SERVER_PARTS);
+                        BigDecimal totalMaterialFee = clareAndAddWorkOrderParts(workOrder.getId(), workOrderServer.getServerId(), item.getThirdWorkOrderParts(), WorkOrderParts.TYPE_THIRD_PARTS);
+
+                        workOrderServer.setMaterialFee(totalMaterialFee);
                         workOrderServerService.updateById(workOrderServer);
                     }
                 }
@@ -3396,6 +3400,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
                 workOrderServerService.save(workOrderServer);
 
+                clareAndAddWorkOrderParts(workOrder.getId(), workOrderServer.getServerId(), item.getWorkOrderParts(), WorkOrderParts.TYPE_SERVER_PARTS);
+                BigDecimal totalMaterialFee = clareAndAddWorkOrderParts(workOrder.getId(), workOrderServer.getServerId(), item.getThirdWorkOrderParts(), WorkOrderParts.TYPE_THIRD_PARTS);
+
+                workOrderServer.setMaterialFee(totalMaterialFee);
+                workOrderServerService.updateById(workOrderServer);
             });
 
         }
