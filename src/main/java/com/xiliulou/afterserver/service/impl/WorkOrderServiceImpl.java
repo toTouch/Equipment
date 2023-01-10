@@ -598,7 +598,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                             row.add(e.getSn());
                             row.add(e.getName());
                             row.add(e.getSum());
-                            row.add(e.getAmount());
+                            //row.add(e.getAmount());
                         });
 
                         Long maxLine = partsMaxLen - workOrderParts.size();
@@ -606,14 +606,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                             row.add("");
                             row.add("");
                             row.add("");
-                            row.add("");
+                            //row.add("");
                         }
                     } else {
                         for (int i = 0; i < partsMaxLen; i++) {
                             row.add("");
                             row.add("");
                             row.add("");
-                            row.add("");
+                            //row.add("");
                         }
                     }
 
@@ -1046,7 +1046,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                             row.add(e.getSn());
                             row.add(e.getName());
                             row.add(e.getSum());
-                            row.add(e.getAmount());
+                            //row.add(e.getAmount());
                         });
 
                         Long maxLine = partsMaxLen - workOrderParts.size();
@@ -1054,14 +1054,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                             row.add("");
                             row.add("");
                             row.add("");
-                            row.add("");
+                            //row.add("");
                         }
                     } else {
                         for (int i = 0; i < partsMaxLen; i++) {
                             row.add("");
                             row.add("");
                             row.add("");
-                            row.add("");
+                            //row.add("");
                         }
                     }
 
@@ -1163,16 +1163,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
                 if(Objects.equals("文件个数", item)) {
                     for(int p = 1; p <= partsMaxLen; p++) {
-                        List<String> partsTitle0 = new ArrayList<>();
-                        partsTitle0.add("物料编号" + p);
                         List<String> partsTitle1 = new ArrayList<>();
-                        partsTitle1.add("物料名称" + p);
+                        partsTitle1.add("配料编号" + p);
                         List<String> partsTitle2 = new ArrayList<>();
-                        partsTitle2.add("数量" + p);
+                        partsTitle2.add("配料名称" + p);
                         List<String> partsTitle3 = new ArrayList<>();
-                        partsTitle3.add("价格" + p);
+                        partsTitle3.add("配料数量" + p);
 
-                        headList.add(partsTitle0);
                         headList.add(partsTitle1);
                         headList.add(partsTitle2);
                         headList.add(partsTitle3);
@@ -1181,19 +1178,19 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
                 if(Objects.equals("第三方对接人", item)) {
                     for(int p = 1; p <= thirdPartsMaxLen ; p++) {
-                        List<String> partsTitle0 = new ArrayList<>();
-                        partsTitle0.add("物料编号" + p);
                         List<String> partsTitle1 = new ArrayList<>();
-                        partsTitle1.add("物料名称" + p);
+                        partsTitle1.add("配料编号" + p);
                         List<String> partsTitle2 = new ArrayList<>();
-                        partsTitle2.add("数量" + p);
+                        partsTitle2.add("配料名称" + p);
                         List<String> partsTitle3 = new ArrayList<>();
-                        partsTitle3.add("价格" + p);
+                        partsTitle3.add("配料数量" + p);
+                        List<String> partsTitle4 = new ArrayList<>();
+                        partsTitle4.add("配料总售价" + p);
 
-                        headList.add(partsTitle0);
                         headList.add(partsTitle1);
                         headList.add(partsTitle2);
                         headList.add(partsTitle3);
+                        headList.add(partsTitle4);
                     }
                 }
             }
