@@ -50,4 +50,5 @@ public class WorkOrderQuery extends WorkOrder {
     private String thirdResponsiblePerson;
     private String serverName;
     private Integer productSeries;
+    private List<Integer> workOrderIds;
 }
