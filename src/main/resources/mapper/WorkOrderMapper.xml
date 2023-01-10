@@ -190,11 +190,6 @@
         wo.type as wo_type,
         wo.point_id as wo_point_id,
         wo.info as wo_info,
-<!--         wo.fee as wo_fee,
-         wo.third_company_id as wo_third_company_id,
-         wo.third_company_type as wo_third_company_type,
-         wo.third_company_pay as wo_third_company_pay,
-         wo.third_reason as wo_third_reason,-->
         wo.work_order_reason_id as wo_work_order_reason_id,
         wo.processor as wo_processor,
         wo.creater_id as wo_creater_id,
@@ -202,9 +197,6 @@
         wo.status as wo_status,
         wo.order_no as wo_order_no,
         wo.create_time as wo_create_time,
-<!--         wo.server_id as wo_server_id,
-         wo.third_company_name as wo_third_company_name,
-         wo.server_name as wo_server_name, -->
         wo.transfer_source_point_id as wo_transfer_source_point_id,
         wo.transfer_destination_point_id as wo_transfer_destination_point_id,
         wo.product as wo_product,
@@ -212,8 +204,6 @@
         wo.describeinfo as wo_describeinfo,
         wo.destination_type as wo_destination_type,
         wo.payment_method as wo_payment_method,
-<!--         wo.third_payment_status as wo_third_payment_status,
-         wo.third_responsible_person as wo_third_responsible_person,-->
         wo.audit_status as wo_audit_status,
         wo.audit_remarks as wo_audit_remarks,
         wo.source_type as wo_source_type,
@@ -253,33 +243,15 @@
             <if test="query.orderNo != null">
                 and wo.order_no = #{query.orderNo}
             </if>
-<!--            <if test="query.thirdCompanyId != null">-->
-<!--                and wo.third_company_id = #{query.thirdCompanyId}-->
-<!--            </if>-->
-<!--            <if test="query.thirdCompanyType != null">-->
-<!--                and wo.third_company_type = #{query.thirdCompanyType}-->
-<!--            </if>-->
-<!--            <if test="query.paymentMethod != null">-->
-<!--                and wo.payment_method = #{query.paymentMethod}-->
-<!--            </if>-->
             <if test="query.processTimeStart != null and query.processTimeEnd != null">
                 and wo.process_time BETWEEN #{query.processTimeStart} and #{query.processTimeEnd}
             </if>
             <if test="query.createTimeStart != null and query.createTimeEnd != null">
                 and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
             </if>
-<!--            <if test="query.thirdCompanyName != null and query.thirdCompanyName != ''">-->
-<!--                and wo.third_company_name  like concat('%',#{query.thirdCompanyName},'%')-->
-<!--            </if>-->
-<!--            <if test="query.serverName != null and query.serverName != ''">-->
-<!--                and wo.server_name like concat('%',#{query.serverName},'%')-->
-<!--            </if>-->
             <if test="query.workOrderReasonId != null">
                 and wo.work_order_reason_id = #{query.workOrderReasonId}
             </if>
-<!--            <if test="query.thirdResponsiblePerson != null and query.thirdResponsiblePerson != ''">-->
-<!--                and wo.third_responsible_person like concat('%', #{query.thirdResponsiblePerson}, '%')-->
-<!--            </if>-->
             <if test="query.auditStatus != null">
                 and wo.audit_status = #{query.auditStatus}
             </if>
@@ -294,6 +266,12 @@
             </if>
             <if test="query.commissionerId != null">
                 and wo.commissioner_id = #{query.commissionerId}
+            </if>
+            <if test="query.workOrderIds != null and query.workOrderIds.size() != 0">
+                and wo.id in
+                <foreach collection="query.workOrderIds" open="(" close=")" item="id" separator=",">
+                    #{id}
+                </foreach>
             </if>
         </where>
         ORDER BY wo.create_time DESC

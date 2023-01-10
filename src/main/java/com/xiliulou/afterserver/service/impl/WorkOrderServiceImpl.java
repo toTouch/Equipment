@@ -303,8 +303,25 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
         //扫描质保过期点位
         pointNewService.updatePastWarrantyStatus();
+        List<WorkOrderVo> workOrderVoList = null;
 
-        List<WorkOrderVo> workOrderVoList = baseMapper.orderList(workOrder);
+        //获取服务商id
+        if(StrUtil.isNotBlank(workOrder.getServerName())) {
+            List<Integer> serverIds = serverService.getByIdsByName(workOrder.getServerName());
+            if(CollectionUtils.isEmpty(serverIds)) {
+                workOrderVoList = new ArrayList<>();
+            }
+
+            List<Integer> workOrderIds = workOrderServerService.getIdsByserverIds(serverIds);
+            if(CollectionUtils.isEmpty(workOrderIds)) {
+                workOrderVoList = new ArrayList<>();
+            }
+            workOrder.setWorkOrderIds(workOrderIds);
+        } else {
+             workOrderVoList = baseMapper.orderList(workOrder);
+        }
+
+
 
         if (ObjectUtil.isEmpty(workOrderVoList)) {
             throw new CustomBusinessException("没有查询到工单!无法导出！");
