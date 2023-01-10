@@ -2904,8 +2904,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             if(Objects.equals(status, WorkOrder.STATUS_PROCESSING)) {
                 Map<Integer, List<WorkOrderAssignmentVo>> collect = data.parallelStream().collect(Collectors.groupingBy(WorkOrderAssignmentVo::getAuditStatus));
                 List<WorkOrderAssignmentVo> result = new ArrayList<>();
-                result.addAll(Optional.ofNullable(collect.get(2)).orElse(new ArrayList<>()).stream().sorted(Comparator.comparing(WorkOrderAssignmentVo::getCreateTime)).collect(Collectors.toList()));
-                result.addAll(Optional.ofNullable(collect.get(0)).orElse(new ArrayList<>()).stream().sorted(Comparator.comparing(WorkOrderAssignmentVo::getCreateTime)).collect(Collectors.toList()));
+                result.addAll(Optional.ofNullable(collect.get(2)).orElse(new ArrayList<>()).stream().sorted(Comparator.comparing(WorkOrderAssignmentVo::getCreateTime).reversed()).collect(Collectors.toList()));
+                result.addAll(Optional.ofNullable(collect.get(0)).orElse(new ArrayList<>()).stream().sorted(Comparator.comparing(WorkOrderAssignmentVo::getCreateTime).reversed()).collect(Collectors.toList()));
                 result.addAll(Optional.ofNullable(collect.get(1)).orElse(new ArrayList<>()).stream().sorted(Comparator.comparing(WorkOrderAssignmentVo::getCreateTime)).collect(Collectors.toList()));
                 result.addAll(Optional.ofNullable(collect.get(3)).orElse(new ArrayList<>()).stream().sorted(Comparator.comparing(WorkOrderAssignmentVo::getCreateTime)).collect(Collectors.toList()));
                 data = result;
