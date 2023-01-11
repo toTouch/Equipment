@@ -43,17 +43,16 @@ public class PartsListener extends AnalysisEventListener<PartsInfo> {
     @Override
     public void invoke(PartsInfo partsInfo, AnalysisContext context) {
         log.info("物料表导入=====解析到一条数据:{}", JSON.toJSONString(partsInfo));
-        ExcelDataConvertException excelDataConvertException = (ExcelDataConvertException)context;
 
         Parts parts = partsService.queryBySn(partsInfo.getSn());
         if(Objects.nonNull(parts)) {
-            repeatSn.add("第"+ excelDataConvertException.getRowIndex() +"行:" + partsInfo.getSn());
+            repeatSn.add(partsInfo.getSn());
             return;
         }
 
         Parts partsByNameAndSpecification = partsService.queryByNameAndSpecification(partsInfo.getName(), partsInfo.getSpecification());
         if(Objects.nonNull(partsByNameAndSpecification)) {
-            repeatSn.add("第"+ excelDataConvertException.getRowIndex() +"行:" + partsInfo.getSn());
+            repeatSn.add(partsInfo.getSn());
             return;
         }
 
