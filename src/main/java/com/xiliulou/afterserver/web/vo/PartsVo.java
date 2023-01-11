@@ -15,4 +15,5 @@ public class PartsVo {
     private String sn;
     private BigDecimal purchasePrice;
     private BigDecimal sellPrice;
+    private String specification;
 }

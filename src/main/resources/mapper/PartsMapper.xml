@@ -12,12 +12,13 @@
     <result property="updateTime" column="update_time" jdbcType="INTEGER"/>
     <result property="sn" column="sn" jdbcType="VARCHAR"/>
     <result property="delFlag" column="del_flag" jdbcType="INTEGER"/>
+    <result property="specification" column="specification" jdbcType="VARCHAR"/>
   </resultMap>
 
   <!--查询单个-->
   <select id="queryById" resultMap="PartsMap">
         select
-          id, name, purchase_price, sell_price, sn, create_time, update_time, del_flag
+          id, name, purchase_price, sell_price, sn, create_time, update_time, del_flag , specification
         from t_parts
         where id = #{id}
     </select>
@@ -25,7 +26,7 @@
   <!--查询指定行数据-->
   <select id="queryAllByLimit" resultMap="PartsMap">
         select
-          id, name, purchase_price, sell_price, sn, create_time, update_time, del_flag
+          id, name, purchase_price, sell_price, sn, create_time, update_time, del_flag, specification
         from t_parts
         limit #{offset}, #{limit}
     </select>
@@ -33,7 +34,7 @@
   <!--通过实体作为筛选条件查询-->
   <select id="queryAll" resultMap="PartsMap">
     select
-    id, name, purchase_price, sell_price, sn, create_time, update_time, del_flag
+    id, name, purchase_price, sell_price, sn, create_time, update_time, del_flag, specification
     from t_parts
     <where>
       <if test="id != null">
@@ -62,8 +63,8 @@
 
   <!--新增所有列-->
   <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
-        insert into t_parts(name, purchase_price, sell_price, sn, create_time, update_time, del_flag)
-        values (#{name}, #{purchasePrice}, #{sellPrice}, #{sn}, #{createTime}, #{updateTime}, #{delFlag})
+        insert into t_parts(name, purchase_price, sell_price, sn, create_time, update_time, del_flag, specification)
+        values (#{name}, #{purchasePrice}, #{sellPrice}, #{sn}, #{createTime}, #{updateTime}, #{delFlag}, #{specification})
     </insert>
 
   <!--通过主键修改数据-->
@@ -91,6 +92,9 @@
       <if test="delFlag != null">
         del_flag = #{delFlag},
       </if>
+      <if test="specification != null and specification != ''">
+        specification = #{specification},
+      </if>
     </set>
     where id = #{id}
   </update>
@@ -102,7 +106,7 @@
 
   <select id="queryList" resultMap="PartsMap">
         select
-          id, name, purchase_price, sell_price, sn, create_time, update_time, del_flag
+          id, name, purchase_price, sell_price, sn, create_time, update_time, del_flag, specification
         from t_parts
         <where>
             and del_flag = 0
@@ -127,7 +131,7 @@
     </select>
 
     <select id="queryBySn" resultMap="PartsMap">
-        select id, name, purchase_price, sell_price, sn, create_time, update_time
+        select id, name, purchase_price, sell_price, sn, create_time, update_time, specification
         from t_parts
         where sn = #{sn} and del_flag = 0
     </select>

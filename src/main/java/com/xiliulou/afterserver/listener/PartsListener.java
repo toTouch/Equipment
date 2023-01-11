@@ -61,6 +61,7 @@ public class PartsListener extends AnalysisEventListener<PartsInfo> {
             parts.setCreateTime(System.currentTimeMillis());
             parts.setUpdateTime(System.currentTimeMillis());
             parts.setDelFlag(Parts.DEL_NORMAL);
+            parts.setSpecification(item.getSpecification());
             partsList.add(parts);
         });
 
