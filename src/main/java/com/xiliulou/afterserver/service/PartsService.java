@@ -74,4 +74,6 @@ public interface PartsService extends IService<Parts> {
     R queryPull(Integer size, Integer offset, String name);
 
     Parts queryBySn(String sn);
+
+    Parts queryByNameAndSpecification(String name, String specification);
 }
