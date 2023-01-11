@@ -40,8 +40,15 @@ public class WorkOrderParts {
      */
     private Integer type;
 
+    /**
+     * 总价
+     */
     private BigDecimal amount;
-    
+    /**
+     * 单价
+     */
+    private BigDecimal sellPrice;
+
     private Long createTime;
     
     private Long updateTime;
@@ -51,8 +58,6 @@ public class WorkOrderParts {
 
     public static final Integer TYPE_SERVER_PARTS = 1;
     public static final Integer TYPE_THIRD_PARTS = 2;
-    @TableField(exist = false)
-    private BigDecimal purchasePrice;
-    @TableField(exist = false)
-    private BigDecimal sellPrice;
+//    @TableField(exist = false)
+//    private BigDecimal purchasePrice;
 }

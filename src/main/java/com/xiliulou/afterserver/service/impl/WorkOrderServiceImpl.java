@@ -2670,13 +2670,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             insert.setType(type);
             insert.setSn(parts.getSn());
             insert.setPartsId(parts.getId());
+            insert.setSellPrice(e.getSellPrice());
             BigDecimal amount = BigDecimal.valueOf(0);
             if(Objects.equals(WorkOrderParts.TYPE_SERVER_PARTS, type)) {
                 amount = qeuryAmount(e.getSum(), parts.getPurchasePrice());
             }
 
             if(Objects.equals(WorkOrderParts.TYPE_THIRD_PARTS, type)) {
-                amount = qeuryAmount(e.getSum(), parts.getSellPrice());
+                amount = qeuryAmount(e.getSum(), e.getSellPrice());
             }
 
             insert.setAmount(amount);
@@ -2691,7 +2692,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     private BigDecimal qeuryAmount(Integer sum, BigDecimal price){
-        return BigDecimal.valueOf(Optional.ofNullable(sum).orElse(0)).multiply(price).setScale(2,BigDecimal.ROUND_HALF_UP);
+        return BigDecimal.valueOf(Optional.ofNullable(sum).orElse(0)).multiply(Optional.ofNullable(price).orElse(new BigDecimal("0"))).setScale(2,BigDecimal.ROUND_HALF_UP);
     }
 
     @Override
