@@ -108,6 +108,15 @@ public class WorkOrderPartsServiceImpl implements WorkOrderPartsService {
         if(CollectionUtils.isEmpty(workOrderParts)){
             return new ArrayList<>();
         }
+
+        workOrderParts.forEach(item -> {
+            Parts parts = partsService.queryByIdFromDB(item.getPartsId());
+            if(Objects.isNull(parts)) {
+                return;
+            }
+
+            item.setSpecification(parts.getSpecification());
+        });
         return workOrderParts;
     }
 
