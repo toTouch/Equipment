@@ -58,6 +58,7 @@ public class WorkOrderParts {
 
     public static final Integer TYPE_SERVER_PARTS = 1;
     public static final Integer TYPE_THIRD_PARTS = 2;
-//    @TableField(exist = false)
-//    private BigDecimal purchasePrice;
+
+    @TableField(exist = false)
+    private String specification;
 }
