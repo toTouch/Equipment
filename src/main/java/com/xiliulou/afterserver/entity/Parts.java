@@ -31,6 +31,10 @@ public class Parts {
      * 出售价
      */
     private BigDecimal sellPrice;
+    /**
+     * 规格
+     */
+    private String specification;
 
     private String sn;
     
