@@ -343,7 +343,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
 
-        String[] header = {"审核状态", "工单类型", "点位", "点位状态", "柜机系列", "移机起点", "移机终点", "创建人",
+        String[] header = {"审核状态", "工单类型", "点位", "点位状态","点位客户", "柜机系列", "移机起点", "移机终点", "创建人",
             "状态", "描述", "备注", "工单原因", "创建时间", "工单编号", "sn码", "审核内容", "专员", "派单时间"};
 
         String[] serverHeader = {"服务商", "工单费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数","是否更换配件", "是否需要第三方承担费用", " 第三方类型",
@@ -411,6 +411,23 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
             //点位状态
             row.add(getPointStatusName(o.getPointStatus()));
+
+            //点位客户
+            if(Objects.nonNull(o.getPointId())) {
+                PointNew pointNew = pointNewService.queryByIdFromDB(o.getPointId());
+                if(Objects.nonNull(pointNew)) {
+                    Customer byId = customerService.getById(pointNew.getCustomerId());
+                    if(Objects.nonNull(byId)){
+                        row.add(StrUtil.isBlank(byId.getName())? "" : byId.getName());
+                    } else {
+                        row.add("");
+                    }
+                }else {
+                    row.add("");
+                }
+            }else {
+                row.add("");
+            }
 
             //柜机系列
             row.add(getPointProductSeries(o.getProductSeries()));
@@ -847,7 +864,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
 
-        String[] header = {"审核状态", "工单类型", "点位", "点位状态", "柜机系列", "创建人",
+        String[] header = {"审核状态", "工单类型", "点位", "点位状态", "点位客户", "柜机系列", "创建人",
             "状态", "描述", "备注", "工单原因", "创建时间", "工单编号", "sn码", "审核内容", "专员", "派单时间"};
 
         String[] serverHeader = {"服务商", "工单费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数","是否更换配件", "是否需要第三方承担费用", " 第三方类型",
@@ -910,6 +927,23 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
 
             row.add(getPointStatusName(o.getPointStatus()));
+
+            //点位客户
+            if(Objects.nonNull(o.getPointId())) {
+                PointNew pointNew = pointNewService.queryByIdFromDB(o.getPointId());
+                if(Objects.nonNull(pointNew)) {
+                    Customer byId = customerService.getById(pointNew.getCustomerId());
+                    if(Objects.nonNull(byId)){
+                        row.add(StrUtil.isBlank(byId.getName())? "" : byId.getName());
+                    } else {
+                        row.add("");
+                    }
+                }else {
+                    row.add("");
+                }
+            }else {
+                row.add("");
+            }
 
             //柜机系列
             row.add(getPointProductSeries(o.getProductSeries()));
