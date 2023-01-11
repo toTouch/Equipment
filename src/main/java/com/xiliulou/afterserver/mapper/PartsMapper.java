@@ -69,4 +69,6 @@ public interface PartsMapper  extends BaseMapper<Parts>{
     Parts queryBySn(@Param("sn")String sn);
 
     Integer queryCount(@Param("size")Integer size,@Param("offset") Integer offset, @Param("name")String name);
+
+    Parts queryByNameAndSpecification(@Param("name")String name, @Param("specification")String specification);
 }

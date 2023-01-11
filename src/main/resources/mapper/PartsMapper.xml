@@ -135,4 +135,10 @@
         from t_parts
         where sn = #{sn} and del_flag = 0
     </select>
+
+    <select id="queryByNameAndSpecification" resultMap="PartsMap">
+        select id, name, purchase_price, sell_price, sn, create_time, update_time, specification
+        from t_parts
+        where name = #{name} and specification = #{specification} and del_flag = 0
+    </select>
 </mapper>

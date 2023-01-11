@@ -7,6 +7,7 @@ import com.xiliulou.afterserver.service.PartsService;
 import com.xiliulou.afterserver.web.query.PartsQuery;
 import com.xiliulou.afterserver.web.vo.PartsVo;
 import com.xiliulou.core.web.R;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -124,6 +125,11 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             return R.fail("物料编码已存在，请检查");
         }
 
+        Parts partsNameAndSpecification =  queryByNameAndSpecification(partsQuery.getName(), partsQuery.getSpecification());
+        if(Objects.nonNull(partsNameAndSpecification)) {
+            return R.fail("相同规格物料已存在，请检查");
+        }
+
         Parts parts = new Parts();
         BeanUtils.copyProperties(partsQuery, parts);
         parts.setCreateTime(System.currentTimeMillis());
@@ -131,6 +137,11 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         parts.setDelFlag(Parts.DEL_NORMAL);
         this.partsMapper.insert(parts);
         return R.ok();
+    }
+
+    @Override
+    public Parts queryByNameAndSpecification(String name, String specification) {
+        return this.partsMapper.queryByNameAndSpecification(name, specification);
     }
 
     @Override
@@ -143,6 +154,11 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         Parts partsBySn = queryBySn(partsQuery.getSn());
         if(Objects.nonNull(partsBySn) && !Objects.equals(parts.getSn(), partsBySn.getSn())) {
             return R.fail("物料编码已存在，请检查");
+        }
+
+        Parts partsNameAndSpecification =  queryByNameAndSpecification(partsQuery.getName(), partsQuery.getSpecification());
+        if(Objects.nonNull(partsNameAndSpecification)) {
+            return R.fail("相同规格物料已存在，请检查");
         }
 
         Parts updateParts = new Parts();
