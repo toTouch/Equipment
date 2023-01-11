@@ -19,4 +19,6 @@ public class PartsInfo {
     private BigDecimal purchasePrice;
     @ExcelProperty(index = 3)
     private BigDecimal sellPrice;
+    @ExcelProperty(index = 4)
+    private String specification;
 }
