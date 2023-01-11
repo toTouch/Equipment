@@ -656,6 +656,12 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                                 row.add(e.getName());
                                 row.add(e.getSum());
                                 //row.add(e.getAmount());
+                                Parts byId = partsService.getById(e.getPartsId());
+                                if(Objects.nonNull(byId)) {
+                                    row.add(StrUtil.isBlank(byId.getSpecification()) ? "" : byId.getSpecification());
+                                }else {
+                                    row.add("");
+                                }
                             });
 
                             Long maxLine = partsMaxLen - workOrderParts.size();
@@ -663,14 +669,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                                 row.add("");
                                 row.add("");
                                 row.add("");
-                                //row.add("");
+                                row.add("");
                             }
                         } else {
                             for (int i = 0; i < partsMaxLen; i++) {
                                 row.add("");
                                 row.add("");
                                 row.add("");
-                                //row.add("");
+                                row.add("");
                             }
                         }
                     } else {
@@ -678,7 +684,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                             row.add("");
                             row.add("");
                             row.add("");
-                            //row.add("");
+                            row.add("");
                         }
                     }
 
@@ -708,10 +714,17 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                                 row.add(e.getName());
                                 row.add(e.getSum());
                                 row.add(e.getAmount());
+                                Parts byId = partsService.getById(e.getPartsId());
+                                if(Objects.nonNull(byId)) {
+                                    row.add(StrUtil.isBlank(byId.getSpecification()) ? "" : byId.getSpecification());
+                                }else {
+                                    row.add("");
+                                }
                             });
 
                             Long maxLine = thirdPartsMaxLen - thirdWorkOrderParts.size();
                             for (int i = 0; i < maxLine; i++) {
+                                row.add("");
                                 row.add("");
                                 row.add("");
                                 row.add("");
@@ -723,10 +736,18 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                                 row.add("");
                                 row.add("");
                                 row.add("");
+                                row.add("");
                             }
                         }
                     } else {
-                        for (int i = 0; i < 7 + thirdPartsMaxLen ; i++) {
+                        for (int i = 0; i < 7; i++) {
+                            row.add("");
+                        }
+                        for (int i = 0; i < thirdPartsMaxLen; i++) {
+                            row.add("");
+                            row.add("");
+                            row.add("");
+                            row.add("");
                             row.add("");
                         }
                     }
@@ -795,10 +816,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         partsTitle2.add("配件名称" + p);
                         List<String> partsTitle3 = new ArrayList<>();
                         partsTitle3.add("配件数量" + p);
+                        List<String> partsTitle4 = new ArrayList<>();
+                        partsTitle4.add("配件规格" + p);
 
                         headList.add(partsTitle1);
                         headList.add(partsTitle2);
                         headList.add(partsTitle3);
+                        headList.add(partsTitle4);
                     }
                 }
 
@@ -812,11 +836,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         partsTitle3.add("配件数量" + p);
                         List<String> partsTitle4 = new ArrayList<>();
                         partsTitle4.add("配件总售价" + p);
+                        List<String> partsTitle5 = new ArrayList<>();
+                        partsTitle5.add("配件规格" + p);
 
                         headList.add(partsTitle1);
                         headList.add(partsTitle2);
                         headList.add(partsTitle3);
                         headList.add(partsTitle4);
+                        headList.add(partsTitle5);
                     }
                 }
             }
@@ -1134,6 +1161,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                                 row.add(e.getName());
                                 row.add(e.getSum());
                                 //row.add(e.getAmount());
+
+                                Parts byId = partsService.getById(e.getPartsId());
+                                if(Objects.nonNull(byId)) {
+                                    row.add(StrUtil.isBlank(byId.getSpecification()) ? "" : byId.getSpecification());
+                                }else {
+                                    row.add("");
+                                }
                             });
 
                             Long maxLine = partsMaxLen - workOrderParts.size();
@@ -1141,14 +1175,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                                 row.add("");
                                 row.add("");
                                 row.add("");
-                                //row.add("");
+                                row.add("");
                             }
                         } else {
                             for (int i = 0; i < partsMaxLen; i++) {
                                 row.add("");
                                 row.add("");
                                 row.add("");
-                                //row.add("");
+                                row.add("");
                             }
                         }
                     } else {
@@ -1156,7 +1190,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                             row.add("");
                             row.add("");
                             row.add("");
-                            //row.add("");
+                            row.add("");
                         }
                     }
 
@@ -1185,10 +1219,18 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                                row.add(e.getName());
                                row.add(e.getSum());
                                row.add(e.getAmount());
+
+                               Parts byId = partsService.getById(e.getPartsId());
+                               if(Objects.nonNull(byId)) {
+                                   row.add(StrUtil.isBlank(byId.getSpecification()) ? "" : byId.getSpecification());
+                               }else {
+                                   row.add("");
+                               }
                            });
 
                            Long maxLine = thirdPartsMaxLen - thirdWorkOrderParts.size();
                            for (int i = 0; i < maxLine; i++) {
+                               row.add("");
                                row.add("");
                                row.add("");
                                row.add("");
@@ -1200,10 +1242,18 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                                row.add("");
                                row.add("");
                                row.add("");
+                               row.add("");
                            }
                        }
                    } else {
-                       for (int i = 0; i < thirdPartsMaxLen + 7; i++) {
+                       for (int i = 0; i < 7; i++) {
+                           row.add("");
+                       }
+                       for (int i = 0; i < thirdPartsMaxLen; i++) {
+                           row.add("");
+                           row.add("");
+                           row.add("");
+                           row.add("");
                            row.add("");
                        }
                    }
@@ -1264,10 +1314,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         partsTitle2.add("配件名称" + p);
                         List<String> partsTitle3 = new ArrayList<>();
                         partsTitle3.add("配件数量" + p);
+                        List<String> partsTitle4 = new ArrayList<>();
+                        partsTitle4.add("配件规格" + p);
 
                         headList.add(partsTitle1);
                         headList.add(partsTitle2);
                         headList.add(partsTitle3);
+                        headList.add(partsTitle4);
                     }
                 }
 
@@ -1281,11 +1334,14 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         partsTitle3.add("配件数量" + p);
                         List<String> partsTitle4 = new ArrayList<>();
                         partsTitle4.add("配件总售价" + p);
+                        List<String> partsTitle5 = new ArrayList<>();
+                        partsTitle5.add("配件规格" + p);
 
                         headList.add(partsTitle1);
                         headList.add(partsTitle2);
                         headList.add(partsTitle3);
                         headList.add(partsTitle4);
+                        headList.add(partsTitle5);
                     }
                 }
             }
