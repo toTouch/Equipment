@@ -83,8 +83,9 @@ public class JsonAdminPartsController {
     @PostMapping("admin/parts/upload")
     public R upload(MultipartFile file) throws IOException {
         ExcelReader excelReader = null;
+        R result = R.ok();
         try {
-            excelReader = EasyExcel.read(file.getInputStream(), PartsInfo.class, new PartsListener(partsService)).build();
+            excelReader = EasyExcel.read(file.getInputStream(), PartsInfo.class, new PartsListener(partsService, result)).build();
         } catch (Exception e) {
             log.error("insert iotCard error", e);
             if (e.getCause() instanceof ExcelDataConvertException) {
@@ -107,6 +108,6 @@ public class JsonAdminPartsController {
         ReadSheet readSheet = EasyExcel.readSheet(0).build();
         excelReader.read(readSheet);
         excelReader.finish();
-        return R.ok();
+        return result;
     }
 }
