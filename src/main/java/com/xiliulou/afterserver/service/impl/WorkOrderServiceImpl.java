@@ -2995,7 +2995,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             //这里小程序显示，已处理提交审核的工单也会显示在已处理工单中，导致不知道提交到哪，所以排序
             //未通过 -->  未审核 -->  待审核 --> 未审核（一般不会出现)
             if(Objects.equals(status, WorkOrder.STATUS_PROCESSING)) {
-                Map<Integer, List<WorkOrderAssignmentVo>> collect = data.parallelStream().collect(Collectors.groupingBy(WorkOrderAssignmentVo::getAuditStatus));
+                Map<Integer, List<WorkOrderAssignmentVo>> collect = Optional.ofNullable(data).orElse(new ArrayList<>()).parallelStream().collect(Collectors.groupingBy(WorkOrderAssignmentVo::getAuditStatus));
                 List<WorkOrderAssignmentVo> result = new ArrayList<>();
                 result.addAll(Optional.ofNullable(collect.get(2)).orElse(new ArrayList<>()).stream().sorted(Comparator.comparing(WorkOrderAssignmentVo::getCreateTime).reversed()).collect(Collectors.toList()));
                 result.addAll(Optional.ofNullable(collect.get(0)).orElse(new ArrayList<>()).stream().sorted(Comparator.comparing(WorkOrderAssignmentVo::getCreateTime).reversed()).collect(Collectors.toList()));
