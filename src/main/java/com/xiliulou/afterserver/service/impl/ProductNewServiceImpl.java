@@ -790,6 +790,18 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             statusSet.add(status);
         });
 
+        AuditProcessVo preAuditProcessVo = null;
+        AuditProcessVo postAuditProcessVo = null;
+        for(AuditProcessVo item : voList) {
+            if (Objects.equals(AuditProcess.TYPE_PRE, item.getType())) {
+                preAuditProcessVo = item;
+            }
+
+            if (Objects.equals(AuditProcess.TYPE_POST, item.getType())) {
+                postAuditProcessVo = item;
+            }
+        }
+
         //获取压测状态
         AuditProcessVo testAuditProcessVo = auditProcessService.createTestAuditProcessVo();
         //获取当前压测状态，
@@ -798,13 +810,11 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             testAuditProcessVo.setStatus(AuditProcessVo.STATUS_FINISHED);
         } else {
             //如果测试未完成，需要看前置检查是否完成：完成则压测正在执行，未完则置灰
-            voList.forEach(item -> {
-                if (Objects.equals(AuditProcess.TYPE_PRE, item.getType())) {
-                    testAuditProcessVo.setStatus(
-                        Objects.equals(item.getStatus(), AuditProcessVo.STATUS_FINISHED)
-                            ? AuditProcessVo.STATUS_EXECUTING : AuditProcessVo.STATUS_UNFINISHED);
-                }
-            });
+            if(Objects.nonNull(preAuditProcessVo)) {
+                testAuditProcessVo.setStatus(
+                    Objects.equals(preAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED)
+                        ? AuditProcessVo.STATUS_EXECUTING : AuditProcessVo.STATUS_UNFINISHED);
+            }
         }
         voList.add(1, testAuditProcessVo);
         statusSet.add(testAuditProcessVo.getStatus());
@@ -818,6 +828,12 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         deliverVo.setStatus(flag ? ProductNewProcessInfoVo.STATUS_FINISHED
             : ProductNewProcessInfoVo.STATUS_UN_FINISHED);
         voList.add(deliverVo);
+
+        if(Objects.equals(preAuditProcessVo, AuditProcessVo.STATUS_FINISHED)
+            && Objects.equals(testAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED)
+            && !Objects.equals(postAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED)) {
+            postAuditProcessVo.setStatus(AuditProcessVo.STATUS_EXECUTING);
+        }
 
         return R.ok(vo);
     }
