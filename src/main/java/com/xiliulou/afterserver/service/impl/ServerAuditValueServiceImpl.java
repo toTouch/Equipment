@@ -107,6 +107,7 @@ public class ServerAuditValueServiceImpl extends ServiceImpl<ServerAuditValueMap
         updateWorkOrderServer.setId(workOrderServer.get(0).getId());
         updateWorkOrderServer.setSolution(query.getSolution());
         updateWorkOrderServer.setSolutionTime(System.currentTimeMillis());
+        updateWorkOrderServer.setHasParts(query.getHasParts());
         updateWorkOrderServer.setPrescription(updateWorkOrderServer.getSolutionTime() - Optional.ofNullable(workOrderOld.getAssignmentTime()).orElse(0L));
         workOrderServerService.updateById(updateWorkOrderServer);
 
