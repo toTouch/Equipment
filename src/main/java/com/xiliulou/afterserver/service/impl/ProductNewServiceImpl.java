@@ -834,12 +834,12 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             : ProductNewProcessInfoVo.STATUS_UN_FINISHED);
         voList.add(deliverVo);
 
-
         if(Objects.equals(preAuditProcessVo, AuditProcessVo.STATUS_FINISHED)
             && Objects.equals(testAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED)
             && !Objects.equals(postAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED)) {
             postAuditProcessVo.setStatus(AuditProcessVo.STATUS_EXECUTING);
         }
+
         return R.ok(vo);
     }
 
