@@ -2308,9 +2308,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         return R.fail("工单必须添加第三方责任人");
                     }
 
-                    if (!checkAndclearEntry(item.getThirdWorkOrderParts())) {
-                        return R.fail("请添加相关物料信息");
-                    }
+                    checkAndclearEntry(item.getThirdWorkOrderParts());
                 }
             }
             workOrder.setAssignmentTime(workOrder.getCreateTime());
@@ -2319,7 +2317,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         for (WorkOrderServerQuery item : workOrder.getWorkOrderServerList()) {
             if (Objects.equals(item.getHasParts(), WorkOrderServer.HAS_PARTS)) {
                 if (!checkAndclearEntry(item.getWorkOrderParts())) {
-                    return R.fail("请添加相关物料信息");
+                    return R.fail("请添加服务商相关物料信息");
                 }
             }
         }
@@ -2413,7 +2411,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         Iterator<WorkOrderParts> iterator = workOrderParts.iterator();
         while (iterator.hasNext()) {
             WorkOrderParts next = iterator.next();
-            if(Objects.isNull(next.getPartsId()) || Objects.isNull(next.getSum())) {
+            if(Objects.isNull(next.getPartsId()) || Objects.isNull(next.getSum()) || Objects.isNull(next.getSellPrice())) {
                 iterator.remove();
             }
         }
@@ -2570,9 +2568,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         return R.fail("工单必须添加第三方责任人");
                     }
 
-                    if (!checkAndclearEntry(item.getThirdWorkOrderParts())) {
-                        return R.fail("请添加相关物件信息");
-                    }
+                    checkAndclearEntry(item.getThirdWorkOrderParts());
                 }
             }
             //workOrder.setAssignmentTime(workOrder.getCreateTime());
@@ -2581,7 +2577,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         for (WorkOrderServerQuery item : workOrder.getWorkOrderServerList()) {
             if (Objects.equals(item.getHasParts(), WorkOrderServer.HAS_PARTS)) {
                 if (!checkAndclearEntry(item.getWorkOrderParts())) {
-                    return R.fail("请添加相关物件信息");
+                    return R.fail("请添加服务商相关物件信息");
                 }
             }
         }
