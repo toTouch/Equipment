@@ -157,7 +157,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         }
 
         Parts partsNameAndSpecification =  queryByNameAndSpecification(partsQuery.getName(), partsQuery.getSpecification());
-        if(Objects.nonNull(partsNameAndSpecification)) {
+        if(Objects.nonNull(partsNameAndSpecification) && !Objects.equals(partsNameAndSpecification.getId(), parts.getId())) {
             return R.fail("相同规格物料已存在，请检查");
         }
 
