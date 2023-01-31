@@ -353,8 +353,8 @@ public class AdminJsonPointNewController {
 
         ArrayList<List<Object>> pointExcelVos = new ArrayList<>();
 
-        //pointNews.forEach(item -> {
-        for(PointNew item : pointNews) {
+        pointNews.parallelStream().forEachOrdered(item -> {
+        //for(PointNew item : pointNews) {
             //PointExcelVo pointExcelVo = new PointExcelVo();
             List<Object> list = new ArrayList<>();
             //审核状态
@@ -676,8 +676,8 @@ public class AdminJsonPointNewController {
                     pointExcelVos.add(lineList);
                 });
             }
-        }
-        //});
+        //}
+        });
 
         String fileName = "点位.xlsx";
         try {
