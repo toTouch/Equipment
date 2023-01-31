@@ -157,6 +157,19 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
             return R.fail(null, "未查询到相关用户");
         }
 
+        //如果为后置检查则需要检查前置检测与老化测试是否完成
+        if(Objects.equals(AuditProcess.TYPE_POST, type)){
+            AuditProcess postAuditProcess = this.getByType(AuditProcess.TYPE_PRE);
+            Integer status = this.getAuditProcessStatus(postAuditProcess, productNew);
+            if(!Objects.equals(status, AuditProcessVo.STATUS_FINISHED)) {
+                return R.fail(null, "前置检测未完成，请先完成前置检测");
+            }
+
+            if(!Objects.equals(productNew.getTestResult(), ProductNew.TEST_RESULT_SUCCESS)){
+                return R.fail(null, "老化测试未完成，请先完成老化测试");
+            }
+        }
+
         //查询组件
         AuditProcess auditProcess = getByType(type);
         if(Objects.isNull(auditProcess)) {

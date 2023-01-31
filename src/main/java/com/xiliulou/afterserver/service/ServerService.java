@@ -11,4 +11,6 @@ public interface ServerService extends IService<Server> {
     IPage getPage(Long offset, Long size, Server server);
 
     R queryServerPull(String name);
+
+    List<Integer> getByIdsByName(String serverName);
 }

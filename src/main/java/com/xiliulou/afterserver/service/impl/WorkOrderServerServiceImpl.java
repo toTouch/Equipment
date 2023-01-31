@@ -53,6 +53,11 @@ public class WorkOrderServerServiceImpl extends ServiceImpl<WorkOrderServerMappe
     }
 
     @Override
+    public List<Integer> getIdsByserverIds(List<Integer> serverIds) {
+        return this.baseMapper.getIdsByserverIds(serverIds);
+    }
+
+    @Override
     public Boolean removeByWorkOrderId(Long id) {
         return this.baseMapper.delete(new UpdateWrapper<WorkOrderServer>().eq("work_order_id", id)) > 0 ;
     }
