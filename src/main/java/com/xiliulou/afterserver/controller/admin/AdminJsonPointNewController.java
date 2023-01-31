@@ -353,67 +353,68 @@ public class AdminJsonPointNewController {
 
         ArrayList<List<Object>> pointExcelVos = new ArrayList<>();
 
-        pointNews.forEach(item -> {
+        //pointNews.forEach(item -> {
+        for(PointNew item : pointNews) {
             //PointExcelVo pointExcelVo = new PointExcelVo();
             List<Object> list = new ArrayList<>();
             //审核状态
-            if(Objects.equals(item.getAuditStatus(), 1)){
+            if (Objects.equals(item.getAuditStatus(), 1)) {
                 list.add("待审核");
-            }else if(Objects.equals(item.getAuditStatus(), 2)){
+            } else if (Objects.equals(item.getAuditStatus(), 2)) {
                 list.add("未通过");
-            }else if(Objects.equals(item.getAuditStatus(), 3)){
+            } else if (Objects.equals(item.getAuditStatus(), 3)) {
                 list.add("已通过");
-            }else{
+            } else {
                 list.add("");
             }
 
             //产品系列
             String productSeriesName = "";
-            if("1".equals(String.valueOf(item.getProductSeries()))){
+            if ("1".equals(String.valueOf(item.getProductSeries()))) {
                 productSeriesName = "取餐柜";
-            }else if("2".equals(String.valueOf(item.getProductSeries()))){
+            } else if ("2".equals(String.valueOf(item.getProductSeries()))) {
                 productSeriesName = "餐厅柜";
-            }else if("3".equals(String.valueOf(item.getProductSeries()))){
+            } else if ("3".equals(String.valueOf(item.getProductSeries()))) {
                 productSeriesName = "换电柜";
-            }else if("4".equals(String.valueOf(item.getProductSeries()))){
+            } else if ("4".equals(String.valueOf(item.getProductSeries()))) {
                 productSeriesName = "充电柜";
-            }else if("5".equals(String.valueOf(item.getProductSeries()))){
+            } else if ("5".equals(String.valueOf(item.getProductSeries()))) {
                 productSeriesName = "寄存柜";
-            }else if("6".equals(String.valueOf(item.getProductSeries()))){
+            } else if ("6".equals(String.valueOf(item.getProductSeries()))) {
                 productSeriesName = "生鲜柜";
             }
             list.add(productSeriesName);
 
             //城市名称
-            if (Objects.nonNull(item.getCityId())){
+            if (Objects.nonNull(item.getCityId())) {
                 City byId = cityService.getById(item.getCityId());
-                if (Objects.nonNull(byId)){
+                if (Objects.nonNull(byId)) {
                     Province province = provinceService.queryByIdFromDB(byId.getPid());
-                    if(Objects.nonNull(province)) {
+                    if (Objects.nonNull(province)) {
                         list.add(province.getName());
                         list.add(byId.getName());
-                    }else {
+                    } else {
                         list.add("");
                         list.add(byId.getName());
                     }
-                }else{
+                } else {
                     list.add("");
                     list.add("");
                 }
-            }else{
+            } else {
                 list.add("");
                 list.add("");
             }
 
             //客户名称
-            if (Objects.nonNull(item.getCustomerId())){
+            if (Objects.nonNull(item.getCustomerId())) {
                 Customer byId = customerService.getById(item.getCustomerId());
-                if (Objects.nonNull(byId)){
+                if (Objects.nonNull(byId)) {
                     list.add(byId.getName());
-                }else{
+                } else {
                     list.add("");
                 }
-            }else{
+            } else {
                 list.add("");
             }
 
@@ -422,59 +423,59 @@ public class AdminJsonPointNewController {
 
             //点位状态
             // 状态 1,移机,2运营中,3:拆机,4:初始化，5：待安装
-            if (Objects.isNull(item.getStatus())){
+            if (Objects.isNull(item.getStatus())) {
                 list.add("");
-            }else if (Objects.equals(item.getStatus(),1)){
+            } else if (Objects.equals(item.getStatus(), 1)) {
                 list.add("移机");
-            }else if (Objects.equals(item.getStatus(),2)){
+            } else if (Objects.equals(item.getStatus(), 2)) {
                 list.add("运营中");
-            }else if (Objects.equals(item.getStatus(),3)){
+            } else if (Objects.equals(item.getStatus(), 3)) {
                 list.add("已拆机");
-            }else if (Objects.equals(item.getStatus(),4)){
+            } else if (Objects.equals(item.getStatus(), 4)) {
                 list.add("初始化");
-            }else if (Objects.equals(item.getStatus(),5)){
+            } else if (Objects.equals(item.getStatus(), 5)) {
                 list.add("待安装");
-            }else if (Objects.equals(item.getStatus(),6)){
+            } else if (Objects.equals(item.getStatus(), 6)) {
                 list.add("运输中");
-            }else if (Objects.equals(item.getStatus(),7)){
+            } else if (Objects.equals(item.getStatus(), 7)) {
                 list.add("安装中");
-            }else if (Objects.equals(item.getStatus(),8)){
+            } else if (Objects.equals(item.getStatus(), 8)) {
                 list.add("安装完成");
-            }else if (Objects.equals(item.getStatus(),9)){
+            } else if (Objects.equals(item.getStatus(), 9)) {
                 list.add("已暂停");
-            }else if (Objects.equals(item.getStatus(),10)){
+            } else if (Objects.equals(item.getStatus(), 10)) {
                 list.add("已取消");
-            }else if (Objects.equals(item.getStatus(),11)){
+            } else if (Objects.equals(item.getStatus(), 11)) {
                 list.add("已过保");
             }
 
             //创建人
-            if(Objects.nonNull(item.getCreateUid())){
+            if (Objects.nonNull(item.getCreateUid())) {
                 User user = userService.getUserById(item.getCreateUid());
-                if(Objects.nonNull(user)){
+                if (Objects.nonNull(user)) {
                     list.add(user.getUserName());
-                }else{
+                } else {
                     list.add("");
                 }
-            }else{
+            } else {
                 list.add("");
             }
 
             //创建时间
             if (item.getCreateTime() != null) {
                 list.add(DateUtils.stampToDate(item.getCreateTime().toString()));
-            }else{
+            } else {
                 list.add("");
             }
 
             // 安装类型 1:室外 2:半室外3：室内
-            if (Objects.isNull(item.getInstallType())){
+            if (Objects.isNull(item.getInstallType())) {
                 list.add("");
-            }else if (Objects.equals(item.getInstallType(),1)){
+            } else if (Objects.equals(item.getInstallType(), 1)) {
                 list.add("室外");
-            }else if (Objects.equals(item.getInstallType(),2)){
+            } else if (Objects.equals(item.getInstallType(), 2)) {
                 list.add("半室外");
-            }else if (Objects.equals(item.getInstallType(),3)){
+            } else if (Objects.equals(item.getInstallType(), 3)) {
                 list.add("室内");
             }
 
@@ -482,10 +483,11 @@ public class AdminJsonPointNewController {
             list.add(item.getCanopyCount() == null ? "" : item.getCanopyCount());
 
             //是否录入资产编码
-            List<PointProductBind> pointProductBinds = pointProductBindService.queryByPointNewIdAndBindType(item.getId(), PointProductBind.TYPE_POINT);
-            if(CollectionUtil.isEmpty(pointProductBinds)){
+            List<PointProductBind> pointProductBinds = pointProductBindService
+                .queryByPointNewIdAndBindType(item.getId(), PointProductBind.TYPE_POINT);
+            if (CollectionUtil.isEmpty(pointProductBinds)) {
                 list.add("否");
-            }else{
+            } else {
                 list.add("是");
             }
 
@@ -494,7 +496,7 @@ public class AdminJsonPointNewController {
             LambdaQueryWrapper<File> fileLambdaQueryWrapper = new LambdaQueryWrapper<>();
             LambdaQueryWrapper<File> eq = fileLambdaQueryWrapper.eq(File::getBindId, item.getId());
             List<File> files = fileMapper.selectList(eq);
-            if(CollectionUtil.isEmpty(files)){
+            if (CollectionUtil.isEmpty(files)) {
                 list.add("0");
             } else {
                 list.add(files.size());
@@ -514,7 +516,7 @@ public class AdminJsonPointNewController {
             //安装时间
             if (item.getCreateTime() != null) {
                 list.add(DateUtils.stampToDate(item.getInstallTime().toString()));
-            }else{
+            } else {
                 list.add("");
             }
             //质保有效期
@@ -522,25 +524,26 @@ public class AdminJsonPointNewController {
             //质保结束时间
             if (item.getWarrantyTime() != null) {
                 list.add(DateUtils.stampToDate(item.getWarrantyTime().toString()));
-            }else{
+            } else {
                 list.add("");
             }
             //施工完成时间
             if (item.getCompletionTime() != null) {
                 list.add(DateUtils.stampToDate(item.getCompletionTime().toString()));
-            }else{
+            } else {
                 list.add("");
             }
 
             //入账
             list.add(item.getIsEntry() == null ? "" : (item.getIsEntry() == 0 ? "否" : "是"));
             //验收
-            list.add(item.getIsAcceptance() == null ? "" : (item.getIsAcceptance() == 0 ? "否" : "是"));
+            list.add(
+                item.getIsAcceptance() == null ? "" : (item.getIsAcceptance() == 0 ? "否" : "是"));
 
             //下单时间
             if (item.getOrderTime() != null) {
                 list.add(DateUtils.stampToDate(item.getOrderTime().toString()));
-            }else{
+            } else {
                 list.add("");
             }
 
@@ -556,7 +559,7 @@ public class AdminJsonPointNewController {
             //审核时间
             if (item.getAuditTime() != null) {
                 list.add(DateUtils.stampToDate(item.getAuditTime().toString()));
-            }else{
+            } else {
                 list.add("");
             }
 
@@ -601,17 +604,21 @@ public class AdminJsonPointNewController {
 
             //TODO
             //摄像头信息
-            if(Objects.nonNull(item.getCameraInfo())){
-                List<CameraInfoQuery> cameraInfoQuery = JSON.parseArray(item.getCameraInfo(), CameraInfoQuery.class);;
-                if(!CollectionUtils.isEmpty(cameraInfoQuery)){
+            if (Objects.nonNull(item.getCameraInfo())) {
+                List<CameraInfoQuery> cameraInfoQuery = JSON
+                    .parseArray(item.getCameraInfo(), CameraInfoQuery.class);
+                ;
+                if (!CollectionUtils.isEmpty(cameraInfoQuery)) {
                     int len = 0;
-                    for(CameraInfoQuery cameraInfo : cameraInfoQuery){
+                    for (CameraInfoQuery cameraInfo : cameraInfoQuery) {
                         //摄像头运营商
-                        list.add(cameraInfo.getCameraSupplier() == null ? "" : cameraInfo.getCameraSupplier());
+                        list.add(cameraInfo.getCameraSupplier() == null ? ""
+                            : cameraInfo.getCameraSupplier());
                         //摄像头序列号
                         list.add(cameraInfo.getCameraSn() == null ? "" : cameraInfo.getCameraSn());
                         //摄像头卡号
-                        list.add(cameraInfo.getCameraNumber() == null ? "" : cameraInfo.getCameraNumber());
+                        list.add(cameraInfo.getCameraNumber() == null ? ""
+                            : cameraInfo.getCameraNumber());
 
                         len++;
                     }
@@ -630,7 +637,7 @@ public class AdminJsonPointNewController {
                         list.add("");
                     }
                 }
-            }else{
+            } else {
                 for (int i = 0; i < finalMax; i++) {
                     list.add("");
                     list.add("");
@@ -638,14 +645,14 @@ public class AdminJsonPointNewController {
                 }
             }
 
-            if(CollectionUtils.isEmpty(pointProductBinds)) {
+            if (CollectionUtils.isEmpty(pointProductBinds)) {
                 pointExcelVos.add(list);
             } else {
                 pointProductBinds.parallelStream().forEach(pointProductBind -> {
                     List<Object> lineList = new ArrayList<>(list);
                     ProductNew productNew = productNewMapper
                         .queryById(pointProductBind.getProductId());
-                    if(Objects.isNull(productNew)) {
+                    if (Objects.isNull(productNew)) {
                         lineList.add("");
                         lineList.add("");
                         lineList.add("");
@@ -653,7 +660,7 @@ public class AdminJsonPointNewController {
                     }
 
                     Product byId = productService.getById(productNew.getModelId());
-                    if(Objects.isNull(byId)) {
+                    if (Objects.isNull(byId)) {
                         lineList.add("");
                         lineList.add("");
                         lineList.add("");
@@ -661,14 +668,16 @@ public class AdminJsonPointNewController {
                     }
 
                     lineList.add(StringUtils.isEmpty(byId.getName()) ? "" : byId.getName());
-                    lineList.add(Objects.isNull(productNew.getNo())? "" : productNew.getNo());
-                    lineList.add(Objects.equals(byId.getBuyType(), Product.BUY_TYPE_CENTRALIZED)? "集采" : "非集采");
+                    lineList.add(Objects.isNull(productNew.getNo()) ? "" : productNew.getNo());
+                    lineList.add(
+                        Objects.equals(byId.getBuyType(), Product.BUY_TYPE_CENTRALIZED) ? "集采"
+                            : "非集采");
 
                     pointExcelVos.add(lineList);
                 });
             }
-
-        });
+        }
+        //});
 
         String fileName = "点位.xlsx";
         try {
