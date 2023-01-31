@@ -281,8 +281,8 @@ public class AdminJsonPointNewController {
             throw new NullPointerException("请选择开始时间和结束时间");
         }
 
-        if (pointNews.isEmpty()){
-            return;
+        if (CollectionUtils.isEmpty(pointNews)){
+            throw new NullPointerException("查询内容为空，无法导出");
         }
 
         Sheet sheet = new Sheet(1,0);
