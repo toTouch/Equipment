@@ -706,7 +706,7 @@ public class AdminJsonPointNewController {
                 }
                 //}
             } catch (Exception e) {
-                log.error("pointExcel Error" + e);
+                log.error("pointExcel Error" , e);
             }
         });
 
