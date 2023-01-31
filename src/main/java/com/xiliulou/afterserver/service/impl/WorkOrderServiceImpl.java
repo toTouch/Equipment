@@ -3090,7 +3090,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     return R.fail("工单必须添加第三方责任人");
                 }
 
-                checkAndclearEntry(item.getThirdWorkOrderParts())
+                checkAndclearEntry(item.getThirdWorkOrderParts());
             }
         }
 
