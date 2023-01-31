@@ -39,6 +39,8 @@ public class JsonUserPointProductController {
     private StorageConfig storageConfig;
     @Autowired
     private AliyunOssService aliyunOssService;
+    @Autowired
+    private WorkOrderService workOrderService;
 
 
 
@@ -119,6 +121,11 @@ public class JsonUserPointProductController {
                     this.removeFile(item.getId(), 1);//1为视频
                 });
             }
+
+            WorkOrder update = new WorkOrder();
+            update.setId(file.getBindId());
+            update.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
+            workOrderService.updateById(update);
         }
 
 

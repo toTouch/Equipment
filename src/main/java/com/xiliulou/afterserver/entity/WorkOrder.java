@@ -100,8 +100,7 @@ public class WorkOrder implements Serializable {
 
     private Long daySumNo;
 
-
-    /**
+ /**
      * 第三方结算状态 无需结算 1，未结算 2，已结算 3
      */
     public static final Integer THIRD_PAYMENT_UNWANTED = 1;

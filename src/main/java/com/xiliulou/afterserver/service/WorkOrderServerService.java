@@ -26,4 +26,6 @@ public interface WorkOrderServerService extends IService<WorkOrderServer> {
     Integer queryMaxCountByWorkOrderId(List<Long> workOrderIds);
 
     List<WorkOrderServerQuery> queryByWorkOrderId(Long workOrderId);
+
+    List<Integer> getIdsByserverIds(List<Integer> serverIds);
 }

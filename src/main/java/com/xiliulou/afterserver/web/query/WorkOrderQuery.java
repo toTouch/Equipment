@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.web.query;
 
 import com.xiliulou.afterserver.entity.WorkOrder;
+import com.xiliulou.afterserver.entity.WorkOrderParts;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -49,4 +50,5 @@ public class WorkOrderQuery extends WorkOrder {
     private String thirdResponsiblePerson;
     private String serverName;
     private Integer productSeries;
+    private List<Integer> workOrderIds;
 }

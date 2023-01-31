@@ -3,29 +3,30 @@
 <mapper namespace="com.xiliulou.afterserver.mapper.WorkOrderServerMapper">
 
     <resultMap id="workOrderServerMap" type="com.xiliulou.afterserver.web.query.WorkOrderServerQuery">
-        <result column="id" property="id" jdbcType="INTEGER"></result>
-        <result column="work_order_id" property="workOrderId" jdbcType="INTEGER"></result>
-        <result column="server_id" property="serverId" jdbcType="INTEGER"></result>
-        <result column="server_name" property="serverName" jdbcType="VARCHAR"></result>
-        <result column="artificial_fee" property="artificialFee" jdbcType="DECIMAL"></result>
-        <result column="material_fee" property="materialFee" jdbcType="DECIMAL"></result>
-        <result column="payment_method" property="paymentMethod" jdbcType="INTEGER"></result>
-        <result column="solution" property="solution" jdbcType="VARCHAR"></result>
-        <result column="solution_time" property="solutionTime" jdbcType="INTEGER"></result>
-        <result column="prescription" property="prescription" jdbcType="INTEGER"></result>
-        <result column="is_use_third" property="isUseThird" jdbcType="VARCHAR"></result>
-        <result column="third_company_type" property="thirdCompanyType" jdbcType="INTEGER"></result>
-        <result column="third_company_id" property="thirdCompanyId" jdbcType="VARCHAR"></result>
-        <result column="third_company_name" property="thirdCompanyName" jdbcType="VARCHAR"></result>
-        <result column="fee" property="fee" jdbcType="DECIMAL"></result>
-        <result column="third_payment_status" property="thirdPaymentStatus" jdbcType="INTEGER"></result>
-        <result column="third_reason" property="thirdReason" jdbcType="VARCHAR"></result>
-        <result column="third_responsible_person" property="thirdResponsiblePerson" jdbcType="VARCHAR"></result>
+        <result column="id" property="id" jdbcType="INTEGER"/>
+        <result column="work_order_id" property="workOrderId" jdbcType="INTEGER"/>
+        <result column="server_id" property="serverId" jdbcType="INTEGER"/>
+        <result column="server_name" property="serverName" jdbcType="VARCHAR"/>
+        <result column="artificial_fee" property="artificialFee" jdbcType="DECIMAL"/>
+        <result column="material_fee" property="materialFee" jdbcType="DECIMAL"/>
+        <result column="payment_method" property="paymentMethod" jdbcType="INTEGER"/>
+        <result column="solution" property="solution" jdbcType="VARCHAR"/>
+        <result column="solution_time" property="solutionTime" jdbcType="INTEGER"/>
+        <result column="prescription" property="prescription" jdbcType="INTEGER"/>
+        <result column="is_use_third" property="isUseThird" jdbcType="VARCHAR"/>
+        <result column="third_company_type" property="thirdCompanyType" jdbcType="INTEGER"/>
+        <result column="third_company_id" property="thirdCompanyId" jdbcType="VARCHAR"/>
+        <result column="third_company_name" property="thirdCompanyName" jdbcType="VARCHAR"/>
+        <result column="fee" property="fee" jdbcType="DECIMAL"/>
+        <result column="third_payment_status" property="thirdPaymentStatus" jdbcType="INTEGER"/>
+        <result column="third_reason" property="thirdReason" jdbcType="VARCHAR"/>
+        <result column="third_responsible_person" property="thirdResponsiblePerson" jdbcType="VARCHAR"/>
+        <result column="has_parts" property="hasParts" jdbcType="INTEGER"/>
     </resultMap>
 
     <select id="queryByWorkOrderId" resultMap="workOrderServerMap">
         select id, work_order_id, server_id, `server_name`, artificial_fee,material_fee, payment_method, solution, solution_time, prescription, is_use_third, third_company_type,
-        third_company_id, third_company_name, fee, third_payment_status, third_reason, third_responsible_person
+        third_company_id, third_company_name, fee, third_payment_status, third_reason, third_responsible_person, has_parts
         from t_work_order_server
         <where>
             <if test="workOrderId != null">
@@ -49,5 +50,16 @@
           </where>
           group by work_order_id
         ) c
+    </select>
+
+    <select id="getIdsByserverIds" resultType="integer">
+        select work_order_id
+        from t_work_order_server
+        <where>
+            server_id in
+            <foreach collection="serverIds" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
     </select>
 </mapper>
