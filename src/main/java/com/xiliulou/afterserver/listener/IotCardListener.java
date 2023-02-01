@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.listener;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.xiliulou.afterserver.entity.Batch;
 import com.xiliulou.afterserver.entity.Deliver;
 import com.xiliulou.afterserver.entity.IotCard;
@@ -62,9 +63,12 @@ public class IotCardListener extends AnalysisEventListener<IotCardInfo> {
         });
 
         if(Objects.nonNull(iotCardInfo.getBatchName())){
-            Batch batch = batchService.queryByName(iotCardInfo.getBatchName());
-            if(Objects.isNull(batch)){
+            List<Batch> batchs = batchService.queryByName(iotCardInfo.getBatchName());
+            if(CollectionUtils.isEmpty(batchs)){
                 throw new RuntimeException("未查询到相关批次号");
+            }
+            if(batchs.size() > 1) {
+                throw new RuntimeException(iotCardInfo.getBatchName() + "查询到多条相关批次号");
             }
         }else{
             throw new RuntimeException("批次号不能为空，请核对批次号");
@@ -111,8 +115,8 @@ public class IotCardListener extends AnalysisEventListener<IotCardInfo> {
 
             iotCard.setSn(item.getSn());
 
-            Batch batch = batchService.queryByName(item.getBatchName());
-            iotCard.setBatchId(batch.getId());
+            List<Batch> batchs = batchService.queryByName(item.getBatchName());
+            iotCard.setBatchId(batchs.get(0).getId());
 
             Supplier Supplier = supplierService.querySupplierName(item.getSupplierName());
             iotCard.setSupplierId(Supplier.getId());

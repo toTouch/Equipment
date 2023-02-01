@@ -129,15 +129,15 @@ public class BatchServiceImpl implements BatchService {
     }
 
     @Override
-    public Batch queryByName(String batchName) {
-        return batchMapper.selectOne(new QueryWrapper<Batch>().eq("batch_no", batchName));
+    public List<Batch> queryByName(String batchName) {
+        return batchMapper.selectList(new QueryWrapper<Batch>().eq("batch_no", batchName));
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public R saveBatch(Batch batch) {
-        Batch batchOld = queryByName(batch.getBatchNo());
-        if(Objects.nonNull(batchOld)){
+        List<Batch> batchOlds = queryByName(batch.getBatchNo());
+        if(CollectionUtils.isNotEmpty(batchOlds)){
             return R.fail("批次号已存在");
         }
         Product product = productService.getBaseMapper().selectById(batch.getModelId());
