@@ -2411,8 +2411,12 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         Iterator<WorkOrderParts> iterator = workOrderParts.iterator();
         while (iterator.hasNext()) {
             WorkOrderParts next = iterator.next();
-            if(Objects.isNull(next.getPartsId()) || Objects.isNull(next.getSum()) || Objects.isNull(next.getSellPrice())) {
+            if(Objects.isNull(next.getPartsId()) || Objects.isNull(next.getSum())) {
                 iterator.remove();
+            }
+
+            if(Objects.isNull(next.getSellPrice())) {
+                next.setSellPrice(BigDecimal.valueOf(0));
             }
         }
 
