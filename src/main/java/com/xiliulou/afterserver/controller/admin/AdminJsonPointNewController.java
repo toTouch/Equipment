@@ -395,7 +395,9 @@ public class AdminJsonPointNewController {
 
                 //产品系列
                 String productSeriesName = "";
-                if ("1".equals(String.valueOf(item.getProductSeries()))) {
+                if(Objects.isNull(item.getProductSeries())) {
+                    productSeriesName = "";
+                } else if ("1".equals(String.valueOf(item.getProductSeries()))) {
                     productSeriesName = "取餐柜";
                 } else if ("2".equals(String.valueOf(item.getProductSeries()))) {
                     productSeriesName = "餐厅柜";
@@ -407,6 +409,8 @@ public class AdminJsonPointNewController {
                     productSeriesName = "寄存柜";
                 } else if ("6".equals(String.valueOf(item.getProductSeries()))) {
                     productSeriesName = "生鲜柜";
+                }else {
+                    productSeriesName = "";
                 }
                 list.add(productSeriesName);
 
@@ -510,7 +514,7 @@ public class AdminJsonPointNewController {
                 //是否录入资产编码
                 List<PointProductBind> pointProductBinds = pointProductBindService
                     .queryByPointNewIdAndBindType(item.getId(), PointProductBind.TYPE_POINT);
-                if (CollectionUtil.isEmpty(pointProductBinds)) {
+                if (CollectionUtils.isEmpty(pointProductBinds)) {
                     list.add("否");
                 } else {
                     list.add("是");
@@ -540,7 +544,7 @@ public class AdminJsonPointNewController {
                 list.add(item.getAddress() == null ? "" : item.getAddress());
 
                 //安装时间
-                if (item.getCreateTime() != null) {
+                if (item.getInstallTime() != null) {
                     list.add(DateUtils.stampToDate(item.getInstallTime().toString()));
                 } else {
                     list.add("");
@@ -703,6 +707,7 @@ public class AdminJsonPointNewController {
 
                         pointExcelVos.add(lineList);
                     });
+
                 }
                 //}
             } catch (Exception e) {
