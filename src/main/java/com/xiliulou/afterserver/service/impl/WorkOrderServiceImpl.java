@@ -219,7 +219,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 item.setAuditUserName(userById.getUserName());
             }
 
-            //处理图片
+            //工单服务商
             List<WorkOrderServerQuery> workOrderServers = workOrderServerService
                 .queryByWorkOrderIdAndServerId(item.getId(), null);
             item.setWorkOrderServerList(workOrderServers);

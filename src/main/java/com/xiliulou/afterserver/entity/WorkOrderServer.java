@@ -30,6 +30,10 @@ public class WorkOrderServer {
      */
     private BigDecimal materialFee;
     /**
+     * 运费
+     */
+    private BigDecimal deliverFee;
+    /**
      * 结算方式 1--月结 2--现结
      */
     private Integer paymentMethod;
@@ -61,6 +65,7 @@ public class WorkOrderServer {
      * 第三方名字
      */
     private String thirdCompanyName;
+
     /**
      * 工单费用
      */
