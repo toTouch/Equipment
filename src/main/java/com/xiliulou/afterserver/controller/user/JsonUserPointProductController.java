@@ -122,10 +122,10 @@ public class JsonUserPointProductController {
                 });
             }
 
-            WorkOrder update = new WorkOrder();
-            update.setId(file.getBindId());
-            update.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
-            workOrderService.updateById(update);
+//            WorkOrder update = new WorkOrder();
+//            update.setId(file.getBindId());
+//            update.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
+//            workOrderService.updateById(update);
         }
 
 

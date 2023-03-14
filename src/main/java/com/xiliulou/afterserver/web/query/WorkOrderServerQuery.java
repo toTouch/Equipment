@@ -28,6 +28,10 @@ public class WorkOrderServerQuery {
      */
     private BigDecimal artificialFee;
     /**
+     * 运费
+     */
+    private BigDecimal deliverFee;
+    /**
      * 物料费用
      */
     private BigDecimal materialFee;
