@@ -71,10 +71,11 @@ public class AdminJsonBatchController {
         if(Objects.isNull(batch.getType())){
             return R.fail("请输入批次类型");
         }
-        Batch batchOld = batchService.queryByName(batch.getBatchNo());
-        if(Objects.nonNull(batchOld) && !Objects.equals(batchOld.getId(), batch.getId())){
-            return R.fail("批次号已存在");
-        }
+//        旧数据拥有相同批次 这里不再限制
+//        List<Batch> batchOlds = batchService.queryByName(batch.getBatchNo());
+//        if(Objects.nonNull(batchOlds) && !Objects.equals(batchOlds.get(0).getId(), batch.getId())){
+//            return R.fail("批次号已存在");
+//        }
 
         this.batchService.update(batch);
 

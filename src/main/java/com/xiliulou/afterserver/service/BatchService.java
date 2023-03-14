@@ -64,7 +64,7 @@ public interface BatchService {
 
     Long count(String batchNo, Long modelId, Long supplierId);
 
-    Batch queryByName(String batch);
+    List<Batch> queryByName(String batch);
 
     R saveBatch(Batch batch);
 

@@ -219,7 +219,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 item.setAuditUserName(userById.getUserName());
             }
 
-            //处理图片
+            //工单服务商
             List<WorkOrderServerQuery> workOrderServers = workOrderServerService
                 .queryByWorkOrderIdAndServerId(item.getId(), null);
             item.setWorkOrderServerList(workOrderServers);
@@ -2411,8 +2411,12 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         Iterator<WorkOrderParts> iterator = workOrderParts.iterator();
         while (iterator.hasNext()) {
             WorkOrderParts next = iterator.next();
-            if(Objects.isNull(next.getPartsId()) || Objects.isNull(next.getSum()) || Objects.isNull(next.getSellPrice())) {
+            if(Objects.isNull(next.getPartsId()) || Objects.isNull(next.getSum())) {
                 iterator.remove();
+            }
+
+            if(Objects.isNull(next.getSellPrice())) {
+                next.setSellPrice(BigDecimal.valueOf(0));
             }
         }
 
@@ -3090,9 +3094,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     return R.fail("工单必须添加第三方责任人");
                 }
 
-                if (!checkAndclearEntry(item.getThirdWorkOrderParts())) {
-                    return R.fail("请添加相关物件信息");
-                }
+                checkAndclearEntry(item.getThirdWorkOrderParts());
             }
         }
 
