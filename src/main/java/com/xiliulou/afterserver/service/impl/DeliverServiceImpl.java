@@ -123,7 +123,6 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                 if (Objects.nonNull(userById)){
                     records.setUserName(userById.getUserName());
                 }
-               records.setUserName(userById.getUserName());
             }
 
             if(Objects.equals(records.getState(),1)){
