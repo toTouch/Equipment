@@ -3172,6 +3172,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         workOrderServer.setId(old.getId());
                         workOrderServer.setSolution(item.getSolution());
                         workOrderServer.setHasParts(item.getHasParts());
+                        workOrderServer.setDeliverFee(item.getDeliverFee());
                         clareAndAddWorkOrderParts(workOrder.getId(), old.getServerId(), item.getWorkOrderParts(), WorkOrderParts.TYPE_SERVER_PARTS);
                         BigDecimal totalMaterialFee = clareAndAddWorkOrderParts(workOrder.getId(), old.getServerId(), item.getThirdWorkOrderParts(), WorkOrderParts.TYPE_THIRD_PARTS);
 
@@ -3500,6 +3501,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrderServer.setThirdReason(item.getThirdReason());
                 workOrderServer.setThirdResponsiblePerson(item.getThirdResponsiblePerson());
                 workOrderServer.setHasParts(item.getHasParts());
+                workOrderServer.setDeliverFee(item.getDeliverFee());
                 workOrderServer.setCreateTime(System.currentTimeMillis());
 
                 workOrderServerService.save(workOrderServer);
