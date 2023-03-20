@@ -3013,6 +3013,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public R updateAssignment(WorkOrderAssignmentQuery workOrderAssignmentQuery) {
         WorkOrder workOrderOld = this.getById(workOrderAssignmentQuery.getId());
         List<WorkOrderServerQuery> workOrderServerList = workOrderAssignmentQuery
@@ -3446,8 +3447,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
     }
 
-    private void createWorkOrderServer(WorkOrder workOrder,
-        WorkOrderAssignmentQuery workOrderAssignmentQuery) {
+    private void createWorkOrderServer(WorkOrder workOrder, WorkOrderAssignmentQuery workOrderAssignmentQuery) {
         //服务商第三方信息
         Boolean boo = false;
         workOrderServerService.removeByWorkOrderId(workOrder.getId());
