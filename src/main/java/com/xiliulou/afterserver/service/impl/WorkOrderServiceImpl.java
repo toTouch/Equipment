@@ -219,7 +219,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 item.setAuditUserName(userById.getUserName());
             }
 
-            //处理图片
+            //工单服务商
             List<WorkOrderServerQuery> workOrderServers = workOrderServerService
                 .queryByWorkOrderIdAndServerId(item.getId(), null);
             item.setWorkOrderServerList(workOrderServers);
@@ -3013,6 +3013,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public R updateAssignment(WorkOrderAssignmentQuery workOrderAssignmentQuery) {
         WorkOrder workOrderOld = this.getById(workOrderAssignmentQuery.getId());
         List<WorkOrderServerQuery> workOrderServerList = workOrderAssignmentQuery
@@ -3172,6 +3173,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         workOrderServer.setId(old.getId());
                         workOrderServer.setSolution(item.getSolution());
                         workOrderServer.setHasParts(item.getHasParts());
+                        workOrderServer.setDeliverFee(item.getDeliverFee());
                         clareAndAddWorkOrderParts(workOrder.getId(), old.getServerId(), item.getWorkOrderParts(), WorkOrderParts.TYPE_SERVER_PARTS);
                         BigDecimal totalMaterialFee = clareAndAddWorkOrderParts(workOrder.getId(), old.getServerId(), item.getThirdWorkOrderParts(), WorkOrderParts.TYPE_THIRD_PARTS);
 
@@ -3445,8 +3447,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
     }
 
-    private void createWorkOrderServer(WorkOrder workOrder,
-        WorkOrderAssignmentQuery workOrderAssignmentQuery) {
+    private void createWorkOrderServer(WorkOrder workOrder, WorkOrderAssignmentQuery workOrderAssignmentQuery) {
         //服务商第三方信息
         Boolean boo = false;
         workOrderServerService.removeByWorkOrderId(workOrder.getId());
@@ -3500,6 +3501,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrderServer.setThirdReason(item.getThirdReason());
                 workOrderServer.setThirdResponsiblePerson(item.getThirdResponsiblePerson());
                 workOrderServer.setHasParts(item.getHasParts());
+                workOrderServer.setDeliverFee(item.getDeliverFee());
                 workOrderServer.setCreateTime(System.currentTimeMillis());
 
                 workOrderServerService.save(workOrderServer);
