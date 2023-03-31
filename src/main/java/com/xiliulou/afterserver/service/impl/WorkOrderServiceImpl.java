@@ -257,9 +257,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
             //工单配件
             workOrderServers.stream().forEach(t -> {
-                if (Objects.equals(t.getHasParts(), WorkOrderServer.NOT_HAS_PARTS)) {
-                    return;
-                }
                 t.setWorkOrderParts(workOrderPartsService
                     .queryByWorkOrderIdAndServerId(t.getWorkOrderId(), t.getServerId(), WorkOrderParts.TYPE_SERVER_PARTS));
                 t.setThirdWorkOrderParts(workOrderPartsService
