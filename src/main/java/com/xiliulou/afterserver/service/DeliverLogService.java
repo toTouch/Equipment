@@ -14,4 +14,6 @@ import java.util.List;
 public interface DeliverLogService extends IService<DeliverLog> {
 
     List<DeliverLog> getByDeliverId(Long id);
+
+    Integer queryMaxCountBydeliverIds(List<Long> collect);
 }

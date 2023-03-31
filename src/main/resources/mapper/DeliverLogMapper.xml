@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiliulou.afterserver.mapper.DeliverLogMapper">
+    <select id="queryMaxCountBydeliverIds" resultType="integer">
+        select count(1) as num from t_deliver_log
+        <where>
+            deliver_id in
+            <foreach collection="ids" open="(" close=")" separator="," item="id">
+               #{id}
+            </foreach>
+        </where>
+        group by deliver_id
+        order by num desc
+        limit 1
+    </select>
+
+</mapper>
