@@ -33,6 +33,7 @@ import com.xiliulou.afterserver.web.query.DeliverFactoryQuery;
 import com.xiliulou.afterserver.web.query.DeliverQuery;
 import com.xiliulou.afterserver.web.vo.*;
 import com.xiliulou.core.json.JsonUtil;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -243,6 +244,15 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             headTitle.add(s);
             headList.add(headTitle);
         }
+
+        //添加柜子资产编码，查询最大个数
+        Integer noMax = deliverLogService.queryMaxCountBydeliverIds(deliverList.parallelStream().map(Deliver::getId).collect(Collectors.toList()));
+        for (int i = 1; i <= noMax; i++){
+            List<String> headTitle = new ArrayList<String>();
+            headTitle.add("资产编码"+i);
+            headList.add(headTitle);
+        }
+
         for (Product p : productAll){
             List<String> headTitle = new ArrayList<String>();
             headTitle.add(p.getName());
@@ -339,6 +349,27 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             //remark
             row.add(d.getRemark() == null ? "" : d.getRemark() );
 
+            //支持编码
+            List<DeliverLog> byDeliverId = deliverLogService.getByDeliverId(d.getId());
+            if(CollectionUtils.isEmpty(byDeliverId)) {
+                byDeliverId.parallelStream().forEach(item -> {
+                    ProductNew productNew = productNewService.queryByIdFromDB(item.getProductId());
+                    if(Objects.isNull(productNew)) {
+                        return;
+                    }
+
+                    row.add(StringUtils.isBlank(productNew.getNo()) ? "" : productNew.getNo());
+                });
+
+                Integer limitLen = noMax - byDeliverId.size();
+                for (int i = 0; i < limitLen; i++) {
+                    row.add("");
+                }
+            } else {
+                for (int i = 0; i < noMax; i++) {
+                    row.add("");
+                }
+            }
 
             //productAndNum
             if(!StrUtil.isEmpty(d.getProduct())

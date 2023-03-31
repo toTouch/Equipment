@@ -8,6 +8,7 @@ import com.xiliulou.afterserver.mapper.DeliverLogMapper;
 import com.xiliulou.afterserver.mapper.DeliverMapper;
 import com.xiliulou.afterserver.service.DeliverLogService;
 import com.xiliulou.afterserver.service.DeliverService;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,5 +24,13 @@ public class DeliverLogServiceImpl extends ServiceImpl<DeliverLogMapper, Deliver
     @Override
     public List<DeliverLog> getByDeliverId(Long deliverId) {
         return this.baseMapper.selectList(new QueryWrapper<DeliverLog>().eq("deliver_id", deliverId));
+    }
+
+    @Override
+    public Integer queryMaxCountBydeliverIds(List<Long> ids) {
+        if(CollectionUtils.isEmpty(ids)) {
+            return 0;
+        }
+        return this.baseMapper.queryMaxCountBydeliverIds(ids);
     }
 }
