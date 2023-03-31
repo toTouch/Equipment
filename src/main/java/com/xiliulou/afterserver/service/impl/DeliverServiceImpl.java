@@ -351,7 +351,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
 
             //支持编码
             List<DeliverLog> byDeliverId = deliverLogService.getByDeliverId(d.getId());
-            if(CollectionUtils.isEmpty(byDeliverId)) {
+            if(!CollectionUtils.isEmpty(byDeliverId)) {
                 byDeliverId.parallelStream().forEach(item -> {
                     ProductNew productNew = productNewService.queryByIdFromDB(item.getProductId());
                     if(Objects.isNull(productNew)) {
