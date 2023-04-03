@@ -82,6 +82,10 @@ public class WorkOrder implements Serializable {
     private String auditRemarks;
     private Long auditUid;
     /**
+     * 审核时间
+     */
+    private Long auditTime;
+    /**
      * 产品信息
      */
     private String productInfo;
@@ -99,6 +103,10 @@ public class WorkOrder implements Serializable {
     private Long assignmentTime;
 
     private Long daySumNo;
+
+
+
+
 
  /**
      * 第三方结算状态 无需结算 1，未结算 2，已结算 3

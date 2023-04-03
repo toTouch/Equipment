@@ -111,7 +111,8 @@ public class AdminJsonFileController {
             WorkOrder update = new WorkOrder();
             update.setId(file.getBindId());
             update.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
-            workOrderService.updateById(update);
+            update.setAuditTime(null);
+            workOrderService.updateAudit(update);
         }
 
         file.setCreateTime(System.currentTimeMillis());

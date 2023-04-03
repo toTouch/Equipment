@@ -62,4 +62,6 @@ public interface WorkOrderMapper extends BaseMapper<WorkOrder> {
 
     @Select("select max(day_sum_no) from work_order where create_time > #{startTime} and create_time < #{endTime} and type= #{id}")
     Long queryMaxDaySumNoByType(@Param("startTime")Long startTime, @Param("endTime")Long endTime, @Param("id")Long id);
+
+    Integer updateAudit(WorkOrder workOrder);
 }
