@@ -111,4 +111,6 @@ public interface WorkOrderService extends IService<WorkOrder> {
     boolean checkAndclearEntry(List<WorkOrderParts> workOrderParts);
 
     BigDecimal clareAndAddWorkOrderParts(Long oid, Long sid, List<WorkOrderParts> WorkOrderParts, Integer type);
+
+    Integer updateAudit(WorkOrder workOrder);
 }

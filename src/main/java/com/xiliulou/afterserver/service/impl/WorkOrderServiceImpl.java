@@ -314,11 +314,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrderVoList = new ArrayList<>();
             }
             workOrder.setWorkOrderIds(workOrderIds);
-        } else {
-             workOrderVoList = baseMapper.orderList(workOrder);
         }
 
-
+        workOrderVoList = baseMapper.orderList(workOrder);
 
         if (ObjectUtil.isEmpty(workOrderVoList)) {
             throw new CustomBusinessException("没有查询到工单!无法导出！");
@@ -340,7 +338,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
 
-        String[] header = {"审核状态", "工单类型", "点位", "点位状态","点位客户", "柜机系列", "移机起点", "移机终点", "创建人",
+        String[] header = {"审核状态", "审核时间", "工单类型", "点位", "点位状态","点位客户", "柜机系列", "移机起点", "移机终点", "创建人",
             "状态", "描述", "备注", "工单原因", "创建时间", "工单编号", "sn码", "审核内容", "专员", "派单时间"};
 
         String[] serverHeader = {"服务商", "工单费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数","是否更换配件", "是否需要第三方承担费用", " 第三方类型",
@@ -379,6 +377,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             List<Object> row = new ArrayList<>();
             //审核状态
             row.add(this.getAuditStatus(o.getAuditStatus()));
+
+            //审核时间
+            if (Objects.nonNull(o.getAuditTime())) {
+                row.add(simpleDateFormat.format(new Date(o.getAuditTime())));
+            } else {
+                row.add("");
+            }
 
             //typeName
             if (Objects.nonNull(o.getType())) {
@@ -888,7 +893,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         // 动态添加 表头 headList --> 所有表头行集合
         List<List<String>> headList = new ArrayList<List<String>>();
 
-        String[] header = {"审核状态", "工单类型", "点位", "点位状态", "点位客户", "柜机系列", "创建人",
+        String[] header = {"审核状态", "审核时间", "工单类型", "点位", "点位状态", "点位客户", "柜机系列", "创建人",
             "状态", "描述", "备注", "工单原因", "创建时间", "工单编号", "sn码", "审核内容", "专员", "派单时间"};
 
         String[] serverHeader = {"服务商", "工单费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数","是否更换配件", "是否需要第三方承担费用", " 第三方类型",
@@ -2677,7 +2682,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         if(Objects.equals(oldWorkOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_PASSED)
             || Objects.equals(oldWorkOrder.getAuditStatus(), WorkOrder.AUDIT_STATUS_FAIL)) {
-            workOrder.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
+            WorkOrder workOrderAuditStatusUpdate = new WorkOrder();
+            workOrderAuditStatusUpdate.setId(workOrder.getId());
+            workOrderAuditStatusUpdate.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
+            workOrderAuditStatusUpdate.setAuditTime(null);
+            updateAudit(workOrderAuditStatusUpdate);
         }
 
         this.baseMapper.updateOne(workOrder);
@@ -2741,6 +2750,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         return totalResult;
+    }
+
+    @Override
+    public Integer updateAudit(WorkOrder workOrder) {
+        return this.baseMapper.updateAudit(workOrder);
     }
 
     private BigDecimal qeuryAmount(Integer sum, BigDecimal price){
@@ -2871,12 +2885,15 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         workOrderUpdate.setId(workOrderAuditStatusQuery.getId());
         workOrderUpdate.setAuditStatus(workOrderAuditStatusQuery.getAuditStatus());
         workOrderUpdate.setAuditRemarks(workOrderAuditStatusQuery.getAuditRemarks());
+
         workOrderUpdate.setAuditUid(uid);
-        if (Objects
-            .equals(workOrderAuditStatusQuery.getAuditStatus(), WorkOrder.AUDIT_STATUS_PASSED)) {
+        if (Objects.equals(workOrderAuditStatusQuery.getAuditStatus(), WorkOrder.AUDIT_STATUS_PASSED)) {
             workOrderUpdate.setStatus(WorkOrder.STATUS_FINISHED);
+            workOrderUpdate.setAuditTime(System.currentTimeMillis());
+        } else {
+            workOrderUpdate.setAuditTime(null);
         }
-        this.updateById(workOrderUpdate);
+        this.updateAudit(workOrderUpdate);
         return R.ok();
     }
 
@@ -3285,7 +3302,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         WorkOrder update = new WorkOrder();
         update.setId(id);
         update.setAuditStatus(WorkOrder.AUDIT_STATUS_WAIT);
-        this.updateById(update);
+        update.setAuditTime(null);
+        this.updateAudit(update);
 
         this.saveWorkAuditNotify(workOrder);
         this.sendWorkAuditNotifyMq(workOrder);
