@@ -67,7 +67,7 @@
         <id property="commissionerId" column="wo_commissioner_id"/>
         <id property="assignmentTime" column="wo_assignment_time"/>
         <id property="productSeries" column="p_product_series"/>
-
+        <id property="auditTime" column="wo_audit_time"/>
     </resultMap>
 
     <resultMap id="userMap" type="com.xiliulou.afterserver.web.vo.WorkOrderAssignmentVo">
@@ -118,6 +118,7 @@
         wo.destination_type as wo_destination_type,
         wo.audit_status as wo_audit_status,
         wo.audit_remarks as wo_audit_remarks,
+        wo.audit_time as wo_audit_time,
         wo.audit_uid as wo_audit_uid,
         wo.source_type as wo_source_type,
         wo.product_info as wo_product_info,
@@ -157,6 +158,9 @@
             </if>
             <if test="query.createTimeStart != null and query.createTimeEnd != null">
                 and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
+            </if>
+            <if test="query.auditTimeStart != null and query.auditTimeEnd != null">
+                and wo.audit_time BETWEEN #{query.auditTimeStart} and #{query.auditTimeEnd}
             </if>
             <if test="query.workOrderReasonId != null">
                 and wo.work_order_reason_id = #{query.workOrderReasonId}
@@ -206,6 +210,7 @@
         wo.payment_method as wo_payment_method,
         wo.audit_status as wo_audit_status,
         wo.audit_remarks as wo_audit_remarks,
+        wo.audit_time as wo_audit_time,
         wo.source_type as wo_source_type,
         wo.product_info as wo_product_info,
         wo.assignment_time as wo_assignment_time,
@@ -248,6 +253,9 @@
             </if>
             <if test="query.createTimeStart != null and query.createTimeEnd != null">
                 and wo.create_time BETWEEN #{query.createTimeStart} and #{query.createTimeEnd}
+            </if>
+            <if test="query.auditTimeStart != null and query.auditTimeEnd != null">
+                and wo.audit_time BETWEEN #{query.auditTimeStart} and #{query.auditTimeEnd}
             </if>
             <if test="query.workOrderReasonId != null">
                 and wo.work_order_reason_id = #{query.workOrderReasonId}
@@ -600,6 +608,21 @@
             </if>
             <if test="auditStatus != null">
                 audit_status = #{auditStatus}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="updateAudit">
+        update work_order
+        <set>
+            audit_status = #{auditStatus},
+            audit_time = #{auditTime},
+            <if test="auditRemarks != null and auditRemarks != ''">
+                audit_remarks = #{auditRemarks}
+            </if>
+            <if test="status != null">
+                status = #{status}
             </if>
         </set>
         where id = #{id}
