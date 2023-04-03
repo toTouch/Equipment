@@ -11,4 +11,14 @@
         <result property="scope" column="scope"/>
         <result property="remark" column="remark"/>
     </resultMap>
+
+    <select id="warehouseSearch" resultType="com.xiliulou.afterserver.web.vo.PageSearchVo">
+        select id, `name` from `ware_house`
+        <where>
+            <if test="name != null and name != ''">
+                `name` like concat('%', #{name}, '%')
+            </if>
+        </where>
+        limit #{offset}, #{size}
+    </select>
 </mapper>

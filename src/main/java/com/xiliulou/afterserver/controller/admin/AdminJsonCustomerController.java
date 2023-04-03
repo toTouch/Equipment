@@ -92,4 +92,16 @@ public class AdminJsonCustomerController extends BaseController {
         return R.ok();
     }
 
+    @GetMapping("admin/customer/search")
+    public R customerSearch(@RequestParam("offset")Long offset, @RequestParam("size")Long size,
+        @RequestParam(value = "name", required = false)String name){
+        if(Objects.isNull(offset) || offset < 0) {
+            offset = 0L;
+        }
+        if(Objects.isNull(size) || size < 0 || size > 20) {
+            size = 20L;
+        }
+        return customerService.customerSearch(offset, size, name);
+    }
+
 }

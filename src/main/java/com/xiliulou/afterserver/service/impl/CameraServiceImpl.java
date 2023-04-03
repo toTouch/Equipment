@@ -21,6 +21,7 @@ import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.CameraQuery;
 import com.xiliulou.afterserver.web.vo.CameraExportExcelVo;
 import com.xiliulou.afterserver.web.vo.IotCardExportExcelVo;
+import com.xiliulou.afterserver.web.vo.PageSearchVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
