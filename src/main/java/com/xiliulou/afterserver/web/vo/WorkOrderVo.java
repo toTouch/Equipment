@@ -78,6 +78,8 @@ public class WorkOrderVo {
     private Integer auditStatus;
     private String auditRemarks;
     private Long auditUid;
+    //private Long auditTimeMillis;
+    private Long auditTime;
     private String auditUserName;
     private Integer fileCount;
     //private Long prescriptionMillis;
