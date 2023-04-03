@@ -21,6 +21,8 @@ import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.PointQuery;
 import com.xiliulou.afterserver.web.query.WareHouseQuery;
+import com.xiliulou.afterserver.web.vo.PageSearchVo;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -102,5 +104,11 @@ public class WarehouseServiceImpl extends ServiceImpl<WareHouseMapper, WareHouse
     @Override
     public R queryWarehouseLikeNamePull(String name) {
         return R.ok(baseMapper.queryWarehouseLikeNamePull(name));
+    }
+
+    @Override
+    public R warehouseSearch(Long offset, Long size, String name) {
+        List<PageSearchVo> listVo = this.baseMapper.warehouseSearch(offset, size, name);
+        return R.ok(listVo);
     }
 }

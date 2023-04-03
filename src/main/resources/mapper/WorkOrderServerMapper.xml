@@ -23,11 +23,12 @@
         <result column="third_responsible_person" property="thirdResponsiblePerson" jdbcType="VARCHAR"/>
         <result column="has_parts" property="hasParts" jdbcType="INTEGER"/>
         <result column="deliver_fee" property="deliverFee" jdbcType="DECIMAL"/>
+        <result column="third_payment_customer" property="thirdPaymentCustomer" jdbcType="VARCHAR"/>
     </resultMap>
 
     <select id="queryByWorkOrderId" resultMap="workOrderServerMap">
         select id, work_order_id, server_id, `server_name`, artificial_fee,material_fee, payment_method, solution, solution_time, prescription, is_use_third, third_company_type,
-        third_company_id, third_company_name, fee, third_payment_status, third_reason, third_responsible_person, has_parts, deliver_fee
+        third_company_id, third_company_name, fee, third_payment_status, third_payment_customer, third_reason, third_responsible_person, has_parts, deliver_fee
         from t_work_order_server
         <where>
             <if test="workOrderId != null">

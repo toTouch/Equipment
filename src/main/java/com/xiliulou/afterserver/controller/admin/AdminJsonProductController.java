@@ -121,4 +121,16 @@ public class AdminJsonProductController {
         return R.ok(productSerialNumberService.removeById(id));
     }
 
+    @GetMapping("/admin/product/search")
+    public R productSearch(@RequestParam("offset")Long offset, @RequestParam("size")Long size,
+        @RequestParam(value = "name", required = false)String name){
+        if(Objects.isNull(offset) || offset < 0) {
+            offset = 0L;
+        }
+        if(Objects.isNull(size) || size < 0 || size > 20) {
+            size = 20L;
+        }
+
+        return productService.productSearch(offset, size, name);
+    }
 }
