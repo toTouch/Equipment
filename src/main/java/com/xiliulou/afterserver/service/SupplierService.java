@@ -22,4 +22,6 @@ public interface SupplierService extends IService<Supplier> {
     R getUserInfo();
 
     List<SupplierPullVo> querySupplierPull(String name);
+
+    R supplierSearch(Long offset, Long size, String name);
 }

@@ -13,4 +13,6 @@ public interface ServerService extends IService<Server> {
     R queryServerPull(String name);
 
     List<Integer> getByIdsByName(String serverName);
+
+    R serverSearch(Long offset, Long size, String name);
 }
