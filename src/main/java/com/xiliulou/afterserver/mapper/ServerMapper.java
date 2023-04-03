@@ -2,6 +2,7 @@ package com.xiliulou.afterserver.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.xiliulou.afterserver.entity.Server;
+import com.xiliulou.afterserver.web.vo.PageSearchVo;
 import com.xiliulou.afterserver.web.vo.ServerPullVo;
 import org.apache.ibatis.annotations.Select;
 
@@ -21,4 +22,6 @@ public interface ServerMapper extends BaseMapper<Server> {
 
     @Select("select id from server where name like concat('%', #{name}, '%')")
     List<Integer> getByIdsByName(String serverName);
+
+    List<PageSearchVo> serverSearch(Long offset, Long size, String name);
 }

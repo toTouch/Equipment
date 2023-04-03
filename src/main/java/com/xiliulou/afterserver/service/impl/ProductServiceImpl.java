@@ -22,6 +22,7 @@ import com.xiliulou.afterserver.service.WarehouseService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
+import com.xiliulou.afterserver.web.vo.PageSearchVo;
 import com.xiliulou.afterserver.web.vo.ProductExcelVo;
 import com.xiliulou.afterserver.web.vo.ProductSerialNumberExcelVo;
 import com.xiliulou.afterserver.web.vo.ProductSerialNumberVo;
@@ -331,6 +332,12 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     public R queryProductModelPull(String name) {
         List<productModelPullVo> list = this.baseMapper.queryProductModelPull(name);
         return R.ok(list);
+    }
+
+    @Override
+    public R productSearch(Long offset, Long size, String name) {
+        List<PageSearchVo> listVo = this.baseMapper.productSearch(offset, size, name);
+        return R.ok(listVo);
     }
 
 

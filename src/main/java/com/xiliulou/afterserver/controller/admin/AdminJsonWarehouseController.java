@@ -103,4 +103,10 @@ public class AdminJsonWarehouseController extends BaseController {
     public R queryWarehousePull(){
         return warehouseService.queryWarehousePull();
     }
+
+    @GetMapping("admin/warehouse/search")
+    public R warehouseSearch(@RequestParam("offset")Long offset, @RequestParam("size")Long size,
+        @RequestParam(value = "name", required = false)String name){
+        return warehouseService.warehouseSearch(offset, size, name);
+    }
 }

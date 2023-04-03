@@ -358,4 +358,10 @@ public class PointServiceImpl extends ServiceImpl<PointMapper, Point> implements
 
         return this.baseMapper.queryPointCountFromDate(startTime,endTime);
     }
+
+    @Override
+    public R pointSearch(Long offset, Long size, String name) {
+        List<PageSearchVo> listVo = this.baseMapper.pointSearch(offset, size, name);
+        return R.ok(listVo);
+    }
 }
