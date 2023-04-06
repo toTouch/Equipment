@@ -82,6 +82,6 @@ public class ServerServiceImpl extends ServiceImpl<ServerMapper, Server> impleme
     @Override
     public R serverSearch(Long offset, Long size, String name) {
         List<PageSearchVo> voList =  baseMapper.serverSearch(offset, size, name);
-        return null;
+        return R.ok(voList);
     }
 }
