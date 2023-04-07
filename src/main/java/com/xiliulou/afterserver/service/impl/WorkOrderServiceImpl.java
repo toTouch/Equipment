@@ -3522,6 +3522,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrderServer.setHasParts(item.getHasParts());
                 workOrderServer.setDeliverFee(item.getDeliverFee());
                 workOrderServer.setCreateTime(System.currentTimeMillis());
+                workOrderServer.setThirdPaymentCustomer(item.getThirdPaymentCustomer());
 
                 workOrderServerService.save(workOrderServer);
 
