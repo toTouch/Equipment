@@ -314,9 +314,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrderVoList = new ArrayList<>();
             }
             workOrder.setWorkOrderIds(workOrderIds);
+        } else {
+             workOrderVoList = baseMapper.orderList(workOrder);
         }
 
-        workOrderVoList = baseMapper.orderList(workOrder);
+
 
         if (ObjectUtil.isEmpty(workOrderVoList)) {
             throw new CustomBusinessException("没有查询到工单!无法导出！");
@@ -342,7 +344,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             "状态", "描述", "备注", "工单原因", "创建时间", "工单编号", "sn码", "审核内容", "专员", "派单时间"};
 
         String[] serverHeader = {"服务商", "工单费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数","是否更换配件", "是否需要第三方承担费用", " 第三方类型",
-            "第三方公司", "应收第三方人工费", "应收第三方物料费", "支付状态", "第三方结算人", "第三方原因", "第三方对接人"};
+            "第三方公司", "应收第三方人工费","应收第三方运费", "应收第三方物料费", "支付状态", "第三方原因", "第三方对接人"};
 
         List<Product> productAll = productService.list();
 
@@ -699,6 +701,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         row.add(item.getThirdCompanyName() == null ? "" : item.getThirdCompanyName());
                         // "人工费用",
                         row.add(item.getArtificialFee() == null ? "" : item.getArtificialFee());
+                        //运费
+                        row.add(item.getDeliverFee() == null ? "" : item.getDeliverFee());
                         //物料费用
                         row.add(item.getMaterialFee() == null ? "" : item.getMaterialFee());
                         // "支付状态",
@@ -899,7 +903,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             "状态", "描述", "备注", "工单原因", "创建时间", "工单编号", "sn码", "审核内容", "专员", "派单时间"};
 
         String[] serverHeader = {"服务商", "工单费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数","是否更换配件", "是否需要第三方承担费用", " 第三方类型",
-            "第三方公司", "应收第三方人工费", "应收第三方物料费", "支付状态","第三方结算人", "第三方原因", "第三方对接人"};
+            "第三方公司", "应收第三方人工费", "应收第三方运费","应收第三方物料费", "支付状态", "第三方原因", "第三方对接人"};
 
         List<Product> productAll = productService.list();
 
@@ -1206,6 +1210,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                        row.add(item.getThirdCompanyName() == null ? "" : item.getThirdCompanyName());
                        // "人工费用",
                        row.add(item.getArtificialFee() == null ? "" : item.getArtificialFee());
+                       //运费
+                       row.add(item.getDeliverFee() == null ? "" : item.getDeliverFee());
                        //物料费用
                        row.add(item.getMaterialFee() == null ? "" : item.getMaterialFee());
                        // "支付状态",
