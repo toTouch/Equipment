@@ -6,6 +6,7 @@ import com.xiliulou.afterserver.entity.Point;
 import com.xiliulou.afterserver.web.query.IndexDataQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
 import com.xiliulou.afterserver.web.vo.CabinetAndBoxAmountVo;
+import com.xiliulou.afterserver.web.vo.PageSearchVo;
 import com.xiliulou.afterserver.web.vo.PointVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -41,4 +42,6 @@ public interface PointMapper extends BaseMapper<Point> {
     Integer getByStatCount(@Param("years") String years, @Param("mouths") String mouths, @Param("city") String city);
 
     Integer queryPointCountFromDate(@Param("startTime") Long startTime, @Param("endTime") Long endTime);
+
+    List<PageSearchVo> pointSearch(@Param("offset")Long offset,@Param("size") Long size,@Param("name") String name);
 }

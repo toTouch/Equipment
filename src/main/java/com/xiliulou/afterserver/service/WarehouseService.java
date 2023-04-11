@@ -21,4 +21,6 @@ public interface WarehouseService extends IService<WareHouse> {
     R queryWarehousePull();
 
     R queryWarehouseLikeNamePull(String name);
+
+    R warehouseSearch(Long offset, Long size, String name);
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiliulou.afterserver.mapper.CustomerMapper">
+    <select id="customerSearch" resultType="com.xiliulou.afterserver.web.vo.PageSearchVo">
+        select id, name from customer
+        <where>
+            <if test="name != null and name != ''">
+                name like concat('%', #{name}, '%')
+            </if>
+        </where>
+        limit #{offset}, #{size}
+    </select>
+</mapper>

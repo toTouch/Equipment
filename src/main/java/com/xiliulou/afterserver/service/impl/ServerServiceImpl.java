@@ -16,6 +16,7 @@ import com.xiliulou.afterserver.service.WorkOrderService;
 import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.vo.PageSearchVo;
 import com.xiliulou.afterserver.web.vo.ServerPullVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,5 +77,11 @@ public class ServerServiceImpl extends ServiceImpl<ServerMapper, Server> impleme
     @Override
     public List<Integer> getByIdsByName(String serverName) {
         return baseMapper.getByIdsByName(serverName);
+    }
+
+    @Override
+    public R serverSearch(Long offset, Long size, String name) {
+        List<PageSearchVo> voList =  baseMapper.serverSearch(offset, size, name);
+        return R.ok(voList);
     }
 }
