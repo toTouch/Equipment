@@ -619,7 +619,7 @@
             audit_status = #{auditStatus},
             audit_time = #{auditTime},
             <if test="auditRemarks != null and auditRemarks != ''">
-                audit_remarks = #{auditRemarks}
+                audit_remarks = #{auditRemarks},
             </if>
             <if test="status != null">
                 status = #{status}
