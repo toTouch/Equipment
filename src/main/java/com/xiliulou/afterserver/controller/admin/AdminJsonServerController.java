@@ -94,4 +94,17 @@ public class AdminJsonServerController {
         excelReader.finish();
         return R.ok();
     }
+
+    @GetMapping("admin/server/search")
+    public R serverSearch(@RequestParam("offset")Long offset, @RequestParam("size")Long size,
+        @RequestParam(value = "name", required = false)String name) {
+        if(Objects.isNull(offset) || offset < 0) {
+            offset = 0L;
+        }
+        if(Objects.isNull(size) || size < 0 || size > 20) {
+            size = 20L;
+        }
+
+        return serverService.serverSearch(offset, size, name);
+    }
 }

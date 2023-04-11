@@ -41,4 +41,6 @@ public interface PointService extends IService<Point> {
     R updatePoint(PointQuery point);
 
     Integer queryPointCountFromDate(Long startTime, Long endTime);
+
+    R pointSearch(Long offset, Long size, String name);
 }

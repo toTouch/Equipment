@@ -419,5 +419,13 @@
         </if>
     </select>
 
-
+    <select id="pointSearch" resultType="com.xiliulou.afterserver.web.vo.PageSearchVo">
+        select id, `name` from `t_point_new`
+        <where>
+            <if test="name != null and name != ''">
+                `name` like concat('%', #{name}, '%')
+            </if>
+        </where>
+        limit #{offset}, #{size}
+    </select>
 </mapper>

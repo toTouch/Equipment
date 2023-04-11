@@ -14,6 +14,7 @@ import com.xiliulou.afterserver.service.CustomerService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.vo.CustomerPullVo;
+import com.xiliulou.afterserver.web.vo.PageSearchVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -77,4 +78,11 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     public List<CustomerPullVo> queryCustomerPull(String name) {
         return baseMapper.queryCustomerPull(name);
     }
+
+    @Override
+    public R customerSearch(Long offset, Long size, String name) {
+        List<PageSearchVo> listVo = baseMapper.customerSearch(offset, size, name);
+        return R.ok(listVo);
+    }
+
 }

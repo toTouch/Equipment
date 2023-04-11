@@ -75,6 +75,10 @@ public class WorkOrderServer {
      */
     private Integer thirdPaymentStatus;
     /**
+     * 第三方结算人
+     */
+    private String thirdPaymentCustomer;
+    /**
      * 第三方问题
      */
     private String thirdReason;
