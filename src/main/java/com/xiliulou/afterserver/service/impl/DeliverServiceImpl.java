@@ -593,7 +593,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
 
     @Override
     public R factoryDeliver(DeliverFactoryQuery deliverFactoryQuery) {
-        if(!redisService.setNx(CacheConstants.CACHE_FACTORY_DELIVER_LOCK, "ok", 2000L, false)){
+        if(!redisService.setNx(CacheConstants.CACHE_FACTORY_DELIVER_LOCK + SecurityUtils.getUid(), "ok", 2000L, false)){
             return R.fail(null, null,"操作频繁，请稍后再试");
         }
 
