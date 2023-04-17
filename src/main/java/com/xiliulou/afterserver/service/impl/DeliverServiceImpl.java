@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiliulou.afterserver.constant.CacheConstants;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.DeliverMapper;
@@ -32,6 +33,7 @@ import com.xiliulou.afterserver.web.query.DeliverFactoryProductQuery;
 import com.xiliulou.afterserver.web.query.DeliverFactoryQuery;
 import com.xiliulou.afterserver.web.query.DeliverQuery;
 import com.xiliulou.afterserver.web.vo.*;
+import com.xiliulou.cache.redis.RedisService;
 import com.xiliulou.core.json.JsonUtil;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -85,6 +87,8 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     private DeliverLogService deliverLogService;
     @Autowired
     private BatchService batchService;
+    @Autowired
+    private RedisService redisService;
 
     @Override
     public IPage getPage(Long offset, Long size, DeliverQuery deliver) {
@@ -589,6 +593,10 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
 
     @Override
     public R factoryDeliver(DeliverFactoryQuery deliverFactoryQuery) {
+        if(redisService.setNx(CacheConstants.CACHE_FACTORY_DELIVER_LOCK, "ok", 2000L, false)){
+            return R.fail(null, null,"操作频繁，请稍后再试");
+        }
+
         Deliver deliver = this.queryByNo(deliverFactoryQuery.getSn());
         if(Objects.isNull(deliver)){
             return R.fail(null, null,"未查询到相关发货编号");
@@ -628,6 +636,21 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         if(!insertInfo.equals(deliverInfo)){
             return R.fail(null, null, "发货内容与录入内容不一致，请检查");
         }
+
+        //检验是否发货
+        for(DeliverFactoryProductQuery productQuery : deliverFactoryQuery.getProductContent()){
+            ProductNew productNew = productNewService.getBaseMapper()
+                .selectOne(queryWrapper.eq("no", productQuery.getNo()).eq("del_flag", ProductNew.DEL_NORMAL));
+            if(Objects.isNull(productNew)) {
+                return R.fail(null, null, "资产编码【"+ productQuery.getNo() +"】不存在，请检查");
+            }
+
+            DeliverLog log = deliverLogService.queryByProductId(productNew.getId());
+            if(Objects.nonNull(log)) {
+                return R.fail(null, null, "资产编码【"+ productQuery.getNo() +"】已发货");
+            }
+        }
+
 
         Deliver updateDeliver = new Deliver();
         updateDeliver.setId(deliver.getId());

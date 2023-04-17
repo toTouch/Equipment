@@ -33,4 +33,9 @@ public class DeliverLogServiceImpl extends ServiceImpl<DeliverLogMapper, Deliver
         }
         return this.baseMapper.queryMaxCountBydeliverIds(ids);
     }
+
+    @Override
+    public DeliverLog queryByProductId(Long id) {
+        return this.baseMapper.selectOne(new QueryWrapper<DeliverLog>().eq("product_id", id));
+    }
 }
