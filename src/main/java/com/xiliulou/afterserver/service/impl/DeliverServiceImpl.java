@@ -639,6 +639,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
 
         //检验是否发货
         for(DeliverFactoryProductQuery productQuery : deliverFactoryQuery.getProductContent()){
+            queryWrapper.clear();
             ProductNew productNew = productNewService.getBaseMapper()
                 .selectOne(queryWrapper.eq("no", productQuery.getNo()).eq("del_flag", ProductNew.DEL_NORMAL));
             if(Objects.isNull(productNew)) {
