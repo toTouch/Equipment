@@ -1197,6 +1197,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             productNewTestContent.setContent(cabinetCompressionQuery.getTestContent());
             productNewTestContent.setUpdateTime(System.currentTimeMillis());
             productNewTestContent.setCreateTime(System.currentTimeMillis());
+            productNewTestContent.setTestContentResult(cabinetCompressionQuery.getTestContentResult());
             productNewTestContentService.insert(productNewTestContent);
             return R.ok();
         }
@@ -1204,7 +1205,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         ProductNewTestContent productNewTestContent = new ProductNewTestContent();
         productNewTestContent.setId(byDb.getId());
         productNewTestContent.setContent(cabinetCompressionQuery.getTestContent());
-        productNewTestContent.setPid(productNew.getId());
+        productNewTestContent.setTestContentResult(cabinetCompressionQuery.getTestContentResult());
+        productNewTestContent.setUpdateTime(System.currentTimeMillis());
         productNewTestContentService.update(productNewTestContent);
         return R.ok();
     }

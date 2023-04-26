@@ -29,7 +29,7 @@ public class JsonAppNoScreenCompressionController {
      */
 
     @PostMapping("upload")
-    public R cabinetCompressionStatus(CabinetCompressionQuery cabinetCompressionQuery){
+    public R cabinetCompressionStatus(@RequestBody CabinetCompressionQuery cabinetCompressionQuery){
         return productNewService.cabinetCompressionStatus(cabinetCompressionQuery);
     }
 

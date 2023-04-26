@@ -33,6 +33,10 @@ public class CabinetCompressionQuery {
      * 压测内容
      */
     private String testContent;
+    /**
+     * 单次压测结果
+     */
+    private String testContentResult;
 
     public static final String TEST_TYPE_ELECTRICITY = "electricity";
     public static final String TEST_TYPE_CUPBOARD = "cupboard";
