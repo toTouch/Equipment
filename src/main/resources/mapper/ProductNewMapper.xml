@@ -27,7 +27,7 @@
     <!--查询单个-->
     <select id="queryById" resultMap="ProductNewMap">
         select
-          id, no, model_id, batch_id, status, expiration_start_time,years, expiration_end_time, create_time,update_time ,del_flag, cache
+          id, no, model_id, batch_id, status, expiration_start_time,years, expiration_end_time, create_time,update_time ,del_flag, cache, test_start_time, test_end_time, test_msg
         from t_product_new
         where id = #{id}
     </select>
@@ -37,7 +37,8 @@
         select
           p.id, p.no, p.model_id, p.batch_id, p.status, p.expiration_start_time, p.years, p.expiration_end_time,
           p.create_time,p.update_time, p.del_flag, p.serial_num, p.type, p.supplier_id,p.remarks,p.iot_card_id,
-          p.camera_id,p.surface,p.color, p.test_result, p.test_file, p.app_version, p.sys_version, p.test_type
+          p.camera_id,p.surface,p.color, p.test_result, p.test_file, p.app_version, p.sys_version, p.test_type,
+          test_start_time, test_end_time, test_msg
         from t_product_new p
     <where>
         and p.del_flag = 0
@@ -134,8 +135,8 @@
 
     <!--新增所有列-->
     <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
-        insert into t_product_new(no, model_id, batch_id, status, expiration_start_time, years, expiration_end_time, create_time, update_time, del_flag, cache, serial_num, supplier_id, type, code)
-        values (#{no}, #{modelId}, #{batchId}, #{status}, #{expirationStartTime},#{years},#{expirationEndTime}, #{createTime}, #{updateTime}, #{delFlag}, #{cache},#{serialNum}, #{supplierId}, #{type}, #{code})
+        insert into t_product_new(no, model_id, batch_id, status, expiration_start_time, years, expiration_end_time, create_time, update_time, del_flag, cache, serial_num, supplier_id, type, code, test_start_time, test_end_time, test_msg)
+        values (#{no}, #{modelId}, #{batchId}, #{status}, #{expirationStartTime},#{years},#{expirationEndTime}, #{createTime}, #{updateTime}, #{delFlag}, #{cache},#{serialNum}, #{supplierId}, #{type}, #{code}, #{testStartTime}, #{testEndTime}, #{testMsg})
     </insert>
 
     <!--通过主键修改数据-->
@@ -193,6 +194,15 @@
             <if test="sysVersion != null and sysVersion != ''">
                 sys_version = #{sysVersion},
             </if>
+            <if test="testStartTime != null" >
+                test_start_time = #{testStartTime},
+            </if>
+            <if test="testEndTime != null">
+                test_end_time = #{testEndTime},
+            </if>
+            <if test="testMsg != null and testMsg != ''">
+                test_msg = #{testMsg},
+            </if>
         </set>
         where id = #{id}
     </update>
@@ -210,5 +220,34 @@
     <delete id="deleteById">
         update t_product_new set  del_flag = 1 where id = #{id}
     </delete>
+
+    <select id="cabinetCompressionList" resultType="com.xiliulou.afterserver.web.vo.CabinetCompressionVo">
+        select no as sn, test_result as test_status, test_start_time, test_end_time, test_msg
+        from t_product_new
+        <where>
+            <if test="sn != null and sn != ''">
+                and no = #{sn}
+            </if>
+            <if test="testStartTimeBeginTime != null">
+                and test_start_time &lt; #{testStartTimeBeginTime}
+            </if>
+            <if test="testStartTimeEndTime != null">
+                and test_start_time &gt; #{testStartTimeEndTime}
+            </if>
+            <if test="testEndTimeBeginTime != null">
+                and test_end_time &lt; #{testEndTimeBeginTime}
+            </if>
+            <if test="testEndTimeEndTime != null">
+                and test_end_time &gt; #{testEndTimeEndTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryProductTestInfo" resultType="com.xiliulou.afterserver.web.vo.CabinetCompressionContentVo">
+        select tpn.no as sn, tpn.test_result as test_status, tpn.test_start_time, tpn.test_end_time, tpn.test_msg, ptc.content
+        from t_product_new tpn
+        left join t_product_new_test_content ptc on tpn.id = ptc.pid
+        where tpn.id = #{pid}
+    </select>
 
 </mapper>
