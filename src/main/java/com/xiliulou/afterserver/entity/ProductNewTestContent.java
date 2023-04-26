@@ -24,6 +24,10 @@ public class ProductNewTestContent {
     private Long pid;
     
     private String content;
+    /**
+     * 单次压测结果
+     */
+    private String testContentResult;
 
     private Long createTime;
 

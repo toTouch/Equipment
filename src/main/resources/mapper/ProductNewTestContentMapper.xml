@@ -9,6 +9,7 @@
     <result property="content" column="content" jdbcType="VARCHAR"/>
     <result property="createTime" column="create_time" jdbcType="BIGINT"/>
     <result property="updateTime" column="update_time" jdbcType="BIGINT"/>
+    <result property="testContentResult" column="test_content_result" jdbcType="VARCHAR"/>
   </resultMap>
 
   <!--查询单个-->
@@ -47,8 +48,8 @@
 
   <!--新增所有列-->
   <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
-        insert into t_product_new_test_content(pid, content, create_time, update_time)
-        values (#{pid}, #{content}, #{createTime}, #{updateTime})
+        insert into t_product_new_test_content(pid, content, create_time, update_time, test_content_result)
+        values (#{pid}, #{content}, #{createTime}, #{updateTime}, #{testContentResult})
     </insert>
 
   <!--通过主键修改数据-->
@@ -65,7 +66,10 @@
         create_time = #{createTime},
       </if>
       <if test="update_time != null">
-        update_time = #{updateTime}
+        update_time = #{updateTime},
+      </if>
+      <if test="testContentResult != null">
+        test_content_result = #{testContentResult},
       </if>
     </set>
     where id = #{id}
@@ -78,7 +82,7 @@
 
   <select id="queryByPid" resultMap="ProductNewTestContentMap">
     select
-    id, pid, content, create_time, update_time
+    id, pid, content, create_time, update_time, test_content_result
     from t_product_new_test_content
     where pid = #{pid}
   </select>
