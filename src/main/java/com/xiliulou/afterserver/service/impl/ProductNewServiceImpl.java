@@ -1225,6 +1225,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         Long testStartTimeEndTime = null;
         Long testEndTimeBeginTime = null;
         Long testEndTimeEndTime = null;
+        Integer sortType = 1;
 
 
         if(Objects.nonNull(startTime)) {
@@ -1233,11 +1234,17 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         }
 
         if(Objects.nonNull(endTime)) {
+            sortType = 2;
             testEndTimeBeginTime = endTime;
             testEndTimeEndTime = endTime +  24L * 3600000;
         }
 
-        List<CabinetCompressionVo>  list = baseMapper.cabinetCompressionList(sn, testStartTimeBeginTime, testStartTimeEndTime, testEndTimeBeginTime, testEndTimeEndTime);
+        if(Objects.isNull(startTime) && Objects.isNull(endTime) && StringUtils.isBlank(sn)) {
+            testStartTimeBeginTime =  System.currentTimeMillis() - 72L * 3600000;
+            testStartTimeEndTime =  System.currentTimeMillis();
+        }
+
+        List<CabinetCompressionVo>  list = baseMapper.cabinetCompressionList(sn, testStartTimeBeginTime, testStartTimeEndTime, testEndTimeBeginTime, testEndTimeEndTime, sortType);
         return R.ok(list);
     }
 
