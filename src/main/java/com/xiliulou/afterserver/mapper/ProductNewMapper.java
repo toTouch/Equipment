@@ -99,7 +99,8 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
         @Param("testStartTimeBeginTime")Long testStartTimeBeginTime,
         @Param("testStartTimeEndTime")Long testStartTimeEndTime,
         @Param("testEndTimeBeginTime")Long testEndTimeBeginTime,
-        @Param("testEndTimeEndTime")Long testEndTimeEndTime);
+        @Param("testEndTimeEndTime")Long testEndTimeEndTime,
+        @Param("sortType")Integer sortType);
 
     CabinetCompressionContentVo queryProductTestInfo(@Param("pid")Long pid);
 }
