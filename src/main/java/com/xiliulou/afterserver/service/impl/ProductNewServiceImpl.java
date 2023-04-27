@@ -1176,6 +1176,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
 
     @Override
     public R cabinetCompressionStatus(CabinetCompressionQuery cabinetCompressionQuery) {
+        log.error("压测 -----> " + cabinetCompressionQuery);
         ProductNew productNew = this.baseMapper.queryByNo(cabinetCompressionQuery.getSn());
         if(Objects.isNull(productNew)) {
             return R.fail(null, "未查询到相关资产编码");
