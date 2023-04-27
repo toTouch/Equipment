@@ -241,6 +241,12 @@
                 and test_end_time &gt; #{testEndTimeEndTime}
             </if>
         </where>
+        <if test="sortType == 1 or sortType == null">
+            order by test_start_time desc
+        </if>
+        <if test="sortType == 2">
+            order by test_end_time desc
+        </if>
     </select>
 
     <select id="queryProductTestInfo" resultType="com.xiliulou.afterserver.web.vo.CabinetCompressionContentVo">
