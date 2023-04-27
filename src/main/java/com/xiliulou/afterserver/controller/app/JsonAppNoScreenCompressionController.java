@@ -39,7 +39,9 @@ public class JsonAppNoScreenCompressionController {
     }
 
     @GetMapping("list")
-    public R cabinetCompressionList(@RequestParam("sn")String sn, @RequestParam("startTime") Long startTime, @RequestParam("endTime")Long endTime){
+    public R cabinetCompressionList(@RequestParam(value = "sn", required = false)String sn,
+        @RequestParam(value = "startTime", required = false) Long startTime,
+        @RequestParam(value = "endTime", required =  false)Long endTime){
         return productNewService.cabinetCompressionList(sn, startTime, endTime);
     }
 }
