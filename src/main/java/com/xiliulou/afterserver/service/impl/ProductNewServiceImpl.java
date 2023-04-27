@@ -1229,13 +1229,13 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
 
 
         if(Objects.nonNull(startTime)) {
-            testStartTimeBeginTime = startTime - 24L * 3600000;
-            testStartTimeEndTime = startTime;
+            testStartTimeBeginTime = startTime;
+            testStartTimeEndTime = startTime + 24L * 3600000;
         }
 
         if(Objects.nonNull(endTime)) {
-            testEndTimeBeginTime = endTime - 24L * 3600000;
-            testEndTimeEndTime = endTime;
+            testEndTimeBeginTime = endTime;
+            testEndTimeEndTime = endTime +  24L * 3600000;
         }
 
         List<CabinetCompressionVo>  list = baseMapper.cabinetCompressionList(sn, testStartTimeBeginTime, testStartTimeEndTime, testEndTimeBeginTime, testEndTimeEndTime);
