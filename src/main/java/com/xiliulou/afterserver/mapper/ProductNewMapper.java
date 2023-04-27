@@ -2,6 +2,8 @@ package com.xiliulou.afterserver.mapper;
 
 import com.xiliulou.afterserver.entity.ProductNew;
 
+import com.xiliulou.afterserver.web.vo.CabinetCompressionContentVo;
+import com.xiliulou.afterserver.web.vo.CabinetCompressionVo;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -92,4 +94,12 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
 
     @Select("select * from t_product_new where no = #{no} and del_flag = 0")
     ProductNew queryByNo(@Param("no")String no);
+
+    List<CabinetCompressionVo> cabinetCompressionList(@Param("sn")String sn,
+        @Param("testStartTimeBeginTime")Long testStartTimeBeginTime,
+        @Param("testStartTimeEndTime")Long testStartTimeEndTime,
+        @Param("testEndTimeBeginTime")Long testEndTimeBeginTime,
+        @Param("testEndTimeEndTime")Long testEndTimeEndTime);
+
+    CabinetCompressionContentVo queryProductTestInfo(@Param("pid")Long pid);
 }
