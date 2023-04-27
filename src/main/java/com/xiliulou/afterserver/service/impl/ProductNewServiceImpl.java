@@ -1215,9 +1215,9 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     public R cabinetCompressionCheck(String no) {
         ProductNew productNew = this.baseMapper.queryByNo(no);
         if(Objects.isNull(productNew)) {
-            return R.fail(no);
+            return R.ok(false);
         }
-        return R.ok();
+        return R.ok(true);
     }
 
     @Override
