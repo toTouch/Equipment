@@ -28,7 +28,7 @@ import java.util.*;
 public class AdminJsonProductNewController {
     @Autowired
     private ProductNewService productNewService;
-//    @Autowired
+    //    @Autowired
 //    private ProductService productService;
 //    @Autowired
 //    private BatchService batchService;
@@ -57,102 +57,101 @@ public class AdminJsonProductNewController {
 //    }
 
     @PutMapping("/admin/productNew")
-    public R putAdminPointNew(@RequestBody ProductNewQuery query){
+    public R putAdminPointNew(@RequestBody ProductNewQuery query) {
         return productNewService.putAdminProductNew(query);
     }
 
     @DeleteMapping("/admin/productNew/{id}")
-    public R delAdminPointNew(@PathVariable("id") Long id){
+    public R delAdminPointNew(@PathVariable("id") Long id) {
         return productNewService.delAdminProductNew(id);
     }
 
     @GetMapping("/admin/productNew/list")
     public R pointList(@RequestParam("offset") Integer offset,
                        @RequestParam("limit") Integer limit,
-                       @RequestParam(value = "no",required = false) String no,
-                       @RequestParam(value = "modelId",required = false) Long modelId,
-                       @RequestParam(value = "pointId",required = false) Long pointId,
-                       @RequestParam(value = "pointType",required = false) Integer pointType,
-                       @RequestParam(value = "startTime",required = false) Long startTime,
-                       @RequestParam(value = "endTime",required = false) Long endTime,
-                       @RequestParam(value = "testType",required = false) String testType){
+                       @RequestParam(value = "no", required = false) String no,
+                       @RequestParam(value = "modelId", required = false) Long modelId,
+                       @RequestParam(value = "pointId", required = false) Long pointId,
+                       @RequestParam(value = "pointType", required = false) Integer pointType,
+                       @RequestParam(value = "startTime", required = false) Long startTime,
+                       @RequestParam(value = "endTime", required = false) Long endTime,
+                       @RequestParam(value = "testType", required = false) String testType) {
         return productNewService.pointList(offset, limit, no, modelId, pointId, pointType, startTime, endTime, testType);
 
     }
 
 
     @GetMapping("/admin/productNew/{id}")
-    public R getProductFile(@PathVariable("id") Long id){
+    public R getProductFile(@PathVariable("id") Long id) {
         return productNewService.getProductFile(id, File.FILE_TYPE_PRODUCT_PRODUCT);
     }
 
     @PutMapping("/admin/productNew/update/status")
-    public R updateStatusFromBatch(@RequestParam(value = "ids",required = false) List<Long> ids,
-                          @RequestParam("status") Integer status){
-        if (ids.isEmpty()){
+    public R updateStatusFromBatch(@RequestParam(value = "ids", required = false) List<Long> ids,
+                                   @RequestParam("status") Integer status) {
+        if (ids.isEmpty()) {
             return R.fail("id不能为空");
         }
 
-        return productNewService.updateStatusFromBatch(ids,status);
+        return productNewService.updateStatusFromBatch(ids, status);
 
     }
 
     @GetMapping("/admin/queryProductInfo")
-    public R  queryProductInfo(String no){
+    public R queryProductInfo(String no) {
         return productNewService.queryProductInfo(no);
     }
 
     @GetMapping("/admin/queryLikeProductByNo")
-    public R queryLikeProductByNo(String no){
+    public R queryLikeProductByNo(String no) {
         return productNewService.queryLikeProductByNo(no);
     }
 
     @PostMapping("/admin/bindPoint")
-    public R bindPoint(Long productId, Long pointId, Integer pointType){
+    public R bindPoint(Long productId, Long pointId, Integer pointType) {
         return productNewService.bindPoint(productId, pointId, pointType);
     }
 
 
     /**
      * 根据资产编码拉取物联网卡信息
+     *
      * @param no
      * @return
      */
     //@GetMapping("/admin/productNew/findIotCard")
-    public R findIotCard(@RequestParam("no") String no){
+    public R findIotCard(@RequestParam("no") String no) {
         return productNewService.findIotCard(no);
     }
 
 
     /**
      * 下载柜机测试文件
+     *
      * @param fileName
      * @return
      */
     @GetMapping("admin/productNew/testFile")
-    public R getTestFile(@RequestParam("fileName") String fileName){
+    public R getTestFile(@RequestParam("fileName") String fileName) {
         String url = null;
         String testFileName = "";
         final String HTTP = "http";
         final String HTTPS = "https";
 
-        if(StringUtils.isNotBlank(StorageConfig.getTestFileDir())){
+        if (StringUtils.isNotBlank(StorageConfig.getTestFileDir())) {
             testFileName = StorageConfig.getTestFileDir();
         }
-        try{
-            url = aliyunOssService.getOssFileUrl(StorageConfig.getOssTestFileBucketName(), testFileName  + fileName, System.currentTimeMillis() + 120 * 1000);
-        }catch(Exception e){
+        try {
+            url = aliyunOssService.getOssFileUrl(StorageConfig.getOssTestFileBucketName(), testFileName + fileName, System.currentTimeMillis() + 120 * 1000);
+        } catch (Exception e) {
             log.error("oss error!", e);
         }
 
-        if(Objects.isNull(url)){
+        if (Objects.isNull(url)) {
             return R.fail("oss error");
         }
 
-        int index = url.indexOf(":");
-        if(url.contains(HTTP) &&  index == HTTP.length()) {
-            url = HTTPS + url.substring(4);
-        }
+        url = HTTPS + url.substring(4);
 
         Map<String, String> result = new HashMap<>(1);
         result.put("url", url);
