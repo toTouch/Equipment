@@ -127,4 +127,6 @@ public interface ProductNewService extends IService<ProductNew> {
     R cabinetCompressionList(String sn, Long startTime, Long endTime);
 
     CabinetCompressionContentVo queryProductTestInfo(Long pid);
+
+    R runFullLoadTest(ApiRequestQuery apiRequestQuery);
 }

@@ -182,4 +182,6 @@ public class ProductNew {
 //    private List<OssUrlVo> outerPackagingFileList;
 //    @TableField(exist = false)
 //    private List<OssUrlVo> qualityInspectionFileList;
+
+    private String errorMessage;
 }
