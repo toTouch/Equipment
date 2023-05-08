@@ -16,6 +16,7 @@ public class CompressionQuery {
     private List<String> noList;
     private String testType;
     private String errorMessage;
+    private Long testEndTime;
     /**
      * 压测状态 0 失败 ，1 成功 ，2 压测中
      */
