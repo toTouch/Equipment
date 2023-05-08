@@ -40,4 +40,13 @@ public class CabinetCompressionQuery {
 
     public static final String TEST_TYPE_ELECTRICITY = "electricity";
     public static final String TEST_TYPE_CUPBOARD = "cupboard";
+
+    /**
+     * 压测状态
+     */
+    public static final Integer TEST_FAIL = 0;
+    public static final Integer TEST_SUCC = 1;
+    public static final Integer TEST_ING = 2;
+
+
 }

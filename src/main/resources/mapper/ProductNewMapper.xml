@@ -38,7 +38,7 @@
           p.id, p.no, p.model_id, p.batch_id, p.status, p.expiration_start_time, p.years, p.expiration_end_time,
           p.create_time,p.update_time, p.del_flag, p.serial_num, p.type, p.supplier_id,p.remarks,p.iot_card_id,
           p.camera_id,p.surface,p.color, p.test_result, p.test_file, p.app_version, p.sys_version, p.test_type,
-          test_start_time, test_end_time, test_msg
+          p.test_start_time, p.test_end_time, p.test_msg ,p.error_message
         from t_product_new p
     <where>
         and p.del_flag = 0
@@ -203,6 +203,9 @@
             <if test="testMsg != null and testMsg != ''">
                 test_msg = #{testMsg},
             </if>
+            <if test="testResult != null ">
+                test_result = #{testResult},
+            </if>
         </set>
         where id = #{id}
     </update>
@@ -222,7 +225,7 @@
     </delete>
 
     <select id="cabinetCompressionList" resultType="com.xiliulou.afterserver.web.vo.CabinetCompressionVo">
-        select no as sn, test_result as test_status, test_start_time, test_end_time, test_msg
+        select no as sn, test_result as test_status, test_start_time, test_end_time, test_msg ,error_message
         from t_product_new
         <where>
             <if test="sn != null and sn != ''">
