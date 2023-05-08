@@ -34,4 +34,9 @@ public class CabinetCompressionVo {
      * 单次压测结果
      */
     private String testContentResult;
+
+    /**
+     * 错误信息
+     */
+    private String errorMessage;
 }

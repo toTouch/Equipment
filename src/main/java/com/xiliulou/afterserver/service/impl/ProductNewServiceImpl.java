@@ -104,6 +104,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     @Autowired
     private ProductNewTestContentService productNewTestContentService;
 
+    public static final int MAX_BYTES_ERROR_MESSAGE=190;
     /**
      * 通过ID查询单条数据从DB
      *
@@ -639,9 +640,9 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             //ProductNew product = new ProductNew();
             //product.setNo(no);
             product.setTestFile(compression.getCompressionFile());
-            product.setTestResult(1);
+            product.setTestResult(compression.getTestStatus());
             product.setTestType(compression.getTestType());
-
+            product.setErrorMessage(subStringByBytes(compression.getErrorMessage()));
             //这里需要将主柜的数据同步到副柜
             //获取副柜需要同步的值
             //List<AuditValue> productValues = auditValueService.getByPidAndEntryIds(copyLong, product.getId());
@@ -1175,6 +1176,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public R cabinetCompressionStatus(CabinetCompressionQuery cabinetCompressionQuery) {
         log.error("压测 -----> " + cabinetCompressionQuery);
         ProductNew productNew = this.baseMapper.queryByNo(cabinetCompressionQuery.getSn());
@@ -1252,5 +1254,42 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     @Override
     public CabinetCompressionContentVo queryProductTestInfo(Long pid) {
         return baseMapper.queryProductTestInfo(pid);
+    }
+
+    @Override
+    public R runFullLoadTest(ApiRequestQuery apiRequestQuery) {
+        CompressionQuery compression = null;
+        try {
+            compression = JSON.parseObject(apiRequestQuery.getData(), CompressionQuery.class);
+        } catch (Exception e) {
+            log.error("COMPRESSION PROPERTY CAST ERROR! success error", e);
+            return R.fail(null, null, "参数解析错误");
+        }
+        if(Objects.equals(compression, CompressionQuery.TEST_ING)){
+            CabinetCompressionQuery cabinetCompressionQuery=null;
+            try {
+                cabinetCompressionQuery = JSON.parseObject(apiRequestQuery.getData(), CabinetCompressionQuery.class);
+            } catch (Exception e) {
+                log.error("COMPRESSION PROPERTY CAST ERROR! success error", e);
+                return R.fail(null, null, "参数解析错误");
+            }
+            return cabinetCompressionStatus(cabinetCompressionQuery);
+        } else if (Objects.equals(compression, CompressionQuery.TEST_FAIL) || Objects.equals(compression, CompressionQuery.TEST_SUCC)) {
+            return successCompression(apiRequestQuery);
+        }else{
+            return R.fail("SYSTEM.0002", "参数不合法");
+        }
+    }
+
+    public static String subStringByBytes(String str){
+        if(Objects.isNull(str)){
+            return str;
+        }
+        byte[] bytes = str.getBytes();
+        if (bytes.length > MAX_BYTES_ERROR_MESSAGE) {
+            byte[] subBytes = Arrays.copyOfRange(bytes, 0, MAX_BYTES_ERROR_MESSAGE); // 截取前190个字节
+            str = new String(subBytes);
+        }
+        return str;
     }
 }
