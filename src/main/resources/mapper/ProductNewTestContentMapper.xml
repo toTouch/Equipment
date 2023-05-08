@@ -62,10 +62,10 @@
       <if test="content != null and content != ''">
         content = #{content},
       </if>
-      <if test="create_time != null">
+      <if test="createtime != null">
         create_time = #{createTime},
       </if>
-      <if test="update_time != null">
+      <if test="updatetime != null">
         update_time = #{updateTime},
       </if>
       <if test="testContentResult != null">
