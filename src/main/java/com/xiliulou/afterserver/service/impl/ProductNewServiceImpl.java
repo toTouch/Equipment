@@ -643,6 +643,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             product.setTestResult(compression.getTestStatus());
             product.setTestType(compression.getTestType());
             product.setErrorMessage(subStringByBytes(compression.getErrorMessage()));
+            product.setTestEndTime(compression.getTestEndTime());
             //这里需要将主柜的数据同步到副柜
             //获取副柜需要同步的值
             //List<AuditValue> productValues = auditValueService.getByPidAndEntryIds(copyLong, product.getId());
