@@ -232,16 +232,16 @@
                 and no = #{sn}
             </if>
             <if test="testStartTimeBeginTime != null">
-                and test_start_time &lt; #{testStartTimeBeginTime}
+                and test_start_time > #{testStartTimeBeginTime}
             </if>
             <if test="testStartTimeEndTime != null">
-                and test_start_time &gt; #{testStartTimeEndTime}
+                and test_start_time <![CDATA[ < ]]> #{testStartTimeEndTime}
             </if>
             <if test="testEndTimeBeginTime != null">
-                and test_end_time &lt; #{testEndTimeBeginTime}
+                and test_end_time <![CDATA[ > ]]> #{testEndTimeBeginTime}
             </if>
             <if test="testEndTimeEndTime != null">
-                and test_end_time &gt; #{testEndTimeEndTime}
+                and test_end_time <![CDATA[ < ]]> #{testEndTimeEndTime}
             </if>
         </where>
         <if test="sortType == 1 or sortType == null">
