@@ -1265,7 +1265,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             log.error("COMPRESSION PROPERTY CAST ERROR! success error", e);
             return R.fail(null, null, "参数解析错误");
         }
-        if(Objects.equals(compression, CompressionQuery.TEST_ING)){
+        if(Objects.equals(compression.getTestStatus(), CompressionQuery.TEST_ING)){
             CabinetCompressionQuery cabinetCompressionQuery=null;
             try {
                 cabinetCompressionQuery = JSON.parseObject(apiRequestQuery.getData(), CabinetCompressionQuery.class);
@@ -1274,7 +1274,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
                 return R.fail(null, null, "参数解析错误");
             }
             return cabinetCompressionStatus(cabinetCompressionQuery);
-        } else if (Objects.equals(compression, CompressionQuery.TEST_FAIL) || Objects.equals(compression, CompressionQuery.TEST_SUCC)) {
+        } else if (Objects.equals(compression.getTestStatus(), CompressionQuery.TEST_FAIL) || Objects.equals(compression.getTestStatus(), CompressionQuery.TEST_SUCC)) {
             return successCompression(apiRequestQuery);
         }else{
             return R.fail("SYSTEM.0002", "参数不合法");
