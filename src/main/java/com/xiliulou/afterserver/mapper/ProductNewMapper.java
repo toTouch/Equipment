@@ -89,7 +89,7 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
     @Select("select id, no from t_product_new where del_flag = 0")
     List<ProductNew> selectNoPull();
 
-    @Update("update t_product_new set test_file = #{testFile}, test_result = #{testResult}, status = #{status}, test_type = #{testType} ,error_message = #{errorMessage} where no = #{no}")
+    @Update("update t_product_new set test_file = #{testFile}, test_result = #{testResult}, status = #{status}, test_type = #{testType} ,error_message = #{errorMessage},test_end_time = #{testEndTime} where no = #{no}")
     Integer updateByNo(ProductNew productNew);
 
     @Select("select * from t_product_new where no = #{no} and del_flag = 0")
