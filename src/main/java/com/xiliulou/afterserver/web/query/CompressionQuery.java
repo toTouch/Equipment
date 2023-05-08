@@ -15,7 +15,19 @@ public class CompressionQuery {
     private String compressionFile;
     private List<String> noList;
     private String testType;
+    private String errorMessage;
+    /**
+     * 压测状态 0 失败 ，1 成功 ，2 压测中
+     */
+    private Integer testStatus;
 
     public static final String TEST_TYPE_ELECTRICITY = "electricity";
     public static final String TEST_TYPE_CUPBOARD = "cupboard";
+
+    /**
+     * 压测状态
+     */
+    public static final Integer TEST_FAIL = 0;
+    public static final Integer TEST_SUCC = 1;
+    public static final Integer TEST_ING = 2;
 }
