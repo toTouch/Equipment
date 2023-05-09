@@ -46,7 +46,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.time.*;
 import java.util.*;
 
 import lombok.extern.slf4j.Slf4j;
@@ -1234,14 +1233,14 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
 
 
         if(Objects.nonNull(startTime)) {
-            testStartTimeBeginTime = getBeforeDawn(startTime);
-            testStartTimeEndTime = testStartTimeBeginTime + 24L * 3600000;
+            testStartTimeBeginTime = startTime;
+            testStartTimeEndTime = startTime + 24L * 3600000;
         }
 
         if(Objects.nonNull(endTime)) {
             sortType = 2;
-            testEndTimeBeginTime = getBeforeDawn(endTime);
-            testEndTimeEndTime = testEndTimeBeginTime +  24L * 3600000;
+            testEndTimeBeginTime = endTime;
+            testEndTimeEndTime = endTime +  24L * 3600000;
         }
 
         if(Objects.isNull(startTime) && Objects.isNull(endTime) && StringUtils.isBlank(sn)) {
@@ -1293,9 +1292,5 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             str = new String(subBytes);
         }
         return str;
-    }
-    public static Long getBeforeDawn(Long timestamp){
-        LocalDate date = LocalDate.ofEpochDay(timestamp / 86400000);
-        return date.atStartOfDay().toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
     }
 }
