@@ -28,6 +28,6 @@ public class JsonAppCompressionController {
 
     @PostMapping("/success")
     public R successCompression(@RequestBody ApiRequestQuery apiRequestQuery){
-        return productNewService.successCompression(apiRequestQuery);
+        return productNewService.runFullLoadTest(apiRequestQuery);
     }
 }

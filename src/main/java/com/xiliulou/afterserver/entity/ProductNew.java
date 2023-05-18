@@ -128,6 +128,18 @@ public class ProductNew {
     private String appVersion;
     private String sysVersion;
     private String testType;
+    /**
+     * 压测开始时间
+     */
+    private Long testStartTime;
+    /**
+     * 压测结束时间
+     */
+    private Long testEndTime;
+    /**
+     * 压测错误原因
+     */
+    private String testMsg;
 
     public static final String TYPE_M = "M";
     public static final String TYPE_V = "V";
@@ -170,4 +182,6 @@ public class ProductNew {
 //    private List<OssUrlVo> outerPackagingFileList;
 //    @TableField(exist = false)
 //    private List<OssUrlVo> qualityInspectionFileList;
+
+    private String errorMessage;
 }
