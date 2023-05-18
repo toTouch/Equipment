@@ -6,10 +6,12 @@ import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.entity.ProductNew;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ApiRequestQuery;
+import com.xiliulou.afterserver.web.query.CabinetCompressionQuery;
 import com.xiliulou.afterserver.web.query.CompressionQuery;
 import com.xiliulou.afterserver.web.query.ProductNewDetailsQuery;
 import com.xiliulou.afterserver.web.query.ProductNewQuery;
 
+import com.xiliulou.afterserver.web.vo.CabinetCompressionContentVo;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
@@ -117,4 +119,14 @@ public interface ProductNewService extends IService<ProductNew> {
     String getStatusName(Integer status);
 
     R delOssFileByName(String name);
+
+    R cabinetCompressionStatus(CabinetCompressionQuery cabinetCompressionQuery);
+
+    R cabinetCompressionCheck(String no);
+
+    R cabinetCompressionList(String sn, Long startTime, Long endTime);
+
+    CabinetCompressionContentVo queryProductTestInfo(Long pid);
+
+    R runFullLoadTest(ApiRequestQuery apiRequestQuery);
 }

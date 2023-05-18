@@ -25,6 +25,7 @@ import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.ApiRequestQuery;
+import com.xiliulou.afterserver.web.query.CabinetCompressionQuery;
 import com.xiliulou.afterserver.web.query.CompressionQuery;
 import com.xiliulou.afterserver.web.query.ProductNewDetailsQuery;
 import com.xiliulou.afterserver.web.query.ProductNewQuery;
@@ -100,7 +101,10 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     private AuditValueService auditValueService;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private ProductNewTestContentService productNewTestContentService;
 
+    public static final int MAX_BYTES_ERROR_MESSAGE=190;
     /**
      * 通过ID查询单条数据从DB
      *
@@ -636,9 +640,10 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             //ProductNew product = new ProductNew();
             //product.setNo(no);
             product.setTestFile(compression.getCompressionFile());
-            product.setTestResult(1);
+            product.setTestResult(compression.getTestStatus());
             product.setTestType(compression.getTestType());
-
+            product.setErrorMessage(subStringByBytes(compression.getErrorMessage()));
+            product.setTestEndTime(compression.getTestEndTime());
             //这里需要将主柜的数据同步到副柜
             //获取副柜需要同步的值
             //List<AuditValue> productValues = auditValueService.getByPidAndEntryIds(copyLong, product.getId());
@@ -1170,5 +1175,122 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     public R delOssFileByName(String name) {
         //0 表示图片
         return fileService.removeOssOrMinio(name, 0);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    public R cabinetCompressionStatus(CabinetCompressionQuery cabinetCompressionQuery) {
+        ProductNew productNew = this.baseMapper.queryByNo(cabinetCompressionQuery.getSn());
+        if(Objects.isNull(productNew)) {
+            return R.fail(null, "未查询到相关资产编码");
+        }
+
+        ProductNew productUpdate = new ProductNew();
+        productUpdate.setId(productNew.getId());
+        productUpdate.setTestResult(cabinetCompressionQuery.getTestStatus());
+        productUpdate.setTestStartTime(cabinetCompressionQuery.getTestStartTime());
+        productUpdate.setTestEndTime(cabinetCompressionQuery.getTestEndTime());
+        productUpdate.setTestMsg(cabinetCompressionQuery.getTestMsg());
+        baseMapper.update(productUpdate);
+
+        ProductNewTestContent byDb = productNewTestContentService.queryByPid(productNew.getId());
+        if(Objects.isNull(byDb)) {
+            ProductNewTestContent productNewTestContent = new ProductNewTestContent();
+            productNewTestContent.setPid(productNew.getId());
+            productNewTestContent.setContent(cabinetCompressionQuery.getTestContent());
+            productNewTestContent.setUpdateTime(System.currentTimeMillis());
+            productNewTestContent.setCreateTime(System.currentTimeMillis());
+            productNewTestContent.setTestContentResult(cabinetCompressionQuery.getTestContentResult());
+            productNewTestContentService.insert(productNewTestContent);
+            return R.ok();
+        }
+
+        ProductNewTestContent productNewTestContent = new ProductNewTestContent();
+        productNewTestContent.setId(byDb.getId());
+        productNewTestContent.setContent(cabinetCompressionQuery.getTestContent());
+        productNewTestContent.setTestContentResult(cabinetCompressionQuery.getTestContentResult());
+        productNewTestContent.setUpdateTime(System.currentTimeMillis());
+        productNewTestContentService.update(productNewTestContent);
+        return R.ok();
+    }
+
+    @Override
+    public R cabinetCompressionCheck(String no) {
+        ProductNew productNew = this.baseMapper.queryByNo(no);
+        if(Objects.isNull(productNew)) {
+            return R.ok(false);
+        }
+        return R.ok(true);
+    }
+
+    @Override
+    public R cabinetCompressionList(String sn, Long startTime, Long endTime) {
+        Long testStartTimeBeginTime = null;
+        Long testStartTimeEndTime = null;
+        Long testEndTimeBeginTime = null;
+        Long testEndTimeEndTime = null;
+        Integer sortType = 1;
+
+
+        if(Objects.nonNull(startTime)) {
+            testStartTimeBeginTime = startTime;
+            testStartTimeEndTime = startTime + 24L * 3600000;
+        }
+
+        if(Objects.nonNull(endTime)) {
+            sortType = 2;
+            testEndTimeBeginTime = endTime;
+            testEndTimeEndTime = endTime +  24L * 3600000;
+        }
+
+        if(Objects.isNull(startTime) && Objects.isNull(endTime) && StringUtils.isBlank(sn)) {
+            testStartTimeBeginTime =  System.currentTimeMillis() - 72L * 3600000;
+            testStartTimeEndTime =  System.currentTimeMillis();
+        }
+
+        List<CabinetCompressionVo>  list = baseMapper.cabinetCompressionList(sn, testStartTimeBeginTime, testStartTimeEndTime, testEndTimeBeginTime, testEndTimeEndTime, sortType);
+        return R.ok(list);
+    }
+
+    @Override
+    public CabinetCompressionContentVo queryProductTestInfo(Long pid) {
+        return baseMapper.queryProductTestInfo(pid);
+    }
+
+    @Override
+    public R runFullLoadTest(ApiRequestQuery apiRequestQuery) {
+        CompressionQuery compression = null;
+        try {
+            compression = JSON.parseObject(apiRequestQuery.getData(), CompressionQuery.class);
+        } catch (Exception e) {
+            log.error("COMPRESSION PROPERTY CAST ERROR! success error", e);
+            return R.fail(null, null, "参数解析错误");
+        }
+        if(Objects.equals(compression.getTestStatus(), CompressionQuery.TEST_ING)){
+            CabinetCompressionQuery cabinetCompressionQuery=null;
+            try {
+                cabinetCompressionQuery = JSON.parseObject(apiRequestQuery.getData(), CabinetCompressionQuery.class);
+            } catch (Exception e) {
+                log.error("COMPRESSION PROPERTY CAST ERROR! success error", e);
+                return R.fail(null, null, "参数解析错误");
+            }
+            return cabinetCompressionStatus(cabinetCompressionQuery);
+        } else if (Objects.equals(compression.getTestStatus(), CompressionQuery.TEST_FAIL) || Objects.equals(compression.getTestStatus(), CompressionQuery.TEST_SUCC)) {
+            return successCompression(apiRequestQuery);
+        }else{
+            return R.fail("SYSTEM.0002", "参数不合法");
+        }
+    }
+
+    public static String subStringByBytes(String str){
+        if(Objects.isNull(str)){
+            return str;
+        }
+        byte[] bytes = str.getBytes();
+        if (bytes.length > MAX_BYTES_ERROR_MESSAGE) {
+            byte[] subBytes = Arrays.copyOfRange(bytes, 0, MAX_BYTES_ERROR_MESSAGE); // 截取前190个字节
+            str = new String(subBytes);
+        }
+        return str;
     }
 }
