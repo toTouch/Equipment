@@ -640,10 +640,9 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             //ProductNew product = new ProductNew();
             //product.setNo(no);
             product.setTestFile(compression.getCompressionFile());
-            product.setTestResult(compression.getTestStatus());
+            product.setTestResult(1);
             product.setTestType(compression.getTestType());
-            product.setErrorMessage(subStringByBytes(compression.getErrorMessage()));
-            product.setTestEndTime(compression.getTestEndTime());
+
             //这里需要将主柜的数据同步到副柜
             //获取副柜需要同步的值
             //List<AuditValue> productValues = auditValueService.getByPidAndEntryIds(copyLong, product.getId());
@@ -1178,7 +1177,6 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public R cabinetCompressionStatus(CabinetCompressionQuery cabinetCompressionQuery) {
         ProductNew productNew = this.baseMapper.queryByNo(cabinetCompressionQuery.getSn());
         if(Objects.isNull(productNew)) {
@@ -1274,9 +1272,9 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
                 log.error("COMPRESSION PROPERTY CAST ERROR! success error", e);
                 return R.fail(null, null, "参数解析错误");
             }
-            return cabinetCompressionStatus(cabinetCompressionQuery);
+            return compressing(cabinetCompressionQuery);
         } else if (Objects.equals(compression.getTestStatus(), CompressionQuery.TEST_FAIL) || Objects.equals(compression.getTestStatus(), CompressionQuery.TEST_SUCC)) {
-            return successCompression(apiRequestQuery);
+            return compressionEnd(apiRequestQuery);
         }else{
             return R.fail("SYSTEM.0002", "参数不合法");
         }
@@ -1292,5 +1290,127 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             str = new String(subBytes);
         }
         return str;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    public R compressionEnd(ApiRequestQuery apiRequestQuery) {
+        CompressionQuery compression = null;
+        try {
+            compression = JSON.parseObject(apiRequestQuery.getData(), CompressionQuery.class);
+        } catch (Exception e) {
+            log.error("COMPRESSION PROPERTY CAST ERROR! success error", e);
+            return R.fail(null, null, "参数解析错误");
+        }
+
+        if (CollectionUtils.isEmpty(compression.getNoList())) {
+            return R.fail(null, null, "压测柜机不存在，请核对");
+        }
+
+        if (StringUtils.isBlank(compression.getCompressionFile())) {
+            return R.fail(null, null, "测试文件为空");
+        }
+
+        IotCard iotCard = iotCardService.queryBySn(compression.getIotCard());
+        if (Objects.isNull(iotCard)) {
+            return R.fail(null, null, "未查询到物联网卡信息");
+        }
+
+        ArrayList<ProductNew> mainProducts = new ArrayList(1);
+        for (String no : compression.getNoList()) {
+            ProductNew product = this.queryByNo(no);
+            if (Objects.equals(product.getType(), ProductNew.TYPE_M)) {
+                mainProducts.add(product);
+            }
+
+        }
+
+        if (!(mainProducts.size() == 1) || Objects.isNull(mainProducts.get(0))) {
+            return R.fail(mainProducts, null, "主柜不存在或存在多个，请核对");
+        }
+
+        AuditProcess byType = auditProcessService.getByType(AuditProcess.TYPE_POST);
+        ProductNew mainProduct = mainProducts.get(0);
+        //需要拷贝的值的组件id
+        List<Long> copyLong = Arrays.asList(AuditProcessConstans.CAMERA_SN_AUDIT_ENTRY,
+                AuditProcessConstans.CAMERA_IOT_AUDIT_ENTRY,
+                AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY,
+                AuditProcessConstans.PRODUCT_COLOR_AUDIT_ENTRY,
+                AuditProcessConstans.DOOR_COLOR_AUDIT_ENTRY,
+                AuditProcessConstans.PRODUCT_SURFACE_AUDIT_ENTRY,
+                AuditProcessConstans.CAMERA_SN_AUDIT_ENTRY_TOW);
+        //获取主柜需要同步到副柜的值
+        List<AuditValue> mainValues = auditValueService
+                .getByPidAndEntryIds(copyLong, mainProduct.getId());
+
+        for (String no : compression.getNoList()) {
+            ProductNew productOld = this.queryByNo(no);
+            if (Objects.isNull(productOld)) {
+                continue;
+            }
+
+            ProductNew product = productNewMapper.queryByNo(no);
+            if (Objects.isNull(product)) {
+                continue;
+            }
+
+            //ProductNew product = new ProductNew();
+            //product.setNo(no);
+            product.setTestFile(compression.getCompressionFile());
+            product.setTestResult(compression.getTestStatus());
+            product.setTestType(compression.getTestType());
+            product.setErrorMessage(subStringByBytes(compression.getErrorMessage()));
+            product.setTestEndTime(compression.getTestEndTime());
+            //这里需要将主柜的数据同步到副柜
+            //获取副柜需要同步的值
+            //List<AuditValue> productValues = auditValueService.getByPidAndEntryIds(copyLong, product.getId());
+            //更新
+            auditValueService.copyValueToTargetValueIsNoll(mainValues, product.getId());
+
+            //更新柜机状态
+            Integer status = auditProcessService.getAuditProcessStatus(byType, productOld);
+            if (Objects.equals(status, AuditProcessVo.STATUS_FINISHED)) {
+                product.setStatus(ProductNewStatusSortConstants.STATUS_POST_DETECTION);
+            } else {
+                product.setStatus(ProductNewStatusSortConstants.STATUS_TESTED);
+            }
+            productNewMapper.updateByNoNew(product);
+        }
+
+        return R.ok();
+    }
+    public R compressing(CabinetCompressionQuery cabinetCompressionQuery) {
+        ProductNew productNew = this.baseMapper.queryByNo(cabinetCompressionQuery.getSn());
+        if(Objects.isNull(productNew)) {
+            return R.fail(null, "未查询到相关资产编码");
+        }
+
+        ProductNew productUpdate = new ProductNew();
+        productUpdate.setId(productNew.getId());
+        productUpdate.setTestResult(cabinetCompressionQuery.getTestStatus());
+        productUpdate.setTestStartTime(cabinetCompressionQuery.getTestStartTime());
+        productUpdate.setTestEndTime(cabinetCompressionQuery.getTestEndTime());
+        productUpdate.setTestMsg(cabinetCompressionQuery.getTestMsg());
+        productNewMapper.updateByConditions(productUpdate);
+
+        ProductNewTestContent byDb = productNewTestContentService.queryByPid(productNew.getId());
+        if(Objects.isNull(byDb)) {
+            ProductNewTestContent productNewTestContent = new ProductNewTestContent();
+            productNewTestContent.setPid(productNew.getId());
+            productNewTestContent.setContent(cabinetCompressionQuery.getTestContent());
+            productNewTestContent.setUpdateTime(System.currentTimeMillis());
+            productNewTestContent.setCreateTime(System.currentTimeMillis());
+            productNewTestContent.setTestContentResult(cabinetCompressionQuery.getTestContentResult());
+            productNewTestContentService.insert(productNewTestContent);
+            return R.ok();
+        }
+
+        ProductNewTestContent productNewTestContent = new ProductNewTestContent();
+        productNewTestContent.setId(byDb.getId());
+        productNewTestContent.setContent(cabinetCompressionQuery.getTestContent());
+        productNewTestContent.setTestContentResult(cabinetCompressionQuery.getTestContentResult());
+        productNewTestContent.setUpdateTime(System.currentTimeMillis());
+        productNewTestContentService.update(productNewTestContent);
+        return R.ok();
     }
 }
