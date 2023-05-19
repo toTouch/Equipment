@@ -129,4 +129,6 @@ public interface ProductNewService extends IService<ProductNew> {
     CabinetCompressionContentVo queryProductTestInfo(Long pid);
 
     R runFullLoadTest(ApiRequestQuery apiRequestQuery);
+
+    R compressionEnd(ApiRequestQuery apiRequestQuery);
 }
