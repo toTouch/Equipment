@@ -298,7 +298,7 @@
         from t_product_new
         <where>
             <if test="sn != null and sn != ''">
-                and no = #{sn}
+                and no like concat('%',#{sn},'%')
             </if>
             <if test="testStartTimeBeginTime != null">
                 and test_start_time > #{testStartTimeBeginTime}
