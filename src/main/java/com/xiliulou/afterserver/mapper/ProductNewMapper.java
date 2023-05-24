@@ -68,6 +68,14 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
     int update(ProductNew productNew);
 
     /**
+     * 修改数据
+     *
+     * @param productNew 实例对象
+     * @return 影响行数
+     */
+    int updateByConditions(ProductNew productNew);
+
+    /**
      * 通过主键删除数据
      *
      * @param id 主键
@@ -90,6 +98,9 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
     List<ProductNew> selectNoPull();
 
     @Update("update t_product_new set test_file = #{testFile}, test_result = #{testResult}, status = #{status}, test_type = #{testType} ,error_message = #{errorMessage},test_end_time = #{testEndTime} where no = #{no}")
+    Integer updateByNoNew(ProductNew productNew);
+
+    @Update("update t_product_new set test_file = #{testFile}, test_result = #{testResult}, status = #{status}, test_type = #{testType} where no = #{no}")
     Integer updateByNo(ProductNew productNew);
 
     @Select("select * from t_product_new where no = #{no} and del_flag = 0")
