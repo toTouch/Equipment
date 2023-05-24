@@ -26,8 +26,13 @@ public class JsonAppCompressionController {
         return productNewService.checkCompression(apiRequestQuery);
     }
 
+    @PostMapping("/loadTest")
+    public R loadTest(@RequestBody ApiRequestQuery apiRequestQuery){
+        return productNewService.runFullLoadTest(apiRequestQuery);
+    }
+
     @PostMapping("/success")
     public R successCompression(@RequestBody ApiRequestQuery apiRequestQuery){
-        return productNewService.runFullLoadTest(apiRequestQuery);
+        return productNewService.successCompression(apiRequestQuery);
     }
 }

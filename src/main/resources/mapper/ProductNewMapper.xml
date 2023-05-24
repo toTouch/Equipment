@@ -176,6 +176,75 @@
             <if test="remarks != null and remarks != ''">
                 remarks = #{remarks},
             </if>
+            <!--            <if test="iotCardId != null">-->
+            <!--                iot_card_id = #{iotCardId},-->
+            <!--            </if>-->
+            <!--            <if test="cameraId != null">-->
+            <!--                camera_id = #{cameraId},-->
+            <!--            </if>-->
+            <!--            <if test="surface != null">-->
+            <!--                surface = #{surface},-->
+            <!--            </if>-->
+            <!--            <if test="color != null">-->
+            <!--                color = #{color},-->
+            <!--            </if>-->
+            <if test="appVersion != null and appVersion != ''">
+                app_version = #{appVersion},
+            </if>
+            <if test="sysVersion != null and sysVersion != ''">
+                sys_version = #{sysVersion},
+            </if>
+            <if test="testStartTime != null" >
+                test_start_time = #{testStartTime},
+            </if>
+            <if test="testEndTime != null">
+                test_end_time = #{testEndTime},
+            </if>
+            <if test="testMsg != null and testMsg != ''">
+                test_msg = #{testMsg},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+
+    <!--通过主键修改数据-->
+    <update id="updateByConditions">
+        update t_product_new
+        <set>
+            <if test="no != null">
+                no = #{no},
+            </if>
+            <if test="modelId != null">
+                model_id = #{modelId},
+            </if>
+            <if test="batchId != null">
+                batch_id = #{batchId},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="expirationStartTime != null">
+                expiration_start_time = #{expirationStartTime},
+            </if>
+            <if test="years != null">
+                years = #{years},
+            </if>
+            <if test="expirationEndTime != null">
+                expiration_end_time = #{expirationEndTime},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="delFlag != null">
+                del_flag = #{delFlag},
+            </if>
+            <if test="remarks != null and remarks != ''">
+                remarks = #{remarks},
+            </if>
 <!--            <if test="iotCardId != null">-->
 <!--                iot_card_id = #{iotCardId},-->
 <!--            </if>-->
@@ -229,7 +298,7 @@
         from t_product_new
         <where>
             <if test="sn != null and sn != ''">
-                and no = #{sn}
+                and no like concat('%',#{sn},'%')
             </if>
             <if test="testStartTimeBeginTime != null">
                 and test_start_time > #{testStartTimeBeginTime}
