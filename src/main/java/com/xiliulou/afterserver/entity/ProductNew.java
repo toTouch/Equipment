@@ -184,4 +184,22 @@ public class ProductNew {
 //    private List<OssUrlVo> qualityInspectionFileList;
 
     private String errorMessage;
+    /**
+     * 物联网productKey
+     */
+    private String productKey;
+    /**
+     * 物联网deviceName
+     */
+    private String deviceName;
+
+    /**
+     * 三元组是否已使用 0使用 1 未使用
+     */
+    private Integer isUse;
+    //三元组已使用
+    public static final Integer IS_USE =0;
+    //三元组未使用
+    public static final Integer NOT_USE =1;
+
 }

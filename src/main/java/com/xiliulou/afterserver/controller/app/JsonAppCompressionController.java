@@ -35,4 +35,12 @@ public class JsonAppCompressionController {
     public R successCompression(@RequestBody ApiRequestQuery apiRequestQuery){
         return productNewService.successCompression(apiRequestQuery);
     }
+
+    /**
+     * 压测2.0，压测结果单笔改成多笔
+     */
+    @PostMapping("/loadTest2")
+    public R loadTest2(@RequestBody ApiRequestQuery apiRequestQuery){
+        return productNewService.runFullLoadTest2(apiRequestQuery);
+    }
 }
