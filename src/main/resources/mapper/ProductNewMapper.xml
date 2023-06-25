@@ -38,7 +38,7 @@
           p.id, p.no, p.model_id, p.batch_id, p.status, p.expiration_start_time, p.years, p.expiration_end_time,
           p.create_time,p.update_time, p.del_flag, p.serial_num, p.type, p.supplier_id,p.remarks,p.iot_card_id,
           p.camera_id,p.surface,p.color, p.test_result, p.test_file, p.app_version, p.sys_version, p.test_type,
-          p.test_start_time, p.test_end_time, p.test_msg ,p.error_message
+          p.test_start_time, p.test_end_time, p.test_msg ,p.error_message,p.product_key,p.device_name,p.is_use
         from t_product_new p
     <where>
         and p.del_flag = 0
