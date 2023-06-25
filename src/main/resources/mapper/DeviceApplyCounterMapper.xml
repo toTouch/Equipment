@@ -4,7 +4,7 @@
 
     <!--新增所有列-->
     <insert id="insertOrUpdate" keyProperty="id" useGeneratedKeys="true">
-        INSERT INTO t_device_apply_counter (date, type, count) VALUES (?, ?, 1) ON DUPLICATE KEY UPDATE count = count + 1
+        INSERT INTO t_device_apply_counter (date, type, count) VALUES (#{date}, #{type}, 1) ON DUPLICATE KEY UPDATE count = count + 1
     </insert>
     <select id="queryByDateAndType" resultType="com.xiliulou.afterserver.entity.DeviceApplyCounter">
         select id,date, type, count from t_device_apply_counter where date = #{date}  and type =#{type}
