@@ -1,7 +1,6 @@
 package com.xiliulou.afterserver;
-
-import com.xiliulou.cache.redis.EnableRedis;
 import com.xiliulou.iot.EnableRegisterDevice;
+import com.xiliulou.cache.redis.EnableRedis;
 import com.xiliulou.mq.EnableMq;
 import com.xiliulou.storage.EnableStorage;
 import org.mybatis.spring.annotation.MapperScan;
