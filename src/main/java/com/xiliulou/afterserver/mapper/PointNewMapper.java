@@ -9,6 +9,7 @@ import java.util.List;
 import com.xiliulou.afterserver.web.vo.PointNewMapCountVo;
 import com.xiliulou.afterserver.web.vo.PointNewMapStatisticsVo;
 import com.xiliulou.afterserver.web.vo.PointNewPullVo;
+import com.xiliulou.afterserver.web.vo.ProductNewDeliverVo;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Select;
@@ -129,4 +130,7 @@ public interface PointNewMapper extends BaseMapper<PointNew> {
     void batchUpdateAuditStatus(PointAuditStatusQuery pointAuditStatusQuery);
 
     Integer updateAuditStatus(PointNew pointNewUpdate);
+
+    List<ProductNewDeliverVo> productNewDeliverList(Long offset,  Long size);
+    Integer productNewDeliverCount();
 }

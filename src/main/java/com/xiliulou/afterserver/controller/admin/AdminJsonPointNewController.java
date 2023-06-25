@@ -780,4 +780,13 @@ public class AdminJsonPointNewController {
     public R pointNewMapCityCount(@RequestParam("pid") Long pid) {
         return pointNewService.pointNewMapCityCount(pid);
     }
+
+    @GetMapping("admin/productNew/deliver/list")
+    public R productNewDeliverList(@RequestParam("offset") Long offset, @RequestParam("size") Long size) {
+        return pointNewService.productNewDeliverList(offset,size);
+    }
+    @GetMapping("admin/productNew/deliver/count")
+    public R productNewDeliverCount() {
+        return pointNewService.productNewDeliverCount();
+    }
 }

@@ -98,4 +98,6 @@ public class Deliver {
     private String paymentMethodName;
     @TableField(exist = false)
     private Map<String, List<DeliverInfoVo>> deliverInfoVoMap;
+
+    private String tenantName;
 }
