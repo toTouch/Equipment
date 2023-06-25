@@ -147,4 +147,9 @@ rocketmq:
   consumer:
     group: cupboard-consumer
 
-
+iot:
+  accessKey: SuoR5L5r9lJKzNiO
+  accessSecret: WsCM0f7upVDgOSLWpTr0HPLgjeCEoc
+  regionId: cn-shanghai
+  domain: iot.cn-shanghai.aliyuncs.com
+  product: iot
