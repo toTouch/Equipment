@@ -691,4 +691,14 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         pointNewAuditRecord.setRemark(remark);
         pointNewAuditRecordService.insert(pointNewAuditRecord);
     }
+
+    @Override
+    public R productNewDeliverList(Long offset,  Long size) {
+        return R.ok(pointNewMapper.productNewDeliverList(offset,size));
+    }
+
+    @Override
+    public R productNewDeliverCount() {
+        return R.ok(pointNewMapper.productNewDeliverCount());
+    }
 }
