@@ -131,4 +131,11 @@ public interface ProductNewService extends IService<ProductNew> {
     R runFullLoadTest(ApiRequestQuery apiRequestQuery);
 
     R compressionEnd(ApiRequestQuery apiRequestQuery);
+
+    R queryDeviceMessage(String no);
+    R getDeviceMessage(String no);
+
+    R updateUsedStatus(String no );
+    R runFullLoadTest2(ApiRequestQuery apiRequestQuery);
+    R compressionEnd2(ApiRequestQuery apiRequestQuery);
 }

@@ -47,4 +47,11 @@ public class Product implements Serializable {
 
     public static final Integer BUY_TYPE_CENTRALIZED = 1;
     public static final Integer BUY_TYPE_NOT_CENTRALIZED = 2;
+    /**
+     * 是否有屏  0无 1有
+     */
+    private Integer hasScreen;
+
+    public static final Integer NO_SCREEN = 0;
+    public static final Integer HAS_SCREEN = 1;
 }

@@ -13,6 +13,7 @@ import java.util.List;
 public class CompressionQuery {
     private String iotCard;
     private String compressionFile;
+    private String testBoxFile;
     private List<String> noList;
     private String testType;
     private String errorMessage;
