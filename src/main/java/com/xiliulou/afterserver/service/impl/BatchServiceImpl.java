@@ -232,7 +232,6 @@ public class BatchServiceImpl implements BatchService {
             productNew.setCreateTime(System.currentTimeMillis());
             productNew.setUpdateTime(System.currentTimeMillis());
             productNew.setDelFlag(ProductNew.DEL_NORMAL);
-            productNewMapper.insertOne(productNew);
             if(Objects.equals(product.getProductSeries(),3)){
                 DeviceApplyCounter counter = deviceApplyCounterMapper.queryByDateAndType(deviceApplyCounter);
                 if(Objects.isNull(counter)){
@@ -241,9 +240,13 @@ public class BatchServiceImpl implements BatchService {
                     deviceApplyCounter.setCount(counter.getCount()+1);
                 }
                 deviceApplyCounterMapper.insertOrUpdate(deviceApplyCounter);
-                deviceNames.add(deviceApplyCounter.getType()+deviceApplyCounter.getDate()+String.format("%05d", deviceApplyCounter.getCount()));
+                String deviceName = deviceApplyCounter.getType() + deviceApplyCounter.getDate() + String.format("%05d", deviceApplyCounter.getCount());
+                productNew.setDeviceName(deviceName);
+                productNew.setProductKey(PRODUCT_KEY);
+                productNew.setIsUse(ProductNew.NOT_USE);
+                deviceNames.add(deviceName);
             }
-
+            productNewMapper.insertOne(productNew);
             PointProductBind bind = new PointProductBind();
             bind.setPointId(batch.getSupplierId());
             bind.setProductId(productNew.getId());
