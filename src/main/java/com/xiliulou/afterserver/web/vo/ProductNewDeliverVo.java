@@ -13,7 +13,7 @@ public class ProductNewDeliverVo {
     /**
      * 型号名称
      */
-    private Long productName;
+    private String productName;
     /**
      * 产品批次no
      */
