@@ -45,4 +45,9 @@ public class ProductNewDeliverVo {
      */
     private Long updateTime;
 
+    /**
+     * 发货时间
+     */
+    private Long deliverTime;
+
 }
