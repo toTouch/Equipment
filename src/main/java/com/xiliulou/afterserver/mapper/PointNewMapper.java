@@ -131,6 +131,6 @@ public interface PointNewMapper extends BaseMapper<PointNew> {
 
     Integer updateAuditStatus(PointNew pointNewUpdate);
 
-    List<ProductNewDeliverVo> productNewDeliverList(Long offset,  Long size);
+    List<ProductNewDeliverVo> productNewDeliverList(@Param("offset") Long offset, @Param("size")  Long size);
     Integer productNewDeliverCount();
 }
