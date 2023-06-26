@@ -1,5 +1,8 @@
 package com.xiliulou.afterserver.web.vo;
 
+import lombok.Data;
+
+@Data
 public class ProductNewDeliverVo {
 
     private Long id;
