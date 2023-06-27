@@ -1,11 +1,8 @@
 package com.xiliulou.afterserver.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -13,7 +10,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.xiliulou.afterserver.constant.AuditProcessConstans;
-import com.xiliulou.afterserver.constant.CommonConstants;
 import com.xiliulou.afterserver.constant.ProductNewStatusSortConstants;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.CompressionRecordMapper;
@@ -21,7 +17,6 @@ import com.xiliulou.afterserver.mapper.PointNewMapper;
 import com.xiliulou.afterserver.mapper.PointProductBindMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.service.*;
-import com.xiliulou.afterserver.util.DataUtil;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
@@ -39,7 +34,6 @@ import com.xiliulou.storage.service.impl.AliyunOssService;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,7 +43,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -1475,7 +1468,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             compressionRecord.setErrorMessage(subStringByBytes(compression.getErrorMessage()));
             compressionRecord.setTestEndTime(compression.getTestEndTime());
             compressionRecord.setUpdateTime(System.currentTimeMillis());
-            compressionRecord.setTestBoxfile(compression.getTestBoxFile());
+            compressionRecord.setTestBoxFile(compression.getTestBoxFile());
             compressionRecordMapper.updateById(compressionRecord);
             //这里需要将主柜的数据同步到副柜
             //获取副柜需要同步的值

@@ -45,7 +45,7 @@ public class CompressionRecord {
     /**
      * 测试格挡文件
      */
-    private String testBoxfile;
+    private String testBoxFile;
 
     private String testType;
 
