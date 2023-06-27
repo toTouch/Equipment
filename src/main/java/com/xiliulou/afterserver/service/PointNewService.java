@@ -112,9 +112,9 @@ public interface PointNewService extends IService<PointNew> {
 
     R batchUpdateAuditStatus(PointAuditStatusQuery pointAuditStatusQuery);
 
-    R productNewDeliverList( Long offset,  Long size);
+    R productNewDeliverList( Long offset, Long size,String batchNo,String sn,String tenantName,Long startTime,Long endTime);
 
-    R productNewDeliverCount();
+    R productNewDeliverCount(String batchNo,String sn,String tenantName,Long startTime,Long endTime);
 
 
 }
