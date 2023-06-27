@@ -693,12 +693,12 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     }
 
     @Override
-    public R productNewDeliverList(Long offset,  Long size) {
-        return R.ok(pointNewMapper.productNewDeliverList(offset,size));
+    public R productNewDeliverList(Long offset,  Long size,String batchNo,String sn,String tenantName,Long startTime,Long endTime) {
+        return R.ok(pointNewMapper.productNewDeliverList(offset,size, batchNo, sn, tenantName, startTime, endTime));
     }
 
     @Override
-    public R productNewDeliverCount() {
-        return R.ok(pointNewMapper.productNewDeliverCount());
+    public R productNewDeliverCount(String batchNo,String sn,String tenantName,Long startTime,Long endTime) {
+        return R.ok(pointNewMapper.productNewDeliverCount( batchNo, sn, tenantName, startTime, endTime));
     }
 }
