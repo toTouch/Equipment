@@ -17,7 +17,7 @@ public class ProductNewDeliverVo {
     /**
      * 产品批次no
      */
-    private Long batchNo;
+    private String batchNo;
     /**
      * 物联网productKey
      */
