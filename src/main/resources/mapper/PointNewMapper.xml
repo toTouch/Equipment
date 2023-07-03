@@ -518,10 +518,10 @@
             and d.tenant_name LIKE CONCAT('%',#{tenantName},'%')
         </if>
         <if test="startTime != null ">
-            and d.deliver_time  > #{startTime}
+            and d.deliver_time  >= #{startTime}
         </if>
         <if test="endTime!= null ">
-            and d.deliver_time <![CDATA[ < ]]> #{endTime}
+            and d.deliver_time <![CDATA[ <= ]]> #{endTime}
         </if>
          order by tpn.create_time desc limit #{offset}, #{size}
     </select>
@@ -541,10 +541,10 @@
             and d.tenant_name LIKE CONCAT('%',#{tenantName},'%')
         </if>
         <if test="startTime != null ">
-            and d.deliver_time  > #{startTime}
+            and d.deliver_time  >= #{startTime}
         </if>
         <if test="endTime!= null ">
-            and d.deliver_time <![CDATA[ < ]]> #{endTime}
+            and d.deliver_time <![CDATA[ <= ]]> #{endTime}
         </if>
 
     </select>
