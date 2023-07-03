@@ -83,11 +83,6 @@ public class DeliverListener extends AnalysisEventListener<DeliverInfo> {
             deliver.setDestination(item.getEndPoint());
             deliver.setRemark(item.getRemarks());
             deliver.setDeliverCost(item.getCost());
-            try {
-                deliver.setDeliverTime(dateToStamp(item.getDeliverTime()));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
             deliver.setCreateTime(System.currentTimeMillis());
             deliver.setExpressCompany(item.getExpressName());
             deliver.setExpressNo(item.getExpressNo());
@@ -119,17 +114,9 @@ public class DeliverListener extends AnalysisEventListener<DeliverInfo> {
             deliver.setThirdCompanyPay(item.getThirdCompanyPay());
             deliver.setThirdReason(item.getThirdReason());
 
-            if (item.getDeliverTime() != null){
-                long l = 0;
-                try {
-                    l = dateToStamp(item.getDeliverTime());
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                deliver.setDeliverTime(l);
-            }else {
-                deliver.setDeliverTime(System.currentTimeMillis());
-            }
+
+            deliver.setDeliverTime(System.currentTimeMillis());
+
 
             if(Objects.nonNull(item.getPaymentMethod())){
                 if("月结".equals(item.getPaymentMethod()) || String.valueOf(Deliver.PAYMENT_METHOD_MONTHLY).equals(item.getPaymentMethod())){
