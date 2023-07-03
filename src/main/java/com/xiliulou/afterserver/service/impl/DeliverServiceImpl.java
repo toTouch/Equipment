@@ -475,11 +475,11 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                 }
 
                 if(!Objects.equals(oldDeliver.getCityType(), deliver.getCityType()) || !Objects.equals(oldDeliver.getCityId(), deliver.getCityId())){
-                    return R.fail("已发货或已到达的订单不可改变起点");
+                    return R.fail("已发货或已到达的订单不可改变起点或终点");
                 }
 
                 if(!Objects.equals(oldDeliver.getDestinationType(), deliver.getDestinationType()) || !Objects.equals(oldDeliver.getDestinationId(), deliver.getDestinationId())){
-                    return R.fail("已发货或已到达的订单不可改变起点");
+                    return R.fail("已发货或已到达的订单不可改变起点或终点");
                 }
             }
         }
