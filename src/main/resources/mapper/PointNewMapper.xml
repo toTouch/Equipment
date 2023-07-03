@@ -509,7 +509,7 @@
         left join deliver d   on d.id=tdl.deliver_id
         where p.product_series=3 and tpn.del_flag=0
         <if test="batchNo != null and batchNo != ''">
-            and t.batch_no = #{batchNo}
+            and t.batch_no LIKE CONCAT('%',#{batchNo},'%')
         </if>
         <if test="sn != null and sn != ''">
             and tpn.no LIKE CONCAT('%',#{sn},'%')
@@ -532,13 +532,13 @@
         left join deliver d   on d.id=tdl.deliver_id
         where p.product_series=3 and tpn.del_flag=0
         <if test="batchNo != null and batchNo != ''">
-            and t.batch_no = #{batchNo}
+            and t.batch_no LIKE CONCAT('%',#{batchNo},'%')
         </if>
         <if test="sn != null and sn != ''">
             and tpn.no LIKE CONCAT('%',#{sn},'%')
         </if>
         <if test="tenantName != null and tenantName != ''">
-           and d.tenant_name LIKE CONCAT('%',#{tenantName},'%')
+            and d.tenant_name LIKE CONCAT('%',#{tenantName},'%')
         </if>
         <if test="startTime != null ">
             and d.deliver_time  > #{startTime}
