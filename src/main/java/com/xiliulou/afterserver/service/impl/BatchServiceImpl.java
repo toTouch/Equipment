@@ -55,7 +55,7 @@ public class BatchServiceImpl implements BatchService {
     private PointProductBindService pointProductBindService;
     @Autowired
     private UserService userService;
-    public static final String PRODUCT_KEY = "a11K1C64UmH";
+    public static final String PRODUCT_KEY = "a1QqoBrbcT1";
     @Autowired
     private RegisterDeviceService registerDeviceService;
     @Autowired
