@@ -23,6 +23,7 @@ import com.xiliulou.afterserver.web.query.*;
 import com.xiliulou.afterserver.web.vo.FileVo;
 import com.xiliulou.afterserver.web.vo.PointNewMapStatisticsVo;
 import com.xiliulou.afterserver.web.vo.PointNewPullVo;
+import com.xiliulou.afterserver.web.vo.ProductNewDeliverVo;
 import com.xiliulou.core.json.JsonUtil;
 import com.xiliulou.mq.service.RocketMqService;
 import com.xiliulou.storage.config.StorageConfig;
@@ -693,8 +694,18 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     }
 
     @Override
-    public R productNewDeliverList(Long offset,  Long size,String batchNo,String sn,String tenantName,Long startTime,Long endTime) {
-        return R.ok(pointNewMapper.productNewDeliverList(offset,size, batchNo, sn, tenantName, startTime, endTime));
+    public R productNewDeliverList(Long offset, Long size, String batchNo, String sn, String tenantName, Long startTime, Long endTime) {
+        List<ProductNewDeliverVo> productNewDeliverVos = pointNewMapper.productNewDeliverList(offset, size, batchNo, sn, tenantName, startTime, endTime);
+        if (CollectionUtils.isEmpty(productNewDeliverVos)) {
+            return R.ok(new ArrayList<ProductNewDeliverVo>());
+        }
+        for (int i = 0; i < productNewDeliverVos.size(); i++) {
+            //打包时间同压测成功之后的结束时间，因此前端只需要获取压测结束时间
+            if (!ProductNew.TEST_RESULT_SUCCESS.equals(productNewDeliverVos.get(i).getTestResult())) {
+                productNewDeliverVos.get(i).setTestEndTime(null);
+            }
+        }
+        return R.ok(productNewDeliverVos);
     }
 
     @Override

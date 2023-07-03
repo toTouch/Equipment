@@ -53,4 +53,14 @@ public class ProductNewDeliverVo {
      */
     private Long deliverTime;
 
+    /**
+     * 测试结果 0--失败 1--通过 2--压测中
+     */
+    private Integer testResult;
+
+    /**
+     * 压测结束时间
+     */
+    private Long testEndTime;
+
 }
