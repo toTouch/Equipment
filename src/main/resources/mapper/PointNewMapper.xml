@@ -504,7 +504,7 @@
         where id = #{id};
     </update>
     <select id="productNewDeliverList" resultType="com.xiliulou.afterserver.web.vo.ProductNewDeliverVo">
-        select tpn.id,tpn.no,t.batch_no,tpn.product_key,tpn.device_name,tpn.is_use,tpn.create_time,d.tenant_name,p.name as productName,d.deliver_time,tpn.test_end_time,tpn.test_result  from t_product_new  tpn  left join product p on tpn.model_id =p.id left join  t_batch t on tpn.batch_id=t.id
+        select tpn.id,tpn.no,t.batch_no,tpn.product_key,tpn.device_name,tpn.is_use,tpn.create_time,d.tenant_name,p.name as productName,tdl.create_time as deliverTime,tpn.test_end_time,tpn.test_result  from t_product_new  tpn  left join product p on tpn.model_id =p.id left join  t_batch t on tpn.batch_id=t.id
         left join t_deliver_log tdl on tdl.product_id = tpn.id
         left join deliver d   on d.id=tdl.deliver_id
         where p.product_series=3 and tpn.del_flag=0
@@ -518,10 +518,10 @@
             and d.tenant_name LIKE CONCAT('%',#{tenantName},'%')
         </if>
         <if test="startTime != null ">
-            and d.deliver_time  >= #{startTime}
+            and tdl.create_time  >= #{startTime}
         </if>
         <if test="endTime!= null ">
-            and d.deliver_time <![CDATA[ <= ]]> #{endTime}
+            and tdl.create_time <![CDATA[ <= ]]> #{endTime}
         </if>
          order by tpn.create_time desc limit #{offset}, #{size}
     </select>
@@ -541,10 +541,10 @@
             and d.tenant_name LIKE CONCAT('%',#{tenantName},'%')
         </if>
         <if test="startTime != null ">
-            and d.deliver_time  >= #{startTime}
+            and tdl.create_time  >= #{startTime}
         </if>
         <if test="endTime!= null ">
-            and d.deliver_time <![CDATA[ <= ]]> #{endTime}
+            and tdl.create_time <![CDATA[ <= ]]> #{endTime}
         </if>
 
     </select>
