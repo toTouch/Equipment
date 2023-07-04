@@ -19,7 +19,7 @@
     <select id="queryListByPid" resultType="com.xiliulou.afterserver.entity.CompressionRecord">
                 select id,pid,no,create_time, update_time,test_result,test_file,test_box_file,
             test_type,test_start_time,test_end_time,test_msg,error_message
-         from t_compression_record where pid = #{pid} order by create_time desc
+         from t_compression_record where pid = #{pid} and test_result not in (5,2) order by create_time desc
     </select>
 
 </mapper>
