@@ -1456,7 +1456,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
 
             //ProductNew product = new ProductNew();
             //product.setNo(no);
-            product.setTestFile(compression.getCompressionFile());
+            //product.setTestFile(compression.getCompressionFile());
             product.setTestResult(compression.getTestStatus());
             product.setTestType(compression.getTestType());
             product.setErrorMessage(subStringByBytes(compression.getErrorMessage()));
@@ -1466,7 +1466,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             if (Objects.isNull(compressionRecord)){
                 continue;
             }
-            compressionRecord.setTestFile(compression.getCompressionFile());
+            //compressionRecord.setTestFile(compression.getCompressionFile());
             compressionRecord.setTestResult(compression.getTestStatus());
             compressionRecord.setTestType(compression.getTestType());
             compressionRecord.setErrorMessage(subStringByBytes(compression.getErrorMessage()));
