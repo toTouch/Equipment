@@ -7,7 +7,9 @@ import java.util.List;
 
 public interface CompressionRecordMapper  extends BaseMapper<CompressionRecord> {
 
-    CompressionRecord queryByPid(Long pid);
+    CompressionRecord queryEleByPid(Long pid);
+
+    CompressionRecord queryCompressionByPid(Long pid);
 
     List<CompressionRecord> queryListByPid(Long pid);
 }
