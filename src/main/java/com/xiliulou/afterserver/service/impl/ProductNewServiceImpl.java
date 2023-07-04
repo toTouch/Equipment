@@ -1364,6 +1364,20 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             product.setTestType(compression.getTestType());
             product.setErrorMessage(subStringByBytes(compression.getErrorMessage()));
             product.setTestEndTime(compression.getTestEndTime());
+
+            CompressionRecord compressionRecord = compressionRecordMapper.queryCompressionByPid(product.getId());
+            if (Objects.isNull(compressionRecord)){
+                continue;
+            }
+            compressionRecord.setTestFile(compression.getCompressionFile());
+            compressionRecord.setTestResult(compression.getTestStatus());
+            compressionRecord.setTestType(compression.getTestType());
+            compressionRecord.setErrorMessage(subStringByBytes(compression.getErrorMessage()));
+            compressionRecord.setTestEndTime(compression.getTestEndTime());
+            compressionRecord.setUpdateTime(System.currentTimeMillis());
+            //compressionRecord.setTestBoxFile(compression.getTestBoxFile());
+            compressionRecordMapper.updateById(compressionRecord);
+
             //这里需要将主柜的数据同步到副柜
             //获取副柜需要同步的值
             //List<AuditValue> productValues = auditValueService.getByPidAndEntryIds(copyLong, product.getId());
@@ -1462,7 +1476,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             product.setErrorMessage(subStringByBytes(compression.getErrorMessage()));
             product.setTestEndTime(compression.getTestEndTime());
 
-            CompressionRecord compressionRecord = compressionRecordMapper.queryByPid(product.getId());
+            CompressionRecord compressionRecord = compressionRecordMapper.queryEleByPid(product.getId());
             if (Objects.isNull(compressionRecord)){
                 continue;
             }
@@ -1505,6 +1519,15 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         productUpdate.setTestEndTime(cabinetCompressionQuery.getTestEndTime());
         productUpdate.setTestMsg(cabinetCompressionQuery.getTestMsg());
         productNewMapper.updateByConditions(productUpdate);
+
+        CompressionRecord compressionRecord=new CompressionRecord();
+        compressionRecord.setPid(productNew.getId());
+        compressionRecord.setCreateTime(System.currentTimeMillis());
+        compressionRecord.setTestResult(cabinetCompressionQuery.getTestStatus());
+        compressionRecord.setTestStartTime(cabinetCompressionQuery.getTestStartTime());
+        compressionRecord.setTestEndTime(cabinetCompressionQuery.getTestEndTime());
+        compressionRecord.setTestMsg(cabinetCompressionQuery.getTestMsg());
+        compressionRecordMapper.insert(compressionRecord);
 
         ProductNewTestContent byDb = productNewTestContentService.queryByPid(productNew.getId());
         if (Objects.isNull(byDb)) {
