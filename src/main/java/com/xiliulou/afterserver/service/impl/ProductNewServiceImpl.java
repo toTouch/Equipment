@@ -1411,7 +1411,11 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         if (Objects.isNull(iotCard)) {
             return R.fail(null, null, "未查询到物联网卡信息");
         }
-
+        if(Objects.equals(compression.getTestStatus(), CompressionQuery.TEST_FAIL)){
+            compression.setTestStatus(CompressionQuery.ELE_TEST_FAIL);
+        }else{
+            compression.setTestStatus(CompressionQuery.ELE_TEST_SUCC);
+        }
         ArrayList<ProductNew> mainProducts = new ArrayList(1);
         for (String no : compression.getNoList()) {
             ProductNew product = this.queryByNo(no);
@@ -1524,6 +1528,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     }
 
     public R compressing2(CabinetCompressionQuery cabinetCompressionQuery) {
+        cabinetCompressionQuery.setTestStatus(CompressionQuery.ELE_TEST_ING);
         ProductNew productNew = this.baseMapper.queryByNo(cabinetCompressionQuery.getSn());
         if (Objects.isNull(productNew)) {
             return R.fail(null, "未查询到相关资产编码");
@@ -1625,18 +1630,13 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             CabinetCompressionQuery cabinetCompressionQuery = null;
             try {
                 cabinetCompressionQuery = JSON.parseObject(apiRequestQuery.getData(), CabinetCompressionQuery.class);
-                cabinetCompressionQuery.setTestStatus(CompressionQuery.ELE_TEST_ING);
             } catch (Exception e) {
                 log.error("COMPRESSION PROPERTY CAST ERROR! success error", e);
                 return R.fail(null, null, "参数解析错误");
             }
             return compressing2(cabinetCompressionQuery);
         } else if (Objects.equals(compression.getTestStatus(), CompressionQuery.TEST_FAIL) || Objects.equals(compression.getTestStatus(), CompressionQuery.TEST_SUCC)) {
-            if(Objects.equals(compression.getTestStatus(), CompressionQuery.TEST_FAIL)){
-                compression.setTestStatus(CompressionQuery.ELE_TEST_FAIL);
-            }else{
-                compression.setTestStatus(CompressionQuery.ELE_TEST_SUCC);
-            }
+
             return compressionEnd2(apiRequestQuery);
         } else {
             return R.fail("SYSTEM.0002", "参数不合法");
