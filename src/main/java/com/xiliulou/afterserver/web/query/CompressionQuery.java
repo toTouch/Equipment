@@ -32,4 +32,10 @@ public class CompressionQuery {
     public static final Integer TEST_FAIL = 0;
     public static final Integer TEST_SUCC = 1;
     public static final Integer TEST_ING = 2;
+    /**
+     * 人机交互结果，和压测状态共用一个字段
+     */
+    public static final Integer ELE_TEST_FAIL = 3;
+    public static final Integer ELE_TEST_SUCC = 4;
+    public static final Integer ELE_TEST_ING = 5;
 }
