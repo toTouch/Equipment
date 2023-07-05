@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.xiliulou.afterserver.constant.CacheConstants;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.BatchMapper;
+import com.xiliulou.afterserver.mapper.DeviceApplyCounterMapper;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.service.*;
@@ -14,6 +16,9 @@ import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.vo.OrderBatchVo;
+import com.xiliulou.cache.redis.RedisService;
+import com.xiliulou.core.json.JsonUtil;
+import com.xiliulou.iot.service.RegisterDeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,6 +55,11 @@ public class BatchServiceImpl implements BatchService {
     private PointProductBindService pointProductBindService;
     @Autowired
     private UserService userService;
+    public static final String PRODUCT_KEY = "a1mqS72fHNi";
+    @Autowired
+    private RegisterDeviceService registerDeviceService;
+    @Autowired
+    private DeviceApplyCounterMapper deviceApplyCounterMapper;
 
     /**
      * 通过ID查询单条数据从DB
@@ -136,6 +146,7 @@ public class BatchServiceImpl implements BatchService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public R saveBatch(Batch batch) {
+
         List<Batch> batchOlds = queryByName(batch.getBatchNo());
         if(CollectionUtils.isNotEmpty(batchOlds)){
             return R.fail("批次号已存在");
@@ -191,12 +202,21 @@ public class BatchServiceImpl implements BatchService {
             codeStr.append(productNew.getType());
         }
         productNew.setCode(codeStr.toString());
-
+        DeviceApplyCounter deviceApplyCounter=new DeviceApplyCounter();
+        if(Objects.isNull(product.getHasScreen())||Objects.equals(product.HAS_SCREEN,product.getHasScreen())){
+            deviceApplyCounter.setType("H");
+        }else{
+            deviceApplyCounter.setType("N");
+        }
+        SimpleDateFormat formatter = new SimpleDateFormat("yyMMdd");
+        String dateString = formatter.format(new Date());
+        deviceApplyCounter.setDate(dateString);
         Integer serialNum = productNewMapper.queryMaxSerialNum(codeStr.toString());
         if(Objects.isNull(serialNum)){
             serialNum = 0;
         }
 
+        Set<String> deviceNames=new HashSet<String>();
         for (int i = 0; i < productNew.getProductCount(); i++) {
             serialNum++;
             String serialNumStr = String.format("%04d", serialNum);
@@ -207,21 +227,41 @@ public class BatchServiceImpl implements BatchService {
             if(Objects.nonNull(productNew.getType())){
                 sb.append(productNew.getType());
             }
-
             productNew.setSerialNum(serialNumStr);
             productNew.setNo(sb.toString());
             productNew.setCreateTime(System.currentTimeMillis());
             productNew.setUpdateTime(System.currentTimeMillis());
             productNew.setDelFlag(ProductNew.DEL_NORMAL);
+            if(Objects.equals(product.getProductSeries(),3)){
+                DeviceApplyCounter counter = deviceApplyCounterMapper.queryByDateAndType(deviceApplyCounter);
+                if(Objects.isNull(counter)){
+                    deviceApplyCounter.setCount(1L);
+                }else{
+                    deviceApplyCounter.setCount(counter.getCount()+1);
+                }
+                deviceApplyCounterMapper.insertOrUpdate(deviceApplyCounter);
+                String deviceName = deviceApplyCounter.getType() + deviceApplyCounter.getDate() + String.format("%05d", deviceApplyCounter.getCount());
+                productNew.setDeviceName(deviceName);
+                productNew.setProductKey(PRODUCT_KEY);
+                productNew.setIsUse(ProductNew.NOT_USE);
+                deviceNames.add(deviceName);
+            }
             productNewMapper.insertOne(productNew);
-
             PointProductBind bind = new PointProductBind();
             bind.setPointId(batch.getSupplierId());
             bind.setProductId(productNew.getId());
             bind.setPointType(PointProductBind.TYPE_SUPPLIER);
             pointProductBindService.insert(bind);
         }
-
+        //如果是换电柜，则自动维护三元组
+        if(Objects.equals(product.getProductSeries(),3)&&deviceNames.size()>0){
+            Long applyId = registerDeviceService.batchCheckDeviceNames(PRODUCT_KEY, deviceNames);
+            log.info("batch check finished:deviceNames={} applyId={} ", deviceNames,applyId);
+            if (Objects.nonNull(applyId)){
+                boolean b = registerDeviceService.batchRegisterDeviceWithApplyId(PRODUCT_KEY, applyId);
+                log.info("batch register finished:result={} applyId={} ", b,applyId);
+            }
+        }
 
         return R.ok();
     }

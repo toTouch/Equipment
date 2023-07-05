@@ -780,4 +780,22 @@ public class AdminJsonPointNewController {
     public R pointNewMapCityCount(@RequestParam("pid") Long pid) {
         return pointNewService.pointNewMapCityCount(pid);
     }
+
+    @GetMapping("admin/productNew/deliver/list")
+    public R productNewDeliverList(@RequestParam("offset") Long offset, @RequestParam("size") Long size,
+                                   @RequestParam(value = "batchNo", required = false) String batchNo,
+                                   @RequestParam(value = "sn", required = false) String  sn,
+                                   @RequestParam(value = "tenantName", required = false) String tenantName,
+                                   @RequestParam(value = "startTime", required = false) Long  startTime,
+                                   @RequestParam(value = "endTime", required = false) Long  endTime) {
+        return pointNewService.productNewDeliverList(offset,size,batchNo,sn,tenantName,startTime,endTime);
+    }
+    @GetMapping("admin/productNew/deliver/count")
+    public R productNewDeliverCount(@RequestParam(value = "batchNo", required = false) String batchNo,
+                                    @RequestParam(value = "sn", required = false) String  sn,
+                                    @RequestParam(value = "tenantName", required = false) String tenantName,
+                                    @RequestParam(value = "startTime", required = false) Long  startTime,
+                                    @RequestParam(value = "endTime", required = false) Long  endTime) {
+        return pointNewService.productNewDeliverCount(batchNo,sn,tenantName,startTime,endTime);
+    }
 }

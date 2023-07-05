@@ -7,6 +7,7 @@ import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.PointAuditStatusQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
 import com.xiliulou.afterserver.web.vo.PointNewPullVo;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -110,4 +111,10 @@ public interface PointNewService extends IService<PointNew> {
     R queryFiles(Long pid);
 
     R batchUpdateAuditStatus(PointAuditStatusQuery pointAuditStatusQuery);
+
+    R productNewDeliverList( Long offset, Long size,String batchNo,String sn,String tenantName,Long startTime,Long endTime);
+
+    R productNewDeliverCount(String batchNo,String sn,String tenantName,Long startTime,Long endTime);
+
+
 }

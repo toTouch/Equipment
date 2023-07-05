@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiliulou.afterserver.mapper.CompressionRecordMapper">
+
+    <!--查询单个-->
+    <select id="queryEleByPid" resultType="com.xiliulou.afterserver.entity.CompressionRecord">
+        select id,pid,no,create_time, update_time,test_result,test_file,test_box_file,
+            test_type,test_start_time,test_end_time,test_msg,error_message
+         from t_compression_record where pid = #{pid}  and test_result=5  order by create_time desc  limit 1
+    </select>
+
+    <!--查询单个-->
+    <select id="queryCompressionByPid" resultType="com.xiliulou.afterserver.entity.CompressionRecord">
+        select id,pid,no,create_time, update_time,test_result,test_file,test_box_file,
+            test_type,test_start_time,test_end_time,test_msg,error_message
+         from t_compression_record where pid = #{pid}  and test_result=2  order by create_time desc  limit 1
+    </select>
+
+    <select id="queryListByPid" resultType="com.xiliulou.afterserver.entity.CompressionRecord">
+                select id,pid,no,create_time, update_time,test_result,test_file,test_box_file,
+            test_type,test_start_time,test_end_time,test_msg,error_message
+         from t_compression_record where pid = #{pid} and test_result not in (5,2) order by create_time desc
+    </select>
+
+</mapper>
