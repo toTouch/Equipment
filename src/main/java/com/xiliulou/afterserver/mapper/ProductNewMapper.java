@@ -6,6 +6,7 @@ import com.xiliulou.afterserver.web.vo.CabinetCompressionContentVo;
 import com.xiliulou.afterserver.web.vo.CabinetCompressionVo;
 import java.util.List;
 
+import com.xiliulou.afterserver.web.vo.DeviceMessageVo;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Select;
@@ -114,4 +115,8 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
         @Param("sortType")Integer sortType);
 
     CabinetCompressionContentVo queryProductTestInfo(@Param("pid")Long pid);
+
+    DeviceMessageVo queryDeviceMessage(@Param("no")String no);
+
+    Integer updateUsedStatusByNo(@Param("no")String no,@Param("updateTime")Long  updateTime);
 }

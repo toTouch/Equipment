@@ -1,11 +1,8 @@
 package com.xiliulou.afterserver.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -13,14 +10,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.xiliulou.afterserver.constant.AuditProcessConstans;
-import com.xiliulou.afterserver.constant.CommonConstants;
 import com.xiliulou.afterserver.constant.ProductNewStatusSortConstants;
 import com.xiliulou.afterserver.entity.*;
+import com.xiliulou.afterserver.mapper.CompressionRecordMapper;
 import com.xiliulou.afterserver.mapper.PointNewMapper;
 import com.xiliulou.afterserver.mapper.PointProductBindMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.service.*;
-import com.xiliulou.afterserver.util.DataUtil;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
@@ -31,10 +27,13 @@ import com.xiliulou.afterserver.web.query.ProductNewDetailsQuery;
 import com.xiliulou.afterserver.web.query.ProductNewQuery;
 import com.xiliulou.afterserver.web.vo.*;
 import com.xiliulou.core.json.JsonUtil;
+import com.xiliulou.iot.entity.response.QueryDeviceDetailResult;
+import com.xiliulou.iot.service.RegisterDeviceService;
 import com.xiliulou.storage.config.StorageConfig;
 import com.xiliulou.storage.service.impl.AliyunOssService;
+
 import javax.annotation.Nullable;
-import org.apache.commons.lang3.RandomUtils;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,7 +43,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -59,8 +57,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service("productNewService")
 @Slf4j
 public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, ProductNew> implements
-    ProductNewService {
-
+        ProductNewService {
+    @Autowired
+    private RegisterDeviceService registerDeviceService;
     @Resource
     private ProductNewMapper productNewMapper;
     @Autowired
@@ -104,7 +103,11 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     @Autowired
     private ProductNewTestContentService productNewTestContentService;
 
-    public static final int MAX_BYTES_ERROR_MESSAGE=190;
+    @Autowired
+    private CompressionRecordMapper compressionRecordMapper;
+
+    public static final int MAX_BYTES_ERROR_MESSAGE = 190;
+
     /**
      * 通过ID查询单条数据从DB
      *
@@ -137,9 +140,9 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
      */
     @Override
     public List<ProductNew> queryAllByLimit(int offset, int limit, String no, Long modelId,
-        Long startTime, Long endTime, List<Long> list, String testType) {
+                                            Long startTime, Long endTime, List<Long> list, String testType) {
         return this.productNewMapper
-            .queryAllByLimit(offset, limit, no, modelId, startTime, endTime, list, testType);
+                .queryAllByLimit(offset, limit, no, modelId, startTime, endTime, list, testType);
     }
 
     /**
@@ -226,7 +229,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             StringBuilder sb = new StringBuilder();
             sb.append(product.getCode()).append("-");
             sb.append(supplier.getCode()).append(batch.getBatchNo())
-                .append(serialNumStr);
+                    .append(serialNumStr);
             if (Objects.nonNull(productNew.getType())) {
                 sb.append(productNew.getType());
             }
@@ -257,7 +260,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
 //        }
 
         Double statusValueOld = ProductNewStatusSortConstants
-            .acquireStatusValue(productNewOld.getStatus());
+                .acquireStatusValue(productNewOld.getStatus());
         if (Objects.isNull(statusValueOld)) {
             return R.fail("产品状态不合法");
         }
@@ -280,7 +283,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         //这里状态改成已收货 位置要发生改变 利用发货日志表查询
         if (Objects.equals(3, query.getStatus())) {
             DeliverLog deliverLog = deliverLogService.getBaseMapper().selectOne(
-                new QueryWrapper<DeliverLog>().eq("product_id", query.getId()));
+                    new QueryWrapper<DeliverLog>().eq("product_id", query.getId()));
 
             if (Objects.nonNull(deliverLog)) {
                 Deliver deliver = deliverService.getById(deliverLog.getId());
@@ -288,22 +291,22 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
                     Integer destinationType = deliver.getDestinationType();
                     if (Objects.equals(destinationType, 1)) {
                         PointNew pointNew = pointNewMapper.selectOne(
-                            new QueryWrapper<PointNew>().eq("name", deliver.getDestination()));
+                                new QueryWrapper<PointNew>().eq("name", deliver.getDestination()));
                         if (Objects.nonNull(pointNew)) {
                             this.bindPoint(query.getId(), pointNew.getId(), 1);
                         }
                     }
                     if (Objects.equals(destinationType, 2)) {
                         WareHouse wareHouse = warehouseService.getBaseMapper().selectOne(
-                            new QueryWrapper<WareHouse>()
-                                .eq("ware_houses", deliver.getDestination()));
+                                new QueryWrapper<WareHouse>()
+                                        .eq("ware_houses", deliver.getDestination()));
                         if (Objects.nonNull(wareHouse)) {
                             this.bindPoint(query.getId(), new Long(wareHouse.getId()), 2);
                         }
                     }
                     if (Objects.equals(destinationType, 3)) {
                         Supplier supplier = supplierService
-                            .querySupplierName(deliver.getDestination());
+                                .querySupplierName(deliver.getDestination());
                         if (Objects.nonNull(supplier)) {
                             this.bindPoint(query.getId(), supplier.getId(), 3);
                         }
@@ -364,7 +367,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     @Override
     public ProductNew prdouctInfoByNo(String no) {
         LambdaQueryWrapper<ProductNew> eq = new LambdaQueryWrapper<ProductNew>()
-            .eq(ProductNew::getNo, no).eq(ProductNew::getDelFlag, ProductNew.DEL_NORMAL);
+                .eq(ProductNew::getNo, no).eq(ProductNew::getDelFlag, ProductNew.DEL_NORMAL);
         ProductNew productNew = this.productNewMapper.selectOne(eq);
         if (Objects.nonNull(productNew)) {
             Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
@@ -441,7 +444,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
 
         if (map.size() < 3 && map.size() > 1) {
             log.error("查询结果有误，请重新录入: name={}, batchNo={}, no={}", map.get("name"),
-                map.get("batchNo"), map.get("no"));
+                    map.get("batchNo"), map.get("no"));
             return R.fail("查询结果有误，请重新录入");
         }
 
@@ -475,8 +478,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         this.update(productNew);
 
         PointProductBind pointProductBind = pointProductBindMapper
-            .selectOne(new QueryWrapper<PointProductBind>()
-                .eq("product_id", productId));
+                .selectOne(new QueryWrapper<PointProductBind>()
+                        .eq("product_id", productId));
 
         if (ObjectUtils.isNotNull(pointProductBind)) {
             pointProductBindMapper.deleteById(pointProductBind.getId());
@@ -548,9 +551,9 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
                 AuditProcess auditProcess = auditProcessService.getByType(AuditProcess.TYPE_PRE);
                 Integer status = auditProcessService.getAuditProcessStatus(auditProcess, product);
                 if ((!Objects.equals(status, AuditProcessVo.STATUS_FINISHED)
-                    || !Objects.equals(product.getStatus(),
-                    ProductNewStatusSortConstants.STATUS_PRE_DETECTION))
-                    && !Objects.equals(product.getStatus(), ProductNewStatusSortConstants.STATUS_TESTED)) {
+                        || !Objects.equals(product.getStatus(),
+                        ProductNewStatusSortConstants.STATUS_PRE_DETECTION))
+                        && !Objects.equals(product.getStatus(), ProductNewStatusSortConstants.STATUS_TESTED)) {
                     errorStatus.add(product.getNo());
                 }
             }
@@ -616,15 +619,15 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         ProductNew mainProduct = mainProducts.get(0);
         //需要拷贝的值的组件id
         List<Long> copyLong = Arrays.asList(AuditProcessConstans.CAMERA_SN_AUDIT_ENTRY,
-            AuditProcessConstans.CAMERA_IOT_AUDIT_ENTRY,
-            AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY,
-            AuditProcessConstans.PRODUCT_COLOR_AUDIT_ENTRY,
-            AuditProcessConstans.DOOR_COLOR_AUDIT_ENTRY,
-            AuditProcessConstans.PRODUCT_SURFACE_AUDIT_ENTRY,
-            AuditProcessConstans.CAMERA_SN_AUDIT_ENTRY_TOW);
+                AuditProcessConstans.CAMERA_IOT_AUDIT_ENTRY,
+                AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY,
+                AuditProcessConstans.PRODUCT_COLOR_AUDIT_ENTRY,
+                AuditProcessConstans.DOOR_COLOR_AUDIT_ENTRY,
+                AuditProcessConstans.PRODUCT_SURFACE_AUDIT_ENTRY,
+                AuditProcessConstans.CAMERA_SN_AUDIT_ENTRY_TOW);
         //获取主柜需要同步到副柜的值
         List<AuditValue> mainValues = auditValueService
-            .getByPidAndEntryIds(copyLong, mainProduct.getId());
+                .getByPidAndEntryIds(copyLong, mainProduct.getId());
 
         for (String no : compression.getNoList()) {
             ProductNew productOld = this.queryByNo(no);
@@ -701,9 +704,9 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
 
         Page page = PageUtil.getPage(offset, size);
         page = productNewMapper
-            .selectPage(page, new QueryWrapper<ProductNew>().eq("batch_id", batchId)
-                .eq("supplier_id", user.getThirdId())
-                .eq("del_flag", ProductNew.DEL_NORMAL));
+                .selectPage(page, new QueryWrapper<ProductNew>().eq("batch_id", batchId)
+                        .eq("supplier_id", user.getThirdId())
+                        .eq("del_flag", ProductNew.DEL_NORMAL));
 
         List<ProductNew> list = page.getRecords();
         if (CollectionUtils.isEmpty(list)) {
@@ -743,15 +746,15 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
 
         if (!Objects.equals(productNew.getSupplierId(), user.getThirdId())) {
             log.error(
-                "QUERY PROCESS INFO ERROR! current user inconsistent  factory! supplierId={}, userThirdId",
-                productNew.getSupplierId(), user.getThirdId());
+                    "QUERY PROCESS INFO ERROR! current user inconsistent  factory! supplierId={}, userThirdId",
+                    productNew.getSupplierId(), user.getThirdId());
             return R.fail(null, "柜机厂家与登录厂家不一致，请重新登陆");
         }
 
         Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
         if (Objects.isNull(batch)) {
             log.error("QUERY PROCESS INFO ERROR! not found batch! batch={}",
-                productNew.getBatchId());
+                    productNew.getBatchId());
             return R.fail(null, "柜机未绑定批次，请检查");
         }
 
@@ -767,18 +770,18 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         vo.setProductStatus(getStatusName(productNew.getStatus()));
 
         List<AuditProcess> auditProcessList = auditProcessService.getBaseMapper()
-            .selectList(new QueryWrapper<AuditProcess>().orderByAsc("id"));
+                .selectList(new QueryWrapper<AuditProcess>().orderByAsc("id"));
         //如果搜索页面配置为空，则只获取压测状态，发货状态随压测状态改变
         if (CollectionUtils.isEmpty(auditProcessList)) {
             AuditProcessVo testVo = auditProcessService.createTestAuditProcessVo();
             testVo.setStatus(ProductNew.TEST_RESULT_SUCCESS.equals(productNew.getTestResult())
-                ? AuditProcessVo.STATUS_FINISHED : AuditProcessVo.STATUS_EXECUTING);
+                    ? AuditProcessVo.STATUS_FINISHED : AuditProcessVo.STATUS_EXECUTING);
             AuditProcessVo deliverVo = auditProcessService.createDeliverAuditProcessVo();
             boolean flag = ProductNewStatusSortConstants.acquireStatusValue(productNew.getStatus())
-                >= ProductNewStatusSortConstants
-                .acquireStatusValue(ProductNewStatusSortConstants.STATUS_SHIPPED);
+                    >= ProductNewStatusSortConstants
+                    .acquireStatusValue(ProductNewStatusSortConstants.STATUS_SHIPPED);
             deliverVo.setStatus(flag ? ProductNewProcessInfoVo.STATUS_FINISHED
-                : ProductNewProcessInfoVo.STATUS_UN_FINISHED);
+                    : ProductNewProcessInfoVo.STATUS_UN_FINISHED);
             voList.add(testVo);
             voList.add(deliverVo);
 
@@ -801,7 +804,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
 
         AuditProcessVo preAuditProcessVo = null;
         AuditProcessVo postAuditProcessVo = null;
-        for(AuditProcessVo item : voList) {
+        for (AuditProcessVo item : voList) {
             if (Objects.equals(AuditProcess.TYPE_PRE, item.getType())) {
                 preAuditProcessVo = item;
             }
@@ -819,10 +822,10 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             testAuditProcessVo.setStatus(AuditProcessVo.STATUS_FINISHED);
         } else {
             //如果测试未完成，需要看前置检查是否完成：完成则压测正在执行，未完则置灰
-            if(Objects.nonNull(preAuditProcessVo)) {
+            if (Objects.nonNull(preAuditProcessVo)) {
                 testAuditProcessVo.setStatus(
-                    Objects.equals(preAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED)
-                        ? AuditProcessVo.STATUS_EXECUTING : AuditProcessVo.STATUS_UNFINISHED);
+                        Objects.equals(preAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED)
+                                ? AuditProcessVo.STATUS_EXECUTING : AuditProcessVo.STATUS_UNFINISHED);
             }
         }
         voList.add(1, testAuditProcessVo);
@@ -832,15 +835,15 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
 
         AuditProcessVo deliverVo = auditProcessService.createDeliverAuditProcessVo();
         boolean flag = ProductNewStatusSortConstants.acquireStatusValue(productNew.getStatus())
-            >= ProductNewStatusSortConstants
-            .acquireStatusValue(ProductNewStatusSortConstants.STATUS_SHIPPED);
+                >= ProductNewStatusSortConstants
+                .acquireStatusValue(ProductNewStatusSortConstants.STATUS_SHIPPED);
         deliverVo.setStatus(flag ? ProductNewProcessInfoVo.STATUS_FINISHED
-            : ProductNewProcessInfoVo.STATUS_UN_FINISHED);
+                : ProductNewProcessInfoVo.STATUS_UN_FINISHED);
         voList.add(deliverVo);
 
-        if(Objects.equals(preAuditProcessVo, AuditProcessVo.STATUS_FINISHED)
-            && Objects.equals(testAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED)
-            && !Objects.equals(postAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED)) {
+        if (Objects.equals(preAuditProcessVo, AuditProcessVo.STATUS_FINISHED)
+                && Objects.equals(testAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED)
+                && !Objects.equals(postAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED)) {
             postAuditProcessVo.setStatus(AuditProcessVo.STATUS_EXECUTING);
         }
         return R.ok(vo);
@@ -940,7 +943,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         vo.setInsertTime(sim.format(new Date()));
 
         Deliver deliver = deliverService.queryByNo(deliverNo);
-        if(Objects.isNull(deliver)) {
+        if (Objects.isNull(deliver)) {
             vo.setCanPrint(false);
             return R.ok(vo);
         }
@@ -948,7 +951,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         vo.setCanPrint(true);
         vo.setCustomerName(queryCustomerName(deliver));
         vo.setSum(Optional.ofNullable(JsonUtil.fromJsonArray(deliver.getQuantity(), Integer.class)).orElse(Lists.newArrayList()).stream().reduce(0, Integer::sum));
-        vo.setType(Objects.equals(productNew.getType(), ProductNew.TYPE_M) ? "主柜" :"副柜");
+        vo.setType(Objects.equals(productNew.getType(), ProductNew.TYPE_M) ? "主柜" : "副柜");
         vo.setProductionTime(dataTimeFormat.format(new Date()));
         vo.setProductColor(auditValueService.getValue(AuditProcessConstans.PRODUCT_COLOR_AUDIT_ENTRY, productNew.getId()));
         vo.setDoorColor(auditValueService.getValue(AuditProcessConstans.DOOR_COLOR_AUDIT_ENTRY, productNew.getId()));
@@ -956,18 +959,18 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     }
 
     private String queryCustomerName(@Nullable Deliver deliver) {
-        if(Objects.equals(deliver.getDestinationType(), Deliver.DESTINATION_TYPE_FACTORY)
-            || Objects.equals(deliver.getDestinationType(), Deliver.DESTINATION_TYPE_WAREHOUSE)) {
+        if (Objects.equals(deliver.getDestinationType(), Deliver.DESTINATION_TYPE_FACTORY)
+                || Objects.equals(deliver.getDestinationType(), Deliver.DESTINATION_TYPE_WAREHOUSE)) {
             return deliver.getDestination();
         }
 
         PointNew pointNew = pointNewMapper.queryById(deliver.getDestinationId());
-        if(Objects.isNull(pointNew)) {
+        if (Objects.isNull(pointNew)) {
             return null;
         }
 
         Customer customer = customerService.getById(pointNew.getCustomerId());
-        if(Objects.isNull(customer)) {
+        if (Objects.isNull(customer)) {
             return null;
         }
         return customer.getName();
@@ -985,8 +988,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             msg += "产品已测试，请将其余检验完成发货";
         }
         boolean isDeliver =
-            ProductNewStatusSortConstants.acquireStatusValue(status) > ProductNewStatusSortConstants
-                .acquireStatusValue(ProductNewStatusSortConstants.STATUS_POST_DETECTION);
+                ProductNewStatusSortConstants.acquireStatusValue(status) > ProductNewStatusSortConstants
+                        .acquireStatusValue(ProductNewStatusSortConstants.STATUS_POST_DETECTION);
         if (isDeliver) {
             msg += "产品已发货";
         }
@@ -1023,7 +1026,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
 
     @Override
     public R pointList(Integer offset, Integer limit, String no, Long modelId, Long pointId,
-        Integer pointType, Long startTime, Long endTime, String testType) {
+                       Integer pointType, Long startTime, Long endTime, String testType) {
         List<Long> productIds = null;
         if (Objects.nonNull(pointId) || Objects.nonNull(pointType)) {
             productIds = pointProductBindService.queryProductIdsByPidAndPtype(pointId, pointType);
@@ -1035,16 +1038,16 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         }
 
         List<ProductNew> productNews = this
-            .queryAllByLimit(offset, limit, no, modelId, startTime, endTime, productIds, testType);
+                .queryAllByLimit(offset, limit, no, modelId, startTime, endTime, productIds, testType);
 
         productNews.parallelStream().forEach(item -> {
 
             PointProductBind pointProductBind = pointProductBindService
-                .queryByProductId(item.getId());
+                    .queryByProductId(item.getId());
             if (Objects.nonNull(pointProductBind)) {
                 if (Objects.equals(pointProductBind.getPointType(), PointProductBind.TYPE_POINT)) {
                     PointNew pointNew = this.pointNewMapper
-                        .selectById(pointProductBind.getPointId());
+                            .selectById(pointProductBind.getPointId());
                     if (Objects.nonNull(pointNew)) {
                         item.setPointId(pointNew.getId().intValue());
                         item.setPointName(pointNew.getName());
@@ -1052,7 +1055,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
                     }
                 }
                 if (Objects
-                    .equals(pointProductBind.getPointType(), PointProductBind.TYPE_WAREHOUSE)) {
+                        .equals(pointProductBind.getPointType(), PointProductBind.TYPE_WAREHOUSE)) {
                     WareHouse wareHouse = warehouseService.getById(pointProductBind.getPointId());
                     if (Objects.nonNull(wareHouse)) {
                         item.setPointId(wareHouse.getId());
@@ -1061,7 +1064,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
                     }
                 }
                 if (Objects
-                    .equals(pointProductBind.getPointType(), PointProductBind.TYPE_SUPPLIER)) {
+                        .equals(pointProductBind.getPointType(), PointProductBind.TYPE_SUPPLIER)) {
                     Supplier supplier = supplierService.getById(pointProductBind.getPointId());
                     if (Objects.nonNull(supplier)) {
                         item.setPointId(supplier.getId().intValue());
@@ -1179,7 +1182,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     public R cabinetCompressionStatus(CabinetCompressionQuery cabinetCompressionQuery) {
         log.error("压测 -----> " + cabinetCompressionQuery);
         ProductNew productNew = this.baseMapper.queryByNo(cabinetCompressionQuery.getSn());
-        if(Objects.isNull(productNew)) {
+        if (Objects.isNull(productNew)) {
             return R.fail(null, "未查询到相关资产编码");
         }
 
@@ -1192,7 +1195,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         baseMapper.update(productUpdate);
 
         ProductNewTestContent byDb = productNewTestContentService.queryByPid(productNew.getId());
-        if(Objects.isNull(byDb)) {
+        if (Objects.isNull(byDb)) {
             ProductNewTestContent productNewTestContent = new ProductNewTestContent();
             productNewTestContent.setPid(productNew.getId());
             productNewTestContent.setContent(cabinetCompressionQuery.getTestContent());
@@ -1215,7 +1218,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     @Override
     public R cabinetCompressionCheck(String no) {
         ProductNew productNew = this.baseMapper.queryByNo(no);
-        if(Objects.isNull(productNew)) {
+        if (Objects.isNull(productNew)) {
             return R.ok(false);
         }
         return R.ok(true);
@@ -1230,23 +1233,23 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         Integer sortType = 1;
 
 
-        if(Objects.nonNull(startTime)) {
+        if (Objects.nonNull(startTime)) {
             testStartTimeBeginTime = startTime;
             testStartTimeEndTime = startTime + 24L * 3600000;
         }
 
-        if(Objects.nonNull(endTime)) {
+        if (Objects.nonNull(endTime)) {
             sortType = 2;
             testEndTimeBeginTime = endTime;
-            testEndTimeEndTime = endTime +  24L * 3600000;
+            testEndTimeEndTime = endTime + 24L * 3600000;
         }
 
-        if(Objects.isNull(startTime) && Objects.isNull(endTime) && StringUtils.isBlank(sn)) {
-            testStartTimeBeginTime =  System.currentTimeMillis() - 72L * 3600000;
-            testStartTimeEndTime =  System.currentTimeMillis();
+        if (Objects.isNull(startTime) && Objects.isNull(endTime) && StringUtils.isBlank(sn)) {
+            testStartTimeBeginTime = System.currentTimeMillis() - 72L * 3600000;
+            testStartTimeEndTime = System.currentTimeMillis();
         }
 
-        List<CabinetCompressionVo>  list = baseMapper.cabinetCompressionList(sn, testStartTimeBeginTime, testStartTimeEndTime, testEndTimeBeginTime, testEndTimeEndTime, sortType);
+        List<CabinetCompressionVo> list = baseMapper.cabinetCompressionList(sn, testStartTimeBeginTime, testStartTimeEndTime, testEndTimeBeginTime, testEndTimeEndTime, sortType);
         return R.ok(list);
     }
 
@@ -1264,8 +1267,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             log.error("COMPRESSION PROPERTY CAST ERROR! success error", e);
             return R.fail(null, null, "参数解析错误");
         }
-        if(Objects.equals(compression.getTestStatus(), CompressionQuery.TEST_ING)){
-            CabinetCompressionQuery cabinetCompressionQuery=null;
+        if (Objects.equals(compression.getTestStatus(), CompressionQuery.TEST_ING)) {
+            CabinetCompressionQuery cabinetCompressionQuery = null;
             try {
                 cabinetCompressionQuery = JSON.parseObject(apiRequestQuery.getData(), CabinetCompressionQuery.class);
             } catch (Exception e) {
@@ -1275,13 +1278,13 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             return compressing(cabinetCompressionQuery);
         } else if (Objects.equals(compression.getTestStatus(), CompressionQuery.TEST_FAIL) || Objects.equals(compression.getTestStatus(), CompressionQuery.TEST_SUCC)) {
             return compressionEnd(apiRequestQuery);
-        }else{
+        } else {
             return R.fail("SYSTEM.0002", "参数不合法");
         }
     }
 
-    public static String subStringByBytes(String str){
-        if(Objects.isNull(str)){
+    public static String subStringByBytes(String str) {
+        if (Objects.isNull(str)) {
             return str;
         }
         byte[] bytes = str.getBytes();
@@ -1361,6 +1364,130 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             product.setTestType(compression.getTestType());
             product.setErrorMessage(subStringByBytes(compression.getErrorMessage()));
             product.setTestEndTime(compression.getTestEndTime());
+
+            CompressionRecord compressionRecord = compressionRecordMapper.queryCompressionByPid(product.getId());
+            if (Objects.isNull(compressionRecord)){
+                continue;
+            }
+            compressionRecord.setTestFile(compression.getCompressionFile());
+            compressionRecord.setTestResult(compression.getTestStatus());
+            compressionRecord.setTestType(compression.getTestType());
+            compressionRecord.setErrorMessage(subStringByBytes(compression.getErrorMessage()));
+            compressionRecord.setTestEndTime(compression.getTestEndTime());
+            compressionRecord.setUpdateTime(System.currentTimeMillis());
+            //compressionRecord.setTestBoxFile(compression.getTestBoxFile());
+            compressionRecordMapper.updateById(compressionRecord);
+
+            //这里需要将主柜的数据同步到副柜
+            //获取副柜需要同步的值
+            //List<AuditValue> productValues = auditValueService.getByPidAndEntryIds(copyLong, product.getId());
+            //更新
+            auditValueService.copyValueToTargetValueIsNoll(mainValues, product.getId());
+
+            //更新柜机状态
+            Integer status = auditProcessService.getAuditProcessStatus(byType, productOld);
+            if (Objects.equals(status, AuditProcessVo.STATUS_FINISHED)) {
+                product.setStatus(ProductNewStatusSortConstants.STATUS_POST_DETECTION);
+            } else {
+                product.setStatus(ProductNewStatusSortConstants.STATUS_TESTED);
+            }
+            productNewMapper.updateByNoNew(product);
+        }
+
+        return R.ok();
+    }
+
+    /**
+     * 压测2.0 结果
+     * @param apiRequestQuery
+     * @return
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    public R compressionEnd2(ApiRequestQuery apiRequestQuery) {
+        CompressionQuery compression = null;
+        try {
+            compression = JSON.parseObject(apiRequestQuery.getData(), CompressionQuery.class);
+        } catch (Exception e) {
+            log.error("COMPRESSION PROPERTY CAST ERROR! success error", e);
+            return R.fail(null, null, "参数解析错误");
+        }
+
+        if (CollectionUtils.isEmpty(compression.getNoList())) {
+            return R.fail(null, null, "压测柜机不存在，请核对");
+        }
+
+        if (StringUtils.isBlank(compression.getCompressionFile())) {
+            return R.fail(null, null, "测试文件为空");
+        }
+
+        IotCard iotCard = iotCardService.queryBySn(compression.getIotCard());
+        if (Objects.isNull(iotCard)) {
+            return R.fail(null, null, "未查询到物联网卡信息");
+        }
+        if(Objects.equals(compression.getTestStatus(), CompressionQuery.TEST_FAIL)){
+            compression.setTestStatus(CompressionQuery.ELE_TEST_FAIL);
+        }else{
+            compression.setTestStatus(CompressionQuery.ELE_TEST_SUCC);
+        }
+        ArrayList<ProductNew> mainProducts = new ArrayList(1);
+        for (String no : compression.getNoList()) {
+            ProductNew product = this.queryByNo(no);
+            if (Objects.equals(product.getType(), ProductNew.TYPE_M)) {
+                mainProducts.add(product);
+            }
+
+        }
+
+        if (!(mainProducts.size() == 1) || Objects.isNull(mainProducts.get(0))) {
+            return R.fail(mainProducts, null, "主柜不存在或存在多个，请核对");
+        }
+
+        AuditProcess byType = auditProcessService.getByType(AuditProcess.TYPE_POST);
+        ProductNew mainProduct = mainProducts.get(0);
+        //需要拷贝的值的组件id
+        List<Long> copyLong = Arrays.asList(AuditProcessConstans.CAMERA_SN_AUDIT_ENTRY,
+                AuditProcessConstans.CAMERA_IOT_AUDIT_ENTRY,
+                AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY,
+                AuditProcessConstans.PRODUCT_COLOR_AUDIT_ENTRY,
+                AuditProcessConstans.DOOR_COLOR_AUDIT_ENTRY,
+                AuditProcessConstans.PRODUCT_SURFACE_AUDIT_ENTRY,
+                AuditProcessConstans.CAMERA_SN_AUDIT_ENTRY_TOW);
+        //获取主柜需要同步到副柜的值
+        List<AuditValue> mainValues = auditValueService
+                .getByPidAndEntryIds(copyLong, mainProduct.getId());
+
+        for (String no : compression.getNoList()) {
+            ProductNew productOld = this.queryByNo(no);
+            if (Objects.isNull(productOld)) {
+                continue;
+            }
+
+            ProductNew product = productNewMapper.queryByNo(no);
+            if (Objects.isNull(product)) {
+                continue;
+            }
+
+            //ProductNew product = new ProductNew();
+            //product.setNo(no);
+            //product.setTestFile(compression.getCompressionFile());
+            product.setTestResult(compression.getTestStatus());
+            product.setTestType(compression.getTestType());
+            product.setErrorMessage(subStringByBytes(compression.getErrorMessage()));
+            product.setTestEndTime(compression.getTestEndTime());
+
+            CompressionRecord compressionRecord = compressionRecordMapper.queryEleByPid(product.getId());
+            if (Objects.isNull(compressionRecord)){
+                continue;
+            }
+            //compressionRecord.setTestFile(compression.getCompressionFile());
+            compressionRecord.setTestResult(compression.getTestStatus());
+            compressionRecord.setTestType(compression.getTestType());
+            compressionRecord.setErrorMessage(subStringByBytes(compression.getErrorMessage()));
+            compressionRecord.setTestEndTime(compression.getTestEndTime());
+            compressionRecord.setUpdateTime(System.currentTimeMillis());
+            compressionRecord.setTestBoxFile(compression.getTestBoxFile());
+            compressionRecordMapper.updateById(compressionRecord);
             //这里需要将主柜的数据同步到副柜
             //获取副柜需要同步的值
             //List<AuditValue> productValues = auditValueService.getByPidAndEntryIds(copyLong, product.getId());
@@ -1381,7 +1508,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     }
     public R compressing(CabinetCompressionQuery cabinetCompressionQuery) {
         ProductNew productNew = this.baseMapper.queryByNo(cabinetCompressionQuery.getSn());
-        if(Objects.isNull(productNew)) {
+        if (Objects.isNull(productNew)) {
             return R.fail(null, "未查询到相关资产编码");
         }
 
@@ -1393,8 +1520,17 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         productUpdate.setTestMsg(cabinetCompressionQuery.getTestMsg());
         productNewMapper.updateByConditions(productUpdate);
 
+        CompressionRecord compressionRecord=new CompressionRecord();
+        compressionRecord.setPid(productNew.getId());
+        compressionRecord.setCreateTime(System.currentTimeMillis());
+        compressionRecord.setTestResult(cabinetCompressionQuery.getTestStatus());
+        compressionRecord.setTestStartTime(cabinetCompressionQuery.getTestStartTime());
+        compressionRecord.setTestEndTime(cabinetCompressionQuery.getTestEndTime());
+        compressionRecord.setTestMsg(cabinetCompressionQuery.getTestMsg());
+        compressionRecordMapper.insert(compressionRecord);
+
         ProductNewTestContent byDb = productNewTestContentService.queryByPid(productNew.getId());
-        if(Objects.isNull(byDb)) {
+        if (Objects.isNull(byDb)) {
             ProductNewTestContent productNewTestContent = new ProductNewTestContent();
             productNewTestContent.setPid(productNew.getId());
             productNewTestContent.setContent(cabinetCompressionQuery.getTestContent());
@@ -1412,5 +1548,121 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         productNewTestContent.setUpdateTime(System.currentTimeMillis());
         productNewTestContentService.update(productNewTestContent);
         return R.ok();
+    }
+
+    public R compressing2(CabinetCompressionQuery cabinetCompressionQuery) {
+        cabinetCompressionQuery.setTestStatus(CompressionQuery.ELE_TEST_ING);
+        ProductNew productNew = this.baseMapper.queryByNo(cabinetCompressionQuery.getSn());
+        if (Objects.isNull(productNew)) {
+            return R.fail(null, "未查询到相关资产编码");
+        }
+        ProductNew productUpdate = new ProductNew();
+        productUpdate.setId(productNew.getId());
+        productUpdate.setTestResult(cabinetCompressionQuery.getTestStatus());
+        productUpdate.setTestStartTime(cabinetCompressionQuery.getTestStartTime());
+        productUpdate.setTestEndTime(cabinetCompressionQuery.getTestEndTime());
+        productUpdate.setTestMsg(cabinetCompressionQuery.getTestMsg());
+        productNewMapper.updateByConditions(productUpdate);
+
+        CompressionRecord compressionRecord=new CompressionRecord();
+        compressionRecord.setPid(productNew.getId());
+        compressionRecord.setCreateTime(System.currentTimeMillis());
+        compressionRecord.setTestResult(cabinetCompressionQuery.getTestStatus());
+        compressionRecord.setTestStartTime(cabinetCompressionQuery.getTestStartTime());
+        compressionRecord.setTestEndTime(cabinetCompressionQuery.getTestEndTime());
+        compressionRecord.setTestMsg(cabinetCompressionQuery.getTestMsg());
+        compressionRecordMapper.insert(compressionRecord);
+
+        ProductNewTestContent byDb = productNewTestContentService.queryByPid(productNew.getId());
+        if (Objects.isNull(byDb)) {
+            ProductNewTestContent productNewTestContent = new ProductNewTestContent();
+            productNewTestContent.setPid(productNew.getId());
+            productNewTestContent.setContent(cabinetCompressionQuery.getTestContent());
+            productNewTestContent.setUpdateTime(System.currentTimeMillis());
+            productNewTestContent.setCreateTime(System.currentTimeMillis());
+            productNewTestContent.setTestContentResult(cabinetCompressionQuery.getTestContentResult());
+            productNewTestContentService.insert(productNewTestContent);
+            return R.ok();
+        }
+
+        ProductNewTestContent productNewTestContent = new ProductNewTestContent();
+        productNewTestContent.setId(byDb.getId());
+        productNewTestContent.setContent(cabinetCompressionQuery.getTestContent());
+        productNewTestContent.setTestContentResult(cabinetCompressionQuery.getTestContentResult());
+        productNewTestContent.setUpdateTime(System.currentTimeMillis());
+        productNewTestContentService.update(productNewTestContent);
+        return R.ok();
+    }
+
+    @Override
+    public R queryDeviceMessage(String no) {
+        DeviceMessageVo deviceMessageVo = productNewMapper.queryDeviceMessage(no);
+        if (Objects.isNull(deviceMessageVo)) {
+            return R.fail(null, "00000", "柜机资产编码不存在，请核对");
+        }
+        if(Objects.isNull(deviceMessageVo.getDeviceName())||Objects.isNull(deviceMessageVo.getProductKey())){
+            return R.fail(null, "00000", "资产编码对应的三元组信息不全");
+        }
+        if (Objects.equals(deviceMessageVo.getIsUse(), ProductNew.IS_USE)) {
+            return R.fail(null, "00000", "柜机对应三元组已使用");
+        }
+        QueryDeviceDetailResult queryDeviceDetailResult = registerDeviceService.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
+        deviceMessageVo.setDeviceSecret(queryDeviceDetailResult == null ? null : queryDeviceDetailResult.getDeviceSecret());
+        return R.ok(deviceMessageVo);
+    }
+
+    @Override
+    public R getDeviceMessage(String no) {
+        DeviceMessageVo deviceMessageVo = productNewMapper.queryDeviceMessage(no);
+        if (Objects.isNull(deviceMessageVo)) {
+            return R.fail(null, "00000", "柜机资产编码不存在，请核对");
+        }
+        if(Objects.isNull(deviceMessageVo.getDeviceName())||Objects.isNull(deviceMessageVo.getProductKey())){
+            return R.fail(null, "00000", "资产编码对应的三元组信息不全");
+        }
+        QueryDeviceDetailResult queryDeviceDetailResult = registerDeviceService.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
+        deviceMessageVo.setDeviceSecret(queryDeviceDetailResult == null ? null : queryDeviceDetailResult.getDeviceSecret());
+        return R.ok(deviceMessageVo);
+    }
+
+    @Override
+    public R updateUsedStatus(String no) {
+        DeviceMessageVo deviceMessageVo = productNewMapper.queryDeviceMessage(no);
+        if (Objects.isNull(deviceMessageVo)) {
+            return R.fail(null, "00000", "柜机资产编码不存在，请核对");
+        }
+        if(Objects.isNull(deviceMessageVo.getDeviceName())||Objects.isNull(deviceMessageVo.getProductKey())){
+            return R.fail(null, "00000", "资产编码对应的三元组信息不全");
+        }
+        if (Objects.equals(deviceMessageVo.getIsUse(), ProductNew.IS_USE)) {
+            return R.fail(null, "00000", "柜机对应三元组已使用");
+        }
+        return R.ok(productNewMapper.updateUsedStatusByNo(no, System.currentTimeMillis()));
+    }
+
+    @Override
+    public R runFullLoadTest2(ApiRequestQuery apiRequestQuery) {
+        CompressionQuery compression = null;
+        try {
+            compression = JSON.parseObject(apiRequestQuery.getData(), CompressionQuery.class);
+        } catch (Exception e) {
+            log.error("COMPRESSION PROPERTY CAST ERROR! success error", e);
+            return R.fail(null, null, "参数解析错误");
+        }
+        if (Objects.equals(compression.getTestStatus(), CompressionQuery.TEST_ING)) {
+            CabinetCompressionQuery cabinetCompressionQuery = null;
+            try {
+                cabinetCompressionQuery = JSON.parseObject(apiRequestQuery.getData(), CabinetCompressionQuery.class);
+            } catch (Exception e) {
+                log.error("COMPRESSION PROPERTY CAST ERROR! success error", e);
+                return R.fail(null, null, "参数解析错误");
+            }
+            return compressing2(cabinetCompressionQuery);
+        } else if (Objects.equals(compression.getTestStatus(), CompressionQuery.TEST_FAIL) || Objects.equals(compression.getTestStatus(), CompressionQuery.TEST_SUCC)) {
+
+            return compressionEnd2(apiRequestQuery);
+        } else {
+            return R.fail("SYSTEM.0002", "参数不合法");
+        }
     }
 }
