@@ -97,6 +97,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     @Autowired
     private MaintenanceUserNotifyConfigService maintenanceUserNotifyConfigService;
 
+
     /**
      * 通过ID查询单条数据从DB
      *
@@ -727,7 +728,10 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     public R productNewDeliverExportExcel( String batchNo, String sn, String tenantName, Long startTime, Long endTime, HttpServletResponse response) {
         List<ProductNewDeliverVo> productNewDeliverVos = pointNewMapper.productNewDeliverExport( batchNo, sn, tenantName, startTime, endTime);
         if (CollectionUtils.isEmpty(productNewDeliverVos)) {
-            return R.ok(new ArrayList<ProductNewDeliverVo>());
+            return R.ok();
+        }
+        if (productNewDeliverVos.size() > 1000) {
+            throw new NullPointerException("导出数据最大不能超过1000条");
         }
         for (int i = 0; i < productNewDeliverVos.size(); i++) {
             //打包时间同压测成功之后的结束时间，因此前端只需要获取压测结束时间
