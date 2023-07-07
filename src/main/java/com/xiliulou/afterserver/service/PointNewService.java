@@ -9,6 +9,7 @@ import com.xiliulou.afterserver.web.query.PointQuery;
 import com.xiliulou.afterserver.web.vo.PointNewPullVo;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -116,5 +117,6 @@ public interface PointNewService extends IService<PointNew> {
 
     R productNewDeliverCount(String batchNo,String sn,String tenantName,Long startTime,Long endTime);
 
+    R productNewDeliverExportExcel(String batchNo, String sn, String tenantName, Long startTime, Long endTime, HttpServletResponse response);
 
 }

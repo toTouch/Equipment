@@ -97,6 +97,18 @@ public class DateUtils {
         return res;
     }
 
+    /**
+     * 将时间戳转换为时间
+     */
+    public static String stampToTime(String s){
+        String res;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        long lt = new Long(s);
+        Date date = new Date(lt);
+        res = simpleDateFormat.format(date);
+        return res;
+    }
+
 
     /**
      * 获取当月开始时间戳
