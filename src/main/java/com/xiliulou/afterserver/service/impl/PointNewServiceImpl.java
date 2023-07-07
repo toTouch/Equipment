@@ -1,9 +1,14 @@
 package com.xiliulou.afterserver.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.excel.EasyExcelFactory;
+import com.alibaba.excel.metadata.Sheet;
+import com.alibaba.excel.metadata.Table;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -16,6 +21,7 @@ import com.xiliulou.afterserver.entity.mq.notify.MqPointNewAuditNotify;
 import com.xiliulou.afterserver.entity.mq.notify.MqWorkOrderAuditNotify;
 import com.xiliulou.afterserver.mapper.*;
 import com.xiliulou.afterserver.service.*;
+import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.vo.PointNewInfoVo;
@@ -28,6 +34,9 @@ import com.xiliulou.core.json.JsonUtil;
 import com.xiliulou.mq.service.RocketMqService;
 import com.xiliulou.storage.config.StorageConfig;
 import com.xiliulou.storage.service.impl.AliyunOssService;
+
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
@@ -37,6 +46,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -85,6 +96,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     private RocketMqService rocketMqService;
     @Autowired
     private MaintenanceUserNotifyConfigService maintenanceUserNotifyConfigService;
+
 
     /**
      * 通过ID查询单条数据从DB
@@ -712,4 +724,75 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     public R productNewDeliverCount(String batchNo,String sn,String tenantName,Long startTime,Long endTime) {
         return R.ok(pointNewMapper.productNewDeliverCount( batchNo, sn, tenantName, startTime, endTime));
     }
+    @Override
+    public R productNewDeliverExportExcel( String batchNo, String sn, String tenantName, Long startTime, Long endTime, HttpServletResponse response) {
+        List<ProductNewDeliverVo> productNewDeliverVos = pointNewMapper.productNewDeliverExport( batchNo, sn, tenantName, startTime, endTime);
+        if (CollectionUtils.isEmpty(productNewDeliverVos)) {
+            return R.ok();
+        }
+        String fileName = "备货.xlsx";
+        Sheet sheet = new Sheet(1, 0);
+        sheet.setSheetName("Sheet");
+        Table table = new Table(1);
+        ArrayList<List<Object>> resultList = new ArrayList<>();
+        if (productNewDeliverVos.size() > 1000) {
+            List<Object> list=new ArrayList<>();
+            list.add("导出数据最大不能超过1000条");
+
+            resultList.add(list);
+        }else{
+            for (int i = 0; i < productNewDeliverVos.size(); i++) {
+                //打包时间同压测成功之后的结束时间，因此前端只需要获取压测结束时间
+                if (!ProductNew.TEST_RESULT_SUCCESS.equals(productNewDeliverVos.get(i).getTestResult())) {
+                    productNewDeliverVos.get(i).setTestEndTime(null);
+                }
+            }
+            String[] header = {"批次号", "资产编码", "deviceName", "productKey", "打包时间", "运营商", "发货时间", "创建时间", "更新时间"};
+
+
+
+
+            List<Object> headList=new ArrayList<Object>();
+            for (int i = 0; i <header.length ; i++) {
+                headList.add(header[i]);
+            }
+            resultList.add(headList);
+            productNewDeliverVos.parallelStream().forEachOrdered(item -> {
+                try {
+                    if(Objects.nonNull(item)){
+                        List<Object> list = new ArrayList<>();
+                        list.add(item.getBatchNo());
+                        list.add(item.getNo());
+                        list.add(item.getDeviceName());
+                        list.add(item.getProductKey());
+                        list.add(Objects.isNull(item.getTestEndTime())?"":DateUtils.stampToTime(item.getTestEndTime().toString()));
+                        list.add(item.getTenantName());
+                        list.add(Objects.isNull(item.getDeliverTime())?"":DateUtils.stampToTime(item.getDeliverTime().toString()));
+                        list.add(Objects.isNull(item.getCreateTime())?"":DateUtils.stampToTime(item.getCreateTime().toString()));
+                        list.add(Objects.isNull(item.getUpdateTime())?"":DateUtils.stampToTime(item.getUpdateTime().toString()));
+                        resultList.add(list);
+                    }
+
+                } catch (Exception e) {
+                    log.error("DeliverExcel Error" , e);
+                }
+            });
+        }
+
+
+        try {
+            ServletOutputStream outputStream = response.getOutputStream();
+            // 告诉浏览器用什么软件可以打开此文件
+            response.setHeader("content-Type", "application/vnd.ms-excel");
+            // 下载文件的默认名称
+            response.setHeader("Content-Disposition",
+                    "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
+            EasyExcelFactory.getWriter(outputStream).write1(resultList, sheet, table).finish();
+
+        } catch (IOException e) {
+            throw new NullPointerException("导出报表失败！请联系管理员处理！");
+        }
+        return R.ok();
+    }
+
 }
