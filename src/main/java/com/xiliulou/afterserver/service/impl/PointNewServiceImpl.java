@@ -730,48 +730,55 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         if (CollectionUtils.isEmpty(productNewDeliverVos)) {
             return R.ok();
         }
-        if (productNewDeliverVos.size() > 1000) {
-            throw new NullPointerException("导出数据最大不能超过1000条");
-        }
-        for (int i = 0; i < productNewDeliverVos.size(); i++) {
-            //打包时间同压测成功之后的结束时间，因此前端只需要获取压测结束时间
-            if (!ProductNew.TEST_RESULT_SUCCESS.equals(productNewDeliverVos.get(i).getTestResult())) {
-                productNewDeliverVos.get(i).setTestEndTime(null);
-            }
-        }
-        String[] header = {"批次号", "资产编码", "deviceName", "productKey", "打包时间", "运营商", "发货时间", "创建时间", "更新时间"};
+        String fileName = "备货.xlsx";
         Sheet sheet = new Sheet(1, 0);
         sheet.setSheetName("Sheet");
         Table table = new Table(1);
-
-        String fileName = "备货.xlsx";
-
         ArrayList<List<Object>> resultList = new ArrayList<>();
-        List<Object> headList=new ArrayList<Object>();
-        for (int i = 0; i <header.length ; i++) {
-            headList.add(header[i]);
-        }
-        resultList.add(headList);
-        productNewDeliverVos.parallelStream().forEachOrdered(item -> {
-            try {
-                if(Objects.nonNull(item)){
-                    List<Object> list = new ArrayList<>();
-                    list.add(item.getBatchNo());
-                    list.add(item.getNo());
-                    list.add(item.getDeviceName());
-                    list.add(item.getProductKey());
-                    list.add(Objects.isNull(item.getTestEndTime())?"":DateUtils.stampToTime(item.getTestEndTime().toString()));
-                    list.add(item.getTenantName());
-                    list.add(Objects.isNull(item.getDeliverTime())?"":DateUtils.stampToTime(item.getDeliverTime().toString()));
-                    list.add(Objects.isNull(item.getCreateTime())?"":DateUtils.stampToTime(item.getCreateTime().toString()));
-                    list.add(Objects.isNull(item.getUpdateTime())?"":DateUtils.stampToTime(item.getUpdateTime().toString()));
-                    resultList.add(list);
-                }
+        if (productNewDeliverVos.size() > 1000) {
+            List<Object> list=new ArrayList<>();
+            list.add("导出数据最大不能超过1000条");
 
-            } catch (Exception e) {
-                log.error("DeliverExcel Error" , e);
+            resultList.add(list);
+        }else{
+            for (int i = 0; i < productNewDeliverVos.size(); i++) {
+                //打包时间同压测成功之后的结束时间，因此前端只需要获取压测结束时间
+                if (!ProductNew.TEST_RESULT_SUCCESS.equals(productNewDeliverVos.get(i).getTestResult())) {
+                    productNewDeliverVos.get(i).setTestEndTime(null);
+                }
             }
-        });
+            String[] header = {"批次号", "资产编码", "deviceName", "productKey", "打包时间", "运营商", "发货时间", "创建时间", "更新时间"};
+
+
+
+
+            List<Object> headList=new ArrayList<Object>();
+            for (int i = 0; i <header.length ; i++) {
+                headList.add(header[i]);
+            }
+            resultList.add(headList);
+            productNewDeliverVos.parallelStream().forEachOrdered(item -> {
+                try {
+                    if(Objects.nonNull(item)){
+                        List<Object> list = new ArrayList<>();
+                        list.add(item.getBatchNo());
+                        list.add(item.getNo());
+                        list.add(item.getDeviceName());
+                        list.add(item.getProductKey());
+                        list.add(Objects.isNull(item.getTestEndTime())?"":DateUtils.stampToTime(item.getTestEndTime().toString()));
+                        list.add(item.getTenantName());
+                        list.add(Objects.isNull(item.getDeliverTime())?"":DateUtils.stampToTime(item.getDeliverTime().toString()));
+                        list.add(Objects.isNull(item.getCreateTime())?"":DateUtils.stampToTime(item.getCreateTime().toString()));
+                        list.add(Objects.isNull(item.getUpdateTime())?"":DateUtils.stampToTime(item.getUpdateTime().toString()));
+                        resultList.add(list);
+                    }
+
+                } catch (Exception e) {
+                    log.error("DeliverExcel Error" , e);
+                }
+            });
+        }
+
 
         try {
             ServletOutputStream outputStream = response.getOutputStream();
