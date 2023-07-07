@@ -798,4 +798,15 @@ public class AdminJsonPointNewController {
                                     @RequestParam(value = "endTime", required = false) Long  endTime) {
         return pointNewService.productNewDeliverCount(batchNo,sn,tenantName,startTime,endTime);
     }
+
+    @GetMapping("admin/productNew/deliver/exportExcel")
+    public void productNewDeliverExportExcel(
+                                   @RequestParam(value = "batchNo", required = false) String batchNo,
+                                   @RequestParam(value = "sn", required = false) String  sn,
+                                   @RequestParam(value = "tenantName", required = false) String tenantName,
+                                   @RequestParam(value = "startTime", required = false) Long  startTime,
+                                   @RequestParam(value = "endTime", required = false) Long  endTime,
+                                             HttpServletResponse response) {
+        pointNewService.productNewDeliverExportExcel(batchNo,sn,tenantName,startTime,endTime,response);
+    }
 }
