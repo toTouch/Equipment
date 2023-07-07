@@ -747,7 +747,11 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         String fileName = "备货.xlsx";
 
         ArrayList<List<Object>> resultList = new ArrayList<>();
-
+        List<Object> headList=new ArrayList<Object>();
+        for (int i = 0; i <header.length ; i++) {
+            headList.add(header[i]);
+        }
+        resultList.add(headList);
         productNewDeliverVos.parallelStream().forEachOrdered(item -> {
             try {
                 if(Objects.nonNull(item)){
@@ -756,11 +760,11 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
                     list.add(item.getNo());
                     list.add(item.getDeviceName());
                     list.add(item.getProductKey());
-                    list.add(Objects.isNull(item.getTestEndTime())?"":DateUtils.stampToDate(item.getTestEndTime().toString()));
+                    list.add(Objects.isNull(item.getTestEndTime())?"":DateUtils.stampToTime(item.getTestEndTime().toString()));
                     list.add(item.getTenantName());
-                    list.add(Objects.isNull(item.getDeliverTime())?"":DateUtils.stampToDate(item.getDeliverTime().toString()));
-                    list.add(Objects.isNull(item.getCreateTime())?"":DateUtils.stampToDate(item.getCreateTime().toString()));
-                    list.add(Objects.isNull(item.getUpdateTime())?"":DateUtils.stampToDate(item.getUpdateTime().toString()));
+                    list.add(Objects.isNull(item.getDeliverTime())?"":DateUtils.stampToTime(item.getDeliverTime().toString()));
+                    list.add(Objects.isNull(item.getCreateTime())?"":DateUtils.stampToTime(item.getCreateTime().toString()));
+                    list.add(Objects.isNull(item.getUpdateTime())?"":DateUtils.stampToTime(item.getUpdateTime().toString()));
                     resultList.add(list);
                 }
 
