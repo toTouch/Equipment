@@ -151,3 +151,4 @@ iot:
   regionId: cn-shanghai
   domain: iot.cn-shanghai.aliyuncs.com
   product: iot
+  iotInstance: iot-060a4jn3
