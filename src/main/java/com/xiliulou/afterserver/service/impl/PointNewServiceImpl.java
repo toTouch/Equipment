@@ -705,6 +705,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         pointNewAuditRecordService.insert(pointNewAuditRecord);
     }
 
+    //备货管理
     @Override
     public R productNewDeliverList(Long offset, Long size, String batchNo, String sn, String tenantName, Long startTime, Long endTime) {
         List<ProductNewDeliverVo> productNewDeliverVos = pointNewMapper.productNewDeliverList(offset, size, batchNo, sn, tenantName, startTime, endTime);
