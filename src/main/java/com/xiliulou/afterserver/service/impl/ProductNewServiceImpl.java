@@ -12,6 +12,7 @@ import com.google.common.collect.Lists;
 import com.xiliulou.afterserver.constant.AuditProcessConstans;
 import com.xiliulou.afterserver.constant.ProductNewStatusSortConstants;
 import com.xiliulou.afterserver.entity.*;
+import com.xiliulou.afterserver.mapper.BatchMapper;
 import com.xiliulou.afterserver.mapper.CompressionRecordMapper;
 import com.xiliulou.afterserver.mapper.PointNewMapper;
 import com.xiliulou.afterserver.mapper.PointProductBindMapper;
@@ -331,8 +332,14 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
 
     @Override
     public R delAdminProductNew(Long id) {
+        //查询产品
+        ProductNew productNew = productNewMapper.queryById(id);
         Boolean aBoolean = this.deleteById(id);
         if (aBoolean) {
+            //更新产品数
+            Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
+            batch.setProductNum(batch.getProductNum()-1);
+            batchService.update(batch);
             return R.ok();
         }
         return R.fail("数据库错误");
@@ -1036,7 +1043,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
                 productIds.add(-1L);
             }
         }
-
+        //分页查询 结果集
         List<ProductNew> productNews = this
                 .queryAllByLimit(offset, limit, no, modelId, startTime, endTime, productIds, testType);
 
@@ -1045,6 +1052,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             PointProductBind pointProductBind = pointProductBindService
                     .queryByProductId(item.getId());
             if (Objects.nonNull(pointProductBind)) {
+                //点位查询填充
                 if (Objects.equals(pointProductBind.getPointType(), PointProductBind.TYPE_POINT)) {
                     PointNew pointNew = this.pointNewMapper
                             .selectById(pointProductBind.getPointId());
@@ -1054,6 +1062,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
                         item.setPointType(PointProductBind.TYPE_POINT);
                     }
                 }
+                // 仓库查询填充
                 if (Objects
                         .equals(pointProductBind.getPointType(), PointProductBind.TYPE_WAREHOUSE)) {
                     WareHouse wareHouse = warehouseService.getById(pointProductBind.getPointId());
@@ -1063,6 +1072,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
                         item.setPointType(PointProductBind.TYPE_WAREHOUSE);
                     }
                 }
+                // 供应商(工厂)查询填充
                 if (Objects
                         .equals(pointProductBind.getPointType(), PointProductBind.TYPE_SUPPLIER)) {
                     Supplier supplier = supplierService.getById(pointProductBind.getPointId());
@@ -1073,21 +1083,21 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
                     }
                 }
             }
-
+            // 产品型号
             if (Objects.nonNull(item.getModelId())) {
                 Product product = productService.getBaseMapper().selectById(item.getModelId());
                 if (Objects.nonNull(product)) {
                     item.setModelName(product.getName());
                 }
             }
-
+            // 批次号
             if (Objects.nonNull(item.getBatchId())) {
                 Batch batch = batchService.queryByIdFromDB(item.getBatchId());
                 if (Objects.nonNull(batch)) {
                     item.setBatchName(batch.getBatchNo());
                 }
             }
-
+            // 供应商
             if (Objects.nonNull(item.getSupplierId())) {
                 Supplier supplier = supplierService.getById(item.getSupplierId());
                 if (Objects.nonNull(supplier)) {
