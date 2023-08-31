@@ -71,4 +71,5 @@ public interface BatchService {
     R delOne(Long id);
 
     R queryByfactory(Long offset, Long size);
+    Batch getByNameAndModeId(String batchNo, Long modelId);
 }
