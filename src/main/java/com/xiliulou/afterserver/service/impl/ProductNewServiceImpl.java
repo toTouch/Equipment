@@ -340,7 +340,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             Batch batch = batchService.getByNameAndModeId(productNew.getBatchName(),productNew.getModelId());
             batchService.queryByIdFromDB(id);
             if (Objects.isNull(batch)) {
-                return R.fail("数据库错误");
+                return R.fail("找不到产品"+batch);
             }
             int i = batch.getProductNum() - 1;
             i=i>=0?i:0;
