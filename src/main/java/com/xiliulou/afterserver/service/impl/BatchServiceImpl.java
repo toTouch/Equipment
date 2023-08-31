@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.xiliulou.afterserver.constant.CacheConstants;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.BatchMapper;
 import com.xiliulou.afterserver.mapper.DeviceApplyCounterMapper;
@@ -16,8 +15,6 @@ import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.vo.OrderBatchVo;
-import com.xiliulou.cache.redis.RedisService;
-import com.xiliulou.core.json.JsonUtil;
 import com.xiliulou.iot.service.RegisterDeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -146,11 +143,11 @@ public class BatchServiceImpl implements BatchService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public R saveBatch(Batch batch) {
-
-        List<Batch> batchOlds = queryByName(batch.getBatchNo());
-        if(CollectionUtils.isNotEmpty(batchOlds)){
-            return R.fail("批次号已存在");
-        }
+        //原有逻辑
+        //List<Batch> batchOlds = queryByName(batch.getBatchNo());
+        //if(CollectionUtils.isNotEmpty(batchOlds)){
+        //    return R.fail("批次号已存在");
+        //}
         Product product = productService.getBaseMapper().selectById(batch.getModelId());
         if (Objects.isNull(product)) {
             return R.fail("产品型号有误，请检查");
@@ -158,11 +155,17 @@ public class BatchServiceImpl implements BatchService {
         if(Objects.isNull(product.getCode())){
             return R.fail("产品型号编码为空,请重新选择");
         }
+        // 批次号(batchNo)+产品型号(modelId)不可重复
+        Batch batchTemp = getByNameAndModeId(batch.getBatchNo(),batch.getModelId());
+        if (Objects.nonNull(batchTemp)) {
+            return R.fail("同批次已有同型号产品已存在");
+        }
+
 
         if(Objects.isNull(batch.getProductNum()) || batch.getProductNum() <= 0){
             return R.fail("请传入正确的产品数量");
         }
-
+        // 就是工厂
         Supplier supplier = supplierService.getById(batch.getSupplierId());
         if (Objects.isNull(supplier)) {
             return R.fail("供应商选择有误，请检查");
@@ -179,7 +182,7 @@ public class BatchServiceImpl implements BatchService {
         batch.setCreateTime(System.currentTimeMillis());
         batch.setUpdateTime(System.currentTimeMillis());
         Batch insert = this.insert(batch);
-
+        //附件上传
         ProductFile productFile = new ProductFile();
         productFile.setProductId(insert.getId());
         productFile.setFileStr(batch.getFileStr());
@@ -255,19 +258,29 @@ public class BatchServiceImpl implements BatchService {
         }
         //如果是换电柜，则自动维护三元组
         if(Objects.equals(product.getProductSeries(),3)&&deviceNames.size()>0){
+            // 批量检查自定义设备名称的合法性
             Long applyId = registerDeviceService.batchCheckDeviceNames(PRODUCT_KEY, deviceNames);
             log.info("batch check finished:deviceNames={} applyId={} ", deviceNames,applyId);
             if (Objects.nonNull(applyId)){
+                // 批量注册设备
                 boolean b = registerDeviceService.batchRegisterDeviceWithApplyId(PRODUCT_KEY, applyId);
                 log.info("batch register finished:result={} applyId={} ", b,applyId);
             }
         }
-
         return R.ok();
+    }
+
+    public Batch getByNameAndModeId(String batchNo, Long modelId) {
+        if(StringUtils.isBlank(batchNo)&&Objects.isNull(modelId)){
+            return null;
+        }
+        LambdaQueryWrapper<Batch> wrapper = new LambdaQueryWrapper<Batch>().eq(Batch::getBatchNo,batchNo).eq(Batch::getModelId,modelId);
+        return batchMapper.selectOne(wrapper);
     }
 
     @Override
     public R delOne(Long id) {
+        // 删除产品 查这个批次有哪些产品，删批次前要清空产品
         List<ProductNew> list = productNewService.queryByBatch(id);
         if(CollectionUtils.isNotEmpty(list)){
             return R.fail("删除失败,请删除产品列表中关联的数据");

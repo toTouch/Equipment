@@ -339,6 +339,4 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         List<PageSearchVo> listVo = this.baseMapper.productSearch(offset, size, name);
         return R.ok(listVo);
     }
-
-
 }
