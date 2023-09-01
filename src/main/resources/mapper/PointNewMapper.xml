@@ -543,6 +543,12 @@
         <if test="sn != null and sn != ''">
             and tpn.no LIKE CONCAT('%',#{sn},'%')
         </if>
+        <if test="deviceName != null and deviceName != ''">
+            and tpn.device_name LIKE CONCAT('%',#{deviceName},'%')
+        </if>
+        <if test="cabinetSn != null and cabinetSn != ''">
+            and tpn.cabinet_sn LIKE CONCAT('%',#{cabinetSn},'%')
+        </if>
         <if test="tenantName != null and tenantName != ''">
             and d.tenant_name LIKE CONCAT('%',#{tenantName},'%')
         </if>

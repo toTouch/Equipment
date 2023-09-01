@@ -810,9 +810,11 @@ public class AdminJsonPointNewController {
     public R productNewDeliverCount(@RequestParam(value = "batchNo", required = false) String batchNo,
                                     @RequestParam(value = "sn", required = false) String  sn,
                                     @RequestParam(value = "tenantName", required = false) String tenantName,
+                                    @RequestParam(value = "deviceName", required = false) String  deviceName,
+                                    @RequestParam(value = "cabinetSn", required = false) String  cabinetSn,
                                     @RequestParam(value = "startTime", required = false) Long  startTime,
                                     @RequestParam(value = "endTime", required = false) Long  endTime) {
-        return pointNewService.productNewDeliverCount(batchNo,sn,tenantName,startTime,endTime);
+        return pointNewService.productNewDeliverCount(batchNo,sn,deviceName,cabinetSn,tenantName,startTime,endTime);
     }
 
     @GetMapping("admin/productNew/deliver/exportExcel")
