@@ -140,9 +140,9 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
      */
     @Override
     public List<ProductNew> queryAllByLimit(int offset, int limit, String no, Long modelId,
-                                            Long startTime, Long endTime, List<Long> list, String testType) {
+                                            Long startTime, Long endTime, List<Long> list, String testType,String cabinetSn) {
         return this.productNewMapper
-                .queryAllByLimit(offset, limit, no, modelId, startTime, endTime, list, testType);
+                .queryAllByLimit(offset, limit, no, modelId, startTime, endTime, list, testType, cabinetSn);
     }
 
     /**
@@ -1026,7 +1026,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
 
     @Override
     public R pointList(Integer offset, Integer limit, String no, Long modelId, Long pointId,
-                       Integer pointType, Long startTime, Long endTime, String testType) {
+                       Integer pointType, Long startTime, Long endTime, String testType,String cabinetSn) {
         List<Long> productIds = null;
         if (Objects.nonNull(pointId) || Objects.nonNull(pointType)) {
             productIds = pointProductBindService.queryProductIdsByPidAndPtype(pointId, pointType);
@@ -1038,7 +1038,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         }
 
         List<ProductNew> productNews = this
-                .queryAllByLimit(offset, limit, no, modelId, startTime, endTime, productIds, testType);
+                .queryAllByLimit(offset, limit, no, modelId, startTime, endTime, productIds, testType,cabinetSn);
 
         productNews.parallelStream().forEach(item -> {
 
