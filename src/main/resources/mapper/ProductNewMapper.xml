@@ -114,6 +114,13 @@
         select count(1) from t_product_new p <!--left join t_point_product_bind b on p.id = b.product_id-->
         <where>
             and p.del_flag = 0
+            and p.cache is null
+            <if test="list != null and list.size() > 0">
+                and p.id in
+                <foreach collection="list" item="c" open="(" separator="," close=")">
+                    #{c}
+                </foreach>
+            </if>
             <if test="no != null and no != '' ">
                 and p.no like concat('%', #{no},'%')
             </if>
@@ -123,15 +130,14 @@
             <if test="startTime != null">
                 and p.create_time &gt;= #{startTime}
             </if>
-
             <if test="endTime != null">
                 and p.create_time &lt;= #{endTime}
             </if>
-            <if test="list != null and list.size() > 0">
-                and p.id in
-                <foreach collection="list" item="c" open="(" separator="," close=")">
-                    #{c}
-                </foreach>
+            <if test="testType != null and testType != ''">
+                and p.test_type = #{testType}
+            </if>
+            <if test="cabinetSn != null and cabinetSn != ''">
+                and p.cabinet_sn  like concat('%', #{cabinetSn},'%')
             </if>
         </where>
     </select>

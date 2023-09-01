@@ -82,7 +82,7 @@ public interface ProductNewService extends IService<ProductNew> {
 
     ProductNew prdouctInfoByNo(String no);
 
-    Integer count(String no,Long modelId,Long startTime,Long endTime, List<Long> list);
+    Integer count(String no,Long modelId,Long startTime,Long endTime, List<Long> list, String testType,String cabinetSn);
 
     R getProductFile(Long id, Integer fileType);
 
