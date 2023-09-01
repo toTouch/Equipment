@@ -116,7 +116,7 @@ public interface PointNewService extends IService<PointNew> {
     R productNewDeliverList(Long offset, Long size, String batchNo, String sn, String deviceName, String cabinetSn, String tenantName,
         Long startTime, Long endTime);
 
-    R productNewDeliverCount(String batchNo,String sn,String tenantName,Long startTime,Long endTime);
+    R productNewDeliverCount(String batchNo, String sn, String deviceName, String cabinetSn, String tenantName, Long startTime, Long endTime);
 
     R productNewDeliverExportExcel(String batchNo, String sn, String deviceName, String cabinetSn, String tenantName, Long startTime, Long endTime, HttpServletResponse response);
 
