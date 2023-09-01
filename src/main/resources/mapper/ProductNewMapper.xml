@@ -138,8 +138,8 @@
 
     <!--新增所有列-->
     <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
-        insert into t_product_new(no, model_id, batch_id, status, expiration_start_time, years, expiration_end_time, create_time, update_time, del_flag, cache, serial_num, supplier_id, type, code, test_start_time, test_end_time, test_msg,device_name,product_key,is_use)
-        values (#{no}, #{modelId}, #{batchId}, #{status}, #{expirationStartTime},#{years},#{expirationEndTime}, #{createTime}, #{updateTime}, #{delFlag}, #{cache},#{serialNum}, #{supplierId}, #{type}, #{code}, #{testStartTime}, #{testEndTime}, #{testMsg},#{deviceName},#{productKey},#{isUse})
+        insert into t_product_new(no, model_id, batch_id, status, expiration_start_time, years, expiration_end_time, create_time, update_time, del_flag, cache, serial_num, supplier_id, type, code, test_start_time, test_end_time, test_msg,device_name,product_key,is_use,cabinet_sn)
+        values (#{no}, #{modelId}, #{batchId}, #{status}, #{expirationStartTime},#{years},#{expirationEndTime}, #{createTime}, #{updateTime}, #{delFlag}, #{cache},#{serialNum}, #{supplierId}, #{type}, #{code}, #{testStartTime}, #{testEndTime}, #{testMsg},#{deviceName},#{productKey},#{isUse},#{cabinetSn})
     </insert>
 
     <!--通过主键修改数据-->
