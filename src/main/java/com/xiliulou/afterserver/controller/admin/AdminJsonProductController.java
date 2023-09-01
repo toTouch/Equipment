@@ -58,7 +58,7 @@ public class AdminJsonProductController {
             if (Objects.isNull(product.getHasScreen())){
                 return R.fail("换电柜柜机类型不能为空");
             }
-            if (Objects.nonNull(product.getBoxNumber())&& product.getBoxNumber()<100){
+            if (Objects.nonNull(product.getBoxNumber())&& product.getBoxNumber()>=100){
                 return R.fail("换电柜格口数量必须小于100");
             }
         }
@@ -81,7 +81,7 @@ public class AdminJsonProductController {
             if (Objects.isNull(product.getHasScreen())){
                 return R.fail("换电柜柜机类型不能为空");
             }
-            if (Objects.nonNull(product.getBoxNumber())&& product.getBoxNumber()<100){
+            if (Objects.nonNull(product.getBoxNumber())&& product.getBoxNumber()>=100){
                 return R.fail("换电柜格口数量必须小于100");
             }
         }
