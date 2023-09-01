@@ -9,7 +9,7 @@ spring:
       driver-class-name: com.mysql.cj.jdbc.Driver
       username: root
       password: y%d*IWrh1KKfQD!E
-      url: jdbc:mysql://172.26.20.230:3306/xiliulou_crm?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&allowMultiQueries=true
+      url: jdbc:mysql://xiliulou-mysql:3306/xiliulou_crm?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&allowMultiQueries=true
   redis:
     lettuce:
       pool:
@@ -153,3 +153,4 @@ iot:
   regionId: cn-shanghai
   domain: iot.cn-shanghai.aliyuncs.com
   product: iot
+  iotInstance: iot-060a4jn3
