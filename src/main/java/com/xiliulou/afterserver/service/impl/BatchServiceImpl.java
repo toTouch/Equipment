@@ -5,9 +5,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.xiliulou.afterserver.config.ProductConfig;
 import com.xiliulou.afterserver.constant.CacheConstants;
 import com.xiliulou.afterserver.entity.*;
-import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.BatchMapper;
 import com.xiliulou.afterserver.mapper.DeviceApplyCounterMapper;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
@@ -56,7 +56,10 @@ public class BatchServiceImpl implements BatchService {
     private PointProductBindService pointProductBindService;
     @Autowired
     private UserService userService;
-    public static final String PRODUCT_KEY = "a1mqS72fHNi";
+
+    @Autowired
+    private ProductConfig productConfig;
+
     public static final String COMPANY_NAME = "BY";
     @Autowired
     private RegisterDeviceService registerDeviceService;
@@ -205,26 +208,10 @@ public class BatchServiceImpl implements BatchService {
         }
         productNew.setCode(codeStr.toString());
         DeviceApplyCounter deviceApplyCounter=new DeviceApplyCounter();
-        //有屏无屏
-        String screen="";
         if(Objects.isNull(product.getHasScreen())||Objects.equals(product.HAS_SCREEN,product.getHasScreen())){
             deviceApplyCounter.setType("H");
-            screen="S";
         }else{
             deviceApplyCounter.setType("N");
-            screen="N";
-        }
-        //电柜仓数
-        Integer boxNumber=0;
-        if (Objects.nonNull(product.getBoxNumber())){
-            boxNumber=product.getBoxNumber();
-        }
-        //消防类型
-        String fireFightStr="";
-        if(Objects.equals(product.getFireFightingType(),0)){
-            fireFightStr="W";
-        }else{
-            fireFightStr="A";
         }
         SimpleDateFormat formatter = new SimpleDateFormat("yyMMdd");
         String dateString = formatter.format(new Date());
@@ -233,10 +220,7 @@ public class BatchServiceImpl implements BatchService {
         if(Objects.isNull(serialNum)){
             serialNum = 0;
         }
-        DeviceApplyCounter cabinet=new DeviceApplyCounter();
-        cabinet.setType("CABINETSN");
-        cabinet.setDate(dateString);
-        String cabinetSn=COMPANY_NAME+String.format("%02d", boxNumber)+screen+fireFightStr+dateString+"0";
+
         Set<String> deviceNames=new HashSet<String>();
         for (int i = 0; i < productNew.getProductCount(); i++) {
             serialNum++;
@@ -263,17 +247,8 @@ public class BatchServiceImpl implements BatchService {
                 deviceApplyCounterMapper.insertOrUpdate(deviceApplyCounter);
                 String deviceName = deviceApplyCounter.getType() + deviceApplyCounter.getDate() + String.format("%05d", deviceApplyCounter.getCount());
                 productNew.setDeviceName(deviceName);
-                productNew.setProductKey(PRODUCT_KEY);
+                productNew.setProductKey(productConfig.getKey());
                 productNew.setIsUse(ProductNew.NOT_USE);
-                //查询出厂序号
-                DeviceApplyCounter snCounter = deviceApplyCounterMapper.queryByDateAndType(cabinet);
-                if(Objects.isNull(snCounter)){
-                    cabinet.setCount(1L);
-                }else{
-                    cabinet.setCount(snCounter.getCount()+1);
-                }
-                deviceApplyCounterMapper.insertOrUpdate(cabinet);
-                productNew.setCabinetSn(cabinetSn+String.format("%04d", cabinet.getCount()));
                 deviceNames.add(deviceName);
             }
             productNewMapper.insertOne(productNew);
@@ -285,15 +260,11 @@ public class BatchServiceImpl implements BatchService {
         }
         //如果是换电柜，则自动维护三元组
         if(Objects.equals(product.getProductSeries(),3)&&deviceNames.size()>0){
-            Long applyId = registerDeviceService.batchCheckDeviceNames(PRODUCT_KEY, deviceNames);
+            Long applyId = registerDeviceService.batchCheckDeviceNames(productConfig.getKey(), deviceNames);
             log.info("batch check finished:deviceNames={} applyId={} ", deviceNames,applyId);
             if (Objects.nonNull(applyId)){
-                boolean b = registerDeviceService.batchRegisterDeviceWithApplyId(PRODUCT_KEY, applyId);
+                boolean b = registerDeviceService.batchRegisterDeviceWithApplyId(productConfig.getKey(), applyId);
                 log.info("batch register finished:result={} applyId={} ", b,applyId);
-                //注册失败则提示
-                if (!b){
-                    throw  new CustomBusinessException("注册三元组失败，请重新生成批次");
-                }
             }
         }
 
