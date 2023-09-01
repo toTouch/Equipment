@@ -386,8 +386,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     }
 
     @Override
-    public Integer count(String no, Long modelId, Long startTime, Long endTime, List<Long> list) {
-        return this.productNewMapper.countProduct(no, modelId, startTime, endTime, list);
+    public Integer count(String no, Long modelId, Long startTime, Long endTime, List<Long> list, String testType,String cabinetSn) {
+        return this.productNewMapper.countProduct(no, modelId, startTime, endTime, list,  testType, cabinetSn);
     }
 
     @Override
@@ -1121,7 +1121,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
 //            item.setQualityInspectionFileList(qualityInspection);
         });
 
-        Integer count = this.count(no, modelId, startTime, endTime, productIds);
+        Integer count = this.count(no, modelId, startTime, endTime, productIds, testType,cabinetSn);
 
         HashMap<String, Object> stringObjectHashMap = new HashMap<>(2);
         stringObjectHashMap.put("data", productNews);
