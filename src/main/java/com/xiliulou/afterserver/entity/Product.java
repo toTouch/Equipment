@@ -45,6 +45,12 @@ public class Product implements Serializable {
      * 是否有屏  0无 1有
      */
     private Integer hasScreen;
+
+    /**
+     * 消防类型 0-水消防 1-气溶胶消防
+     */
+    private Integer fireFightingType;
+
     public static final Integer MAIN_LOCKER = 1;
     public static final Integer VICE_LOCKER = 2;
 
