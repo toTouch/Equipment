@@ -451,7 +451,7 @@
             </if>
         </where>
     </select>
-    
+
     <select id="pointNewMapProvinceCount" resultType="com.xiliulou.afterserver.web.vo.PointNewMapCountVo">
         select `name`, count(*) as count from (
              select p.name
@@ -504,7 +504,7 @@
         where id = #{id};
     </update>
     <select id="productNewDeliverList" resultType="com.xiliulou.afterserver.web.vo.ProductNewDeliverVo">
-        select tpn.id,tpn.no,t.batch_no,tpn.product_key,tpn.device_name,tpn.is_use,tpn.create_time,d.tenant_name,p.name as productName,tdl.create_time as deliverTime,tpn.test_end_time,tpn.test_result  from t_product_new  tpn  left join product p on tpn.model_id =p.id left join  t_batch t on tpn.batch_id=t.id
+        select tpn.id,tpn.no,t.batch_no,tpn.product_key,tpn.device_name,tpn.cabinet_sn,tpn.is_use,tpn.create_time,d.tenant_name,p.name as productName,tdl.create_time as deliverTime,tpn.test_end_time,tpn.test_result  from t_product_new  tpn  left join product p on tpn.model_id =p.id left join  t_batch t on tpn.batch_id=t.id
         left join t_deliver_log tdl on tdl.product_id = tpn.id
         left join deliver d   on d.id=tdl.deliver_id
         where p.product_series=3 and tpn.del_flag=0
@@ -513,6 +513,12 @@
         </if>
         <if test="sn != null and sn != ''">
             and tpn.no LIKE CONCAT('%',#{sn},'%')
+        </if>
+        <if test="deviceName != null and deviceName != ''">
+            and tpn.device_name LIKE CONCAT('%',#{deviceName},'%')
+        </if>
+        <if test="cabinetSn != null and cabinetSn != ''">
+            and tpn.cabinet_sn LIKE CONCAT('%',#{cabinetSn},'%')
         </if>
         <if test="tenantName != null and tenantName != ''">
             and d.tenant_name LIKE CONCAT('%',#{tenantName},'%')
@@ -550,7 +556,7 @@
     </select>
 
     <select id="productNewDeliverExport" resultType="com.xiliulou.afterserver.web.vo.ProductNewDeliverVo">
-        select tpn.id,tpn.no,t.batch_no,tpn.product_key,tpn.device_name,tpn.is_use,tpn.create_time,d.tenant_name,p.name as productName,tdl.create_time as deliverTime,tpn.test_end_time,tpn.test_result  from t_product_new  tpn  left join product p on tpn.model_id =p.id left join  t_batch t on tpn.batch_id=t.id
+        select tpn.id,tpn.no,t.batch_no,tpn.product_key,tpn.device_name,tpn.cabinet_sn,tpn.is_use,tpn.create_time,d.tenant_name,p.name as productName,tdl.create_time as deliverTime,tpn.test_end_time,tpn.test_result  from t_product_new  tpn  left join product p on tpn.model_id =p.id left join  t_batch t on tpn.batch_id=t.id
         left join t_deliver_log tdl on tdl.product_id = tpn.id
         left join deliver d   on d.id=tdl.deliver_id
         where p.product_series=3 and tpn.del_flag=0
@@ -559,6 +565,12 @@
         </if>
         <if test="sn != null and sn != ''">
             and tpn.no LIKE CONCAT('%',#{sn},'%')
+        </if>
+        <if test="deviceName != null and deviceName != ''">
+            and tpn.device_name LIKE CONCAT('%',#{deviceName},'%')
+        </if>
+        <if test="cabinetSn != null and cabinetSn != ''">
+            and tpn.cabinet_sn LIKE CONCAT('%',#{cabinetSn},'%')
         </if>
         <if test="tenantName != null and tenantName != ''">
             and d.tenant_name LIKE CONCAT('%',#{tenantName},'%')

@@ -334,18 +334,15 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     public R delAdminProductNew(Long id) {
         //查询产品
         ProductNew productNew = productNewMapper.queryById(id);
-        ProductNew productNew1 = this.queryByIdFromDB(id);
         Boolean aBoolean = this.deleteById(id);
         if (aBoolean) {
             //更新产品数 同产品批次可能不同
-            //Batch batch = batchService.getByNameAndModeId(productNew.getBatchName(),productNew.getModelId());
             Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
             batchService.queryByIdFromDB(id);
-            if (Objects.isNull(batch)) {
-                return R.fail("找不到产品"+batch+"batch\n"+productNew+"productNew\n"+productNew1);
+            if (Objects.isNull(batch)&&batch.getProductNum()<=0) {
+                return R.fail("找不到产品，请刷新页面");
             }
-            int i = batch.getProductNum() - 1;
-            i=i>=0?i:0;
+            int i = batch.getProductNum()- 1 ;
             batch.setProductNum(i);
             batchService.update(batch);
             return R.ok();
