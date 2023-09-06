@@ -228,6 +228,11 @@ public class BatchServiceImpl implements BatchService {
         }else{
             fireFightStr="A";
         }
+        //工厂简称
+        String co="";
+        if (Objects.nonNull(supplier.getSimpleName())) {
+            co=supplier.getSimpleName();
+        }
         SimpleDateFormat formatter = new SimpleDateFormat("yyMMdd");
         String dateString = formatter.format(new Date());
         deviceApplyCounter.setDate(dateString);
@@ -238,7 +243,7 @@ public class BatchServiceImpl implements BatchService {
         DeviceApplyCounter cabinet=new DeviceApplyCounter();
         cabinet.setType("CABINETSN");
         cabinet.setDate(dateString);
-        String cabinetSn=COMPANY_NAME+String.format("%02d", boxNumber)+screen+fireFightStr+dateString+"0";
+        String cabinetSn=COMPANY_NAME+String.format("%02d", boxNumber)+screen+fireFightStr+dateString+co;
         Set<String> deviceNames=new HashSet<String>();
         for (int i = 0; i < productNew.getProductCount(); i++) {
             serialNum++;
