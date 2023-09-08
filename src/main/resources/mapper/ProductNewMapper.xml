@@ -328,7 +328,7 @@
         where tpn.id = #{pid}
     </select>
     <select id="queryDeviceMessage" resultType="com.xiliulou.afterserver.web.vo.DeviceMessageVo">
-        select t.product_key,t.device_name,t.is_use, pr.box_number
+        select t.id as product_id, t.product_key,t.device_name,t.is_use, pr.box_number
         from t_product_new t left join product pr on t.model_id = pr.id  where t.del_flag = 0 and t.no = #{no}
     </select>
     <select id="updateUsedStatusByNo" resultType="java.lang.Integer">

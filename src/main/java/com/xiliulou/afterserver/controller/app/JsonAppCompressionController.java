@@ -1,5 +1,7 @@
 package com.xiliulou.afterserver.controller.app;
 
+import com.xiliulou.afterserver.entity.FactoryTestConf;
+import com.xiliulou.afterserver.service.FactoryTestConfService;
 import com.xiliulou.afterserver.service.ProductNewService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ApiRequestQuery;
@@ -8,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @author zgw
@@ -20,6 +24,9 @@ public class JsonAppCompressionController {
 
     @Autowired
     private ProductNewService productNewService;
+
+    @Autowired
+    private FactoryTestConfService factoryTestConfService;
 
     @PostMapping("/check")
     public R checkCompression(@RequestBody ApiRequestQuery apiRequestQuery){
@@ -43,4 +50,14 @@ public class JsonAppCompressionController {
     public R loadTest2(@RequestBody ApiRequestQuery apiRequestQuery){
         return productNewService.runFullLoadTest2(apiRequestQuery);
     }
+
+    /**
+     * 配置列表`
+     */
+    @PostMapping("/listConf")
+    public List<FactoryTestConf> listConf(@RequestBody ApiRequestQuery apiRequestQuery){
+        return factoryTestConfService.getAllByApi(apiRequestQuery);
+    }
+
+
 }

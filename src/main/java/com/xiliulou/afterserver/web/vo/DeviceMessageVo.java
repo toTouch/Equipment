@@ -4,6 +4,12 @@ import lombok.Data;
 
 @Data
 public class DeviceMessageVo {
+
+    /**
+     * 物联网 productId
+     */
+    private Long productId;
+
     /**
      * 物联网productKey
      */
