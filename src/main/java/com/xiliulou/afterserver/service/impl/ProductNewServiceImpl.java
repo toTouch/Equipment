@@ -1511,14 +1511,12 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         if (Objects.isNull(productNew)) {
             return R.fail(null, "未查询到相关资产编码");
         }
-        // 判断当前资产编码是不是 成功或者失败 若是 直接返回
-        if (Objects.equals(productNew.getTestResult(), CompressionQuery.TEST_FAIL) || Objects.equals(productNew.getTestResult(), CompressionQuery.TEST_SUCC)){
-            return R.ok();
-        }
-
         ProductNew productUpdate = new ProductNew();
         productUpdate.setId(productNew.getId());
-        productUpdate.setTestResult(cabinetCompressionQuery.getTestStatus());
+        // 判断当前资产编码是不是 成功或者失败 若是 不修改状态
+        if (!Objects.equals(productNew.getTestResult(), CompressionQuery.TEST_FAIL) && !Objects.equals(productNew.getTestResult(), CompressionQuery.TEST_SUCC)){
+            productUpdate.setTestResult(cabinetCompressionQuery.getTestStatus());
+        }
         productUpdate.setTestStartTime(cabinetCompressionQuery.getTestStartTime());
         productUpdate.setTestEndTime(cabinetCompressionQuery.getTestEndTime());
         productUpdate.setTestMsg(cabinetCompressionQuery.getTestMsg());
@@ -1562,7 +1560,10 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         }
         ProductNew productUpdate = new ProductNew();
         productUpdate.setId(productNew.getId());
-        productUpdate.setTestResult(cabinetCompressionQuery.getTestStatus());
+        // 判断当前资产编码是不是 成功或者失败 若是 不修改状态
+        if (!Objects.equals(productNew.getTestResult(), CompressionQuery.TEST_FAIL) && !Objects.equals(productNew.getTestResult(), CompressionQuery.TEST_SUCC)){
+            productUpdate.setTestResult(cabinetCompressionQuery.getTestStatus());
+        }
         productUpdate.setTestStartTime(cabinetCompressionQuery.getTestStartTime());
         productUpdate.setTestEndTime(cabinetCompressionQuery.getTestEndTime());
         productUpdate.setTestMsg(cabinetCompressionQuery.getTestMsg());
