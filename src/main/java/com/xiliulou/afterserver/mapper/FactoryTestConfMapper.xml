@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiliulou.afterserver.mapper.FactoryTestConfMapper">
+
+    <resultMap id="factoryTestConfMap" type="com.xiliulou.afterserver.entity.FactoryTestConf">
+        <result column="id" property="id" jdbcType="INTEGER"></result>
+        <result column="conf_name" property="confName" jdbcType="VARCHAR"></result>
+        <result column="json_content" property="jsonContent" jdbcType="LONGVARCHAR"></result>
+        <result column="del_flag" property="delFlag" jdbcType="INTEGER"></result>
+        <result column="update_time" property="updateTime" jdbcType="BIGINT"></result>
+        <result column="create_time" property="createTime" jdbcType="BIGINT"></result>
+    </resultMap>
+    <select id="queryAll" resultMap="factoryTestConfMap">
+        select id,conf_name,json_content,del_flag,update_time,create_time
+        from t_factory_test_conf
+        <where>
+            del_flag = 0
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="confName != null">
+                and conf_name like concat('%', #{name}, '%')
+            </if>
+        </where>
+        order by id desc
+    </select>
+
+</mapper>
