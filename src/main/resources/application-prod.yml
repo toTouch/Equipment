@@ -93,7 +93,7 @@ jwt:
   secret: 20e5@cda38da811*27ed6fa.d226&8
   expire: 1296000
 
-#minio:
+  #minio:
   #endpoint: http://192.168.0.236
   #port: 9000
   #accessKey: LUS0FLKBY835V0QLADFP
@@ -152,3 +152,6 @@ iot:
   domain: iot.cn-shanghai.aliyuncs.com
   product: iot
   iotInstance: iot-060a4jn3
+
+product-config:
+  key: a1mqS72fHNi

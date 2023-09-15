@@ -41,7 +41,8 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
                                      @Param("startTime") Long startTime,
                                      @Param("endTime") Long endTime,
                                      @Param("list")List<Long> list,
-                                     @Param("testType")String testType);
+                                     @Param("testType")String testType,
+                                     @Param("cabinetSn")String cabinetSn);
 
 
     /**
@@ -88,7 +89,9 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
                          @Param("modelId") Long modelId,
                          @Param("startTime") Long startTime,
                          @Param("endTime") Long endTime,
-                         @Param("list")List<Long> list);
+                         @Param("list")List<Long> list											,
+                         @Param("testType")String testType,
+                         @Param("cabinetSn")String cabinetSn);
 
     int updateStatusFromBatch(@Param("ids") List<Long> ids, @Param("status") Integer status);
 

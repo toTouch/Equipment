@@ -50,6 +50,18 @@ public class AdminJsonProductController {
         if(Objects.nonNull(productOld)){
             return R.fail("类型【"+product.getName()+"】已存在");
         }
+        //换电柜 ，消防类型不能为空
+        if(Objects.equals(product.getProductSeries(),3)){
+            if (Objects.isNull(product.getFireFightingType())){
+                return R.fail("换电柜消防类型不能为空");
+            }
+            if (Objects.isNull(product.getHasScreen())){
+                return R.fail("换电柜柜机类型不能为空");
+            }
+            if (Objects.nonNull(product.getBoxNumber())&& product.getBoxNumber()>=100){
+                return R.fail("换电柜格口数量必须小于100");
+            }
+        }
         product.setCreateTime(System.currentTimeMillis());
         productService.save(product);
         return R.ok();
@@ -60,6 +72,18 @@ public class AdminJsonProductController {
         Product productOld = productService.getByName(product.getName());
         if(Objects.nonNull(productOld) && !Objects.equals(productOld.getId(), product.getId())){
             return R.fail("类型【"+product.getName()+"】已存在");
+        }
+        //换电柜 ，消防类型不能为空
+        if(Objects.equals(product.getProductSeries(),3)){
+            if (Objects.isNull(product.getFireFightingType())){
+                return R.fail("换电柜消防类型不能为空");
+            }
+            if (Objects.isNull(product.getHasScreen())){
+                return R.fail("换电柜柜机类型不能为空");
+            }
+            if (Objects.nonNull(product.getBoxNumber())&& product.getBoxNumber()>=100){
+                return R.fail("换电柜格口数量必须小于100");
+            }
         }
         return R.ok(productService.updateById(product));
     }
