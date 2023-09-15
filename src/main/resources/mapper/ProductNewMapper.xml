@@ -38,7 +38,7 @@
           p.id, p.no, p.model_id, p.batch_id, p.status, p.expiration_start_time, p.years, p.expiration_end_time,
           p.create_time,p.update_time, p.del_flag, p.serial_num, p.type, p.supplier_id,p.remarks,p.iot_card_id,
           p.camera_id,p.surface,p.color, p.test_result, p.test_file, p.app_version, p.sys_version, p.test_type,
-          p.test_start_time, p.test_end_time, p.test_msg ,p.error_message,p.product_key,p.device_name,p.is_use
+          p.test_start_time, p.test_end_time, p.test_msg ,p.error_message,p.product_key,p.device_name,p.is_use,p.cabinet_sn
         from t_product_new p
     <where>
         and p.del_flag = 0
@@ -63,6 +63,9 @@
         </if>
         <if test="testType != null and testType != ''">
             and p.test_type = #{testType}
+        </if>
+        <if test="cabinetSn != null and cabinetSn != ''">
+            and p.cabinet_sn  like concat('%', #{cabinetSn},'%')
         </if>
     </where>
     order by create_time desc
@@ -111,6 +114,13 @@
         select count(1) from t_product_new p <!--left join t_point_product_bind b on p.id = b.product_id-->
         <where>
             and p.del_flag = 0
+            and p.cache is null
+            <if test="list != null and list.size() > 0">
+                and p.id in
+                <foreach collection="list" item="c" open="(" separator="," close=")">
+                    #{c}
+                </foreach>
+            </if>
             <if test="no != null and no != '' ">
                 and p.no like concat('%', #{no},'%')
             </if>
@@ -120,23 +130,22 @@
             <if test="startTime != null">
                 and p.create_time &gt;= #{startTime}
             </if>
-
             <if test="endTime != null">
                 and p.create_time &lt;= #{endTime}
             </if>
-            <if test="list != null and list.size() > 0">
-                and p.id in
-                <foreach collection="list" item="c" open="(" separator="," close=")">
-                    #{c}
-                </foreach>
+            <if test="testType != null and testType != ''">
+                and p.test_type = #{testType}
+            </if>
+            <if test="cabinetSn != null and cabinetSn != ''">
+                and p.cabinet_sn  like concat('%', #{cabinetSn},'%')
             </if>
         </where>
     </select>
 
     <!--新增所有列-->
     <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
-        insert into t_product_new(no, model_id, batch_id, status, expiration_start_time, years, expiration_end_time, create_time, update_time, del_flag, cache, serial_num, supplier_id, type, code, test_start_time, test_end_time, test_msg,device_name,product_key,is_use)
-        values (#{no}, #{modelId}, #{batchId}, #{status}, #{expirationStartTime},#{years},#{expirationEndTime}, #{createTime}, #{updateTime}, #{delFlag}, #{cache},#{serialNum}, #{supplierId}, #{type}, #{code}, #{testStartTime}, #{testEndTime}, #{testMsg},#{deviceName},#{productKey},#{isUse})
+        insert into t_product_new(no, model_id, batch_id, status, expiration_start_time, years, expiration_end_time, create_time, update_time, del_flag, cache, serial_num, supplier_id, type, code, test_start_time, test_end_time, test_msg,device_name,product_key,is_use,cabinet_sn)
+        values (#{no}, #{modelId}, #{batchId}, #{status}, #{expirationStartTime},#{years},#{expirationEndTime}, #{createTime}, #{updateTime}, #{delFlag}, #{cache},#{serialNum}, #{supplierId}, #{type}, #{code}, #{testStartTime}, #{testEndTime}, #{testMsg},#{deviceName},#{productKey},#{isUse},#{cabinetSn})
     </insert>
 
     <!--通过主键修改数据-->

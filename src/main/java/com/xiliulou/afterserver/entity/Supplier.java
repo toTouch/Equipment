@@ -31,6 +31,8 @@ public class Supplier {
 
     @TableField(exist = false)
     private String cityName;
-
-
+    /**
+     * 代码
+     */
+    private String simpleName;
 }
