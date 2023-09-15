@@ -20,6 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @program: XILIULOU
@@ -35,6 +37,8 @@ public class AdminJsonSupplierController extends BaseController {
     @Autowired
     SupplierService supplierService;
 
+    // 匹配只有一位字符且是0-9、a-z和A-Z的情况
+    Pattern CODE_PATTERN = Pattern.compile("^[0-9a-zA-Z]$");
 
     @GetMapping("admin/supplier/page")
     public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, Supplier supplier) {
@@ -47,10 +51,22 @@ public class AdminJsonSupplierController extends BaseController {
         if(StringUtils.isBlank(supplier.getArea())){
             return R.fail("请添加城市");
         }
+        if(StringUtils.isBlank(supplier.getSimpleName())){
+            return R.fail("请添加代码");
+        }else{
+            Matcher matcher = CODE_PATTERN.matcher(supplier.getSimpleName());
+            if (!matcher.matches()) {
+                return R.fail("代码格式不正确");
+            }
+        }
         BaseMapper<Supplier> baseMapper = supplierService.getBaseMapper();
         Supplier supplierOld = baseMapper.selectOne(new QueryWrapper<Supplier>().eq("name", supplier.getName()));
         if(Objects.nonNull(supplierOld)){
             return R.fail("供应商列表已存在【" + supplier.getName()  + "】");
+        }
+        supplierOld = baseMapper.selectOne(new QueryWrapper<Supplier>().eq("simple_name", supplier.getSimpleName()));
+        if(Objects.nonNull(supplierOld)){
+            return R.fail("供应商代码已存在【" + supplier.getSimpleName()  + "】");
         }
 
         supplier.setCreateTime(System.currentTimeMillis());
@@ -62,12 +78,23 @@ public class AdminJsonSupplierController extends BaseController {
         if(StringUtils.isBlank(supplier.getArea())){
             return R.fail("请添加城市");
         }
+        if(StringUtils.isBlank(supplier.getSimpleName())){
+            return R.fail("请添加代码");
+        }else{
+            Matcher matcher = CODE_PATTERN.matcher(supplier.getSimpleName());
+            if (!matcher.matches()) {
+                return R.fail("代码格式不正确");
+            }
+        }
         BaseMapper<Supplier> baseMapper = supplierService.getBaseMapper();
         Supplier supplierOld = baseMapper.selectOne(new QueryWrapper<Supplier>().eq("name", supplier.getName()));
-        if(Objects.nonNull(supplierOld) && !Objects.equals(supplier.getId(), supplierOld.getId())){
-            return R.fail("供应商列表已存在【" + supplier.getName()  + "】");
+        if (Objects.nonNull(supplierOld) && !Objects.equals(supplier.getId(), supplierOld.getId())) {
+            return R.fail("供应商列表已存在【" + supplier.getName() + "】");
         }
-
+        supplierOld = baseMapper.selectOne(new QueryWrapper<Supplier>().eq("simple_name", supplier.getSimpleName()));
+        if (Objects.nonNull(supplierOld) && !Objects.equals(supplier.getId(), supplierOld.getId())) {
+            return R.fail("供应商代码已存在【" + supplier.getSimpleName() + "】");
+        }
         return R.ok(supplierService.updateById(supplier));
     }
 
