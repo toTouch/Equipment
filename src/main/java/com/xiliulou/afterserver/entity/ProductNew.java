@@ -140,6 +140,10 @@ public class ProductNew {
      * 压测错误原因
      */
     private String testMsg;
+    /**
+     * 柜机编码
+     */
+    private String cabinetSn;
 
     public static final String TYPE_M = "M";
     public static final String TYPE_V = "V";
