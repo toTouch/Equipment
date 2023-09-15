@@ -61,10 +61,27 @@ public class AdminJsonProductNewController {
         return productNewService.putAdminProductNew(query);
     }
 
+   /*
+    * 删除产品
+    */
     @DeleteMapping("/admin/productNew/{id}")
     public R delAdminPointNew(@PathVariable("id") Long id) {
         return productNewService.delAdminProductNew(id);
     }
+
+    /**
+     * 产品列表
+     * @param offset 查询起始位置
+     * @param limit 条数
+     * @param no 产品编号
+     * @param modelId 产品型号
+     * @param pointId 产品位置
+     * @param pointType 产品位置类型
+     * @param startTime 开始时间
+     * @param endTime  结束时间
+     * @param testType 测试类型
+     * @return
+     */
 
     @GetMapping("/admin/productNew/list")
     public R pointList(@RequestParam("offset") Integer offset,
@@ -82,11 +99,13 @@ public class AdminJsonProductNewController {
     }
 
 
+    //查看图片
     @GetMapping("/admin/productNew/{id}")
     public R getProductFile(@PathVariable("id") Long id) {
         return productNewService.getProductFile(id, File.FILE_TYPE_PRODUCT_PRODUCT);
     }
 
+    //更新
     @PutMapping("/admin/productNew/update/status")
     public R updateStatusFromBatch(@RequestParam(value = "ids", required = false) List<Long> ids,
                                    @RequestParam("status") Integer status) {

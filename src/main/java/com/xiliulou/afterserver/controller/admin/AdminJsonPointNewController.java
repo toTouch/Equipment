@@ -781,32 +781,52 @@ public class AdminJsonPointNewController {
         return pointNewService.pointNewMapCityCount(pid);
     }
 
+    /**
+     * 备货管理列表
+     *
+     * @param offset
+     * @param size
+     * @param batchNo 批次
+     * @param sn 资产编码
+     * @param deviceName 物联网deviceName
+     * @param cabinetSn 柜机编码
+     * @param tenantName 运营商
+     * @param startTime
+     * @param endTime
+     * @return
+     */
     @GetMapping("admin/productNew/deliver/list")
     public R productNewDeliverList(@RequestParam("offset") Long offset, @RequestParam("size") Long size,
                                    @RequestParam(value = "batchNo", required = false) String batchNo,
                                    @RequestParam(value = "sn", required = false) String  sn,
+                                   @RequestParam(value = "deviceName", required = false) String  deviceName,
+                                   @RequestParam(value = "cabinetSn", required = false) String  cabinetSn,
                                    @RequestParam(value = "tenantName", required = false) String tenantName,
                                    @RequestParam(value = "startTime", required = false) Long  startTime,
                                    @RequestParam(value = "endTime", required = false) Long  endTime) {
-        return pointNewService.productNewDeliverList(offset,size,batchNo,sn,tenantName,startTime,endTime);
+        return pointNewService.productNewDeliverList(offset,size,batchNo,sn,deviceName,cabinetSn,tenantName,startTime,endTime);
     }
     @GetMapping("admin/productNew/deliver/count")
     public R productNewDeliverCount(@RequestParam(value = "batchNo", required = false) String batchNo,
                                     @RequestParam(value = "sn", required = false) String  sn,
                                     @RequestParam(value = "tenantName", required = false) String tenantName,
+                                    @RequestParam(value = "deviceName", required = false) String  deviceName,
+                                    @RequestParam(value = "cabinetSn", required = false) String  cabinetSn,
                                     @RequestParam(value = "startTime", required = false) Long  startTime,
                                     @RequestParam(value = "endTime", required = false) Long  endTime) {
-        return pointNewService.productNewDeliverCount(batchNo,sn,tenantName,startTime,endTime);
+        return pointNewService.productNewDeliverCount(batchNo,sn,deviceName,cabinetSn,tenantName,startTime,endTime);
     }
 
     @GetMapping("admin/productNew/deliver/exportExcel")
     public void productNewDeliverExportExcel(
                                    @RequestParam(value = "batchNo", required = false) String batchNo,
                                    @RequestParam(value = "sn", required = false) String  sn,
+                                   @RequestParam(value = "deviceName", required = false) String  deviceName,
+                                   @RequestParam(value = "cabinetSn", required = false) String  cabinetSn,
                                    @RequestParam(value = "tenantName", required = false) String tenantName,
                                    @RequestParam(value = "startTime", required = false) Long  startTime,
                                    @RequestParam(value = "endTime", required = false) Long  endTime,
                                              HttpServletResponse response) {
-        pointNewService.productNewDeliverExportExcel(batchNo,sn,tenantName,startTime,endTime,response);
+        pointNewService.productNewDeliverExportExcel(batchNo,sn,deviceName,cabinetSn,tenantName,startTime,endTime,response);
     }
 }

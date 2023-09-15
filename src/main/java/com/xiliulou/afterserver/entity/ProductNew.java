@@ -197,6 +197,7 @@ public class ProductNew {
      */
     private String deviceName;
 
+
     /**
      * 三元组是否已使用 0使用 1 未使用
      */
