@@ -705,9 +705,10 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         pointNewAuditRecordService.insert(pointNewAuditRecord);
     }
 
+    //备货管理
     @Override
-    public R productNewDeliverList(Long offset, Long size, String batchNo, String sn, String tenantName, Long startTime, Long endTime) {
-        List<ProductNewDeliverVo> productNewDeliverVos = pointNewMapper.productNewDeliverList(offset, size, batchNo, sn, tenantName, startTime, endTime);
+    public R productNewDeliverList(Long offset, Long size, String batchNo, String sn, String deviceName, String cabinetSn, String tenantName, Long startTime, Long endTime) {
+        List<ProductNewDeliverVo> productNewDeliverVos = pointNewMapper.productNewDeliverList(offset,size,batchNo,sn,deviceName,cabinetSn,tenantName,startTime,endTime);
         if (CollectionUtils.isEmpty(productNewDeliverVos)) {
             return R.ok(new ArrayList<ProductNewDeliverVo>());
         }
@@ -721,12 +722,12 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     }
 
     @Override
-    public R productNewDeliverCount(String batchNo,String sn,String tenantName,Long startTime,Long endTime) {
-        return R.ok(pointNewMapper.productNewDeliverCount( batchNo, sn, tenantName, startTime, endTime));
+    public R productNewDeliverCount(String batchNo, String sn, String deviceName, String cabinetSn, String tenantName, Long startTime, Long endTime) {
+        return R.ok(pointNewMapper.productNewDeliverCount( batchNo,sn,deviceName,cabinetSn,tenantName,startTime,endTime));
     }
     @Override
-    public R productNewDeliverExportExcel( String batchNo, String sn, String tenantName, Long startTime, Long endTime, HttpServletResponse response) {
-        List<ProductNewDeliverVo> productNewDeliverVos = pointNewMapper.productNewDeliverExport( batchNo, sn, tenantName, startTime, endTime);
+    public R productNewDeliverExportExcel( String batchNo, String sn, String deviceName, String cabinetSn, String tenantName, Long startTime, Long endTime, HttpServletResponse response) {
+        List<ProductNewDeliverVo> productNewDeliverVos = pointNewMapper.productNewDeliverExport( batchNo,sn,deviceName,cabinetSn,tenantName,startTime,endTime);
         if (CollectionUtils.isEmpty(productNewDeliverVos)) {
             return R.ok();
         }
@@ -747,7 +748,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
                     productNewDeliverVos.get(i).setTestEndTime(null);
                 }
             }
-            String[] header = {"批次号", "资产编码", "deviceName", "productKey", "打包时间", "运营商", "发货时间", "创建时间", "更新时间"};
+            String[] header = {"批次号", "资产编码", "deviceName", "柜机编码","productKey", "打包时间", "运营商", "发货时间", "创建时间", "更新时间"};
 
 
 
@@ -764,6 +765,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
                         list.add(item.getBatchNo());
                         list.add(item.getNo());
                         list.add(item.getDeviceName());
+                        list.add(item.getCabinetSn());
                         list.add(item.getProductKey());
                         list.add(Objects.isNull(item.getTestEndTime())?"":DateUtils.stampToTime(item.getTestEndTime().toString()));
                         list.add(item.getTenantName());
