@@ -196,10 +196,7 @@ public class ProductNew {
      * 物联网deviceName
      */
     private String deviceName;
-    /**
-     * 机柜编码cabinetSn
-     */
-    private String cabinetSn;
+
 
     /**
      * 三元组是否已使用 0使用 1 未使用
