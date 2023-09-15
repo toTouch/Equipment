@@ -27,6 +27,10 @@ public class ProductNewDeliverVo {
      */
     private String deviceName;
     /**
+     * 机柜编码cabinetSn
+     */
+    private String cabinetSn;
+    /**
      * 运营商名称
      */
     private String tenantName;

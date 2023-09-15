@@ -58,4 +58,5 @@ public interface ProductService extends IService<Product> {
     R queryProductModelPull(String name);
 
     R productSearch(Long offset, Long size, String name);
+
 }
