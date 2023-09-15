@@ -64,7 +64,7 @@ public class AdminJsonBatchController {
     }
 
     /**
-     * 修改
+     * 修改批次信息
      */
     @PutMapping("/admin/batch")
     public R updateBatch(@RequestBody Batch batch){
@@ -78,8 +78,9 @@ public class AdminJsonBatchController {
 //        }
 
         this.batchService.update(batch);
+        //
 
-        if(Objects.nonNull(batch.getFileId()) 
+        if(Objects.nonNull(batch.getFileId())
                 && StringUtils.isNotBlank(batch.getFileStr())
                 && StringUtils.isNotBlank(batch.getProductFileName())){
             ProductFile productFile = new ProductFile();
@@ -92,7 +93,9 @@ public class AdminJsonBatchController {
     }
 
     /**
-     * 列表
+     * 产品管理_批次列表
+     * @param offset 查询起始位置
+     * @param limit  查询条数
      */
     @GetMapping("/admin/batch/list")
     public R selectOne(@RequestParam(value = "batchNo",required = false) String batchNo,
@@ -104,14 +107,15 @@ public class AdminJsonBatchController {
         List<Batch> batches = this.batchService.queryAllByLimit(batchNo, offset, limit, modelId, supplierId);
         if (Objects.nonNull(batches)){
             batches.forEach(item -> {
+                // 查询附件信息
                 List<ProductFile> productFiles = productFileMapper.selectList(new LambdaQueryWrapper<ProductFile>().eq(ProductFile::getProductId, item.getId()));
                 item.setProductFileList(productFiles);
-
+                // 产品型号
                 Product product = productService.getById(item.getModelId());
                 if(Objects.nonNull(product)){
                     item.setModelName(product.getName());
                 }
-
+                // 工厂名
                 Supplier supplier = supplierService.getById(item.getSupplierId());
                 if(Objects.nonNull(supplier)){
                     item.setSupplierName(supplier.getName());
@@ -119,7 +123,7 @@ public class AdminJsonBatchController {
             });
         }
 
-
+        // 条数
         Long count = this.batchService.count(batchNo, modelId, supplierId);
 
         HashMap<String, Object> stringObjectHashMap = new HashMap<>(2);

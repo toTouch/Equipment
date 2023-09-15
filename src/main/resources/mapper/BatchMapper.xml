@@ -18,7 +18,7 @@
     <!--查询单个-->
     <select id="queryById" resultMap="BatchMap">
         select
-          id, batch_no, remarks, create_time
+          id, batch_no, remarks, create_time,product_num
         from t_batch
         where id = #{id}
     </select>
@@ -91,6 +91,9 @@
         <set>
             <if test="type != null">
                 type = #{type},
+            </if>
+            <if test="productNum != null">
+                product_num = #{productNum},
             </if>
             <if test="remarks != null and remarks != ''">
                 remarks = #{remarks},
