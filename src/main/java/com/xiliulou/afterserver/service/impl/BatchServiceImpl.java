@@ -255,8 +255,7 @@ public class BatchServiceImpl implements BatchService {
          */
         List<String> customDeviceNameList = batch.getCustomDeviceNameList();
         if (CollectionUtils.isNotEmpty(customDeviceNameList)
-            &&Objects.equals(product.getProductSeries(),3)
-            &&Objects.equals(batch.getBatteryReplacementCabinetType(),1)) {
+            &&Objects.equals(product.getProductSeries(),3)) {
             List<String> customDeviceNameDisList  = customDeviceNameList.stream().distinct().collect(Collectors.toList());
             if (customDeviceNameList.size()!=customDeviceNameDisList.size()) {
                 throw new CustomBusinessException("deviceName有重复");
