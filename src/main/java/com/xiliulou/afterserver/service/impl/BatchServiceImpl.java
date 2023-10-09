@@ -19,6 +19,9 @@ import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.vo.OrderBatchVo;
 import com.xiliulou.iot.service.RegisterDeviceService;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,6 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service("batchService")
 @Slf4j
 public class BatchServiceImpl implements BatchService {
+    static final String REGEX = "[^a-zA-Z0-9]";
     @Resource
     private BatchMapper batchMapper;
     @Autowired
@@ -253,16 +257,20 @@ public class BatchServiceImpl implements BatchService {
         if (CollectionUtils.isNotEmpty(customDeviceNameList)
             &&Objects.equals(product.getProductSeries(),3)
             &&Objects.equals(batch.getBatteryReplacementCabinetType(),1)) {
-            customDeviceNameList = customDeviceNameList.stream().distinct().collect(
-                Collectors.toList());
-            if (customDeviceNameList.size()!=productNew.getProductCount()) {
+            List<String> customDeviceNameDisList  = customDeviceNameList.stream().distinct().collect(Collectors.toList());
+            if (customDeviceNameList.size()!=customDeviceNameDisList.size()) {
+                throw new CustomBusinessException("deviceName有重复");
+            }
+            if (customDeviceNameList.size()!=batch.getProductNum()) {
                 throw new CustomBusinessException("deviceName数量与产品数量不匹配");
-                //return R.fail("deviceName数量与产品数量不匹配");
             }
 
             for (String deviceName : customDeviceNameList) {
                 if (deviceName.length()<5||deviceName.length()>12) {
                     throw new CustomBusinessException("deviceName长度必须在5-12位间");
+                }
+                if (isContainNonAlphanumeric(deviceName)) {
+                    throw new CustomBusinessException("deviceName不支持特殊符号");
                 }
             }
             // 同批次同型号下deviceName是否存在
@@ -349,6 +357,11 @@ public class BatchServiceImpl implements BatchService {
             }
         }
         return R.ok();
+    }
+    public static boolean isContainNonAlphanumeric(String input) {
+        Pattern pattern = Pattern.compile(REGEX);
+        Matcher matcher = pattern.matcher(input);
+        return matcher.find();
     }
 
     @Override
