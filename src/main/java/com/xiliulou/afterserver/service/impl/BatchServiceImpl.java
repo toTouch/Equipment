@@ -261,7 +261,7 @@ public class BatchServiceImpl implements BatchService {
             }
 
             for (String deviceName : customDeviceNameList) {
-                if (deviceName.length()<=5||deviceName.length()>=12) {
+                if (deviceName.length()<5||deviceName.length()>12) {
                     throw new CustomBusinessException("deviceName长度必须在5-12位间");
                 }
             }
@@ -307,11 +307,10 @@ public class BatchServiceImpl implements BatchService {
                 deviceApplyCounterMapper.insertOrUpdate(deviceApplyCounter);
                 String deviceName = "";
                 //api换电柜 getBatteryReplacementCabinetType 0:SaaS换电柜 1:api换电柜
-                if(Objects.equals(batch.getBatteryReplacementCabinetType(),0)){
-                    deviceName = deviceApplyCounter.getType() + deviceApplyCounter.getDate() + String.format("%05d", deviceApplyCounter.getCount());;
-                }
-                if(Objects.equals(batch.getBatteryReplacementCabinetType(),1)){
+                if(CollectionUtils.isNotEmpty(customDeviceNameList)&&customDeviceNameList.size()>0){
                     deviceName =customDeviceNameList.get(i);
+                }else{
+                    deviceName = deviceApplyCounter.getType() + deviceApplyCounter.getDate() + String.format("%05d", deviceApplyCounter.getCount());;
                 }
                 productNew.setDeviceName(deviceName);
                 productNew.setProductKey(key);
@@ -351,6 +350,7 @@ public class BatchServiceImpl implements BatchService {
         }
         return R.ok();
     }
+
     @Override
     public Batch getByNameAndModeId(String batchNo, Long modelId) {
         if(StringUtils.isBlank(batchNo)&&Objects.isNull(modelId)){
