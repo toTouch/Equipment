@@ -275,12 +275,12 @@ public class BatchServiceImpl implements BatchService {
             // 同批次同型号下deviceName是否存在
             List<ProductNew> customDeviceName = productNewMapper.selectList(
                 new LambdaQueryWrapper<ProductNew>()
-                    .eq(ProductNew::getBatchId, batch.getId()).eq(ProductNew::getNo, batch.getBatchNo())
-                    .in(ProductNew::getDeviceName, customDeviceNameList));
+//                    .eq(ProductNew::getBatchId, batch.getId()).eq(ProductNew::getNo, batch.getBatchNo())
+                    .in(Objects.nonNull(customDeviceNameDisList),ProductNew::getDeviceName, customDeviceNameDisList));
 
             if (CollectionUtils.isNotEmpty(customDeviceName)) {
                 //收集已存在的产品集的deviceName字段
-                String deviceNamecollect = customDeviceName.stream().map(ProductNew::getDeviceName)
+                String deviceNamecollect = customDeviceName.stream().map(ProductNew::getDeviceName).distinct().limit(10)
                     .collect(Collectors.joining("、"));
                 throw new CustomBusinessException("deviceName已存在"+deviceNamecollect);
             }
