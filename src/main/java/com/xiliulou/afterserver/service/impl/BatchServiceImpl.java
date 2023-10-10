@@ -269,13 +269,13 @@ public class BatchServiceImpl implements BatchService {
                     throw new CustomBusinessException("deviceName长度必须在5-12位间");
                 }
                 if (isContainNonAlphanumeric(deviceName)) {
-                    throw new CustomBusinessException("deviceName不支持特殊符号");
+                    throw new CustomBusinessException("deviceName仅支持字母和数字");
                 }
             }
-            // 同批次同型号下deviceName是否存在
+            // 同批次同型号下未删除(0)deviceName是已否存在
             List<ProductNew> customDeviceName = productNewMapper.selectList(
                 new LambdaQueryWrapper<ProductNew>()
-//                    .eq(ProductNew::getBatchId, batch.getId()).eq(ProductNew::getNo, batch.getBatchNo())
+                    .eq(ProductNew::getDelFlag,0)
                     .in(Objects.nonNull(customDeviceNameDisList),ProductNew::getDeviceName, customDeviceNameDisList));
 
             if (CollectionUtils.isNotEmpty(customDeviceName)) {
