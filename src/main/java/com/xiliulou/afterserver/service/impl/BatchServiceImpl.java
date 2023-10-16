@@ -19,6 +19,10 @@ import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.vo.OrderBatchVo;
 import com.xiliulou.iot.service.RegisterDeviceService;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service("batchService")
 @Slf4j
 public class BatchServiceImpl implements BatchService {
+    static final String REGEX = "[^a-zA-Z0-9]";
     @Resource
     private BatchMapper batchMapper;
     @Autowired
@@ -148,11 +153,6 @@ public class BatchServiceImpl implements BatchService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public R saveBatch(Batch batch) {
-        //原有逻辑
-        //List<Batch> batchOlds = queryByName(batch.getBatchNo());
-        //if(CollectionUtils.isNotEmpty(batchOlds)){
-        //    return R.fail("批次号已存在");
-        //}
         Product product = productService.getBaseMapper().selectById(batch.getModelId());
         if (Objects.isNull(product)) {
             return R.fail("产品型号有误，请检查");
@@ -213,7 +213,7 @@ public class BatchServiceImpl implements BatchService {
         DeviceApplyCounter deviceApplyCounter=new DeviceApplyCounter();
         //有屏无屏
         String screen="";
-        if(Objects.isNull(product.getHasScreen())||Objects.equals(product.HAS_SCREEN,product.getHasScreen())){
+        if(Objects.isNull(product.getHasScreen())||Objects.equals(Product.HAS_SCREEN,product.getHasScreen())){
             deviceApplyCounter.setType("H");
             screen="S";
         }else{
@@ -249,13 +249,52 @@ public class BatchServiceImpl implements BatchService {
         cabinet.setDate(dateString);
         String cabinetSn=COMPANY_NAME+String.format("%02d", boxNumber)+screen+fireFightStr+dateString+co;
         Set<String> deviceNames=new HashSet<String>();
+
+        /* 去重并校验deviceNames
+         * getProductSeries 3:换电柜  getBatteryReplacementCabinetType 0:SaaS换电柜 1:api换电柜
+         */
+        List<String> customDeviceNameList = batch.getCustomDeviceNameList();
+        if (CollectionUtils.isNotEmpty(customDeviceNameList)
+            &&Objects.equals(product.getProductSeries(),3)) {
+            List<String> customDeviceNameDisList  = customDeviceNameList.stream().distinct().collect(Collectors.toList());
+            if (customDeviceNameList.size()!=customDeviceNameDisList.size()) {
+                throw new CustomBusinessException("deviceName有重复");
+            }
+            if (customDeviceNameList.size()!=batch.getProductNum()) {
+                throw new CustomBusinessException("deviceName数量与产品数量不匹配");
+            }
+
+            for (String deviceName : customDeviceNameList) {
+                if (deviceName.length()<5||deviceName.length()>12) {
+                    throw new CustomBusinessException("deviceName长度必须在5-12位间");
+                }
+                if (isContainNonAlphanumeric(deviceName)) {
+                    throw new CustomBusinessException("deviceName仅支持字母和数字");
+                }
+            }
+            // 同批次同型号下未删除(0)deviceName是已否存在
+            List<ProductNew> customDeviceName = productNewMapper.selectList(
+                new LambdaQueryWrapper<ProductNew>()
+                    .eq(ProductNew::getDelFlag,0)
+                    .in(Objects.nonNull(customDeviceNameDisList),ProductNew::getDeviceName, customDeviceNameDisList));
+
+            if (CollectionUtils.isNotEmpty(customDeviceName)) {
+                //收集已存在的产品集的deviceName字段
+                String deviceNamecollect = customDeviceName.stream().map(ProductNew::getDeviceName).distinct().limit(10)
+                    .collect(Collectors.joining("、"));
+                throw new CustomBusinessException("deviceName已存在"+deviceNamecollect);
+            }
+        }
+
+        //产品创建 getBatteryReplacementCabinetType 0:SaaS换电柜 1:api换电柜
+        String key = batch.getBatteryReplacementCabinetType()==0?productConfig.getKey():productConfig.getApiKey();
         for (int i = 0; i < productNew.getProductCount(); i++) {
             serialNum++;
             String serialNumStr = String.format("%04d", serialNum);
             StringBuilder sb = new StringBuilder();
             sb.append(product.getCode()).append("-");
             sb.append(supplier.getCode()).append(batch.getBatchNo())
-                    .append(serialNumStr);
+                .append(serialNumStr);
             if(Objects.nonNull(productNew.getType())){
                 sb.append(productNew.getType());
             }
@@ -264,6 +303,7 @@ public class BatchServiceImpl implements BatchService {
             productNew.setCreateTime(System.currentTimeMillis());
             productNew.setUpdateTime(System.currentTimeMillis());
             productNew.setDelFlag(ProductNew.DEL_NORMAL);
+            //换电柜逻辑
             if(Objects.equals(product.getProductSeries(),3)){
                 DeviceApplyCounter counter = deviceApplyCounterMapper.queryByDateAndType(deviceApplyCounter);
                 if(Objects.isNull(counter)){
@@ -272,9 +312,15 @@ public class BatchServiceImpl implements BatchService {
                     deviceApplyCounter.setCount(counter.getCount()+1);
                 }
                 deviceApplyCounterMapper.insertOrUpdate(deviceApplyCounter);
-                String deviceName = deviceApplyCounter.getType() + deviceApplyCounter.getDate() + String.format("%05d", deviceApplyCounter.getCount());
+                String deviceName = "";
+                //api换电柜 getBatteryReplacementCabinetType 0:SaaS换电柜 1:api换电柜
+                if(CollectionUtils.isNotEmpty(customDeviceNameList)&&customDeviceNameList.size()>0){
+                    deviceName =customDeviceNameList.get(i);
+                }else{
+                    deviceName = deviceApplyCounter.getType() + deviceApplyCounter.getDate() + String.format("%05d", deviceApplyCounter.getCount());;
+                }
                 productNew.setDeviceName(deviceName);
-                productNew.setProductKey(productConfig.getKey());
+                productNew.setProductKey(key);
                 productNew.setIsUse(ProductNew.NOT_USE);
                 //查询出厂序号
                 DeviceApplyCounter snCounter = deviceApplyCounterMapper.queryByDateAndType(cabinet);
@@ -296,10 +342,12 @@ public class BatchServiceImpl implements BatchService {
         }
         //如果是换电柜，则自动维护三元组
         if(Objects.equals(product.getProductSeries(),3)&&deviceNames.size()>0){
-            Long applyId = registerDeviceService.batchCheckDeviceNames(productConfig.getKey(), deviceNames);
+            // 批量检查自定义设备名称的合法性
+            Long applyId =registerDeviceService.batchCheckDeviceNames(key, deviceNames);
             log.info("batch check finished:deviceNames={} applyId={} ", deviceNames,applyId);
             if (Objects.nonNull(applyId)){
-                boolean b = registerDeviceService.batchRegisterDeviceWithApplyId(productConfig.getKey(), applyId);
+                // 批量注册设备
+                boolean b = registerDeviceService.batchRegisterDeviceWithApplyId(key, applyId);
                 log.info("batch register finished:result={} applyId={} ", b,applyId);
                 //注册失败则提示
                 if (!b){
@@ -309,7 +357,13 @@ public class BatchServiceImpl implements BatchService {
         }
         return R.ok();
     }
+    public static boolean isContainNonAlphanumeric(String input) {
+        Pattern pattern = Pattern.compile(REGEX);
+        Matcher matcher = pattern.matcher(input);
+        return matcher.find();
+    }
 
+    @Override
     public Batch getByNameAndModeId(String batchNo, Long modelId) {
         if(StringUtils.isBlank(batchNo)&&Objects.isNull(modelId)){
             return null;
