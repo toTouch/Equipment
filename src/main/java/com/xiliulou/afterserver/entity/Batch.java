@@ -80,4 +80,11 @@ public class Batch {
     private String modelName;
     @TableField(exist = false)
     private String supplierName;
+
+    //换电柜类型(0:SaaS换电柜,1:api换电柜)
+    @TableField(exist = false)
+    private Integer batteryReplacementCabinetType;
+    //自定义设备名称
+    @TableField(exist = false)
+    private List<String> customDeviceNameList;
 }
