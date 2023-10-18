@@ -43,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service("batchService")
 @Slf4j
 public class BatchServiceImpl implements BatchService {
-    static final String REGEX = "[^a-zA-Z0-9]";
+    static final Pattern ALPHANUMERIC  = Pattern.compile("[^a-zA-Z0-9]");
     @Resource
     private BatchMapper batchMapper;
     @Autowired
@@ -358,8 +358,7 @@ public class BatchServiceImpl implements BatchService {
         return R.ok();
     }
     public static boolean isContainNonAlphanumeric(String input) {
-        Pattern pattern = Pattern.compile(REGEX);
-        Matcher matcher = pattern.matcher(input);
+        Matcher matcher = ALPHANUMERIC.matcher(input);
         return matcher.find();
     }
 
