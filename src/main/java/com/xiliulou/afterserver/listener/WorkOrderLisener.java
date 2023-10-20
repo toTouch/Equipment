@@ -167,7 +167,7 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
             long maxDaySumNo = workOrderService.queryMaxDaySumNoByType(startTime, endTime, workOrderType.getId());
             maxDaySumNo++;
             workOrder.setDaySumNo(maxDaySumNo);
-            workOrder.setOrderNo(workOrderService.generateWorkOrderNo(workOrderType, String.format("%05d", maxDaySumNo)));
+            workOrder.setOrderNo(workOrderService.generateWorkOrderNo(workOrderType));
             workOrder.setCreaterId(SecurityUtils.getUid());
 
             if(StringUtils.isNotBlank(item.getCommissioner())) {

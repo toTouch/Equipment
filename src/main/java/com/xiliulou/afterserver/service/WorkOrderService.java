@@ -50,7 +50,7 @@ public interface WorkOrderService extends IService<WorkOrder> {
 
     R saveWorkerOrder(WorkOrderQuery workOrder);
 
-    String generateWorkOrderNo(WorkOrderType type, String no);
+    String generateWorkOrderNo(WorkOrderType type);
 
     Long queryMaxDaySumNoByType(Long startTime, Long endTime, Long id);
 
