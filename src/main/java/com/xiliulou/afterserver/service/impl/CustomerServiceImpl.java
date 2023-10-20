@@ -37,8 +37,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
     @Override
     public IPage getCustomerPage(Long offset, Long size, Customer customer) {
+        
         Page page = PageUtil.getPage(offset, size);
-
         LambdaQueryWrapper<Customer> wrapper = new LambdaQueryWrapper<>();
         wrapper.like(Objects.nonNull(customer.getName()),Customer::getName,customer.getName())
                 .like(Objects.nonNull(customer.getPhone()),Customer::getPhone,customer.getPhone())
