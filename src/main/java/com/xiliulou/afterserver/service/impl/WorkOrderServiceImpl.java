@@ -27,6 +27,8 @@ import com.xiliulou.afterserver.entity.mq.notify.MqNotifyCommon;
 import com.xiliulou.afterserver.entity.mq.notify.MqWorkOrderAuditNotify;
 import com.xiliulou.afterserver.entity.mq.notify.MqWorkOrderServerNotify;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
+import com.xiliulou.afterserver.mapper.DeviceApplyCounterMapper;
+import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.mapper.ProductSerialNumberMapper;
 import com.xiliulou.afterserver.mapper.WorkOrderMapper;
 import com.xiliulou.afterserver.service.*;
@@ -120,7 +122,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     private WorkOrderPartsService workOrderPartsService;
     @Autowired
     private PartsService partsService;
-
+    @Autowired
+    private DeviceApplyCounterMapper deviceApplyCounterMapper;
 
 
     @Override
@@ -2337,11 +2340,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         WorkOrderType workOrderType = workOrderTypeService.getById(workOrder.getType());
         long startTime = DateUtil.beginOfDay(DateUtil.date()).toInstant().toEpochMilli();
         long endTime = System.currentTimeMillis();
-        long maxDaySumNo = queryMaxDaySumNoByType(startTime, endTime, workOrderType.getId());
-        maxDaySumNo++;
-        workOrder.setDaySumNo(maxDaySumNo);
-        workOrder
-            .setOrderNo(generateWorkOrderNo(workOrderType, String.format("%05d", maxDaySumNo)));
+        
+        //生成工单编号
+        workOrder.setOrderNo(generateWorkOrderNo(workOrderType));
 
         if (Objects.nonNull(workOrder.getProductInfoList())) {
             Iterator<ProductInfoQuery> iterator = workOrder.getProductInfoList().iterator();
@@ -2437,14 +2438,26 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
 
     @Override
-    public String generateWorkOrderNo(WorkOrderType type, String no) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-
+    public String generateWorkOrderNo(WorkOrderType type) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        String dateString = formatter.format(new Date());
+        DeviceApplyCounter workOrderCounter=new DeviceApplyCounter();
+        String workOrderTyperStr = Objects.isNull(type) ? "UNKNOWN" : type.getNo();
+        workOrderCounter.setType(workOrderTyperStr);
+        workOrderCounter.setDate(dateString);
+        DeviceApplyCounter snCounter = deviceApplyCounterMapper.queryByDateAndType(workOrderCounter);
+        if(Objects.isNull(snCounter)){
+            workOrderCounter.setCount(1L);
+        }else{
+            workOrderCounter.setCount(snCounter.getCount()+1);
+        }
+        deviceApplyCounterMapper.insertOrUpdate(workOrderCounter);
+        
         StringBuilder sb = new StringBuilder();
-        sb.append(Objects.isNull(type) ? "UNKNOWN" : type.getNo()).append("-");
-        sb.append(sdf.format(new Date())).append("-");
-        sb.append(no);
-
+        sb.append(workOrderTyperStr).append("-");
+        sb.append(dateString).append("-");
+        sb.append(String.format("%05d",workOrderCounter.getCount()));
+        
         return sb.toString();
     }
 
