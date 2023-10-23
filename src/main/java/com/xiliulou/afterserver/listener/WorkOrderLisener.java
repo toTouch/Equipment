@@ -370,6 +370,9 @@ public class WorkOrderLisener extends AnalysisEventListener<WorkOrderInfo> {
         if("7".equals(type) || "派送安装".equals(type)){
             return 7;
         }
+        if("8".equals(type) || "物流".equals(type)){
+            return 7;
+        }
         return null;
     }
 
