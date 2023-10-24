@@ -1,7 +1,6 @@
 package com.xiliulou.afterserver.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.xiliulou.afterserver.entity.Customer;
 import com.xiliulou.afterserver.entity.FactoryTestConf;
 
 import java.util.List;
@@ -12,10 +11,13 @@ import java.util.List;
  * @Description:
  **/
 public interface FactoryTestConfMapper extends BaseMapper<FactoryTestConf> {
-
+    
     /**
      * 查询所有
+     *
      * @return
      */
     List<FactoryTestConf> queryAll(FactoryTestConf condition);
+    
+    int updateOneShelf(FactoryTestConf updater);
 }
