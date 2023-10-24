@@ -7,14 +7,22 @@
         <result column="conf_name" property="confName" jdbcType="VARCHAR"></result>
         <result column="json_content" property="jsonContent" jdbcType="LONGVARCHAR"></result>
         <result column="del_flag" property="delFlag" jdbcType="INTEGER"></result>
+        <result column="shelf_status" property="shelfStatus" jdbcType="INTEGER"></result>
         <result column="update_time" property="updateTime" jdbcType="BIGINT"></result>
         <result column="create_time" property="createTime" jdbcType="BIGINT"></result>
     </resultMap>
+    <update id="updateOneShelf">
+        update t_factory_test_conf
+        set shelf_status = #{shelfStatus}
+        where del_flag = 0
+          and id = #{id}
+    </update>
+    <!-- shelf_status  0上架 1下架  -->
     <select id="queryAll" resultMap="factoryTestConfMap">
         select id,conf_name,json_content,del_flag,update_time,create_time
         from t_factory_test_conf
         <where>
-            del_flag = 0
+            del_flag = 0 and shelf_status=0
             <if test="id != null">
                 and id = #{id}
             </if>
