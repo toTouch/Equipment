@@ -8,20 +8,19 @@ spring:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
       username: root
-      password: root #y%d*IWrh1KKfQD!E
-      url: jdbc:mysql://127.0.0.1:3308/xiliulou_crm?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&allowMultiQueries=true
-  #      url: jdbc:mysql://172.26.20.230:3306/xiliulou_crm?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&allowMultiQueries=true
+      password: y%d*IWrh1KKfQD!E
+      url: jdbc:mysql://xiliulou-mysql:3306/xiliulou_crm?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&allowMultiQueries=true
   redis:
     lettuce:
       pool:
         max-active: 1
         max-idle: 1
         min-idle: 1
-    host:  ${REDIS-HOST:127.0.0.1}
+    host:  ${REDIS-HOST:xiliulou-redis}
     database: 7
 
   klock:
-    address: ${REDIS-HOST:127.0.0.1}:6379
+    address: ${REDIS-HOST:xiliulou-redis}:6379
     wait-time: 20
     lease-time: 20
     database: 15

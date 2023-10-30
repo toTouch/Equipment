@@ -6,6 +6,7 @@ import com.xiliulou.afterserver.entity.WorkOrderReason;
 import com.xiliulou.afterserver.entity.WorkOrderType;
 import com.xiliulou.afterserver.mapper.WorkOrderReasonMapper;
 import com.xiliulou.afterserver.service.WorkOrderReasonService;
+import com.xiliulou.afterserver.service.WorkOrderTypeService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.cache.redis.RedisService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 public class WorkOrderReasonServiceImpl extends ServiceImpl<WorkOrderReasonMapper, WorkOrderReason> implements WorkOrderReasonService {
     @Autowired
     private RedisService redisService;
+ 
 
     @Override
     public Integer deleteById(Long id) {
@@ -56,7 +58,8 @@ public class WorkOrderReasonServiceImpl extends ServiceImpl<WorkOrderReasonMappe
         
         WorkOrderReason workOrderReason = this.getById(workOrderReasonId);
         if (Objects.isNull(workOrderReason)) {
-            return null;
+             workOrderReason = this.getById(workOrderReasonId);
+            return workOrderReason;
         }
         
         redisService.saveWithHash(WorkOrderConstant.WORK_ORDER_REASON, workOrderReason);
