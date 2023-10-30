@@ -5,7 +5,6 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.EasyExcelFactory;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.enums.CellDataTypeEnum;
-import com.alibaba.excel.exception.ExcelAnalysisException;
 import com.alibaba.excel.exception.ExcelDataConvertException;
 import com.alibaba.excel.metadata.CellData;
 import com.alibaba.excel.metadata.Sheet;
@@ -13,7 +12,6 @@ import com.alibaba.excel.metadata.Table;
 import com.alibaba.excel.read.metadata.ReadSheet;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.export.PointInfo;
@@ -27,16 +25,13 @@ import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.R;
 
 import com.xiliulou.afterserver.util.SecurityUtils;
-import com.xiliulou.afterserver.vo.PointExcelVo;
 import com.xiliulou.afterserver.web.query.CameraInfoQuery;
 import com.xiliulou.afterserver.web.query.PointAuditStatusQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
 import com.xiliulou.afterserver.web.query.ProductInfoQuery;
 import com.xiliulou.core.json.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -49,7 +44,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author Hardy
@@ -279,6 +273,7 @@ public class AdminJsonPointNewController {
         return pointNewService.putAdminPointNewCreateUser(id, createUid);
     }
 
+    // 导出点位
     @GetMapping("/admin/pointNew/exportExcel")
     public void pointExportExcel(@RequestParam(value = "name", required = false) String name,
         @RequestParam(value = "cid", required = false) Integer cid,
@@ -360,7 +355,31 @@ public class AdminJsonPointNewController {
                 headList.add(headTitle3);
             }
         }
-
+        
+        int productMax=0;
+        // 点位绑定的产品信息
+        for (PointNew pointNew : pointNews) {
+            if (Objects.nonNull(pointNew.getProductInfo()) && pointNew.getProductInfo()
+                    .matches("\\[.*\\]")) {
+                List<ProductInfoQuery> productInfo = JSON.parseArray(pointNew.getProductInfo(), ProductInfoQuery.class);
+                
+                if (!CollectionUtils.isEmpty(productInfo)) {
+                    productMax = Math.max(productMax, productInfo.size());
+                }
+            }
+        }
+        if (productMax!=0) {
+            for (int i = 0; i < productMax; i++) {
+                List<String> headTitle1 = new ArrayList<>();
+                headTitle1.add("产品名称" + (1 + i));
+                List<String> headTitle2 = new ArrayList<>();
+                headTitle2.add("产品数量" + (1 + i));
+                
+                headList.add(headTitle1);
+                headList.add(headTitle2);
+            }
+        }
+        
         List<String> modeTitle = new ArrayList<>();
         modeTitle.add("产品型号");
         headList.add(modeTitle);
@@ -376,7 +395,8 @@ public class AdminJsonPointNewController {
         table.setHead(headList);
 
         ArrayList<List<Object>> pointExcelVos = new ArrayList<>();
-
+        
+        final int finalProductMax = productMax;
         pointNews.parallelStream().forEachOrdered(item -> {
             try {
                 //for(PointNew item : pointNews) {
@@ -676,7 +696,10 @@ public class AdminJsonPointNewController {
                         list.add("");
                     }
                 }
-
+                
+                //产品信息
+                productInformation(finalProductMax, item, list);
+                
                 if (CollectionUtils.isEmpty(pointProductBinds)) {
                     pointExcelVos.add(list);
                 } else {
@@ -731,7 +754,53 @@ public class AdminJsonPointNewController {
         }
 
     }
-
+    
+    private static void productInformation(Integer finalMax, PointNew item, List<Object> list) {
+        
+        
+        if (Objects.nonNull(item.getProductInfo())) {
+            List<CameraInfoQuery> cameraInfoQuery = JSON
+                    .parseArray(item.getCameraInfo(), CameraInfoQuery.class);
+            ;
+            if (!CollectionUtils.isEmpty(cameraInfoQuery)) {
+                int len = 0;
+                for (CameraInfoQuery cameraInfo : cameraInfoQuery) {
+                    //摄像头运营商
+                    list.add(cameraInfo.getCameraSupplier() == null ? ""
+                            : cameraInfo.getCameraSupplier());
+                    //摄像头序列号
+                    list.add(
+                            cameraInfo.getCameraSn() == null ? "" : cameraInfo.getCameraSn());
+                    //摄像头卡号
+                    list.add(cameraInfo.getCameraNumber() == null ? ""
+                            : cameraInfo.getCameraNumber());
+                    
+                    len++;
+                }
+                //填补
+                int finalMaxTemp = finalMax;
+                finalMaxTemp -= len;
+                for (int i = 0; i < finalMaxTemp; i++) {
+                    list.add("");
+                    list.add("");
+                    list.add("");
+                }
+            } else {
+                for (int i = 0; i < finalMax; i++) {
+                    list.add("");
+                    list.add("");
+                    list.add("");
+                }
+            }
+        } else {
+            for (int i = 0; i < finalMax; i++) {
+                list.add("");
+                list.add("");
+                list.add("");
+            }
+        }
+    }
+    
     @GetMapping("/admin/pointNew/info/{pid}")
     public R printInfo(@PathVariable("pid") Long pid) {
         return pointNewService.pointInfo(pid);

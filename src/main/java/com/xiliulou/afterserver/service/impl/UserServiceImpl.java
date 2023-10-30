@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.config.RolePermissionConfig;
+import com.xiliulou.afterserver.constant.WorkOrderConstant;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.UserMapper;
 import com.xiliulou.afterserver.service.*;
@@ -19,6 +20,7 @@ import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.util.password.PasswordUtils;
+import com.xiliulou.cache.redis.RedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +44,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     RolePermissionConfig rolePermissionConfig;
     @Autowired
     UserRoleService userRoleService;
+    @Autowired
+    RedisService redisService;
     @Autowired
     SupplierService supplierService;
     @Autowired
@@ -179,5 +183,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         this.updateById(user);
 
         return R.ok();
+    }
+ 
+    @Override
+    public User queryByIdFromCache(Long id) {
+        User serviceWithHash = redisService.getWithHash(WorkOrderConstant.USER + id, User.class);
+        if (Objects.nonNull(serviceWithHash)) {
+            return serviceWithHash;
+        }
+        
+        User user = this.getById(id);
+        if (Objects.isNull(user)) {
+            return null;
+        }
+        
+        redisService.saveWithHash(WorkOrderConstant.WORK_ORDER_TYPE, user);
+        return user;
     }
 }

@@ -9,12 +9,14 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.xiliulou.afterserver.constant.MqConstant;
+import com.xiliulou.afterserver.constant.WorkOrderConstant;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.entity.mq.notify.MqNotifyCommon;
 import com.xiliulou.afterserver.entity.mq.notify.MqPointNewAuditNotify;
@@ -30,6 +32,7 @@ import com.xiliulou.afterserver.web.vo.FileVo;
 import com.xiliulou.afterserver.web.vo.PointNewMapStatisticsVo;
 import com.xiliulou.afterserver.web.vo.PointNewPullVo;
 import com.xiliulou.afterserver.web.vo.ProductNewDeliverVo;
+import com.xiliulou.cache.redis.RedisService;
 import com.xiliulou.core.json.JsonUtil;
 import com.xiliulou.mq.service.RocketMqService;
 import com.xiliulou.storage.config.StorageConfig;
@@ -87,6 +90,8 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     @Autowired
     private UserService userService;
     @Autowired
+    private RedisService redisService;
+    @Autowired
     private StorageConfig storageConfig;
     @Autowired
     private AliyunOssService aliyunOssService;
@@ -96,8 +101,8 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     private RocketMqService rocketMqService;
     @Autowired
     private MaintenanceUserNotifyConfigService maintenanceUserNotifyConfigService;
-
-
+    
+    
     /**
      * 通过ID查询单条数据从DB
      *
@@ -117,7 +122,18 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
      */
     @Override
     public PointNew queryByIdFromCache(Long id) {
-        return null;
+        PointNew serviceWithHash = redisService.getWithHash(WorkOrderConstant.WORK_ORDER_TYPE + id, PointNew.class);
+        if (Objects.nonNull(serviceWithHash)) {
+            return serviceWithHash;
+        }
+        
+        PointNew pointNew= this.getById(id);
+        if (Objects.isNull(pointNew)) {
+            return null;
+        }
+        
+        redisService.saveWithHash(WorkOrderConstant.WORK_ORDER_TYPE, pointNew);
+        return pointNew;
     }
 
 
@@ -408,7 +424,8 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
 
     @Override
     public List<PointNew> queryAllByLimitExcel(String name, Integer cid, Integer status, Long customerId, Long startTime, Long endTime, Long createUid,String snNo,Integer productSeries, Integer auditStatus) {
-        return this.pointNewMapper.queryAllByLimitExcel(name,cid,status,customerId,startTime,endTime,createUid,snNo,productSeries,auditStatus);
+        List<PointNew> pointNews = this.pointNewMapper.queryAllByLimitExcel(name, cid, status, customerId, startTime, endTime, createUid, snNo, productSeries, auditStatus);
+        return pointNews;
     }
 
     @Override

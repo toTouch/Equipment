@@ -19,4 +19,6 @@ public interface UserService extends IService<User> {
     R typePull(String username, Integer type);
 
     R updateUser(User user);
+    
+    User queryByIdFromCache(Long id);
 }

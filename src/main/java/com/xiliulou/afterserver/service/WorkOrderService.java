@@ -2,6 +2,7 @@ package com.xiliulou.afterserver.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.xiliulou.afterserver.entity.Product;
 import com.xiliulou.afterserver.entity.WorkOrder;
 import com.xiliulou.afterserver.entity.WorkOrderParts;
 import com.xiliulou.afterserver.entity.WorkOrderType;
@@ -27,7 +28,15 @@ public interface WorkOrderService extends IService<WorkOrder> {
     R saveWorkOrder(SaveWorkOrderQuery saveWorkOrderQuery);
 
     void exportExcel(WorkOrderQuery workOrder, HttpServletResponse response);
-
+    
+    /**
+     * 工单列表通过查缓存进行数据填充
+     * @param workOrder
+     * @param workOrderVoList
+     * @return
+     */
+    List<WorkOrderVo> workOrderVoDataSupplementation(List<Product> productAll, WorkOrderQuery workOrder, List<WorkOrderVo> workOrderVoList);
+    
     R insertWorkOrder(WorkOrderQuery workOrder);
 //
 //    R reconciliationSummary(WorkOrderQuery workOrder);
