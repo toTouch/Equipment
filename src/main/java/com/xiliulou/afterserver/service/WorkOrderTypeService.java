@@ -10,5 +10,6 @@ import com.xiliulou.afterserver.entity.WorkOrderType;
  * @create: 2021-01-29 10:42
  **/
 public interface WorkOrderTypeService extends IService<WorkOrderType> {
-
+    
+    WorkOrderType queryByIdFromCache(Integer id);
 }
