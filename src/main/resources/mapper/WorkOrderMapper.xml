@@ -217,7 +217,7 @@
         wo.commissioner_id as wo_commissioner_id,
         wo.day_sum_no as wo_day_sum_no,
         (SELECT name FROM t_point_new WHERE id = wo_transfer_source_point_id) as wo_transfer_source_point_name,
-        (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name,
+        (SELECT name FROM t_point_new WHERE id = wo_transfer_destination_point_id) as wo_transfer_destination_point_name
 #         wot.type as wot_type,
 #         wor.name as wor_name,
 #         u.user_name as u_user_name,

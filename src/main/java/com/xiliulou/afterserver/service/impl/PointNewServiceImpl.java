@@ -129,7 +129,8 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         
         PointNew pointNew= this.getById(id);
         if (Objects.isNull(pointNew)) {
-            return null;
+            pointNew=this.getById(id);
+            return pointNew;
         }
         
         redisService.saveWithHash(WorkOrderConstant.WORK_ORDER_TYPE, pointNew);
