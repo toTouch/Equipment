@@ -1,6 +1,5 @@
 package com.xiliulou.afterserver.service.impl;
 
-import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
@@ -374,6 +373,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
         
         List<Product> productAll = productService.list();
+        
         // 工单列表数据补充
         workOrderVoList = workOrderVoDataSupplementation(productAll, workOrder, workOrderVoList);
         
@@ -391,8 +391,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     /**
      * 工单列表通过查缓存进行数据填充
      *
-     * @param workOrder
-     * @param workOrderVoList
+     * @param productAll      产品型号
+     * @param workOrder       请求参数
+     * @param workOrderVoList 要返回的vo对象
      * @return
      */
     @Override
@@ -462,8 +463,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         
         String[] serverHeader = {"服务商", "工单费用", "结算方式", "解决方案", "解决时间", "处理时长", "文件个数", "是否更换配件", "是否需要第三方承担费用", " 第三方类型",
                 "第三方公司", "应收第三方人工费", "应收第三方运费", "应收第三方物料费", "支付状态", "第三方结算人", "第三方原因", "第三方对接人"};
-        
-        Map<Long, Product> productAllMap = productAll.stream().collect(Collectors.toMap(Product::getId, product -> product));
         
         for (String s : header) {
             List<String> headTitle = new ArrayList<String>();
@@ -654,7 +653,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 o.getProductInfoList().forEach(e -> {
                     // 产品名
                     row.add(e.getProductName());
-                    // 名
+                    // 数量
                     row.add(e.getNumber());
                 });
                 
@@ -1804,9 +1803,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         // workOrder.setProcessTimeStart(workOrder.getCreateTimeStart());
         // workOrder.setProcessTimeEnd(workOrder.getCreateTimeEnd());]
         BigDecimal zero = new BigDecimal("0");
-        
+        List<Product> productAll = productService.list();
         Integer count = baseMapper.countOrderList(workOrder);
         List<WorkOrderVo> workOrderVoList = baseMapper.orderList(workOrder);
+        workOrderVoList = workOrderVoDataSupplementation(productAll, workOrder, workOrderVoList);
+        
         workOrderVoList.forEach(o -> {
             
             // o.setPaymentMethodName(getPaymentMethod(o.getPaymentMethod()));
@@ -1871,7 +1872,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     
     @Override
     public List<WorkOrderVo> getWorkOrderList(WorkOrderQuery workOrder) {
-        return baseMapper.orderList(workOrder);
+        List<Product> productAll = productService.list();
+        List<WorkOrderVo> workOrderVoList = baseMapper.orderList(workOrder);
+        workOrderVoList = workOrderVoDataSupplementation(productAll, workOrder, workOrderVoList);
+        return workOrderVoList;
     }
     
     @Override
@@ -1885,7 +1889,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             throw new CustomBusinessException("请选择创建开始时间结束时间");
         }
         
+        List<Product> productAll = productService.list();
         List<WorkOrderVo> workOrderVoList = baseMapper.orderList(workOrder);
+        workOrderVoList = workOrderVoDataSupplementation(productAll, workOrder, workOrderVoList);
         
         if (ObjectUtil.isEmpty(workOrderVoList)) {
             throw new CustomBusinessException("没有查询到工单!无法导出！");
