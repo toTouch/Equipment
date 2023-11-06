@@ -29,6 +29,7 @@ import com.xiliulou.afterserver.web.query.CameraInfoQuery;
 import com.xiliulou.afterserver.web.query.PointAuditStatusQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
 import com.xiliulou.afterserver.web.query.ProductInfoQuery;
+import com.xiliulou.afterserver.web.vo.WorkOrderVo;
 import com.xiliulou.core.json.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Hardy
@@ -310,7 +312,11 @@ public class AdminJsonPointNewController {
             "质保结束时间", "施工完成时间", "入账", "验收", "下单时间", "运营商", "物流信息", "审核人", "审核时间", "审核内容", "备注"};
         //List<Product> productAll = productService.list();
         Integer max = 0;
-
+        
+        // 查询全部产品型号
+        List<Product> productAll = productService.list();
+        Map<Long, Product> productAllMap = productAll.stream().collect(Collectors.toMap(Product::getId, product -> product));
+        
         for (PointNew pointNew : pointNews) {
             if (Objects.nonNull(pointNew.getCameraInfo()) && pointNew.getCameraInfo()
                 .matches("\\[.*\\]")) {
@@ -321,6 +327,23 @@ public class AdminJsonPointNewController {
                     max = max < cameraInfoQuery.size() ? cameraInfoQuery.size() : max;
                 }
             }
+            
+            if (Objects.nonNull(pointNew.getProductInfo())) {
+                List<ProductInfoQuery> productInfo = JSON
+                        .parseArray(pointNew.getProductInfo(), ProductInfoQuery.class);
+                pointNew.setProductInfoList(productInfo);
+                
+                // 填充产品名
+                if (org.apache.commons.collections.CollectionUtils.isNotEmpty(productInfo) && Objects.nonNull(productAllMap)) {
+                    for (ProductInfoQuery pr : productInfo) {
+                        Product product = productAllMap.get(pr.getProductId());
+                        if (Objects.nonNull(product)) {
+                            pr.setProductName(product.getName());
+                        }
+                    }
+                }
+            }
+            
         }
 
         final Integer finalMax = max;
@@ -755,50 +778,31 @@ public class AdminJsonPointNewController {
 
     }
     
-    private static void productInformation(Integer finalMax, PointNew item, List<Object> list) {
+    private static void productInformation(Integer productsMaxLen, PointNew item, List<Object> row) {
+        List<ProductInfoQuery> productInfoQueries = JSON.parseArray(item.getProductInfo(), ProductInfoQuery.class);
         
-        
-        if (Objects.nonNull(item.getProductInfo())) {
-            List<CameraInfoQuery> cameraInfoQuery = JSON
-                    .parseArray(item.getCameraInfo(), CameraInfoQuery.class);
-            ;
-            if (!CollectionUtils.isEmpty(cameraInfoQuery)) {
-                int len = 0;
-                for (CameraInfoQuery cameraInfo : cameraInfoQuery) {
-                    //摄像头运营商
-                    list.add(cameraInfo.getCameraSupplier() == null ? ""
-                            : cameraInfo.getCameraSupplier());
-                    //摄像头序列号
-                    list.add(
-                            cameraInfo.getCameraSn() == null ? "" : cameraInfo.getCameraSn());
-                    //摄像头卡号
-                    list.add(cameraInfo.getCameraNumber() == null ? ""
-                            : cameraInfo.getCameraNumber());
-                    
-                    len++;
-                }
-                //填补
-                int finalMaxTemp = finalMax;
-                finalMaxTemp -= len;
-                for (int i = 0; i < finalMaxTemp; i++) {
-                    list.add("");
-                    list.add("");
-                    list.add("");
-                }
-            } else {
-                for (int i = 0; i < finalMax; i++) {
-                    list.add("");
-                    list.add("");
-                    list.add("");
-                }
+        item.getProductInfo();
+        // 产品名称
+        if (!CollectionUtils.isEmpty(productInfoQueries)) {
+            item.getProductInfoList().forEach(e -> {
+                // 产品名
+                row.add(e.getProductName());
+                // 数量
+                row.add(e.getNumber());
+            });
+            
+            long maxLine = productsMaxLen - item.getProductInfoList().size();
+            for (int i = 0; i < maxLine; i++) {
+                row.add("");
+                row.add("");
             }
         } else {
-            for (int i = 0; i < finalMax; i++) {
-                list.add("");
-                list.add("");
-                list.add("");
+            for (int i = 0; i < productsMaxLen; i++) {
+                row.add("");
+                row.add("");
             }
         }
+        // 新添加列写在此行后面
     }
     
     @GetMapping("/admin/pointNew/info/{pid}")
