@@ -5,7 +5,6 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.EasyExcelFactory;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.enums.CellDataTypeEnum;
-import com.alibaba.excel.exception.ExcelAnalysisException;
 import com.alibaba.excel.exception.ExcelDataConvertException;
 import com.alibaba.excel.metadata.CellData;
 import com.alibaba.excel.metadata.Sheet;
@@ -13,7 +12,6 @@ import com.alibaba.excel.metadata.Table;
 import com.alibaba.excel.read.metadata.ReadSheet;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.export.PointInfo;
@@ -27,16 +25,14 @@ import com.xiliulou.afterserver.util.DateUtils;
 import com.xiliulou.afterserver.util.R;
 
 import com.xiliulou.afterserver.util.SecurityUtils;
-import com.xiliulou.afterserver.vo.PointExcelVo;
 import com.xiliulou.afterserver.web.query.CameraInfoQuery;
 import com.xiliulou.afterserver.web.query.PointAuditStatusQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
 import com.xiliulou.afterserver.web.query.ProductInfoQuery;
+import com.xiliulou.afterserver.web.vo.WorkOrderVo;
 import com.xiliulou.core.json.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -279,6 +275,7 @@ public class AdminJsonPointNewController {
         return pointNewService.putAdminPointNewCreateUser(id, createUid);
     }
 
+    // 导出点位
     @GetMapping("/admin/pointNew/exportExcel")
     public void pointExportExcel(@RequestParam(value = "name", required = false) String name,
         @RequestParam(value = "cid", required = false) Integer cid,
@@ -315,7 +312,11 @@ public class AdminJsonPointNewController {
             "质保结束时间", "施工完成时间", "入账", "验收", "下单时间", "运营商", "物流信息", "审核人", "审核时间", "审核内容", "备注"};
         //List<Product> productAll = productService.list();
         Integer max = 0;
-
+        
+        // 查询全部产品型号
+        List<Product> productAll = productService.list();
+        Map<Long, Product> productAllMap = productAll.stream().collect(Collectors.toMap(Product::getId, product -> product));
+        
         for (PointNew pointNew : pointNews) {
             if (Objects.nonNull(pointNew.getCameraInfo()) && pointNew.getCameraInfo()
                 .matches("\\[.*\\]")) {
@@ -326,6 +327,23 @@ public class AdminJsonPointNewController {
                     max = max < cameraInfoQuery.size() ? cameraInfoQuery.size() : max;
                 }
             }
+            
+            if (Objects.nonNull(pointNew.getProductInfo())) {
+                List<ProductInfoQuery> productInfo = JSON
+                        .parseArray(pointNew.getProductInfo(), ProductInfoQuery.class);
+                pointNew.setProductInfoList(productInfo);
+                
+                // 填充产品名
+                if (org.apache.commons.collections.CollectionUtils.isNotEmpty(productInfo) && Objects.nonNull(productAllMap)) {
+                    for (ProductInfoQuery pr : productInfo) {
+                        Product product = productAllMap.get(pr.getProductId());
+                        if (Objects.nonNull(product)) {
+                            pr.setProductName(product.getName());
+                        }
+                    }
+                }
+            }
+            
         }
 
         final Integer finalMax = max;
@@ -360,7 +378,31 @@ public class AdminJsonPointNewController {
                 headList.add(headTitle3);
             }
         }
-
+        
+        int productMax=0;
+        // 点位绑定的产品信息
+        for (PointNew pointNew : pointNews) {
+            if (Objects.nonNull(pointNew.getProductInfo()) && pointNew.getProductInfo()
+                    .matches("\\[.*\\]")) {
+                List<ProductInfoQuery> productInfo = JSON.parseArray(pointNew.getProductInfo(), ProductInfoQuery.class);
+                
+                if (!CollectionUtils.isEmpty(productInfo)) {
+                    productMax = Math.max(productMax, productInfo.size());
+                }
+            }
+        }
+        if (productMax!=0) {
+            for (int i = 0; i < productMax; i++) {
+                List<String> headTitle1 = new ArrayList<>();
+                headTitle1.add("产品名称" + (1 + i));
+                List<String> headTitle2 = new ArrayList<>();
+                headTitle2.add("产品数量" + (1 + i));
+                
+                headList.add(headTitle1);
+                headList.add(headTitle2);
+            }
+        }
+        
         List<String> modeTitle = new ArrayList<>();
         modeTitle.add("产品型号");
         headList.add(modeTitle);
@@ -376,7 +418,8 @@ public class AdminJsonPointNewController {
         table.setHead(headList);
 
         ArrayList<List<Object>> pointExcelVos = new ArrayList<>();
-
+        
+        final int finalProductMax = productMax;
         pointNews.parallelStream().forEachOrdered(item -> {
             try {
                 //for(PointNew item : pointNews) {
@@ -676,7 +719,10 @@ public class AdminJsonPointNewController {
                         list.add("");
                     }
                 }
-
+                
+                //产品信息
+                productInformation(finalProductMax, item, list);
+                
                 if (CollectionUtils.isEmpty(pointProductBinds)) {
                     pointExcelVos.add(list);
                 } else {
@@ -731,7 +777,34 @@ public class AdminJsonPointNewController {
         }
 
     }
-
+    
+    private static void productInformation(Integer productsMaxLen, PointNew item, List<Object> row) {
+        List<ProductInfoQuery> productInfoQueries = JSON.parseArray(item.getProductInfo(), ProductInfoQuery.class);
+        
+        item.getProductInfo();
+        // 产品名称
+        if (!CollectionUtils.isEmpty(productInfoQueries)) {
+            item.getProductInfoList().forEach(e -> {
+                // 产品名
+                row.add(e.getProductName());
+                // 数量
+                row.add(e.getNumber());
+            });
+            
+            long maxLine = productsMaxLen - item.getProductInfoList().size();
+            for (int i = 0; i < maxLine; i++) {
+                row.add("");
+                row.add("");
+            }
+        } else {
+            for (int i = 0; i < productsMaxLen; i++) {
+                row.add("");
+                row.add("");
+            }
+        }
+        // 新添加列写在此行后面
+    }
+    
     @GetMapping("/admin/pointNew/info/{pid}")
     public R printInfo(@PathVariable("pid") Long pid) {
         return pointNewService.pointInfo(pid);

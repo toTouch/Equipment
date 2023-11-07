@@ -8,5 +8,6 @@ public interface WorkOrderReasonService extends IService<WorkOrderReason> {
     Integer deleteById(Long id);
 
     R getTreeList();
-
+    
+    WorkOrderReason queryByIdFromCache(Long workOrderReasonId);
 }

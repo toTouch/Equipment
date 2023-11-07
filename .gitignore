@@ -32,4 +32,4 @@ build/
 ### VS Code ###
 .vscode/
 /logs/
-hs*
+hs*!/src/main/resources/application-dev.yml
