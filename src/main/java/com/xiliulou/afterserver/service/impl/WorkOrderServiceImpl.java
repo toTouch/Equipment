@@ -841,42 +841,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
             // 屎山尾
             
-            /* row.add("++++");
-            // 产品个数
-            if (productAll != null && !productAll.isEmpty()) {
-                List<ProductInfoQuery> productInfoQueries = null;
-                if (Objects.nonNull(o.getProductInfoList())) {
-                    productInfoQueries = o.getProductInfoList();
-                }
-                if (!CollectionUtil.isEmpty(productInfoQueries)) {
-                    for (Product p : productAll) {
-                        ProductInfoQuery index = null;
-                        for (ProductInfoQuery entry : productInfoQueries) {
-                            if (Objects.equals(p.getId(), entry.getProductId())) {
-                                index = entry;
-                            }
-                        }
-                        
-                        if (index != null) {
-                            row.add(index.getNumber()+"?产品?");
-                        } else {
-                            row.add("");
-                        }
-                    }
-                } else {
-                    for (Product p : productAll) {
-                        row.add("");
-                    }
-                }
-            }
-            
-            List<String> codes = JSON.parseArray(o.getCode(), String.class);
-            if (!CollectionUtils.isEmpty(codes)) {
-                codeMaxSize = codeMaxSize > codes.size() ? codeMaxSize : codes.size();
-                for (String code : codes) {
-                    row.add(code);
-                }
-            }*/
             data.add(row);
         }
         // 添加产品类型 产品数量
@@ -1368,34 +1332,6 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
             }
             // 屎山别动尾
-            
-            // 产品个数
-            // if (productAll != null && !productAll.isEmpty()) {
-            //     List<ProductInfoQuery> productInfoQueries = null;
-            //     if (Objects.nonNull(o.getProductInfo())) {
-            //         productInfoQueries = JSON.parseArray(o.getProductInfo(), ProductInfoQuery.class);
-            //     }
-            //     if (!CollectionUtil.isEmpty(productInfoQueries)) {
-            //         for (Product p : productAll) {
-            //             ProductInfoQuery index = null;
-            //             for (ProductInfoQuery entry : productInfoQueries) {
-            //                 if (Objects.equals(p.getId(), entry.getProductId())) {
-            //                     index = entry;
-            //                 }
-            //             }
-            //
-            //             if (index != null) {
-            //                 row.add(index.getNumber());
-            //             } else {
-            //                 row.add("");
-            //             }
-            //         }
-            //     } else {
-            //         for (Product p : productAll) {
-            //             row.add("");
-            //         }
-            //     }
-            // }
             
             data.add(row);
         }
