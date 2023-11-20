@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
 import com.xiliulou.afterserver.entity.Batch;
 import com.xiliulou.afterserver.entity.Point;
 import com.xiliulou.afterserver.entity.Product;
@@ -18,6 +19,7 @@ import com.xiliulou.afterserver.entity.ProductNew;
 import com.xiliulou.afterserver.entity.ProductSerialNumber;
 import com.xiliulou.afterserver.entity.WareHouse;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
+import com.xiliulou.afterserver.mapper.PointProductBindMapper;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.mapper.ProductMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
@@ -83,6 +85,9 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     
     @Autowired
     ProductMapper productMapper;
+    
+    @Autowired
+    PointProductBindMapper pointProductBindMapper;
     
     @Autowired
     ProductFileMapper productFileMapper;
@@ -379,14 +384,13 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         
         // 删除增加判断逻辑
         // 是否绑定批次
-        List<Batch> batches = batchService.queryByProductId(id);
+        List<Batch> batches = batchService.ListBatchByProductId(id);
         if (CollectionUtils.isNotEmpty(batches)) {
             return R.failMsg("该产品已绑定批次，请先删除批次");
         }
         
         // 判断是否绑定点位
-        List<ProductNew> productNews = productNewMapper.selectListByProductId(id);
-        if (CollectionUtils.isNotEmpty(productNews)) {
+        if (SqlHelper.retBool(pointProductBindMapper.countProductByProductId(id))) {
             return R.failMsg("该产品已绑定点位，请先删除点位");
         }
         return R.ok(this.removeById(id));
