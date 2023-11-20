@@ -84,10 +84,10 @@
     </select>
 
     <select id="productSearch" resultType="com.xiliulou.afterserver.web.vo.PageSearchVo">
-        select id, `name` from `product` where shelf_status=1
-            <if test="name != null and name != ''">
-                `name` like concat('%', #{name}, '%')
-            </if>
+        select id, `name` from `product` where shelf_status = 0
+        <if test="name != null and name != ''">
+            `name` like concat('%', #{name}, '%')
+        </if>
         limit #{offset}, #{size}
     </select>
 </mapper>

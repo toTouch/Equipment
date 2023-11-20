@@ -103,12 +103,6 @@ public class AdminJsonProductController {
         return R.ok(productService.removeProductById(id));
     }
     
-    // 产品管理】-【产品型号】增减上下架功能
-    @DeleteMapping("admin/product/shelf/{id}")
-    public R shelfOne(@PathVariable("id") Long id, @RequestParam("status") Integer shelfStatus) {
-        return productService.dupdateOneShelf(id, shelfStatus);
-    }
-    
     @GetMapping("admin/product/exportExcel")
     public void exportExcel(Product product, HttpServletResponse response) {
         productService.exportExcel(product, response);

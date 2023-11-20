@@ -58,6 +58,4 @@ public interface ProductService extends IService<Product> {
     R productSearch(Long offset, Long size, String name);
     
     R removeProductById(Long id);
-    
-    R dupdateOneShelf(Long id, Integer shelfStatus);
 }
