@@ -46,4 +46,5 @@ public interface PointMapper extends BaseMapper<Point> {
 
     List<PageSearchVo> pointSearch(@Param("offset")Long offset,@Param("size") Long size,@Param("name") String name);
     
+    Integer countPointByProductId(Long id);
 }

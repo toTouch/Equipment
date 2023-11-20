@@ -19,6 +19,7 @@ import com.xiliulou.afterserver.entity.ProductNew;
 import com.xiliulou.afterserver.entity.ProductSerialNumber;
 import com.xiliulou.afterserver.entity.WareHouse;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
+import com.xiliulou.afterserver.mapper.PointMapper;
 import com.xiliulou.afterserver.mapper.PointProductBindMapper;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.mapper.ProductMapper;
@@ -87,7 +88,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     ProductMapper productMapper;
     
     @Autowired
-    PointProductBindMapper pointProductBindMapper;
+    PointMapper pointMapper;
     
     @Autowired
     ProductFileMapper productFileMapper;
@@ -390,7 +391,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         }
         
         // 判断是否绑定点位
-        if (SqlHelper.retBool(pointProductBindMapper.countProductByProductId(id))) {
+        if (SqlHelper.retBool(pointMapper.countPointByProductId(id))) {
             return R.failMsg("该产品已绑定点位，请先删除点位");
         }
         return R.ok(this.removeById(id));

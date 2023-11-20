@@ -428,4 +428,11 @@
         </where>
         limit #{offset}, #{size}
     </select>
+    
+    <select id="countPointByProductId" resultType="java.lang.Integer">
+        SELECT
+            count(1)
+        FROM xiliulou_crm.t_point_new
+        WHERE product_info LIKE CONCAT('%', '"productId":', #{id}, '}%')
+    </select>
 </mapper>
