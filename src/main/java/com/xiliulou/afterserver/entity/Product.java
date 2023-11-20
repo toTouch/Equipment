@@ -1,6 +1,5 @@
 package com.xiliulou.afterserver.entity;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,27 +19,39 @@ import java.math.BigDecimal;
 @Accessors(chain = true)
 @TableName("product")
 public class Product implements Serializable {
-
+    
     private static final long serialVersionUID = 1L;
-
+    
     private Long id;
+    
     private String name;
+    
     // 1.主柜 2.副柜
     private Integer type;
+    
     private String code;
+    
     private Integer boxNumber;
+    
     private Long createTime;
+    
     private String info;
-    private String state;//产品状态
-    private BigDecimal price;//价格
-    private String remarks;//备注
-    //产品系列
+    
+    private String state;// 产品状态
+    
+    private BigDecimal price;// 价格
+    
+    private String remarks;// 备注
+    
+    // 产品系列
     // 取餐柜 1、餐厅柜 2、换电柜 3、充电柜 4、寄存柜 5、生鲜柜 6
     private Integer productSeries;
+    
     /**
      * 购买类型 1--集采 2--非集采
      */
     private Integer buyType;
+    
     /**
      * 是否有屏  0无 1有
      */
@@ -56,14 +67,17 @@ public class Product implements Serializable {
      * 消防类型 0-水消防 1-气溶胶消防
      */
     private Integer fireFightingType;
-
+    
     public static final Integer MAIN_LOCKER = 1;
+    
     public static final Integer VICE_LOCKER = 2;
-
+    
     public static final Integer BUY_TYPE_CENTRALIZED = 1;
+    
     public static final Integer BUY_TYPE_NOT_CENTRALIZED = 2;
-
-
+    
+    
     public static final Integer NO_SCREEN = 0;
+    
     public static final Integer HAS_SCREEN = 1;
 }
