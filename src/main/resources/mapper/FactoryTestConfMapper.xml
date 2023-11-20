@@ -20,6 +20,9 @@
             <if test="supplierIds != null">
                 supplier_Ids = #{supplierIds},
             </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
         </set>
         where del_flag = 0
         and id = #{id}

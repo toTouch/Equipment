@@ -59,9 +59,8 @@ public class JsonAdminFactoryTestConfController {
      * 上下架工厂测试流程配置
      */
     @PutMapping("/shelf/{id}")
-    public R shelfOne(@PathVariable("id") Long id, @RequestParam(value = "status", required = false) Integer status,
-            @RequestParam(value = "supplierIds", required = false) List<Long> supplierIds) {
-        return factoryTestConfService.updateOneShelf(id, status, supplierIds);
+    public R shelfOne(@RequestBody FactoryTestConf conf) {
+        return factoryTestConfService.updateOneShelf(conf);
     }
     
     @PutMapping("/update")
