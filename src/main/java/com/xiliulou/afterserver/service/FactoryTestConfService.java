@@ -34,5 +34,5 @@ public interface FactoryTestConfService extends IService<FactoryTestConf> {
     
     R detailById(Long id);
     
-    R updateOneShelf(Long ids, Integer shelfStatus, List<Long> supplierIds);
+    R updateOneShelf(FactoryTestConf con);
 }

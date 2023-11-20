@@ -220,7 +220,11 @@ public class FactoryTestConfServiceImpl extends ServiceImpl<FactoryTestConfMappe
     }
     
     @Override
-    public R updateOneShelf(Long id, Integer shelfStatus, List<Long> supplierIds) {
+    public R updateOneShelf(FactoryTestConf factoryTestConf) {
+        Long id = factoryTestConf.getId();
+        List<Long> supplierIdList = factoryTestConf.getSupplierIdList();
+        Integer shelfStatus = factoryTestConf.getShelfStatus();
+        
         if (Objects.isNull(id)) {
             return R.fail("id不能为空");
         }
@@ -228,14 +232,15 @@ public class FactoryTestConfServiceImpl extends ServiceImpl<FactoryTestConfMappe
         FactoryTestConf updater = new FactoryTestConf();
         updater.setUpdateTime(System.currentTimeMillis());
         updater.setId(id);
-        
-        // 长度限制
-        if (supplierIds.size() > CommonConstants.FILL_MAX_NO) {
-            return R.fail("工厂id数不能超过6个");
-        }
-        
-        updater.setSupplierIds(JSON.toJSONString(supplierIds));
         updater.setShelfStatus(shelfStatus);
+        
+        if (Objects.nonNull(supplierIdList)){
+            updater.setSupplierIds(JSON.toJSONString(supplierIdList));
+            // 长度限制
+            if (supplierIdList.size() > CommonConstants.FILL_MAX_NO) {
+                return R.fail("工厂数不能超过6个");
+            }
+        }
         
         if (SqlHelper.retBool(factoryTestConfMapper.updateOneShelf(updater))) {
             return R.ok();
