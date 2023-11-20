@@ -59,7 +59,7 @@ public class FactoryTestConfServiceImpl extends ServiceImpl<FactoryTestConfMappe
     @Override
     public List<FactoryTestConf> getAllByApi(ApiRequestQuery apiRequestQuery) {
         FactoryTestConf condition = new FactoryTestConf();
-        if (ObjectUtils.isEmpty(apiRequestQuery) && ObjectUtils.isEmpty(apiRequestQuery.getData())) {
+        if (Objects.isNull(apiRequestQuery) && ObjectUtils.isEmpty(apiRequestQuery.getData())) {
             return new ArrayList<>();
         }
         

@@ -70,4 +70,6 @@ public interface PointProductBindMapper extends BaseMapper<PointProductBind> {
 
     @Update("update t_point_new set audit_status = #{auditStatus}, audit_remarks = #{auditRemarks} where id = #{id}")
     int updateAuditStatus(PointNew pointNewUpdate);
+    
+    Integer countProductByProductId(Long id);
 }

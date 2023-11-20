@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiliulou.afterserver.entity.Point;
+import com.xiliulou.afterserver.entity.PointNew;
 import com.xiliulou.afterserver.web.query.IndexDataQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
 import com.xiliulou.afterserver.web.vo.CabinetAndBoxAmountVo;
@@ -44,4 +45,5 @@ public interface PointMapper extends BaseMapper<Point> {
     Integer queryPointCountFromDate(@Param("startTime") Long startTime, @Param("endTime") Long endTime);
 
     List<PageSearchVo> pointSearch(@Param("offset")Long offset,@Param("size") Long size,@Param("name") String name);
+    
 }

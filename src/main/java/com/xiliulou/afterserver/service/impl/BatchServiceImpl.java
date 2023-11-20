@@ -372,7 +372,7 @@ public class BatchServiceImpl implements BatchService {
     }
     
     @Override
-    public List<Batch> queryByProductId(Long productId) {
+    public List<Batch> ListBatchByProductId(Long productId) {
         LambdaQueryWrapper<Batch> batchLambdaQueryWrapper = new LambdaQueryWrapper<>();
         batchLambdaQueryWrapper.eq(Objects.nonNull(productId),Batch::getModelId, productId);
         return batchMapper.selectList(batchLambdaQueryWrapper);
