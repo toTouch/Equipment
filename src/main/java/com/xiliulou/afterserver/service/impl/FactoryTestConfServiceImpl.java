@@ -1,25 +1,41 @@
 package com.xiliulou.afterserver.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
+import com.xiliulou.afterserver.constant.CommonConstants;
 import com.xiliulou.afterserver.entity.FactoryTestConf;
+import com.xiliulou.afterserver.entity.ProductNew;
+import com.xiliulou.afterserver.entity.Supplier;
 import com.xiliulou.afterserver.mapper.FactoryTestConfMapper;
+import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.service.FactoryTestConfService;
+import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ApiRequestQuery;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.beans.BeanUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @Author lny
@@ -30,17 +46,59 @@ import java.util.Objects;
 @Service
 public class FactoryTestConfServiceImpl extends ServiceImpl<FactoryTestConfMapper, FactoryTestConf> implements FactoryTestConfService {
     
+    @Autowired
+    ProductNewMapper productNewMapper;
+    
     @Resource
     private FactoryTestConfMapper factoryTestConfMapper;
+    
+    @Autowired
+    private SupplierService supplierService;
+    
     
     @Override
     public List<FactoryTestConf> getAllByApi(ApiRequestQuery apiRequestQuery) {
         FactoryTestConf condition = new FactoryTestConf();
-        if (ObjectUtils.isNotEmpty(apiRequestQuery) && ObjectUtils.isNotEmpty(apiRequestQuery.getData())) {
-            FactoryTestConf conf = JSON.parseObject(apiRequestQuery.getData(), FactoryTestConf.class);
-            BeanUtils.copyProperties(conf, condition);
+        if (ObjectUtils.isEmpty(apiRequestQuery) && ObjectUtils.isEmpty(apiRequestQuery.getData())) {
+            return new ArrayList<>();
         }
-        return factoryTestConfMapper.queryAll(condition);
+        
+        CabinetFactoryTestInfo factoryTestInfo = JSON.parseObject(apiRequestQuery.getData(), CabinetFactoryTestInfo.class);
+        List<ProductNew> productNews;
+        List<Long> supplierIds = new ArrayList<>();
+        
+        if (Objects.nonNull(factoryTestInfo) && CollectionUtils.isNotEmpty(factoryTestInfo.getNoList())) {
+            productNews = productNewMapper.selectListByNoList(factoryTestInfo.getNoList());
+            if (Objects.nonNull(productNews)) {
+                supplierIds = productNews.stream().map(ProductNew::getSupplierId).collect(Collectors.toList());
+            }
+        }
+        
+        condition.setSupplierIdList(supplierIds);
+        
+        List<FactoryTestConf> factoryTestConfs = factoryTestConfMapper.queryAll(condition);
+        if (CollectionUtils.isEmpty(factoryTestConfs) || CollectionUtils.isEmpty(supplierIds)) {
+            return factoryTestConfs;
+        }
+        
+        // 去重
+        HashSet<Long> supplierIdsSet = new HashSet<>(supplierIds);
+        factoryTestConfs = factoryTestConfs.stream().filter(item -> containsAnySupplierIds(item.getSupplierIds(), supplierIdsSet)).collect(Collectors.toList());
+        
+        return factoryTestConfs;
+    }
+    
+    private boolean containsAnySupplierIds(String supplierIds, HashSet<Long> values) {
+        if (CollectionUtils.isEmpty(values) || StringUtils.isBlank(supplierIds)) {
+            return false;
+        }
+        
+        for (Long value : values) {
+            if (supplierIds.contains(value.toString())) {
+                return true;
+            }
+        }
+        return false;
     }
     
     
@@ -52,7 +110,60 @@ public class FactoryTestConfServiceImpl extends ServiceImpl<FactoryTestConfMappe
         LambdaQueryWrapper<FactoryTestConf> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Objects.nonNull(conf.getId()), FactoryTestConf::getId, conf.getId()).like(Objects.nonNull(conf.getConfName()), FactoryTestConf::getConfName, conf.getConfName())
                 .eq(FactoryTestConf::getDelFlag, FactoryTestConf.DEL_NORMAL).orderByDesc(FactoryTestConf::getCreateTime);
-        return R.ok(factoryTestConfMapper.selectPage(page, wrapper));
+        
+        Page<FactoryTestConf> factoryTestConfList = factoryTestConfMapper.selectPage(page, wrapper);
+        List<FactoryTestConf> factoryTestConfListRecords = factoryTestConfList.getRecords();
+        
+        Map<Long, String> supplierNameFromIdMap = getSupplierNameFromIdMap(factoryTestConfListRecords);
+        if (CollectionUtil.isEmpty(supplierNameFromIdMap)) {
+            return R.ok(factoryTestConfList);
+        }
+        
+        // 加表
+        factoryTestConfListRecords.forEach(item -> {
+            if (StringUtils.isBlank(item.getSupplierIds())) {
+                return;
+            }
+            
+            List<Long> supplierIds = JSON.parseArray(item.getSupplierIds(), Long.class);
+            List<String> supplierNames = new ArrayList<>();
+            
+            item.setSupplierIdList(supplierIds);
+            fillInFactoryName(supplierNameFromIdMap, item, supplierNames);
+            
+            item.setSupplierNameList(supplierNames);
+        });
+        return R.ok(factoryTestConfList);
+    }
+    
+    private static void fillInFactoryName(Map<Long, String> supplierNameFromIdMap, FactoryTestConf item, List<String> supplierNames) {
+        item.getSupplierIdList().forEach(sid -> {
+            supplierNames.add(supplierNameFromIdMap.getOrDefault(sid, StringUtils.EMPTY));
+        });
+    }
+    
+    private Map<Long, String> getSupplierNameFromIdMap(List<FactoryTestConf> factoryTestConfListRecords) {
+        Set<Long> factoryTestConfSet = new HashSet<>();
+        
+        if (CollectionUtils.isEmpty(factoryTestConfListRecords)) {
+            return Collections.emptyMap();
+        }
+        factoryTestConfListRecords.forEach(item -> {
+            if (StringUtils.isNotBlank(item.getSupplierIds())) {
+                List<Long> list = JSON.parseArray(item.getSupplierIds(), Long.class);
+                factoryTestConfSet.addAll(list);
+            }
+        });
+        
+        if (CollectionUtils.isEmpty(factoryTestConfSet)) {
+            return Collections.emptyMap();
+        }
+        List<Supplier> supplierList = supplierService.ListBySupplierIds(factoryTestConfSet);
+        
+        if (CollectionUtils.isEmpty(supplierList)) {
+            return Collections.emptyMap();
+        }
+        return supplierList.stream().collect(Collectors.toMap(Supplier::getId, Supplier::getName, (k1, k2) -> k1));
     }
     
     @Override
@@ -109,7 +220,7 @@ public class FactoryTestConfServiceImpl extends ServiceImpl<FactoryTestConfMappe
     }
     
     @Override
-    public R updateOneShelf(Long id, Integer shelfStatus) {
+    public R updateOneShelf(Long id, Integer shelfStatus, List<Long> supplierIds) {
         if (Objects.isNull(id)) {
             return R.fail("id不能为空");
         }
@@ -117,9 +228,16 @@ public class FactoryTestConfServiceImpl extends ServiceImpl<FactoryTestConfMappe
         FactoryTestConf updater = new FactoryTestConf();
         updater.setUpdateTime(System.currentTimeMillis());
         updater.setId(id);
+        
+        // 长度限制
+        if (supplierIds.size() > CommonConstants.FILL_MAX_NO) {
+            return R.fail("工厂id数不能超过6个");
+        }
+        
+        updater.setSupplierIds(JSON.toJSONString(supplierIds));
         updater.setShelfStatus(shelfStatus);
-        int result = factoryTestConfMapper.updateOneShelf(updater);
-        if (result > 0) {
+        
+        if (SqlHelper.retBool(factoryTestConfMapper.updateOneShelf(updater))) {
             return R.ok();
         }
         return R.fail("上下架失败");
@@ -136,4 +254,15 @@ public class FactoryTestConfServiceImpl extends ServiceImpl<FactoryTestConfMappe
         }
         return R.ok(conf);
     }
+}
+
+@Data
+class CabinetFactoryTestInfo extends FactoryTestConf {
+    
+    /**
+     * 压测柜机sn
+     */
+    private List<String> noList;
+    
+    private String iotCard;
 }

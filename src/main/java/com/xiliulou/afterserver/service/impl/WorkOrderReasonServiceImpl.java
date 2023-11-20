@@ -1,12 +1,10 @@
 package com.xiliulou.afterserver.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xiliulou.afterserver.constant.WorkOrderConstant;
+import com.xiliulou.afterserver.constant.cache.WorkOrderConstant;
 import com.xiliulou.afterserver.entity.WorkOrderReason;
-import com.xiliulou.afterserver.entity.WorkOrderType;
 import com.xiliulou.afterserver.mapper.WorkOrderReasonMapper;
 import com.xiliulou.afterserver.service.WorkOrderReasonService;
-import com.xiliulou.afterserver.service.WorkOrderTypeService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.cache.redis.RedisService;
 import lombok.extern.slf4j.Slf4j;
@@ -26,26 +24,25 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class WorkOrderReasonServiceImpl extends ServiceImpl<WorkOrderReasonMapper, WorkOrderReason> implements WorkOrderReasonService {
+    
     @Autowired
     private RedisService redisService;
- 
-
+    
+    
     @Override
     public Integer deleteById(Long id) {
         return this.baseMapper.deleteForID(id);
     }
-
+    
     @Override
     public R getTreeList() {
         List<WorkOrderReason> selectList = this.baseMapper.selectList(null);
-
-
-        List<WorkOrderReason> collectMenu1 = selectList.stream().filter(item -> item.getParentId() == -1)
-                .map(menu -> {
-                    menu.setChird(getChrlidens(menu, selectList));
-                    return menu;
-                }).collect(Collectors.toList());
-
+        
+        List<WorkOrderReason> collectMenu1 = selectList.stream().filter(item -> item.getParentId() == -1).map(menu -> {
+            menu.setChird(getChrlidens(menu, selectList));
+            return menu;
+        }).collect(Collectors.toList());
+        
         return R.ok(collectMenu1);
     }
     
@@ -58,7 +55,7 @@ public class WorkOrderReasonServiceImpl extends ServiceImpl<WorkOrderReasonMappe
         
         WorkOrderReason workOrderReason = this.getById(workOrderReasonId);
         if (Objects.isNull(workOrderReason)) {
-             workOrderReason = this.getById(workOrderReasonId);
+            workOrderReason = this.getById(workOrderReasonId);
             return workOrderReason;
         }
         
