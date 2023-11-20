@@ -119,7 +119,6 @@ public class FactoryTestConfServiceImpl extends ServiceImpl<FactoryTestConfMappe
             return R.ok(factoryTestConfList);
         }
         
-        // 加表
         factoryTestConfListRecords.forEach(item -> {
             if (StringUtils.isBlank(item.getSupplierIds())) {
                 return;
@@ -238,7 +237,7 @@ public class FactoryTestConfServiceImpl extends ServiceImpl<FactoryTestConfMappe
             updater.setSupplierIds(JSON.toJSONString(supplierIdList));
             // 长度限制
             if (supplierIdList.size() > CommonConstants.FILL_MAX_NO) {
-                return R.fail("工厂数不能超过6个");
+                return R.fail("工厂数不能超过50个");
             }
         }
         

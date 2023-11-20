@@ -261,7 +261,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     
     @Override
     public R productList() {
-        List<Product> products = this.baseMapper.selectList(null);
+        List<Product> products = this.baseMapper.selectList(new LambdaQueryWrapper<Product>().eq(Product::getShelfStatus, Product.SHELF_STATUS));
         return R.ok(products);
     }
     
@@ -374,37 +374,21 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     public R removeProductById(Long id) {
         Product byId = this.getById(id);
         if (Objects.isNull(byId)) {
-            return R.fail("产品型号有误，请检查");
+            return R.failMsg("产品型号有误，请检查");
         }
         
         // 删除增加判断逻辑
         // 是否绑定批次
         List<Batch> batches = batchService.queryByProductId(id);
         if (CollectionUtils.isNotEmpty(batches)) {
-            return R.fail("该产品已绑定批次，请先删除批次");
+            return R.failMsg("该产品已绑定批次，请先删除批次");
         }
         
         // 判断是否绑定点位
         List<ProductNew> productNews = productNewMapper.selectListByProductId(id);
         if (CollectionUtils.isNotEmpty(productNews)) {
-            return R.fail("该产品已绑定点位，请先删除点位");
+            return R.failMsg("该产品已绑定点位，请先删除点位");
         }
         return R.ok(this.removeById(id));
-    }
-    
-    @Override
-    public R dupdateOneShelf(Long id, Integer shelfStatus) {
-        if (Objects.isNull(id)) {
-            return R.fail("id不能为空");
-        }
-        
-        Product productUpdater = new Product();
-        productUpdater.setId(id);
-        productUpdater.setShelfStatus(shelfStatus);
-        int result = productMapper.updateOneShelf(productUpdater);
-        if (result > 0) {
-            return R.ok();
-        }
-        return R.fail("上下架失败");
     }
 }
