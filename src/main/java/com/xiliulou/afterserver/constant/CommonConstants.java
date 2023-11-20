@@ -44,5 +44,5 @@ public interface CommonConstants {
     /**
      * 填充最大数量
      */
-    Integer FILL_MAX_NO = 6;
+    Integer FILL_MAX_NO = 50;
 }
