@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author zgw
  * @date 2022/6/10 11:06
@@ -29,6 +32,9 @@ public class JsonAdminFactoryTestConfController {
     @Autowired
     FactoryTestConfService factoryTestConfService;
     
+    /**
+     * 工厂测试流程配置列表
+     */
     @GetMapping("/list")
     public R queryList(@RequestParam("offset") Long offset, @RequestParam("size") Long size, @RequestParam(required = false, value = "confName") String confName) {
         return factoryTestConfService.getPage(offset, size, confName);
@@ -54,8 +60,8 @@ public class JsonAdminFactoryTestConfController {
      * 上下架工厂测试流程配置
      */
     @PutMapping("/shelf/{id}")
-    public R shelfOne(@PathVariable("id") Long id, @RequestParam("status") Integer status) {
-        return factoryTestConfService.updateOneShelf(id, status);
+    public R shelfOne(@PathVariable("id") Long id, @RequestParam("status") Integer status, @RequestParam("supplierIds")List<Long> supplierIds) {
+        return factoryTestConfService.updateOneShelf(id, status,  supplierIds);
     }
     
     @PutMapping("/update")

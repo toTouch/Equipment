@@ -5,9 +5,23 @@
         select id, name from supplier
         <where>
             <if test="name != null and name != ''">
-                name like concat('%', #{name}, '%')
+                name like concat('%', #{name}, '%')supplier
             </if>
         </where>
         limit #{offset}, #{size}
+    </select>
+    
+    <select id="selectListByIds" resultType="com.xiliulou.afterserver.entity.Supplier">
+        select id, label, name, manager, phone
+        from supplier
+        <where>
+            <if test="supplierIds != null and supplierIds.size() > 0">
+                and `id` in
+                <foreach close=")" collection="supplierIds" item="id" open="(" separator=",">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+        ;
     </select>
 </mapper>

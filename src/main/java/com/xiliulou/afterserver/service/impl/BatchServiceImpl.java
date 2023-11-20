@@ -370,7 +370,14 @@ public class BatchServiceImpl implements BatchService {
         LambdaQueryWrapper<Batch> wrapper = new LambdaQueryWrapper<Batch>().eq(Batch::getBatchNo,batchNo).eq(Batch::getModelId,modelId);
         return batchMapper.selectOne(wrapper);
     }
-
+    
+    @Override
+    public List<Batch> queryByProductId(Long productId) {
+        LambdaQueryWrapper<Batch> batchLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        batchLambdaQueryWrapper.eq(Objects.nonNull(productId),Batch::getModelId, productId);
+        return batchMapper.selectList(batchLambdaQueryWrapper);
+    }
+    
     @Override
     public R delOne(Long id) {
         // 删除产品 查这个批次有哪些产品，删批次前要清空产品

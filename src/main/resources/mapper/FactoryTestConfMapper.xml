@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xiliulou.afterserver.mapper.FactoryTestConfMapper">
-
+    
     <resultMap id="factoryTestConfMap" type="com.xiliulou.afterserver.entity.FactoryTestConf">
         <result column="id" property="id" jdbcType="INTEGER"></result>
         <result column="conf_name" property="confName" jdbcType="VARCHAR"></result>
@@ -13,13 +13,21 @@
     </resultMap>
     <update id="updateOneShelf">
         update t_factory_test_conf
-        set shelf_status = #{shelfStatus}
+        <set>
+            <if test="shelfStatus != null">
+                shelf_status = #{shelfStatus},
+            </if>
+            <if test="supplierIds != null">
+                supplier_Ids = #{supplierIds},
+            </if>
+        </set>
         where del_flag = 0
-          and id = #{id}
+        and id = #{id}
     </update>
+    
     <!-- shelf_status  0上架 1下架  -->
     <select id="queryAll" resultMap="factoryTestConfMap">
-        select id,conf_name,json_content,del_flag,update_time,create_time
+        select id,conf_name,json_content,del_flag,update_time,create_time,supplier_ids
         from t_factory_test_conf
         <where>
             del_flag = 0 and shelf_status=0
@@ -32,5 +40,4 @@
         </where>
         order by id desc
     </select>
-
 </mapper>

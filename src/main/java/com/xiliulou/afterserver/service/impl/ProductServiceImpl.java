@@ -5,16 +5,24 @@ import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xiliulou.afterserver.entity.*;
+import com.xiliulou.afterserver.entity.Batch;
+import com.xiliulou.afterserver.entity.Point;
+import com.xiliulou.afterserver.entity.Product;
+import com.xiliulou.afterserver.entity.ProductFile;
+import com.xiliulou.afterserver.entity.ProductNew;
+import com.xiliulou.afterserver.entity.ProductSerialNumber;
+import com.xiliulou.afterserver.entity.WareHouse;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.mapper.ProductMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.mapper.ProductSerialNumberMapper;
+import com.xiliulou.afterserver.service.BatchService;
 import com.xiliulou.afterserver.service.PointService;
 import com.xiliulou.afterserver.service.ProductSerialNumberService;
 import com.xiliulou.afterserver.service.ProductService;
@@ -38,7 +46,12 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @program: XILIULOU
@@ -49,47 +62,61 @@ import java.util.*;
 @Service
 @Slf4j
 public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> implements ProductService {
-
+    
     @Autowired
     ProductSerialNumberMapper productSerialNumberMapper;
+    
     @Autowired
     ProductSerialNumberService productSerialNumberService;
+    
     @Autowired
     ProductService productService;
+    
     @Autowired
     WarehouseService warehouseService;
+    
     @Autowired
     PointService pointService;
+    
+    @Autowired
+    BatchService batchService;
+    
+    @Autowired
+    ProductMapper productMapper;
+    
     @Autowired
     ProductFileMapper productFileMapper;
+    
     @Autowired
     ProductNewMapper productNewMapper;
-
+    
     @Override
-    public IPage getPage(Long offset, Long size, Product product) {
+    public IPage getPage(Long offset, Long size, Integer shelfStatus, Product product) {
         Page page = PageUtil.getPage(offset, size);
-        Page selectPage = baseMapper.selectPage(page, Wrappers.lambdaQuery(product).eq(Objects.nonNull(product.getProductSeries()), Product::getProductSeries, product.getProductSeries()).orderByDesc(Product::getCreateTime));
-        return  selectPage;
+        Page selectPage = baseMapper.selectPage(page,
+                Wrappers.lambdaQuery(product).eq(Objects.nonNull(product.getProductSeries()), Product::getProductSeries, product.getProductSeries())
+                        .eq(Objects.nonNull(shelfStatus), Product::getShelfStatus, shelfStatus).orderByDesc(Product::getCreateTime));
+        return selectPage;
     }
-
+    
     @Override
     public IPage getPage(Long offset, Long size, String name) {
         Page page = PageUtil.getPage(offset, size);
-        Page selectPage = baseMapper.selectPage(page, new LambdaQueryWrapper<Product>().like(Product::getName,name).orderByDesc(Product::getCreateTime));
-        return  selectPage;
+        Page selectPage = baseMapper.selectPage(page, new LambdaQueryWrapper<Product>().like(Product::getName, name).orderByDesc(Product::getCreateTime));
+        return selectPage;
     }
-
+    
     @Override
     public IPage getAllByName(String name) {
-        List<Product> product = baseMapper.selectList(new LambdaQueryWrapper<Product>().like(Product::getName,name).orderByDesc(Product::getCreateTime));
-        Integer count = baseMapper.selectCount(new LambdaQueryWrapper<Product>().like(Product::getName,name));
+        List<Product> product = baseMapper.selectList(new LambdaQueryWrapper<Product>().like(Product::getName, name).orderByDesc(Product::getCreateTime));
+        Integer count = baseMapper.selectCount(new LambdaQueryWrapper<Product>().like(Product::getName, name));
         Page<Product> selectPage = new Page();
         selectPage.setRecords(product);
         selectPage.setTotal(count);
         selectPage.setSize(count);
         return selectPage;
     }
-
+    
     @Override
     public void exportExcel(Product product, HttpServletResponse response) {
         List<Product> productList = list();
@@ -102,7 +129,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             BeanUtil.copyProperties(p, productExcelVo);
             productExcelVos.add(productExcelVo);
         }
-
+        
         String fileName = "产品型号.xlsx";
         try {
             ServletOutputStream outputStream = response.getOutputStream();
@@ -117,7 +144,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         }
         throw new CustomBusinessException("导出报表失败！请联系客服！");
     }
-
+    
     @Override
     public void serialNumberExportExcel(ProductSerialNumberQuery productSerialNumberQuery, HttpServletResponse response) {
         List<ProductSerialNumberVo> productSerialNumberMapperSerialNumberList = productSerialNumberMapper.getSerialNumberList(productSerialNumberQuery);
@@ -134,7 +161,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             productSerialNumberExcelVo.setPrice(p.getPrice());
             productSerialNumberExcelVoArrayList.add(productSerialNumberExcelVo);
         }
-
+        
         String fileName = "产品序列号.xlsx";
         try {
             ServletOutputStream outputStream = response.getOutputStream();
@@ -149,41 +176,40 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         }
         throw new CustomBusinessException("导出报表失败！请联系客服！");
     }
-
+    
     @Override
     @Transactional(rollbackFor = Exception.class)
     public R insertSerialNumber(ProductSerialNumberQuery productSerialNumberQuery) {
-
+        
         Product product = getById(productSerialNumberQuery.getProductId());
         if (Objects.isNull(product)) {
             return R.failMsg("未找到产品型号!");
         }
-        if (productSerialNumberQuery.getRightInterval() < productSerialNumberQuery.getLeftInterval()
-                && productSerialNumberQuery.getRightInterval() <= 9999 && productSerialNumberQuery.getLeftInterval() >= 0) {
+        if (productSerialNumberQuery.getRightInterval() < productSerialNumberQuery.getLeftInterval() && productSerialNumberQuery.getRightInterval() <= 9999
+                && productSerialNumberQuery.getLeftInterval() >= 0) {
             return R.failMsg("请设置合适的编号区间!");
         }
         DecimalFormat decimalFormat = new DecimalFormat("0000");
-
-
+        
         for (Long i = productSerialNumberQuery.getLeftInterval(); i <= productSerialNumberQuery.getRightInterval(); i++) {
-
+            
             ProductSerialNumber productSerialNumber = new ProductSerialNumber();
             productSerialNumber.setSerialNumber(productSerialNumberQuery.getPrefix() + "_" + decimalFormat.format(i));
             productSerialNumber.setProductId(productSerialNumberQuery.getProductId());
             productSerialNumber.setPrice(product.getPrice());
             productSerialNumber.setCreateTime(System.currentTimeMillis());
             productSerialNumberService.save(productSerialNumber);
-
-            if (productSerialNumberQuery.getFileId()!=null){
+            
+            if (productSerialNumberQuery.getFileId() != null) {
                 ProductFile productFile = productFileMapper.selectById(productSerialNumberQuery.getFileId());
                 productFile.setProductId(productSerialNumber.getId());
                 productFileMapper.updateById(productFile);
             }
-
+            
         }
         return R.ok();
     }
-
+    
     @Override
     public R getSerialNumberPage(Long offset, Long size, ProductSerialNumberQuery productSerialNumber) {
         List<ProductNew> data = productNewMapper.selectNoPull();
@@ -191,7 +217,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         records.put("records", data);
         return R.ok(records);
     }
-
+    
     @Override
     public Integer getByDateQuery(Map<String, Object> params) {
         String years = (String) params.get("years");
@@ -199,7 +225,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         Integer count = this.baseMapper.getMouth(years, mouths);
         return count;
     }
-
+    
     @Override
     public Integer getMouth(Map<String, Object> params) {
         String years = (String) params.get("years");
@@ -207,7 +233,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         Integer count = this.baseMapper.getMouth(years, mouths);
         return count;
     }
-
+    
     @Override
     public Integer getGeneral(Map<String, Object> params) {
         String years = (String) params.get("years");
@@ -215,7 +241,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         Integer count = this.baseMapper.getMouth(years, mouths);
         return count;
     }
-
+    
     @Override
     public Integer getTotal(Map<String, Object> params) {
         String years = (String) params.get("years");
@@ -223,120 +249,162 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         Integer count = this.baseMapper.getMouth(years, mouths);
         return count;
     }
-
+    
     @Override
     public Integer getRepairCount(Map<String, Object> params) {
-
+        
         String years = (String) params.get("years");
         String mouths = (String) params.get("mouths");
         Integer count = this.baseMapper.getMouth(years, mouths);
         return count;
     }
-
+    
     @Override
     public R productList() {
         List<Product> products = this.baseMapper.selectList(null);
         return R.ok(products);
     }
-
+    
+    
     @Override
     public R productSerialNumber(ProductSerialNumberQuery productSerialNumberQuery) {
         Product product = this.baseMapper.selectById(productSerialNumberQuery.getProductId());
         if (Objects.isNull(product)) {
             return R.fail("产品型号有误，请检查");
         }
-
+        
         Long leftInterval = productSerialNumberQuery.getLeftInterval();
         Long rightInterval = productSerialNumberQuery.getRightInterval();
         String code = product.getCode();
-
+        
         for (int i = Integer.parseInt(leftInterval.toString()); i <= Integer.parseInt(rightInterval.toString()); i++) {
-
+            
             ProductSerialNumber productSerialNumber = new ProductSerialNumber();
             BeanUtil.copyProperties(productSerialNumberQuery, productSerialNumber);
             productSerialNumber.setSerialNumber(code + "_" + i);
             productSerialNumber.setCreateTime(System.currentTimeMillis());
             productSerialNumberMapper.insert(productSerialNumber);
-
-            if (productSerialNumberQuery.getFileId()!=null && productSerialNumberQuery.getFileId() != ""){
+            
+            if (productSerialNumberQuery.getFileId() != null && productSerialNumberQuery.getFileId() != "") {
                 ProductFile productFile = productFileMapper.selectById(productSerialNumberQuery.getFileId());
                 productFile.setProductId(productSerialNumber.getId());
                 productFileMapper.updateById(productFile);
             }
-
+            
         }
-
+        
         return R.ok();
     }
-
+    
     @Override
     public R productSerialNumberInfo(Long id) {
         ProductSerialNumber productSerialNumber = productSerialNumberMapper.selectById(id);
         ProductSerialNumberVo productSerialNumberVo = new ProductSerialNumberVo();
         BeanUtil.copyProperties(productSerialNumber, productSerialNumberVo);
-
+        
         if (Objects.nonNull(productSerialNumber)) {
-            if (productSerialNumberVo.getStatus().equals(ProductSerialNumber.PRODUCTION.toString())
-                    || productSerialNumberVo.getStatus().equals(ProductSerialNumber.TO_BE_REPAIRED.toString())) {
+            if (productSerialNumberVo.getStatus().equals(ProductSerialNumber.PRODUCTION.toString()) || productSerialNumberVo.getStatus()
+                    .equals(ProductSerialNumber.TO_BE_REPAIRED.toString())) {
                 WareHouse wareHouse = warehouseService.getById(productSerialNumber.getPointId());
                 if (Objects.nonNull(wareHouse)) {
                     productSerialNumberVo.setAddr(wareHouse);
                 }
             }
-
+            
             if (productSerialNumberVo.getStatus().equals(ProductSerialNumber.IN_USE.toString())) {
                 Point point = pointService.getById(productSerialNumberVo.getPointId());
                 if (Objects.nonNull(point)) {
                     productSerialNumberVo.setAddr(point);
                 }
             }
-
+            
             LambdaQueryWrapper<ProductFile> eq = new LambdaQueryWrapper<ProductFile>().eq(ProductFile::getProductId, id);
             List<ProductFile> productFiles = productFileMapper.selectList(eq);
             productSerialNumberVo.setProductFileList(productFiles);
         }
-
+        
         return R.ok(productSerialNumberVo);
     }
-
+    
     @Override
     public R updateProductSerialNumberInfo(ProductSerialNumberQuery productSerialNumberQuery) {
         int i = productSerialNumberMapper.updateById(productSerialNumberQuery);
         if (i > 0) {
-
+            
             return R.ok();
         }
         return R.fail("数据库错误");
     }
-
+    
     @Override
     public R getProductSerialNumListByPid(Long id) {
-//        LambdaQueryWrapper<ProductSerialNumber> productSerialNumberLambdaQueryWrapper = new LambdaQueryWrapper<>();
-//        productSerialNumberLambdaQueryWrapper.eq(ProductSerialNumber::getProductId, id);
-//        List<ProductSerialNumber> productSerialNumbers = productSerialNumberMapper.selectList(productSerialNumberLambdaQueryWrapper);
+        //        LambdaQueryWrapper<ProductSerialNumber> productSerialNumberLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        //        productSerialNumberLambdaQueryWrapper.eq(ProductSerialNumber::getProductId, id);
+        //        List<ProductSerialNumber> productSerialNumbers = productSerialNumberMapper.selectList(productSerialNumberLambdaQueryWrapper);
         LambdaQueryWrapper<ProductNew> productNew = new LambdaQueryWrapper<>();
         productNew.eq(ProductNew::getModelId, id);
         return R.ok(productNewMapper.selectList(productNew));
     }
-
+    
     @Override
     public Product getByName(String name) {
-        if(StringUtils.isBlank(name)){
+        if (StringUtils.isBlank(name)) {
             return null;
         }
-        LambdaQueryWrapper<Product> wrapper = new LambdaQueryWrapper<Product>().eq(Product::getName,name);
+        LambdaQueryWrapper<Product> wrapper = new LambdaQueryWrapper<Product>().eq(Product::getName, name);
         return this.baseMapper.selectOne(wrapper);
     }
-
+    
     @Override
     public R queryProductModelPull(String name) {
         List<productModelPullVo> list = this.baseMapper.queryProductModelPull(name);
         return R.ok(list);
     }
-
+    
     @Override
     public R productSearch(Long offset, Long size, String name) {
         List<PageSearchVo> listVo = this.baseMapper.productSearch(offset, size, name);
         return R.ok(listVo);
+    }
+    
+    /**
+     * 删除增加判断逻辑 是否绑定资产编码 是否绑定点位
+     */
+    @Override
+    public R removeProductById(Long id) {
+        Product byId = this.getById(id);
+        if (Objects.isNull(byId)) {
+            return R.fail("产品型号有误，请检查");
+        }
+        
+        // 删除增加判断逻辑
+        // 是否绑定批次
+        List<Batch> batches = batchService.queryByProductId(id);
+        if (CollectionUtils.isNotEmpty(batches)) {
+            return R.fail("该产品已绑定批次，请先删除批次");
+        }
+        
+        // 判断是否绑定点位
+        List<ProductNew> productNews = productNewMapper.selectListByProductId(id);
+        if (CollectionUtils.isNotEmpty(productNews)) {
+            return R.fail("该产品已绑定点位，请先删除点位");
+        }
+        return R.ok(this.removeById(id));
+    }
+    
+    @Override
+    public R dupdateOneShelf(Long id, Integer shelfStatus) {
+        if (Objects.isNull(id)) {
+            return R.fail("id不能为空");
+        }
+        
+        Product productUpdater = new Product();
+        productUpdater.setId(id);
+        productUpdater.setShelfStatus(shelfStatus);
+        int result = productMapper.updateOneShelf(productUpdater);
+        if (result > 0) {
+            return R.ok();
+        }
+        return R.fail("上下架失败");
     }
 }
