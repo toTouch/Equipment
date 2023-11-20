@@ -100,7 +100,7 @@ public class AdminJsonProductController {
         if (Objects.isNull(id)) {
             return R.fail("请选择产品型号");
         }
-        return R.ok(productService.removeProductById(id));
+        return productService.removeProductById(id);
     }
     
     @GetMapping("admin/product/exportExcel")
