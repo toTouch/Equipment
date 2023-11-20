@@ -1,10 +1,7 @@
 package com.xiliulou.afterserver.controller.admin;
 
 import com.xiliulou.afterserver.entity.Product;
-import com.xiliulou.afterserver.entity.ProductFile;
-import com.xiliulou.afterserver.entity.ProductSerialNumber;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
-import com.xiliulou.afterserver.mapper.ProductMapper;
 import com.xiliulou.afterserver.service.ProductSerialNumberService;
 import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.util.R;
@@ -15,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -36,10 +32,10 @@ public class AdminJsonProductController {
     ProductSerialNumberService productSerialNumberService;
 
 
-
+    // 产品型号列表
     @GetMapping("admin/product/page")
-    public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, Product product) {
-        return R.ok(productService.getPage(offset, size, product));
+    public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size,@RequestParam("shelfStatus") Integer shelfStatus, Product product) {
+        return R.ok(productService.getPage(offset, size,shelfStatus, product));
     }
 
 
@@ -88,11 +84,21 @@ public class AdminJsonProductController {
         return R.ok(productService.updateById(product));
     }
 
+    // 删除产品型号
     @DeleteMapping("admin/product")
     public R delete(@RequestParam("id") Long id) {
-        return R.ok(productService.removeById(id));
+        if (Objects.isNull(id)) {
+            return R.fail("请选择产品型号");
+        }
+        return R.ok(productService.removeProductById(id));
     }
 
+    // 产品管理】-【产品型号】增减上下架功能
+    @DeleteMapping("admin/product/shelf/{id}")
+    public R shelfOne(@PathVariable("id") Long id, @RequestParam("shelfStatus") Integer shelfStatus) {
+        return productService.dupdateOneShelf(id, shelfStatus);
+    }
+    
     @GetMapping("admin/product/exportExcel")
     public void exportExcel(Product product, HttpServletResponse response) {
         productService.exportExcel(product, response);

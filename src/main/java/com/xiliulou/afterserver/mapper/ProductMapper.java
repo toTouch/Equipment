@@ -29,4 +29,7 @@ public interface ProductMapper extends BaseMapper<Product> {
     List<productModelPullVo> queryProductModelPull(String name);
 
     List<PageSearchVo> productSearch(@Param("offset")Long offset, @Param("size")Long size, @Param("name")String name);
+    
+    
+    int updateOneShelf(Product productUpdater);
 }
