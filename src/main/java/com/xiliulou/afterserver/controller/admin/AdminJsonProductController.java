@@ -34,7 +34,7 @@ public class AdminJsonProductController {
 
     // 产品型号列表
     @GetMapping("admin/product/page")
-    public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size,@RequestParam("shelfStatus") Integer shelfStatus, Product product) {
+    public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size,@RequestParam(value = "shelfStatus", required = false) Integer shelfStatus, Product product) {
         return R.ok(productService.getPage(offset, size,shelfStatus, product));
     }
 
