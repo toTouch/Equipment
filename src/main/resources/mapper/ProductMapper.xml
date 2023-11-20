@@ -20,7 +20,10 @@
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xiliulou.afterserver.mapper.ProductMapper">
-
+    <update id="updateOneShelf">
+        update `product` set `shelf_status` = #{shelf} where id = #{id}
+    </update>
+    
     <select id="getByDateQuery" resultType="java.lang.Integer">
         SELECT count(1) FROM `work_order` where 1 = 1
 
@@ -81,12 +84,10 @@
     </select>
 
     <select id="productSearch" resultType="com.xiliulou.afterserver.web.vo.PageSearchVo">
-        select id, `name` from `product`
-        <where>
+        select id, `name` from `product` where shelf_status=1
             <if test="name != null and name != ''">
                 `name` like concat('%', #{name}, '%')
             </if>
-        </where>
         limit #{offset}, #{size}
     </select>
 </mapper>

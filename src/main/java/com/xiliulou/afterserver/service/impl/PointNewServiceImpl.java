@@ -1,6 +1,5 @@
 package com.xiliulou.afterserver.service.impl;
 
-import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.excel.EasyExcelFactory;
 import com.alibaba.excel.metadata.Sheet;
@@ -8,19 +7,15 @@ import com.alibaba.excel.metadata.Table;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.google.common.collect.Lists;
 import com.xiliulou.afterserver.constant.MqConstant;
-import com.xiliulou.afterserver.constant.WorkOrderConstant;
+import com.xiliulou.afterserver.constant.cache.WorkOrderConstant;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.entity.mq.notify.MqNotifyCommon;
 import com.xiliulou.afterserver.entity.mq.notify.MqPointNewAuditNotify;
-import com.xiliulou.afterserver.entity.mq.notify.MqWorkOrderAuditNotify;
 import com.xiliulou.afterserver.mapper.*;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.DateUtils;
@@ -40,7 +35,6 @@ import com.xiliulou.storage.service.impl.AliyunOssService;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,7 +116,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
      */
     @Override
     public PointNew queryByIdFromCache(Long id) {
-        PointNew serviceWithHash = redisService.getWithHash(WorkOrderConstant.WORK_ORDER_TYPE + id, PointNew.class);
+        PointNew serviceWithHash = redisService.getWithHash(WorkOrderConstant.POINT_NEW + id, PointNew.class);
         if (Objects.nonNull(serviceWithHash)) {
             return serviceWithHash;
         }
@@ -133,7 +127,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             return pointNew;
         }
         
-        redisService.saveWithHash(WorkOrderConstant.WORK_ORDER_TYPE, pointNew);
+        redisService.saveWithHash(WorkOrderConstant.POINT_NEW, pointNew);
         return pointNew;
     }
 

@@ -45,6 +45,12 @@ public class Product implements Serializable {
      * 是否有屏  0无 1有
      */
     private Integer hasScreen;
+    
+    /*
+     * 上下架状态 0-上架、1-下架'
+     */
+    private Integer shelfStatus;
+    
 
     /**
      * 消防类型 0-水消防 1-气溶胶消防

@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.config.RolePermissionConfig;
-import com.xiliulou.afterserver.constant.WorkOrderConstant;
+import com.xiliulou.afterserver.constant.cache.WorkOrderConstant;
 import com.xiliulou.afterserver.entity.Role;
 import com.xiliulou.afterserver.entity.Server;
 import com.xiliulou.afterserver.entity.Supplier;
@@ -207,7 +207,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return user;
         }
         
-        redisService.saveWithHash(WorkOrderConstant.WORK_ORDER_TYPE, user);
+        redisService.saveWithHash(WorkOrderConstant.USER, user);
         return user;
     }
 }

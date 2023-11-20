@@ -1,16 +1,7 @@
 package com.xiliulou.afterserver;
 
 import com.alibaba.fastjson.JSONObject;
-import com.xiliulou.afterserver.entity.PointNew;
-import com.xiliulou.afterserver.mapper.PointNewMapper;
-import com.xiliulou.afterserver.service.PointNewService;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,9 +16,9 @@ import java.net.URLConnection;
  * @mood
  */
 public class AmapApiTest {
-
+    
     private static final String GAO_DE_KEY = "75f594346e35dced0bf957474ea5ae89";
-
+    
     /**
      * 功能描述: 地址转换为经纬度
      *
@@ -37,7 +28,7 @@ public class AmapApiTest {
      */
     @Test
     public void getLonLat() {
-
+        
         try {
             // 返回输入地址address的经纬度信息, 格式是 经度,纬度
             String queryLonLatUrl = "http://restapi.amap.com/v3/geocode/geo?key=%s&address=%s&batch=true";
@@ -46,18 +37,15 @@ public class AmapApiTest {
             String queryResult = getResponse(queryUrl);
             System.out.println(queryResult);
             JSONObject job = JSONObject.parseObject(queryResult);
-            JSONObject jobJSON = JSONObject
-                    .parseObject(
-                            job.get("geocodes").toString().substring(1, job.get("geocodes").toString().length() - 1));
+            JSONObject jobJSON = JSONObject.parseObject(job.get("geocodes").toString().substring(1, job.get("geocodes").toString().length() - 1));
             String LngAndLat = jobJSON.get("location").toString();
-
-
+            
             System.out.println(LngAndLat);
         } catch (Exception e) {
-
+        
         }
     }
-
+    
     private static String getResponse(String serverUrl) {
         // 用JAVA发起http请求，并返回json格式的结果
         StringBuffer result = new StringBuffer();
@@ -77,6 +65,6 @@ public class AmapApiTest {
         }
         return result.toString();
     }
-
-
+    
+    
 }

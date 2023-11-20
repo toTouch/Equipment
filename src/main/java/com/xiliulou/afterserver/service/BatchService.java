@@ -72,4 +72,6 @@ public interface BatchService {
 
     R queryByfactory(Long offset, Long size);
     Batch getByNameAndModeId(String batchNo, Long modelId);
+    
+    List<Batch> queryByProductId(Long id);
 }

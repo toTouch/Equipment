@@ -40,5 +40,9 @@ public interface CommonConstants {
      * oss水印文字偏移量（px)
      */
     String OSS_IMG_WATERMARK_OFFSET = "40";
-
+    
+    /**
+     * 填充最大数量
+     */
+    Integer FILL_MAX_NO = 6;
 }
