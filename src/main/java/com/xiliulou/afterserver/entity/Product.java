@@ -79,5 +79,7 @@ public class Product implements Serializable {
     
     public static final Integer NO_SCREEN = 0;
     
+    public static final Integer SHELF_STATUS = 0;
+    
     public static final Integer HAS_SCREEN = 1;
 }
