@@ -182,7 +182,13 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     public Boolean deleteById(Long id) {
         return this.pointNewMapper.deleteById(id) > 0;
     }
-
+    
+    /**
+     * 插入点位
+     *
+     * @param pointNew
+     * @return
+     */
     @Override
     public R saveAdminPointNew(PointNew pointNew) {
         R r = checkPropertes(pointNew);
