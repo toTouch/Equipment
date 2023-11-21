@@ -2,6 +2,7 @@ package com.xiliulou.afterserver.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.xiliulou.afterserver.web.query.ProductInfoQuery;
 import com.xiliulou.afterserver.web.vo.DeliverInfoVo;
 import lombok.Data;
 
@@ -96,6 +97,8 @@ public class Deliver {
     private boolean isDeliver;
     @TableField(exist = false)
     private String paymentMethodName;
+    @TableField(exist = false)
+    private List<ProductInfoQuery> productInfoList;
     @TableField(exist = false)
     private Map<String, List<DeliverInfoVo>> deliverInfoVoMap;
 
