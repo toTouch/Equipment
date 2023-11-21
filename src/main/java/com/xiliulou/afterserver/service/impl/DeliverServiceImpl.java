@@ -32,12 +32,14 @@ import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.DeliverFactoryProductQuery;
 import com.xiliulou.afterserver.web.query.DeliverFactoryQuery;
 import com.xiliulou.afterserver.web.query.DeliverQuery;
+import com.xiliulou.afterserver.web.query.ProductInfoQuery;
 import com.xiliulou.afterserver.web.vo.*;
 import com.xiliulou.cache.redis.RedisService;
 import com.xiliulou.core.json.JsonUtil;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -111,8 +113,10 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         if (list.isEmpty()) {
             return selectPage;
         }
-
-
+        
+        // 查询所有产品型号
+        List<Product> productAll = productService.list();
+        Map<Long, Product> productAllMap = productAll.stream().collect(Collectors.toMap(Product::getId, product -> product));
 
         list.forEach(records -> {
 
@@ -160,6 +164,24 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
 
             if(StrUtil.isEmpty(records.getProduct())) {
                 records.setProduct(JSONUtil.toJsonStr(new ArrayList<>()));
+            }else {
+                //json转数组
+                List<Long> productInfo = JSON.parseArray(records.getProduct(), Long.class);
+                List<ProductInfoQuery> productInfoQueries = new ArrayList<>();
+                
+                for (Long pro : productInfo) {
+                    ProductInfoQuery productInfoQuery = new ProductInfoQuery();
+                    if (Objects.isNull(pro)) {
+                        continue;
+                    }
+                    Product product = productAllMap.get(pro);
+                    if (Objects.nonNull(product)) {
+                        productInfoQuery.setProductName(product.getName());
+                        productInfoQuery.setProductId(product.getId());
+                        productInfoQueries.add(productInfoQuery);
+                    }
+                }
+                records.setProductInfoList(productInfoQueries);
             }
 
             /*if(ObjectUtils.isNotNull(records.getProduct())
