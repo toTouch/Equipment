@@ -269,9 +269,22 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 item.setPrescription(prescription);
                 item.setPrescriptionMillis(item.getProcessTime() - item.getCreateTime());
             }*/
+            // 查询所有产品型号
+            List<Product> productAll = productService.list();
+            Map<Long, Product> productAllMap = productAll.stream().collect(Collectors.toMap(Product::getId, product -> product));
             
             if (Objects.nonNull(item.getProductInfo())) {
                 List<ProductInfoQuery> productInfo = JSON.parseArray(item.getProductInfo(), ProductInfoQuery.class);
+                
+                for (ProductInfoQuery pro : productInfo) {
+                    if (Objects.isNull(pro)) {
+                        continue;
+                    }
+                    Product product = productAllMap.get(pro.getProductId());
+                    if (Objects.nonNull(product)) {
+                        pro.setProductName(product.getName());
+                    }
+                }
                 item.setProductInfoList(productInfo);
             }
             
