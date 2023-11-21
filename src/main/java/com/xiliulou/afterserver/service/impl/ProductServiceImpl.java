@@ -267,7 +267,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     
     @Override
     public R productList() {
-        List<Product> products = this.baseMapper.selectList(new LambdaQueryWrapper<Product>().eq(Product::getShelfStatus, Product.SHELF_STATUS));
+        List<Product> products = this.baseMapper.selectList(null);
         return R.ok(products);
     }
     
