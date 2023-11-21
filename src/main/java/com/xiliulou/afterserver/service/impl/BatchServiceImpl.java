@@ -18,6 +18,7 @@ import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.vo.OrderBatchVo;
+import com.xiliulou.iot.entity.response.QueryDeviceDetailResult;
 import com.xiliulou.iot.service.RegisterDeviceService;
 
 import java.util.regex.Matcher;
@@ -249,7 +250,10 @@ public class BatchServiceImpl implements BatchService {
         cabinet.setDate(dateString);
         String cabinetSn=COMPANY_NAME+String.format("%02d", boxNumber)+screen+fireFightStr+dateString+co;
         Set<String> deviceNames=new HashSet<String>();
-
+        
+        //获取电池更换机柜类型 0:SaaS换电柜 1:api换电柜
+        String key = batch.getBatteryReplacementCabinetType()==0?productConfig.getKey():productConfig.getApiKey();
+        
         /* 去重并校验deviceNames
          * getProductSeries 3:换电柜  getBatteryReplacementCabinetType 0:SaaS换电柜 1:api换电柜
          */
@@ -263,7 +267,7 @@ public class BatchServiceImpl implements BatchService {
             if (customDeviceNameList.size()!=batch.getProductNum()) {
                 throw new CustomBusinessException("deviceName数量与产品数量不匹配");
             }
-
+            
             for (String deviceName : customDeviceNameList) {
                 if (deviceName.length()<5||deviceName.length()>12) {
                     throw new CustomBusinessException("deviceName长度必须在5-12位间");
@@ -271,7 +275,13 @@ public class BatchServiceImpl implements BatchService {
                 if (isContainNonAlphanumeric(deviceName)) {
                     throw new CustomBusinessException("deviceName仅支持字母和数字");
                 }
+                
+                QueryDeviceDetailResult queryDeviceDetailResult = registerDeviceService.queryDeviceDetail(key, deviceName);
+                if (Objects.nonNull(queryDeviceDetailResult)) {
+                    throw new CustomBusinessException("deviceName已存在"+deviceName);
+                }
             }
+            
             // 同批次同型号下未删除(0)deviceName是已否存在
             List<ProductNew> customDeviceName = productNewMapper.selectList(
                 new LambdaQueryWrapper<ProductNew>()
@@ -285,9 +295,7 @@ public class BatchServiceImpl implements BatchService {
                 throw new CustomBusinessException("deviceName已存在"+deviceNamecollect);
             }
         }
-
-        //产品创建 getBatteryReplacementCabinetType 0:SaaS换电柜 1:api换电柜
-        String key = batch.getBatteryReplacementCabinetType()==0?productConfig.getKey():productConfig.getApiKey();
+        
         for (int i = 0; i < productNew.getProductCount(); i++) {
             serialNum++;
             String serialNumStr = String.format("%04d", serialNum);
