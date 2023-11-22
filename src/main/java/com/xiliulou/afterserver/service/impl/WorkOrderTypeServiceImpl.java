@@ -37,7 +37,7 @@ public class WorkOrderTypeServiceImpl extends ServiceImpl<WorkOrderTypeMapper, W
             return null;
         }
         
-        redisService.saveWithHash(WorkOrderConstant.WORK_ORDER_TYPE, workOrderType);
+        redisService.saveWithHash(WorkOrderConstant.WORK_ORDER_TYPE + id, workOrderType);
         return workOrderType;
     }
 }

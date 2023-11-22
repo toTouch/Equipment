@@ -439,12 +439,12 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                     productInfo = JSON.parseArray(pointNew.getProductInfo(), ProductInfoQuery.class);
                 }
                 
-                /*  如果点位和工单不绑定就启用
-                // 产品信息 productInfo
+                // 工单有填充产品信息 productInfo 使用工单产品类型信息
                 if (Objects.nonNull(item.getProductInfo())) {
                     // 根据工单填充
                     productInfo = JSON.parseArray(item.getProductInfo(), ProductInfoQuery.class);
-                } */
+                }
+                
                 // 填充产品名
                 if (org.apache.commons.collections.CollectionUtils.isNotEmpty(productInfo) && Objects.nonNull(productAllMap)) {
                     for (ProductInfoQuery pr : productInfo) {
