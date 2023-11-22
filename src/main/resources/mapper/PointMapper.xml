@@ -432,7 +432,7 @@
     <select id="countPointByProductId" resultType="java.lang.Integer">
         SELECT
             count(1)
-        FROM xiliulou_crm.t_point_new
-        WHERE product_info  and del_flag =1 LIKE CONCAT('%', '"productId":', #{id}, '}%')
+        FROM t_point_new
+        WHERE del_flag =0 and product_info LIKE CONCAT('%', '"productId":', #{id}, '}%')
     </select>
 </mapper>
