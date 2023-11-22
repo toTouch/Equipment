@@ -19,6 +19,7 @@ import com.xiliulou.afterserver.entity.ProductNew;
 import com.xiliulou.afterserver.entity.ProductSerialNumber;
 import com.xiliulou.afterserver.entity.WareHouse;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
+import com.xiliulou.afterserver.mapper.PermissionResourceMapper;
 import com.xiliulou.afterserver.mapper.PointMapper;
 import com.xiliulou.afterserver.mapper.PointProductBindMapper;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
@@ -104,7 +105,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
                 Wrappers.lambdaQuery(product).eq(Objects.nonNull(product.getProductSeries()), Product::getProductSeries, product.getProductSeries())
                         .eq(Objects.nonNull(shelfStatus), Product::getShelfStatus, shelfStatus).orderByDesc(Product::getId));
         Long end=System.currentTimeMillis();
-        log.info("耗时"+(end-st)+"ms");
+        log.debug("耗时"+(end-st)+"ms");
         return selectPage;
     }
     
