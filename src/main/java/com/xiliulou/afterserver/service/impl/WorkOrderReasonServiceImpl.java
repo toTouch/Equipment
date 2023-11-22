@@ -59,7 +59,7 @@ public class WorkOrderReasonServiceImpl extends ServiceImpl<WorkOrderReasonMappe
             return workOrderReason;
         }
         
-        redisService.saveWithHash(WorkOrderConstant.WORK_ORDER_REASON, workOrderReason);
+        redisService.saveWithHash(WorkOrderConstant.WORK_ORDER_REASON + workOrderReasonId, workOrderReason);
         return workOrderReason;
     }
     

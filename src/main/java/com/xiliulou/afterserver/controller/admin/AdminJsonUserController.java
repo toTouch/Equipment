@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.controller.admin;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xiliulou.afterserver.config.MinioConfig;
+import com.xiliulou.afterserver.constant.cache.WorkOrderConstant;
 import com.xiliulou.afterserver.controller.BaseController;
 import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.service.RoleService;
@@ -11,6 +12,7 @@ import com.xiliulou.afterserver.util.MinioUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.util.password.PasswordUtils;
+import com.xiliulou.cache.redis.RedisService;
 import com.xiliulou.core.json.JsonUtil;
 import com.xiliulou.core.utils.DataUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +37,8 @@ public class AdminJsonUserController extends BaseController {
     UserService userService;
     @Autowired
     RoleService roleService;
+    @Autowired
+    private RedisService redisService;
 
     @PostMapping("admin/register")
     public R register(@RequestBody User user) {
@@ -74,12 +78,14 @@ public class AdminJsonUserController extends BaseController {
 
    @PutMapping("/admin/user")
     public R updateUser(@RequestBody User user,HttpServletRequest request){
+       redisService.delete(WorkOrderConstant.USER + user.getId());
        return userService.updateUser(user);
 
    }
 
    @DeleteMapping("/admin/user/{uid}")
     public R delUser(@PathVariable("uid") Long uid){
+       redisService.delete(WorkOrderConstant.USER + uid);
         return R.ok(userService.removeById(uid));
    }
 

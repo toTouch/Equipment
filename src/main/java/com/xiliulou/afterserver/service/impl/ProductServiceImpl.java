@@ -19,7 +19,6 @@ import com.xiliulou.afterserver.entity.ProductNew;
 import com.xiliulou.afterserver.entity.ProductSerialNumber;
 import com.xiliulou.afterserver.entity.WareHouse;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
-import com.xiliulou.afterserver.mapper.PermissionResourceMapper;
 import com.xiliulou.afterserver.mapper.PointMapper;
 import com.xiliulou.afterserver.mapper.PointProductBindMapper;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
@@ -99,10 +98,12 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     
     @Override
     public IPage getPage(Long offset, Long size, Integer shelfStatus, Product product) {
+        long st = System.currentTimeMillis();
         Page page = PageUtil.getPage(offset, size);
         Page selectPage = baseMapper.selectPage(page,
                 Wrappers.lambdaQuery(product).eq(Objects.nonNull(product.getProductSeries()), Product::getProductSeries, product.getProductSeries())
                         .eq(Objects.nonNull(shelfStatus), Product::getShelfStatus, shelfStatus).orderByDesc(Product::getId));
+        Long end=System.currentTimeMillis();
         return selectPage;
     }
     
