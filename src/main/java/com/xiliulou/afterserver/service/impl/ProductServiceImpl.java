@@ -106,6 +106,9 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
                         .eq(Objects.nonNull(shelfStatus), Product::getShelfStatus, shelfStatus).orderByDesc(Product::getId));
         Long end=System.currentTimeMillis();
         log.debug("耗时"+(end-st)+"ms");
+        if (end>0){
+            throw new CustomBusinessException("zbzzbzbzbzzbzb耗时"+(end-st)+"ms");
+        }
         return selectPage;
     }
     
