@@ -1,10 +1,12 @@
 package com.xiliulou.afterserver.controller.admin;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.xiliulou.afterserver.constant.cache.WorkOrderConstant;
 import com.xiliulou.afterserver.entity.Supplier;
 import com.xiliulou.afterserver.entity.WorkOrderReason;
 import com.xiliulou.afterserver.service.WorkOrderReasonService;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.cache.redis.RedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +25,8 @@ public class AdminJsonWorkOrderReasonController {
 
     @Autowired
     WorkOrderReasonService workOrderReasonService;
-
+    @Autowired
+    private RedisService redisService;
 
     @GetMapping("admin/workOrderReason/all")
     public R getPage() {
@@ -43,6 +46,7 @@ public class AdminJsonWorkOrderReasonController {
 
     @PutMapping("admin/workOrderReason")
     public R update(@RequestBody WorkOrderReason workOrderReason) {
+        redisService.delete(WorkOrderConstant.WORK_ORDER_REASON + workOrderReason.getId());
         return R.ok(workOrderReasonService.updateById(workOrderReason));
     }
 

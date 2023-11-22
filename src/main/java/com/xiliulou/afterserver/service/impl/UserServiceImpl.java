@@ -207,7 +207,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return user;
         }
         
-        redisService.saveWithHash(WorkOrderConstant.USER, user);
+        redisService.saveWithHash(WorkOrderConstant.USER + id, user);
         return user;
     }
 }
