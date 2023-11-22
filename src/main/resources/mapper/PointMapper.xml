@@ -433,6 +433,6 @@
         SELECT
             count(1)
         FROM xiliulou_crm.t_point_new
-        WHERE product_info LIKE CONCAT('%', '"productId":', #{id}, '}%')
+        WHERE product_info  and del_flag =0 LIKE CONCAT('%', '"productId":', #{id}, '}%')
     </select>
 </mapper>
