@@ -581,6 +581,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     
     @Override
     public R checkCompression(ApiRequestQuery apiRequestQuery) {
+        log.info("url: /app/compression/check checkCompression: {}", apiRequestQuery.getData());
         CompressionQuery compression = null;
         try {
             compression = JSON.parseObject(apiRequestQuery.getData(), CompressionQuery.class);
@@ -644,6 +645,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         // 更新物联网卡
         ProductNew mainProduct = mainProducts.get(0);
         // auditValueService.biandOrUnbindEntry(AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY, iotCard.getSn(), mainProduct.getId());
+        log.info("url: /app/compression/check mainProduct.getNo: {}", mainProduct.getNo());
         return R.ok(Arrays.asList(mainProduct.getNo()));
     }
     
