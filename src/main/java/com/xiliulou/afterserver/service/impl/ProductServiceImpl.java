@@ -98,23 +98,26 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     
     @Override
     public IPage getPage(Long offset, Long size, Integer shelfStatus, Product product) {
+        long st = System.currentTimeMillis();
         Page page = PageUtil.getPage(offset, size);
         Page selectPage = baseMapper.selectPage(page,
                 Wrappers.lambdaQuery(product).eq(Objects.nonNull(product.getProductSeries()), Product::getProductSeries, product.getProductSeries())
-                        .eq(Objects.nonNull(shelfStatus), Product::getShelfStatus, shelfStatus).orderByDesc(Product::getCreateTime));
+                        .eq(Objects.nonNull(shelfStatus), Product::getShelfStatus, shelfStatus).orderByDesc(Product::getId));
+        Long end=System.currentTimeMillis();
+        log.info("耗时"+(end-st)+"ms");
         return selectPage;
     }
     
     @Override
     public IPage getPage(Long offset, Long size, String name) {
         Page page = PageUtil.getPage(offset, size);
-        Page selectPage = baseMapper.selectPage(page, new LambdaQueryWrapper<Product>().like(Product::getName, name).orderByDesc(Product::getCreateTime));
+        Page selectPage = baseMapper.selectPage(page, new LambdaQueryWrapper<Product>().like(Product::getName, name).orderByDesc(Product::getId));
         return selectPage;
     }
     
     @Override
     public IPage getAllByName(String name) {
-        List<Product> product = baseMapper.selectList(new LambdaQueryWrapper<Product>().like(Product::getName, name).orderByDesc(Product::getCreateTime));
+        List<Product> product = baseMapper.selectList(new LambdaQueryWrapper<Product>().like(Product::getName, name).orderByDesc(Product::getId));
         Integer count = baseMapper.selectCount(new LambdaQueryWrapper<Product>().like(Product::getName, name));
         Page<Product> selectPage = new Page();
         selectPage.setRecords(product);
