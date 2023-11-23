@@ -5,7 +5,7 @@
         select id, name from supplier
         <where>
             <if test="name != null and name != ''">
-                name like concat('%', #{name}, '%')supplier
+                name like concat('%', #{name}, '%')
             </if>
         </where>
         limit #{offset}, #{size}
