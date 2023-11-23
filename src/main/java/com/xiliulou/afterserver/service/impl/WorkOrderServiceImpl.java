@@ -440,9 +440,12 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 }
                 
                 // 工单有填充产品信息 productInfo 使用工单产品类型信息
-                if (Objects.nonNull(item.getProductInfo())) {
+                if (StringUtils.isNotBlank(item.getProductInfo())) {
                     // 根据工单填充
-                    productInfo = JSON.parseArray(item.getProductInfo(), ProductInfoQuery.class);
+                    List<ProductInfoQuery> productInfoItem = JSON.parseArray(item.getProductInfo(), ProductInfoQuery.class);
+                    if (org.apache.commons.collections.CollectionUtils.isNotEmpty(productInfoItem)) {
+                        productInfo = productInfoItem;
+                    }
                 }
                 
                 // 填充产品名
