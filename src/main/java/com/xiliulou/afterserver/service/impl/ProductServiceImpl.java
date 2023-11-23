@@ -392,7 +392,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         }
         
         // 判断是否绑定点位
-        if (SqlHelper.retBool(pointMapper.countPointByProductId(id))) {
+        if (SqlHelper.retBool(pointMapper.countPointByProductId(String.valueOf(id)))) {
             return R.failMsg("该产品已绑定点位，请先删除点位");
         }
         return R.ok(this.removeById(id));
