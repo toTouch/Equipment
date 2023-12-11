@@ -177,12 +177,6 @@
     <select id="cabinetCompressionList" resultType="com.xiliulou.afterserver.web.vo.CabinetCompressionVo">
         select no as sn, test_result as test_status, test_start_time, test_end_time, test_msg ,error_message
         from t_product_new
-        <if test="sortType == 1 or sortType == null">
-            order by test_start_time desc
-        </if>
-        <if test="sortType == 2">
-            order by test_end_time desc
-        </if>
         <where>
             <if test="sn != null and sn != ''">
                 and no like concat('%',#{sn},'%')
@@ -200,6 +194,12 @@
                 and test_end_time <![CDATA[ < ]]> #{testEndTimeEndTime}
             </if>
         </where>
+        <if test="sortType == 1 or sortType == null">
+            order by test_start_time desc
+        </if>
+        <if test="sortType == 2">
+            order by test_end_time desc
+        </if>
     </select>
     
     <select id="queryProductTestInfo" resultType="com.xiliulou.afterserver.web.vo.CabinetCompressionContentVo">
