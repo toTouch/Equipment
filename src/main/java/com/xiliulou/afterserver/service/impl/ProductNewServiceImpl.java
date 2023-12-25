@@ -828,6 +828,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         vo.setAuditProcessList(voList);
         vo.setCreateTime(simp.format(new Date(productNew.getCreateTime())));
         vo.setProductStatus(getStatusName(productNew.getStatus()));
+        vo.setCabinetSn(productNew.getCabinetSn()); // 资产编码打印同样实现底部增加对应柜机编码
         
         List<AuditProcess> auditProcessList = auditProcessService.getBaseMapper().selectList(new QueryWrapper<AuditProcess>().orderByAsc("id"));
         // 如果搜索页面配置为空，则只获取压测状态，发货状态随压测状态改变
