@@ -41,6 +41,10 @@ public class KeyProcessVo {
      * 页面，值
      */
     private List<KeyProcessAuditEntryVo> keyProcessAuditEntryList;
+    /**
+     * 柜机编码
+     */
+    private String cabinetSn;
 }
 
 
