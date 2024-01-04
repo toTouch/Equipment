@@ -193,6 +193,9 @@
             <if test="testEndTimeEndTime != null">
                 and test_end_time <![CDATA[ < ]]> #{testEndTimeEndTime}
             </if>
+            <if test="thirdId!=null">
+                and p.supplier_id = #{thirdId}
+            </if>
         </where>
         <if test="sortType == 1 or sortType == null">
             order by test_start_time desc
