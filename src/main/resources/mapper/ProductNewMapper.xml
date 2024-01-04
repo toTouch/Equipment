@@ -173,7 +173,7 @@
     </select>
     
     
-    <!--通过主键修改数据-->
+    <!--资产编码的压测结果列表-->
     <select id="cabinetCompressionList" resultType="com.xiliulou.afterserver.web.vo.CabinetCompressionVo">
         select no as sn, test_result as test_status, test_start_time, test_end_time, test_msg ,error_message
         from t_product_new
@@ -194,7 +194,7 @@
                 and test_end_time <![CDATA[ < ]]> #{testEndTimeEndTime}
             </if>
             <if test="thirdId!=null">
-                and p.supplier_id = #{thirdId}
+                and supplier_id = #{thirdId}
             </if>
         </where>
         <if test="sortType == 1 or sortType == null">
