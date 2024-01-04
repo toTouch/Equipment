@@ -1274,6 +1274,13 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     
     @Override
     public R cabinetCompressionList(String sn, Long startTime, Long endTime) {
+        //获取uid
+        Long uid = SecurityUtils.getUid();
+        User user = userService.queryByIdFromCache(uid);
+        if (Objects.isNull(user)) {
+            return R.ok(null);
+        }
+        
         Long testStartTimeBeginTime = null;
         Long testStartTimeEndTime = null;
         Long testEndTimeBeginTime = null;
@@ -1296,7 +1303,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             testStartTimeEndTime = System.currentTimeMillis();
         }
         
-        List<CabinetCompressionVo> list = baseMapper.cabinetCompressionList(sn, testStartTimeBeginTime, testStartTimeEndTime, testEndTimeBeginTime, testEndTimeEndTime, sortType);
+        List<CabinetCompressionVo> list = baseMapper.cabinetCompressionList(sn, testStartTimeBeginTime, testStartTimeEndTime, testEndTimeBeginTime, testEndTimeEndTime, sortType,user.getThirdId());
         return R.ok(list);
     }
     
