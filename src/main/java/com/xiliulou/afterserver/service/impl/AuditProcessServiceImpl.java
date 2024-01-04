@@ -193,6 +193,7 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
         KeyProcessVo keyProcessVo = new KeyProcessVo();
         keyProcessVo.setPid(productNew.getId());
         keyProcessVo.setNo(productNew.getNo());
+        keyProcessVo.setCabinetSn(productNew.getCabinetSn()); // 资产编码打印同样实现底部增加对应柜机编码
         keyProcessVo.setBatchId(batch.getId());
         keyProcessVo.setBatchNo(batch.getBatchNo());
         keyProcessVo.setCreateTime(simp.format(new Date(productNew.getCreateTime())));

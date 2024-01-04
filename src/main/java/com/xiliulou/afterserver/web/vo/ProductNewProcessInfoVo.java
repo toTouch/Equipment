@@ -18,6 +18,10 @@ public class ProductNewProcessInfoVo {
      */
     private String no;
     /**
+     * 产品编号
+     */
+    private String cabinetSn;
+    /**
      * 产品批次ID
      */
     private Long batchId;
