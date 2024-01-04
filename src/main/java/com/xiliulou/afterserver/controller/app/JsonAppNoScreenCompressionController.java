@@ -19,32 +19,32 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/app/noScreen/compression")
 public class JsonAppNoScreenCompressionController {
-
+    
     @Autowired
     private ProductNewService productNewService;
-
+    
     /**
      * 柜机压测状态上报
+     *
      * @return
      */
-
+    
     @PostMapping("upload")
-    public R cabinetCompressionStatus(@RequestBody CabinetCompressionQuery cabinetCompressionQuery){
+    public R cabinetCompressionStatus(@RequestBody CabinetCompressionQuery cabinetCompressionQuery) {
         return productNewService.cabinetCompressionStatus(cabinetCompressionQuery);
     }
-
+    
     @GetMapping("check")
-    public R cabinetCompressionCheck(@RequestParam("sn")String sn){
+    public R cabinetCompressionCheck(@RequestParam("sn") String sn) {
         return productNewService.cabinetCompressionCheck(sn);
     }
-
+    
     /**
-    * pda柜机压测列表
+     * pda柜机压测列表
      */
     @GetMapping("list")
-    public R cabinetCompressionList(@RequestParam(value = "sn", required = false)String sn,
-        @RequestParam(value = "startTime", required = false) Long startTime,
-        @RequestParam(value = "endTime", required =  false)Long endTime){
-        return productNewService.cabinetCompressionList(sn, startTime, endTime);
+    public R cabinetCompressionList(@RequestParam(value = "uid", required = false) Long uid, @RequestParam(value = "sn", required = false) String sn,
+            @RequestParam(value = "startTime", required = false) Long startTime, @RequestParam(value = "endTime", required = false) Long endTime) {
+        return productNewService.cabinetCompressionList(uid, sn, startTime, endTime);
     }
 }
