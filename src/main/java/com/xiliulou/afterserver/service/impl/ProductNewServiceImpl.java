@@ -1278,6 +1278,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         Long uid = SecurityUtils.getUid();
         User user = userService.queryByIdFromCache(uid);
         if (Objects.isNull(user)) {
+            log.error("压测 -----> 用户不存在:{}", uid);
             return R.ok(null);
         }
         
