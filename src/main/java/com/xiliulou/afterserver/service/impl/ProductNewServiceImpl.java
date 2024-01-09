@@ -1276,8 +1276,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     public R cabinetCompressionList(Long uid, String sn, Long startTime, Long endTime) {
         
         User user = userService.getUserById(uid);
-        if (Objects.isNull(uid)) {
-            log.error("压测 -----> 用户不存在:{}", user);
+        if (Objects.isNull(user)) {
+            log.error("用户不存在 uid={}", uid);
             return R.ok(null);
         }
         
