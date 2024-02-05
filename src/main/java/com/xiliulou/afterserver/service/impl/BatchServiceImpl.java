@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiliulou.afterserver.config.ProductConfig;
-import com.xiliulou.afterserver.constant.CacheConstants;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.BatchMapper;
@@ -95,13 +94,14 @@ public class BatchServiceImpl implements BatchService {
     /**
      * 查询多条数据
      *
-     * @param offset 查询起始位置
-     * @param limit  查询条数
+     * @param offset     查询起始位置
+     * @param limit      查询条数
+     * @param notShipped
      * @return 对象列表
      */
     @Override
-    public List<Batch> queryAllByLimit(String batchNo,int offset, int limit, Long modelId, Long supplierId) {
-        return this.batchMapper.queryAllByLimit(batchNo,offset, limit,modelId , supplierId);
+    public List<Batch> queryAllByLimit(String batchNo,int offset, int limit, Long modelId, Long supplierId, Integer notShipped) {
+        return this.batchMapper.queryAllByLimit(batchNo,offset, limit,modelId , supplierId, notShipped);
     }
 
     /**
@@ -187,6 +187,7 @@ public class BatchServiceImpl implements BatchService {
 
         batch.setCreateTime(System.currentTimeMillis());
         batch.setUpdateTime(System.currentTimeMillis());
+        batch.setNotShipped(batch.getProductNum());
         Batch insert = this.insert(batch);
         //附件上传
         ProductFile productFile = new ProductFile();
@@ -384,6 +385,14 @@ public class BatchServiceImpl implements BatchService {
         LambdaQueryWrapper<Batch> batchLambdaQueryWrapper = new LambdaQueryWrapper<>();
         batchLambdaQueryWrapper.eq(Objects.nonNull(productId),Batch::getModelId, productId);
         return batchMapper.selectList(batchLambdaQueryWrapper);
+    }
+    
+    @Override
+    public Integer batchUpdateById(ArrayList<Batch> batches) {
+        if(CollectionUtils.isEmpty(batches)){
+            return null;
+        }
+        return batchMapper.batchUpdateById(batches);
     }
     
     @Override

@@ -19,7 +19,9 @@ import java.util.Map;
 @Data
 @TableName("deliver")
 public class Deliver {
-
+    
+    
+    
     private Long id;
     private Long customerId;//客户id
     private Long phone;//客户电话
@@ -76,6 +78,11 @@ public class Deliver {
     public static final Integer DESTINATION_TYPE_POINT = 1;
     public static final Integer DESTINATION_TYPE_WAREHOUSE = 2;
     public static final Integer DESTINATION_TYPE_FACTORY = 3;
+    
+    /**
+     * 已发货
+     */
+    public static final Integer STATUS_SHIPPED = 2;
 
 
     public static final Integer PAYMENT_METHOD_MONTHLY = 1;

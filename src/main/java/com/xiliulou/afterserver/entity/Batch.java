@@ -43,11 +43,15 @@ public class Batch {
     /**
      * 产品类型 M主柜 V副柜
      */
-    private String productType;
+    private String productType;;
     /**
      * 产品数量
      */
     private Integer productNum;
+    /**
+     * 未发货柜机数
+     */
+    private Integer notShipped;
     /**
      * 工厂
      */

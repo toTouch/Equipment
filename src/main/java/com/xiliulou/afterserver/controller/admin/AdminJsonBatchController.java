@@ -96,15 +96,18 @@ public class AdminJsonBatchController {
      * 产品管理_批次列表
      * @param offset 查询起始位置
      * @param limit  查询条数
+     * @param limit  查询条数
+     *
      */
     @GetMapping("/admin/batch/list")
     public R selectOne(@RequestParam(value = "batchNo",required = false) String batchNo,
                        @RequestParam(value = "modelId",required = false)Long modelId,
                        @RequestParam(value = "supplierId",required = false)Long supplierId,
+                       @RequestParam(value = "notShipped",required = false)Integer notShipped,
                        @RequestParam(value = "offset") int offset,
                        @RequestParam(value = "limit") int limit) {
 
-        List<Batch> batches = this.batchService.queryAllByLimit(batchNo, offset, limit, modelId, supplierId);
+        List<Batch> batches = this.batchService.queryAllByLimit(batchNo, offset, limit, modelId, supplierId, notShipped);
         if (Objects.nonNull(batches)){
             batches.forEach(item -> {
                 // 查询附件信息

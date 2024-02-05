@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,6 +19,8 @@ import java.util.List;
  * @since 2021-08-17 10:29:13
  */
 public interface ProductNewMapper extends BaseMapper<ProductNew> {
+    
+    int batchUpdateStatusById(@Param("ids") ArrayList<Long> ids, @Param("statusShipped") Integer statusShipped);
     
     /**
      * 通过ID查询单条数据
