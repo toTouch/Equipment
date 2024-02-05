@@ -1278,7 +1278,6 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         User user = userService.getUserById(uid);
         if (Objects.isNull(user)) {
             log.error("用户不存在 uid={}", uid);
-            return R.ok(null);
         }
         
         Long testStartTimeBeginTime = null;
