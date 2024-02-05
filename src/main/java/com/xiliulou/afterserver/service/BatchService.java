@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.service;
 import com.xiliulou.afterserver.entity.Batch;
 import com.xiliulou.afterserver.util.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,11 +33,12 @@ public interface BatchService {
     /**
      * 查询多条数据
      *
-     * @param offset 查询起始位置
-     * @param limit  查询条数
+     * @param offset     查询起始位置
+     * @param limit      查询条数
+     * @param notShipped
      * @return 对象列表
      */
-    List<Batch> queryAllByLimit(String batchNo,int offset, int limit, Long modelId, Long supplierId);
+    List<Batch> queryAllByLimit(String batchNo,int offset, int limit, Long modelId, Long supplierId, Integer notShipped);
 
     /**
      * 新增数据
@@ -74,4 +76,6 @@ public interface BatchService {
     Batch getByNameAndModeId(String batchNo, Long modelId);
     
     List<Batch> ListBatchByProductId(Long id);
+    
+    Integer batchUpdateById(ArrayList<Batch> batches);
 }

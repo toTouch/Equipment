@@ -398,4 +398,13 @@
             #{c}
         </foreach>
     </update>
+    
+    <update id="batchUpdateStatusById">
+        update t_product_new
+        set status = #{statusShipped}
+        where id in
+        <foreach collection="ids" item="c" open="(" separator="," close=")">
+            #{c}
+        </foreach>
+    </update>
 </mapper>
