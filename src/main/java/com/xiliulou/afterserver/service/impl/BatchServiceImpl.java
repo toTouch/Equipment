@@ -101,7 +101,7 @@ public class BatchServiceImpl implements BatchService {
      */
     @Override
     public List<Batch> queryAllByLimit(String batchNo,int offset, int limit, Long modelId, Long supplierId, Integer notShipped) {
-        return this.batchMapper.queryAllByLimit(batchNo,offset, limit,modelId , supplierId, notShipped);
+        return this.batchMapper.queryAllByLimit(batchNo,offset, limit, modelId , supplierId, notShipped);
     }
 
     /**
@@ -408,7 +408,7 @@ public class BatchServiceImpl implements BatchService {
     }
 
     @Override
-    public R queryByfactory(Long offset, Long size) {
+    public R queryByfactory(Long offset, Long size, Integer notShipped, String batchNo) {
         Long uid = SecurityUtils.getUid();
         if(Objects.isNull(uid)){
             return R.fail("未查询到相关用户");
@@ -424,7 +424,10 @@ public class BatchServiceImpl implements BatchService {
             return R.fail("用户未绑定工厂，请联系管理员");
         }
         Page page = PageUtil.getPage(offset, size);
-        page = batchMapper.selectPage(page, new QueryWrapper<Batch>().eq("supplier_id", user.getThirdId()).orderByDesc("create_time"));
+        LambdaQueryWrapper<Batch> batchLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        batchLambdaQueryWrapper.like(StringUtils.isNotBlank(batchNo), Batch::getBatchNo, batchNo).gt(Objects.nonNull(notShipped), Batch::getNotShipped, notShipped).eq(Objects.nonNull(notShipped), Batch::getNotShipped, notShipped).orderByDesc(Batch::getCreateTime);
+        
+        page = batchMapper.selectPage(page,batchLambdaQueryWrapper);
 
         List<Batch> batchList = page.getRecords();
 
