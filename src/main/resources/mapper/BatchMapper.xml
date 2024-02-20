@@ -92,8 +92,8 @@
     
     <!--新增所有列-->
     <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
-        insert into t_batch(batch_no, remarks, create_time, type, model_id, product_type, product_num, supplier_id, update_time)
-        values (#{batchNo}, #{remarks}, #{createTime}, #{type}, #{modelId}, #{productType}, #{productNum}, #{supplierId}, #{updateTime})
+        insert into t_batch(batch_no, remarks, create_time, type, model_id, product_type, product_num, supplier_id, update_time, not_shipped)
+        values (#{batchNo}, #{remarks}, #{createTime}, #{type}, #{modelId}, #{productType}, #{productNum}, #{supplierId}, #{updateTime},#{notShipped})
     </insert>
     
     <!--通过主键修改数据-->
