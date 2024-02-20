@@ -423,9 +423,13 @@ public class BatchServiceImpl implements BatchService {
         if(Objects.isNull(supplier)){
             return R.fail("用户未绑定工厂，请联系管理员");
         }
+        
         Page page = PageUtil.getPage(offset, size);
         LambdaQueryWrapper<Batch> batchLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        batchLambdaQueryWrapper.like(StringUtils.isNotBlank(batchNo), Batch::getBatchNo, batchNo).gt(Objects.nonNull(notShipped), Batch::getNotShipped, notShipped).eq(Objects.nonNull(notShipped), Batch::getNotShipped, notShipped).orderByDesc(Batch::getCreateTime);
+        batchLambdaQueryWrapper.like(StringUtils.isNotBlank(batchNo), Batch::getBatchNo, batchNo)
+                .gt(Objects.nonNull(notShipped) && notShipped>0, Batch::getNotShipped, notShipped)
+                .eq(Objects.nonNull(notShipped) && notShipped == 0, Batch::getNotShipped, notShipped)
+                .orderByDesc(Batch::getCreateTime);
         
         page = batchMapper.selectPage(page,batchLambdaQueryWrapper);
 
