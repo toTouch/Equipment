@@ -135,7 +135,7 @@
             <if test="updateTime != null and updateTime != ''">
                 update_time = #{updateTime},
             </if>
-            <if test="notShippers != null">
+            <if test="notShipped != null">
                 not_shipped = #{notShipped},
             </if>
         </set>
