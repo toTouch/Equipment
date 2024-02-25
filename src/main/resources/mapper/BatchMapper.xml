@@ -109,6 +109,12 @@
             <if test="remarks != null and remarks != ''">
                 remarks = #{remarks},
             </if>
+            <if test="updateTime != null and updateTime != ''">
+                update_time = #{updateTime},
+            </if>
+            <if test="notShipped != null">
+                not_shipped = #{notShipped},
+            </if>
         </set>
         where id = #{id}
     </update>

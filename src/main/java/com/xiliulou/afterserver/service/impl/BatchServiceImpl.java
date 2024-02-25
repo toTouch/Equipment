@@ -126,6 +126,7 @@ public class BatchServiceImpl implements BatchService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Integer update(Batch batch) {
+        log.debug("更新批次未发货数量" + batch);
         return this.batchMapper.update(batch);
     }
 
