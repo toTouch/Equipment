@@ -652,8 +652,8 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             }
             
             // 检验是否发货
-            DeliverLog log = deliverLogService.queryByProductId(productNew.getId());
-            if (Objects.nonNull(log)) {
+            Boolean existDeliverLog = deliverLogService.existDeliverLog(productNew.getId());
+            if (existDeliverLog) {
                 return R.fail(null, null, "资产编码【" + productQuery.getNo() + "】已发货");
             }
             
@@ -684,15 +684,15 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     
     // 发货后更新批次未发货数量
     private void updateBatchUnshippedQuantity(Map<Long, List<ProductNew>> batchToProductNewMap) {
-        ArrayList<Batch> batches = new ArrayList<>();
         batchToProductNewMap.forEach((batchId, tempProductNews) -> {
             Batch batch = batchService.queryByIdFromDB(batchId);
             Batch batchUp = new Batch();
             batchUp.setNotShipped(batch.getNotShipped() - tempProductNews.size());
+            log.debug("已经发货数量: " +tempProductNews.size());
             batchUp.setUpdateTime(System.currentTimeMillis());
-            batches.add(batch);
+            batchService.update(batchUp);
+            log.debug("更新批次未发货数量" + batchUp);
         });
-        batchService.batchUpdateById(batches);
     }
     
     // 填充发货信息

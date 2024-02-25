@@ -2,12 +2,9 @@ package com.xiliulou.afterserver.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xiliulou.afterserver.entity.Deliver;
 import com.xiliulou.afterserver.entity.DeliverLog;
 import com.xiliulou.afterserver.mapper.DeliverLogMapper;
-import com.xiliulou.afterserver.mapper.DeliverMapper;
 import com.xiliulou.afterserver.service.DeliverLogService;
-import com.xiliulou.afterserver.service.DeliverService;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +32,12 @@ public class DeliverLogServiceImpl extends ServiceImpl<DeliverLogMapper, Deliver
     }
 
     @Override
-    public DeliverLog queryByProductId(Long id) {
-        return this.baseMapper.selectOne(new QueryWrapper<DeliverLog>().eq("product_id", id));
+    public Boolean existDeliverLog(Long id) {
+        // 查询是否存在
+        Integer selectCount = this.baseMapper.selectCount(new QueryWrapper<DeliverLog>().eq("product_id", id));
+        if(selectCount == 0) {
+            return false;
+        }
+        return true;
     }
 }

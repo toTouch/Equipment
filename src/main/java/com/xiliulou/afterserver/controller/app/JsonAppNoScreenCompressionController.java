@@ -25,6 +25,7 @@ public class JsonAppNoScreenCompressionController {
 
     /**
      * 柜机压测状态上报
+     *
      * @return
      */
 
@@ -38,6 +39,9 @@ public class JsonAppNoScreenCompressionController {
         return productNewService.cabinetCompressionCheck(sn);
     }
 
+    /**
+     * pda柜机压测列表
+     */
     @GetMapping("list")
     public R cabinetCompressionList(@RequestParam(value = "sn", required = false)String sn,
         @RequestParam(value = "startTime", required = false) Long startTime,
