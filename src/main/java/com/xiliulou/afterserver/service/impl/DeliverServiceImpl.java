@@ -687,6 +687,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         batchToProductNewMap.forEach((batchId, tempProductNews) -> {
             Batch batch = batchService.queryByIdFromDB(batchId);
             Batch batchUp = new Batch();
+            batchUp.setId(batchId);
             batchUp.setNotShipped(batch.getNotShipped() - tempProductNews.size());
             log.debug("已经发货数量: " +tempProductNews.size());
             batchUp.setUpdateTime(System.currentTimeMillis());
