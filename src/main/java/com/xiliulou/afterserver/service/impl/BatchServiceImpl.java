@@ -430,6 +430,7 @@ public class BatchServiceImpl implements BatchService {
         batchLambdaQueryWrapper.like(StringUtils.isNotBlank(batchNo), Batch::getBatchNo, batchNo)
                 .gt(Objects.nonNull(notShipped) && notShipped>0, Batch::getNotShipped, notShipped)
                 .eq(Objects.nonNull(notShipped) && notShipped == 0, Batch::getNotShipped, notShipped)
+                .eq(Objects.nonNull(supplier),Batch::getSupplierId, supplier.getId())
                 .orderByDesc(Batch::getCreateTime);
         
         page = batchMapper.selectPage(page,batchLambdaQueryWrapper);
