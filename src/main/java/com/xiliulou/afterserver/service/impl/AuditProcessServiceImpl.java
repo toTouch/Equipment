@@ -254,6 +254,7 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
         }
 
         ProductNew productNew = productNewService.getById(keyProcessQuery.getPid());
+        log.error("productNew:{}"+ productNew);
         if(Objects.isNull(productNew)){
             return R.fail(null, "未查询到相关柜机");
         }
@@ -302,8 +303,11 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
         //完成，
         // 如果为前置检测 改变状态
         if(Objects.equals(AuditProcess.TYPE_PRE, auditProcess.getType())) {
+            if (Objects.equals(productNew.getStatus(), ProductNewStatusSortConstants.STATUS_SHIPPED) || Objects.equals(productNew.getStatus(), ProductNewStatusSortConstants.STATUS_USE)){
+                productNew.setStatus(null);
+            }
             productNew.setStatus(ProductNewStatusSortConstants.STATUS_PRE_DETECTION);
-            productNewMapper.updateById(productNew);
+            productNewMapper.update(productNew);
             return R.ok();
         }
 
@@ -323,8 +327,12 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
         }
 
         productNew.setStatus(ProductNewStatusSortConstants.STATUS_POST_DETECTION);
-        productNewMapper.updateById(productNew);
-        //log.error("全部完成" + status);
+        log.error("产品状态" + productNew.getStatus());
+        if (Objects.equals(productNew.getStatus(), ProductNewStatusSortConstants.STATUS_SHIPPED) || Objects.equals(productNew.getStatus(), ProductNewStatusSortConstants.STATUS_USE)){
+            productNew.setStatus(null);
+        }
+        productNewMapper.update(productNew);
+        log.error("产品状态和信息:" + productNew);
         return R.ok();
     }
 
