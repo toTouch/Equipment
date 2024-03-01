@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xiliulou.afterserver.mapper.BatchMapper">
-
     <resultMap type="com.xiliulou.afterserver.entity.Batch" id="BatchMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="batchNo" column="batch_no" jdbcType="VARCHAR"/>
@@ -13,20 +12,25 @@
         <result property="productNum" column="product_num"/>
         <result property="supplierId" column="supplier_id"/>
         <result property="updateTime" column="update_time"/>
+        <result property="notShipped" column="not_shipped"/>
     </resultMap>
-
+    
     <!--查询单个-->
     <select id="queryById" resultMap="BatchMap">
-        select
-          id, batch_no, remarks, create_time,product_num
+        select id,
+               batch_no,
+               remarks,
+               create_time,
+               product_num,
+               not_shipped
         from t_batch
         where id = #{id}
     </select>
-
+    
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="BatchMap">
         select
-          id, batch_no, remarks, create_time, type, model_id, product_type, product_num, supplier_id, update_time
+        id, batch_no, remarks, create_time, type, model_id, product_type, product_num, supplier_id, not_shipped, update_time
         from t_batch
         <where>
             <if test="batchNo != null and batchNo != '' ">
@@ -38,11 +42,18 @@
             <if test="supplierId != null">
                 and supplier_id = #{supplierId}
             </if>
+            <!--0 已发货  >0 待发货   -->
+            <if test="notShipped != null and notShipped > 0 ">
+                and not_shipped > 0
+            </if>
+            <if test="notShipped != null and notShipped == 0">
+                and not_shipped = 0
+            </if>
         </where>
         order by create_time desc
         limit #{offset}, #{limit}
     </select>
-
+    
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="BatchMap">
         select
@@ -63,7 +74,7 @@
             </if>
         </where>
     </select>
-
+    
     <select id="count" resultType="java.lang.Long">
         select count(1) from t_batch
         <where>
@@ -78,13 +89,13 @@
             </if>
         </where>
     </select>
-
+    
     <!--新增所有列-->
     <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
-        insert into t_batch(batch_no, remarks, create_time,type,model_id, product_type, product_num, supplier_id, update_time)
-        values (#{batchNo}, #{remarks}, #{createTime}, #{type}, #{modelId}, #{productType}, #{productNum}, #{supplierId}, #{updateTime})
+        insert into t_batch(batch_no, remarks, create_time, type, model_id, product_type, product_num, supplier_id, update_time, not_shipped)
+        values (#{batchNo}, #{remarks}, #{createTime}, #{type}, #{modelId}, #{productType}, #{productNum}, #{supplierId}, #{updateTime},#{notShipped})
     </insert>
-
+    
     <!--通过主键修改数据-->
     <update id="update">
         update t_batch
@@ -98,13 +109,45 @@
             <if test="remarks != null and remarks != ''">
                 remarks = #{remarks},
             </if>
+            <if test="updateTime != null and updateTime != ''">
+                update_time = #{updateTime},
+            </if>
+            <if test="notShipped != null">
+                not_shipped = #{notShipped},
+            </if>
         </set>
         where id = #{id}
     </update>
-
+    
     <!--通过主键删除-->
     <delete id="deleteById">
-        delete from t_batch where id = #{id}
+        delete
+        from t_batch
+        where id = #{id}
     </delete>
-
+    
+    <update id="batchUpdateById">
+        update t_batch
+        <set>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="productNum != null">
+                product_num = #{productNum},
+            </if>
+            <if test="remarks != null and remarks != ''">
+                remarks = #{remarks},
+            </if>
+            <if test="updateTime != null and updateTime != ''">
+                update_time = #{updateTime},
+            </if>
+            <if test="notShipped != null">
+                not_shipped = #{notShipped},
+            </if>
+        </set>
+        where id in
+        <foreach collection="batches" item="batch" open="(" separator="," close=")">
+            #{batch.id}
+        </foreach>
+    </update>
 </mapper>

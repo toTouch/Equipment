@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiliulou.afterserver.config.ProductConfig;
-import com.xiliulou.afterserver.constant.CacheConstants;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.BatchMapper;
@@ -95,13 +94,14 @@ public class BatchServiceImpl implements BatchService {
     /**
      * 查询多条数据
      *
-     * @param offset 查询起始位置
-     * @param limit  查询条数
+     * @param offset     查询起始位置
+     * @param limit      查询条数
+     * @param notShipped
      * @return 对象列表
      */
     @Override
-    public List<Batch> queryAllByLimit(String batchNo,int offset, int limit, Long modelId, Long supplierId) {
-        return this.batchMapper.queryAllByLimit(batchNo,offset, limit,modelId , supplierId);
+    public List<Batch> queryAllByLimit(String batchNo,int offset, int limit, Long modelId, Long supplierId, Integer notShipped) {
+        return this.batchMapper.queryAllByLimit(batchNo,offset, limit, modelId , supplierId, notShipped);
     }
 
     /**
@@ -126,6 +126,7 @@ public class BatchServiceImpl implements BatchService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Integer update(Batch batch) {
+        log.debug("更新批次未发货数量" + batch);
         return this.batchMapper.update(batch);
     }
 
@@ -187,6 +188,7 @@ public class BatchServiceImpl implements BatchService {
 
         batch.setCreateTime(System.currentTimeMillis());
         batch.setUpdateTime(System.currentTimeMillis());
+        batch.setNotShipped(batch.getProductNum());
         Batch insert = this.insert(batch);
         //附件上传
         ProductFile productFile = new ProductFile();
@@ -387,6 +389,14 @@ public class BatchServiceImpl implements BatchService {
     }
     
     @Override
+    public Integer batchUpdateById(ArrayList<Batch> batches) {
+        if(CollectionUtils.isEmpty(batches)){
+            return null;
+        }
+        return batchMapper.batchUpdateById(batches);
+    }
+    
+    @Override
     public R delOne(Long id) {
         // 删除产品 查这个批次有哪些产品，删批次前要清空产品
         List<ProductNew> list = productNewService.queryByBatch(id);
@@ -399,7 +409,7 @@ public class BatchServiceImpl implements BatchService {
     }
 
     @Override
-    public R queryByfactory(Long offset, Long size) {
+    public R queryByfactory(Long offset, Long size, Integer notShipped, String batchNo) {
         Long uid = SecurityUtils.getUid();
         if(Objects.isNull(uid)){
             return R.fail("未查询到相关用户");
@@ -414,8 +424,16 @@ public class BatchServiceImpl implements BatchService {
         if(Objects.isNull(supplier)){
             return R.fail("用户未绑定工厂，请联系管理员");
         }
+        
         Page page = PageUtil.getPage(offset, size);
-        page = batchMapper.selectPage(page, new QueryWrapper<Batch>().eq("supplier_id", user.getThirdId()).orderByDesc("create_time"));
+        LambdaQueryWrapper<Batch> batchLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        batchLambdaQueryWrapper.like(StringUtils.isNotBlank(batchNo), Batch::getBatchNo, batchNo)
+                .gt(Objects.nonNull(notShipped) && notShipped>0, Batch::getNotShipped, 0)
+                .eq(Objects.nonNull(notShipped) && notShipped == 0, Batch::getNotShipped, 0)
+                .eq(Objects.nonNull(supplier),Batch::getSupplierId, supplier.getId())
+                .orderByDesc(Batch::getCreateTime);
+        
+        page = batchMapper.selectPage(page,batchLambdaQueryWrapper);
 
         List<Batch> batchList = page.getRecords();
 

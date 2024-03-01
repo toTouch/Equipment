@@ -44,7 +44,10 @@ public class JsonAdminOrderBatchController {
 
     @GetMapping("/batch/list")
     public R queryByfactory(@RequestParam(value = "offset", required = false) Long offset,
-                            @RequestParam(value = "limit", required = false) Long size){
+                            @RequestParam(value = "limit", required = false) Long size,
+                            @RequestParam(value = "notShipped",required = false)Integer notShipped,
+                            @RequestParam(value = "batchNo",required = false) String batchNo
+           ){
         if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)){
             return R.fail("登陆用户非工厂类型");
         }
@@ -62,7 +65,7 @@ public class JsonAdminOrderBatchController {
 
 
 
-        return batchService.queryByfactory(offset, size);
+        return batchService.queryByfactory(offset, size, notShipped, batchNo);
     }
 
     /**

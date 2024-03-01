@@ -2,6 +2,7 @@ package com.xiliulou.afterserver.mapper;
 
 import com.xiliulou.afterserver.entity.Batch;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -22,15 +23,16 @@ public interface BatchMapper extends BaseMapper<Batch> {
      * @return 实例对象
      */
     Batch queryById(Long id);
-
+    
     /**
      * 查询指定行数据
      *
-     * @param offset 查询起始位置
-     * @param limit  查询条数
+     * @param offset     查询起始位置
+     * @param limit      查询条数
+     * @param notShipped
      * @return 对象列表
      */
-    List<Batch> queryAllByLimit(@Param("batchNo") String batchNo, @Param("offset") int offset, @Param("limit") int limit, @Param("modelId") Long modelId,  @Param("supplierId") Long supplierId);
+    List<Batch> queryAllByLimit(@Param("batchNo") String batchNo, @Param("offset") int offset, @Param("limit") int limit, @Param("modelId") Long modelId, @Param("supplierId") Long supplierId, @Param("notShipped") Integer notShipped);
 
 
     /**
@@ -66,4 +68,6 @@ public interface BatchMapper extends BaseMapper<Batch> {
     int deleteById(Long id);
 
     Long count(@Param("batchNo") String batchNo, @Param("modelId")Long modelId, @Param("supplierId")Long supplierId);
+    
+    Integer batchUpdateById(ArrayList<Batch> batches);
 }
