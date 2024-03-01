@@ -16,6 +16,6 @@ public interface DeliverLogService extends IService<DeliverLog> {
     List<DeliverLog> getByDeliverId(Long id);
 
     Integer queryMaxCountBydeliverIds(List<Long> collect);
-
-    DeliverLog queryByProductId(Long id);
+    
+    Boolean existDeliverLog(Long id);
 }

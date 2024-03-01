@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
+import com.xiliulou.afterserver.mapper.ProductMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
+import com.xiliulou.afterserver.mapper.SupplierMapper;
 import com.xiliulou.afterserver.service.BatchService;
 import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.service.SupplierService;
@@ -19,7 +21,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * (Batch)表控制层
@@ -40,6 +45,10 @@ public class AdminJsonBatchController {
     SupplierService supplierService;
     @Autowired
     ProductNewMapper productNewMapper;
+    @Autowired
+    SupplierMapper supplierMapper;
+    @Autowired
+    ProductMapper productMapper;
     @Autowired
     ProductService productService;
 
@@ -96,27 +105,48 @@ public class AdminJsonBatchController {
      * 产品管理_批次列表
      * @param offset 查询起始位置
      * @param limit  查询条数
+     * @param limit  查询条数
+     *
      */
     @GetMapping("/admin/batch/list")
     public R selectOne(@RequestParam(value = "batchNo",required = false) String batchNo,
                        @RequestParam(value = "modelId",required = false)Long modelId,
                        @RequestParam(value = "supplierId",required = false)Long supplierId,
+                       @RequestParam(value = "notShipped",required = false)Integer notShipped,
                        @RequestParam(value = "offset") int offset,
                        @RequestParam(value = "limit") int limit) {
 
-        List<Batch> batches = this.batchService.queryAllByLimit(batchNo, offset, limit, modelId, supplierId);
+        List<Batch> batches = this.batchService.queryAllByLimit(batchNo, offset, limit, modelId, supplierId, notShipped);
         if (Objects.nonNull(batches)){
+            
+            // 批次id 查询附件信息
+            List<Long> collectIds = batches.stream().map(Batch::getId).collect(Collectors.toList());
+            List<ProductFile> productFileList = productFileMapper.selectList(new LambdaQueryWrapper<ProductFile>().in(ProductFile::getProductId, collectIds));
+            // productFileList分组操作
+            Map<Long, List<ProductFile>> longProductFileListMap = productFileList.stream().collect(Collectors.groupingBy(ProductFile::getProductId));
+            
+            // 产品型号ids
+            List<Long> collectModelIds = batches.stream().map(Batch::getModelId).collect(Collectors.toList());
+            List<Product> productList = productMapper.selectList(new LambdaQueryWrapper<Product>().in(Product::getId, collectModelIds));
+            Map<Long, Product> longProductNewMap = productList.stream().collect(Collectors.toMap(Product::getId, Function.identity(), (oldValue, newValue) -> newValue));
+            
+            // 供应商/工厂id
+            List<Long> collectSupplierIds = batches.stream().map(Batch::getSupplierId).collect(Collectors.toList());
+            List<Supplier> supplierList = supplierMapper.selectList(new LambdaQueryWrapper<Supplier>().in(Supplier::getId, collectSupplierIds));
+            Map<Long, Supplier> longSupplierMap = supplierList.stream().collect(Collectors.toMap(Supplier::getId, Function.identity(), (oldValue, newValue) -> newValue));
+            
             batches.forEach(item -> {
                 // 查询附件信息
-                List<ProductFile> productFiles = productFileMapper.selectList(new LambdaQueryWrapper<ProductFile>().eq(ProductFile::getProductId, item.getId()));
+                List<ProductFile> productFiles = longProductFileListMap.get(item.getId());
+                
                 item.setProductFileList(productFiles);
                 // 产品型号
-                Product product = productService.getById(item.getModelId());
+                Product product = longProductNewMap.get(item.getModelId());
                 if(Objects.nonNull(product)){
                     item.setModelName(product.getName());
                 }
                 // 工厂名
-                Supplier supplier = supplierService.getById(item.getSupplierId());
+                Supplier supplier = longSupplierMap.get(item.getSupplierId());
                 if(Objects.nonNull(supplier)){
                     item.setSupplierName(supplier.getName());
                 }

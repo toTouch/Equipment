@@ -3,7 +3,6 @@ package com.xiliulou.afterserver.controller.user;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.xiliulou.afterserver.entity.*;
-import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.storage.config.StorageConfig;
@@ -158,7 +157,7 @@ public class JsonUserPointProductController {
     @GetMapping("/user/batch/list")
     public R selectOne(@RequestParam(value = "name",required = false) String name) {
 
-        return R.ok(this.batchService.queryAllByLimit(name,0,20, null, null));
+        return R.ok(this.batchService.queryAllByLimit(name,0,20, null, null, null));
     }
 
     /**

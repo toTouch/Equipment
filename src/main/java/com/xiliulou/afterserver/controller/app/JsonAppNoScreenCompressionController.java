@@ -25,6 +25,7 @@ public class JsonAppNoScreenCompressionController {
 
     /**
      * 柜机压测状态上报
+     *
      * @return
      */
 
