@@ -44,7 +44,7 @@ public class JsonAppCompressionController {
     }
 
     /**
-     * 压测2.0，压测结果单笔改成多笔
+     * 压测2.0，压测结果单笔改成多笔 人机交互
      */
     @PostMapping("/loadTest2")
     public R loadTest2(@RequestBody ApiRequestQuery apiRequestQuery){

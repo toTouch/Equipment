@@ -646,7 +646,12 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         ProductNew mainProduct = mainProducts.get(0);
         // auditValueService.biandOrUnbindEntry(AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY, iotCard.getSn(), mainProduct.getId());
         log.info("url: /app/compression/check mainProduct.getNo: {}", mainProduct.getNo());
-        return R.ok(Arrays.asList(mainProduct.getNo()));
+        
+        Batch batch = batchService.queryByIdFromDB(mainProduct.getBatchId());
+        HashMap<String, Object> stringStringHashMap = new HashMap<>();
+        stringStringHashMap.put("productNo", Arrays.asList(mainProduct.getNo()));
+        stringStringHashMap.put("cabinetType", String.valueOf(batch.getBatteryReplacementCabinetType()));
+        return R.ok(stringStringHashMap);
     }
     
     @Override
@@ -1337,6 +1342,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         }
     }
     
+    // 压测1.0 结束
     @Override
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public R compressionEnd(ApiRequestQuery apiRequestQuery) {
@@ -1435,7 +1441,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     }
     
     /**
-     * 压测2.0 结果
+     * 压测2.0 结果  人机交互
      *
      * @param apiRequestQuery
      * @return
@@ -1504,6 +1510,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             // ProductNew product = new ProductNew();
             // product.setNo(no);
             // product.setTestFile(compression.getCompressionFile());
+            //todo
+            
             product.setTestResult(compression.getTestStatus());
             product.setTestType(compression.getTestType());
             product.setErrorMessage(subStringByBytes(compression.getErrorMessage()));
