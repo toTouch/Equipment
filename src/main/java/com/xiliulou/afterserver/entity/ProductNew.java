@@ -121,6 +121,10 @@ public class ProductNew {
     private String type;
     private String code;
     private String remarks;
+    
+    /**
+     * 测试结果 0--失败 1--通过 2--压测中
+     */
     private Integer testResult;
     private String testFile;
 //    private Long iotCardId;
