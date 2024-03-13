@@ -647,11 +647,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         // auditValueService.biandOrUnbindEntry(AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY, iotCard.getSn(), mainProduct.getId());
         log.info("url: /app/compression/check mainProduct.getNo: {}", mainProduct.getNo());
         
-        Batch batch = batchService.queryByIdFromDB(mainProduct.getBatchId());
-        HashMap<String, Object> stringStringHashMap = new HashMap<>();
-        stringStringHashMap.put("productNo", Arrays.asList(mainProduct.getNo()));
-        stringStringHashMap.put("cabinetType", String.valueOf(batch.getBatteryReplacementCabinetType()));
-        return R.ok(stringStringHashMap);
+        return R.ok(Arrays.asList(mainProduct.getNo()));
     }
     
     @Override
@@ -1510,7 +1506,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             // ProductNew product = new ProductNew();
             // product.setNo(no);
             // product.setTestFile(compression.getCompressionFile());
-            //todo
+            // todo
             
             product.setTestResult(compression.getTestStatus());
             product.setTestType(compression.getTestType());
@@ -1546,6 +1542,81 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         }
         
         return R.ok();
+    }
+    
+    @Override
+    public R queryCabinetIotType(ApiRequestQuery apiRequestQuery) {
+        log.info("url: /app/compression/check checkCompression: {}", apiRequestQuery.getData());
+        CompressionQuery compression = null;
+        try {
+            compression = JSON.parseObject(apiRequestQuery.getData(), CompressionQuery.class);
+        } catch (Exception e) {
+            log.error("COMPRESSION PROPERTY CAST ERROR! check error", e);
+            return R.fail(null, null, "参数解析错误");
+        }
+        
+        if (CollectionUtils.isEmpty(compression.getNoList())) {
+            return R.fail(null, null, "压测柜机不存在，请核对");
+        }
+        
+        List<String> errorNos = new ArrayList<>();
+        List<String> errorStatus = new ArrayList<>();
+        
+        // String mainProductNo = "";
+        
+        if (Objects.isNull(compression.getIotCard())) {
+            return R.fail(null, null, "未上报主柜物联网卡号");
+        }
+        
+        IotCard iotCard = iotCardService.queryBySn(compression.getIotCard());
+        if (Objects.isNull(iotCard)) {
+            return R.fail(null, null, "物联网卡号【" + compression.getIotCard() + "】不存在，请核对");
+        }
+        
+        ArrayList<ProductNew> mainProducts = new ArrayList<>(1);
+        
+        for (String no : compression.getNoList()) {
+            ProductNew product = this.queryByNo(no);
+            if (Objects.isNull(product)) {
+                errorNos.add(no);
+            } else {
+                // 统计是否有多主柜
+                if (Objects.equals(product.getType(), ProductNew.TYPE_M)) {
+                    mainProducts.add(product);
+                }
+                
+                // 统计是否有前置检测未通过柜机
+                AuditProcess auditProcess = auditProcessService.getByType(AuditProcess.TYPE_PRE);
+                Integer status = auditProcessService.getAuditProcessStatus(auditProcess, product);
+                if ((!Objects.equals(status, AuditProcessVo.STATUS_FINISHED) || !Objects.equals(product.getStatus(), ProductNewStatusSortConstants.STATUS_PRE_DETECTION))
+                        && !Objects.equals(product.getStatus(), ProductNewStatusSortConstants.STATUS_TESTED)) {
+                    errorStatus.add(product.getNo());
+                }
+            }
+        }
+        
+        if (CollectionUtils.isNotEmpty(errorNos)) {
+            return R.fail(errorNos, null, "资产编码不存在，请核对");
+        }
+        
+        if (!(mainProducts.size() == 1) || Objects.isNull(mainProducts.get(0))) {
+            return R.fail(mainProducts, null, "主柜不存在或存在多个，请核对");
+        }
+        
+        if (CollectionUtils.isNotEmpty(errorStatus)) {
+            return R.fail(errorStatus, null, "柜机前置检测未通过或非前置检测完成、已测试状态,请核对");
+        }
+        
+        // 更新物联网卡
+        ProductNew mainProduct = mainProducts.get(0);
+        // auditValueService.biandOrUnbindEntry(AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY, iotCard.getSn(), mainProduct.getId());
+        log.info("url: /app/compression/check mainProduct.getNo: {}", mainProduct.getNo());
+        
+        Batch batch = batchService.queryByIdFromDB(mainProduct.getBatchId());
+        HashMap<String, Object> stringStringHashMap = new HashMap<>();
+        stringStringHashMap.put("productNo", Arrays.asList(mainProduct.getNo()));
+        stringStringHashMap.put("cabinetType", String.valueOf(batch.getBatteryReplacementCabinetType()));
+        return R.ok(stringStringHashMap);
     }
     
     public R compressing(CabinetCompressionQuery cabinetCompressionQuery) {

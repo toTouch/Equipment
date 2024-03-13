@@ -32,6 +32,11 @@ public class JsonAppCompressionController {
     public R checkCompression(@RequestBody ApiRequestQuery apiRequestQuery){
         return productNewService.checkCompression(apiRequestQuery);
     }
+    
+    @PostMapping("/getIotTypeAndCheck")
+    public R queryCabinetIotType(@RequestBody ApiRequestQuery apiRequestQuery){
+        return productNewService.queryCabinetIotType(apiRequestQuery);
+    }
 
     @PostMapping("/loadTest")
     public R loadTest(@RequestBody ApiRequestQuery apiRequestQuery){

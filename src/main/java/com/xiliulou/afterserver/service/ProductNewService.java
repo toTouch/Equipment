@@ -138,4 +138,6 @@ public interface ProductNewService extends IService<ProductNew> {
     R updateUsedStatus(String no );
     R runFullLoadTest2(ApiRequestQuery apiRequestQuery);
     R compressionEnd2(ApiRequestQuery apiRequestQuery);
+    
+    R queryCabinetIotType(ApiRequestQuery apiRequestQuery);
 }
