@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.util;
 
+import com.google.common.util.concurrent.RateLimiter;
 import com.huaweicloud.sdk.core.auth.AbstractCredentials;
 import com.huaweicloud.sdk.core.auth.BasicCredentials;
 import com.huaweicloud.sdk.core.auth.ICredential;
@@ -23,16 +24,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 @Component
 public class DeviceSolutionUtil {
     
     @Autowired
     private ProductConfig productConfig;
+    
+    // 令牌桶
+    public static final RateLimiter TOKEN_BUCKET_50 = RateLimiter.create(50.0);
     
     /**
      * 获取IoTDAClient实例
@@ -127,13 +129,9 @@ public class DeviceSolutionUtil {
             if (booleanObjectStringTriple.getLeft()) {
                 return Pair.of(false, booleanObjectStringTriple.getMiddle() + "设备已存在");
             }
-            deviceNames.forEach(deviceName -> {
+            deviceNames.parallelStream().forEach(deviceName -> {
                 registerDevice(client, productKey, deviceName);
-                try {
-                    TimeUnit.MILLISECONDS.sleep(20);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                TOKEN_BUCKET_50.acquire();
             });
         } catch (ConnectionException | RequestTimeoutException e) {
             e.printStackTrace();
@@ -156,16 +154,12 @@ public class DeviceSolutionUtil {
      */
     private Triple<Boolean, Object, String> devicePresenceVerification(Set<String> deviceNames, IoTDAClient client) {
         Set<String> deviceAlreadyExists = new HashSet<>();
-        deviceNames.forEach(deviceName -> {
+        deviceNames.parallelStream().forEach(deviceName -> {
             ShowDeviceResponse showDeviceResponse = queryDeviceDetail(client, deviceName);
             if (showDeviceResponse != null && showDeviceResponse.getDeviceName() != null) {
                 deviceAlreadyExists.add(showDeviceResponse.getDeviceName());
             }
-            try {
-                TimeUnit.MILLISECONDS.sleep(20);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            TOKEN_BUCKET_50.acquire();
         });
         
         if (!CollectionUtils.isEmpty(deviceAlreadyExists)) {

@@ -194,6 +194,7 @@ public class BatchServiceImpl implements BatchService {
         Product product = productService.getBaseMapper().selectById(batch.getModelId());
         // 就是工厂
         Supplier supplier = supplierService.getById(batch.getSupplierId());
+        // 校验
         R<String> fail = verifyBeforeCreatingABatch(batch, product, supplier);
         if (fail != null) {
             return fail;
@@ -304,6 +305,7 @@ public class BatchServiceImpl implements BatchService {
         }
         
         if (HUAWEI_CLOUD_SaaS.equals(batch.getBatteryReplacementCabinetType())) {
+            //20240314 华为云IOT注册限制每秒50次请求 此接口超时时间为30秒
             Pair<Boolean, String> booleanStringPair = deviceSolutionUtil.batchRegisterDevice(deviceNames, key);
             if (!booleanStringPair.getLeft()) {
                 throw new CustomBusinessException(booleanStringPair.getRight());

@@ -220,7 +220,7 @@ public class DeviceSolution {
     /**
      * 批量注册设备
      *
-     * @
+     *
      */
     public Pair<Boolean, String> batchRegisterDevice(ArrayList<String> deviceNames, String productKey) {
         IoTDAClient client = getIoTDAClient(ak, sk);
@@ -317,4 +317,5 @@ public class DeviceSolution {
         }
         return "SELECT * FROM device WHERE node_id IN (" + inClauseBuilder + ")";
     }
+    
 }
