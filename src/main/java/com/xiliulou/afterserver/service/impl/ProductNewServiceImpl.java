@@ -104,6 +104,7 @@ import java.util.Set;
 public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, ProductNew> implements ProductNewService {
     
     public static final int MAX_BYTES_ERROR_MESSAGE = 190;
+    
     @Autowired
     private DeviceSolutionUtil deviceSolutionUtil;
     
@@ -1742,13 +1743,23 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         if (Objects.isNull(deviceMessageVo.getDeviceName()) || Objects.isNull(deviceMessageVo.getProductKey())) {
             return R.fail(null, "00000", "资产编码对应的三元组信息不全");
         }
+        
         QueryDeviceDetailResult queryDeviceDetailResult = registerDeviceService.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
         
-        ShowDeviceResponse showDeviceResponse = deviceSolutionUtil.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
-        
-        deviceMessageVo.setDeviceSecret(queryDeviceDetailResult == null ? null : queryDeviceDetailResult.getDeviceSecret());
+        String secret = "";
+        if (Objects.isNull(queryDeviceDetailResult)) {
+            ShowDeviceResponse showDeviceResponse = deviceSolutionUtil.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
+            
+            if (Objects.nonNull(showDeviceResponse) && Objects.nonNull(showDeviceResponse.getAuthInfo())) {
+                secret = showDeviceResponse.getAuthInfo().getSecret();
+            } else {
+                secret = null;
+            }
+        }
+        deviceMessageVo.setDeviceSecret(queryDeviceDetailResult == null ? secret : queryDeviceDetailResult.getDeviceSecret());
         return R.ok(deviceMessageVo);
     }
+    
     
     @Override
     public R updateUsedStatus(String no) {
