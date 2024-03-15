@@ -13,6 +13,6 @@ public class ProductConfig {
     private String huaweiKey;
     private String huaweiAccessKey;
     private String huaweiAccessSecret;
-    
+    private String endpoint;
 
 }

@@ -4,6 +4,7 @@ import com.huaweicloud.sdk.core.auth.ICredential;
 import com.huaweicloud.sdk.core.exception.ConnectionException;
 import com.huaweicloud.sdk.core.exception.RequestTimeoutException;
 import com.huaweicloud.sdk.core.exception.ServiceResponseException;
+import com.huaweicloud.sdk.core.region.Region;
 import com.huaweicloud.sdk.iotda.v5.IoTDAClient;
 import com.huaweicloud.sdk.iotda.v5.model.AddDevice;
 import com.huaweicloud.sdk.iotda.v5.model.AddDeviceRequest;
@@ -48,6 +49,7 @@ public class DeviceSolution {
     String sk = "gWcndZnssP8QslPFFy1AhSCxQUB98ZnZQO0Df1qH"; // System.getenv("CLOUD_SDK_SK");
     
     String productKey = "product_exchange";
+    // String productKey = "65f04c2d7bdccc0126c81902";
     /*
     POST /v5/iot/{project_id}/devices   project_id 	ecd4aae0a479487dbadddc67ee1e3d2f
     registerDevice
@@ -71,7 +73,7 @@ public class DeviceSolution {
     @Test
     public void registerDevice() {
         IoTDAClient ioTDAClient = getIoTDAClient(ak, sk);
-        registerDevice(ioTDAClient, productKey, "ABC123456781");
+        registerDevice(ioTDAClient, productKey, "ABC1234567866613");
     }
     
     /**
@@ -153,7 +155,6 @@ public class DeviceSolution {
         body.withNodeId(deviceName);  // T 设备标识码，通常使用IMEI、MAC地址或Serial No作为node_id   -- deviceName
         body.withProductId(productKey); // T 设备关联的产品ID，用于唯一标识一个产品模型  -- productKey
         request.withBody(body);
-        request.withInstanceId("8700f314-280a-4f87-8ef6-89b6fe11bf01");
         
         try {
             AddDeviceResponse response = client.addDevice(request);
@@ -172,6 +173,9 @@ public class DeviceSolution {
         }
     }
     
+    private static final String REGION_ID = "<YOUR REGION ID>";
+    // ENDPOINT：请在控制台的"总览"界面的"平台接入地址"中查看“应用侧”的https接入地址。
+    private static final String ENDPOINT = "3ece5eca3c.st1.iotda-app.cn-north-4.myhuaweicloud.com";
     /**
      * 获取IoTDAClient实例列表
      *
@@ -186,7 +190,10 @@ public class DeviceSolution {
         ICredential auth = new BasicCredentials().withDerivedPredicate(AbstractCredentials.DEFAULT_DERIVED_PREDICATE) // Used in derivative ak/sk authentication scenarios
                 .withAk(ak).withSk(sk);
         
-        IoTDAClient client = IoTDAClient.newBuilder().withCredential(auth).withRegion(IoTDARegion.valueOf(regionId)).build();
+        IoTDAClient client = IoTDAClient.newBuilder().withCredential(auth)
+                .withRegion(new Region(regionId, ENDPOINT))
+                // .withRegion(IoTDARegion.valueOf(regionId))
+                .build();
         return client;
     }
     
@@ -326,7 +333,7 @@ public class DeviceSolution {
         IoTDAClient client = getIoTDAClient(ak, sk);
         try {
             ShowDeviceRequest request = new ShowDeviceRequest();
-            request.setDeviceId("hw0001");
+            request.setDeviceId("ABC1234567866613");
             ShowDeviceResponse response = client.showDevice(request);
             System.out.println("================ response =================");
             System.out.println(response.toString());

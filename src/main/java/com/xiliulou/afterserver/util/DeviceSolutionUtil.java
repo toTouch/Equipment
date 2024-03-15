@@ -7,6 +7,7 @@ import com.huaweicloud.sdk.core.auth.ICredential;
 import com.huaweicloud.sdk.core.exception.ConnectionException;
 import com.huaweicloud.sdk.core.exception.RequestTimeoutException;
 import com.huaweicloud.sdk.core.exception.ServiceResponseException;
+import com.huaweicloud.sdk.core.region.Region;
 import com.huaweicloud.sdk.iotda.v5.IoTDAClient;
 import com.huaweicloud.sdk.iotda.v5.model.AddDevice;
 import com.huaweicloud.sdk.iotda.v5.model.AddDeviceRequest;
@@ -42,7 +43,7 @@ public class DeviceSolutionUtil {
      * @link <a href="https://support.huaweicloud.com/devg-apisign/api-sign-provide-aksk.html"> 获取ak、sk实例 </a>
      */
     private IoTDAClient getIoTDAClient() {
-        return getIoTDAClient(productConfig.getHuaweiAccessKey(), productConfig.getHuaweiAccessSecret(), null);
+        return getIoTDAClient(productConfig.getHuaweiAccessKey(), productConfig.getHuaweiAccessSecret(), null, productConfig.getEndpoint());
     }
     
     /**
@@ -60,6 +61,14 @@ public class DeviceSolutionUtil {
                 .withAk(ak).withSk(sk);
         
         return IoTDAClient.newBuilder().withCredential(auth).withRegion(IoTDARegion.valueOf(regionId)).build();
+    }
+    
+    private IoTDAClient getIoTDAClient(String ak, String sk, String regionId, String endpoint) {
+        regionId = StringUtils.isEmpty(regionId) ? "cn-north-4" : regionId;
+        ICredential auth = new BasicCredentials().withDerivedPredicate(AbstractCredentials.DEFAULT_DERIVED_PREDICATE) // Used in derivative ak/sk authentication scenarios
+                .withAk(ak).withSk(sk);
+        
+        return IoTDAClient.newBuilder().withCredential(auth).withRegion(new Region(regionId, endpoint)).build();
     }
     
     /**
@@ -86,11 +95,11 @@ public class DeviceSolutionUtil {
         return null;
     }
     
-    public ShowDeviceResponse queryDeviceDetail(String productKey , String deviceName) {
+    public ShowDeviceResponse queryDeviceDetail(String productKey, String deviceName) {
         IoTDAClient ioTDAClient = getIoTDAClient();
         try {
             ShowDeviceRequest request = new ShowDeviceRequest();
-            request.setDeviceId(productKey+deviceName);
+            request.setDeviceId(deviceName);
             ShowDeviceResponse response = ioTDAClient.showDevice(request);
             System.out.println("================ response =================");
             System.out.println(response.toString());
@@ -143,7 +152,6 @@ public class DeviceSolutionUtil {
     
     private static AddDeviceRequest getAddDeviceRequest() {
         AddDeviceRequest request = new AddDeviceRequest();
-        request.withInstanceId("8700f314-280a-4f87-8ef6-89b6fe11bf01");
         return request;
     }
     
