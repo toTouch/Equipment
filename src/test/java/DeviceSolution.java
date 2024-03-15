@@ -38,9 +38,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-// @SpringBootTest(classes = AfterServerApplication.class)
-// @RunWith(SpringRunner.class)
-// @ActiveProfiles("dev")
+@SpringBootTest(classes = AfterServerApplication.class)
+@RunWith(SpringRunner.class)
+@ActiveProfiles("loc")
 @Slf4j
 public class DeviceSolution {
     
@@ -56,16 +56,16 @@ public class DeviceSolution {
     
     */
     
-    // @Autowired
-    // DeviceSolutionUtil deviceSolutionUtil;
+    @Autowired
+    DeviceSolutionUtil deviceSolutionUtil;
     
-    // @Test
-    // public void batchRegisterDevice() {
-    //     Set<String> strings = new HashSet<>();
-    //     strings.add("ABC123456780");
-    //     Pair<Boolean, String> booleanStringPair = deviceSolutionUtil.batchRegisterDevice(strings, productKey);
-    //     System.out.println(booleanStringPair);
-    // }
+    @Test
+    public void batchRegisterDevice() {
+        Set<String> strings = new HashSet<>();
+        strings.add("11ABC123456780");
+        Pair<Boolean, String> booleanStringPair = deviceSolutionUtil.batchRegisterDevice(strings, productKey);
+        System.out.println(booleanStringPair);
+    }
     
     /**
      * 注册设备
