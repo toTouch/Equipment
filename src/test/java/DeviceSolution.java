@@ -37,9 +37,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-@SpringBootTest(classes = AfterServerApplication.class)
-@RunWith(SpringRunner.class)
-@ActiveProfiles("dev")
+// @SpringBootTest(classes = AfterServerApplication.class)
+// @RunWith(SpringRunner.class)
+// @ActiveProfiles("dev")
 @Slf4j
 public class DeviceSolution {
     
@@ -47,23 +47,23 @@ public class DeviceSolution {
     
     String sk = "gWcndZnssP8QslPFFy1AhSCxQUB98ZnZQO0Df1qH"; // System.getenv("CLOUD_SDK_SK");
     
-    String productKey = "65f04c2d7bdccc0126c81902";
+    String productKey = "product_exchange";
     /*
     POST /v5/iot/{project_id}/devices   project_id 	ecd4aae0a479487dbadddc67ee1e3d2f
     registerDevice
     
     */
     
-    @Autowired
-    DeviceSolutionUtil deviceSolutionUtil;
+    // @Autowired
+    // DeviceSolutionUtil deviceSolutionUtil;
     
-    @Test
-    public void batchRegisterDevice() {
-        Set<String> strings = new HashSet<>();
-        strings.add("ABC123456780");
-        Pair<Boolean, String> booleanStringPair = deviceSolutionUtil.batchRegisterDevice(strings, productKey);
-        System.out.println(booleanStringPair);
-    }
+    // @Test
+    // public void batchRegisterDevice() {
+    //     Set<String> strings = new HashSet<>();
+    //     strings.add("ABC123456780");
+    //     Pair<Boolean, String> booleanStringPair = deviceSolutionUtil.batchRegisterDevice(strings, productKey);
+    //     System.out.println(booleanStringPair);
+    // }
     
     /**
      * 注册设备
@@ -71,7 +71,7 @@ public class DeviceSolution {
     @Test
     public void registerDevice() {
         IoTDAClient ioTDAClient = getIoTDAClient(ak, sk);
-        registerDevice(ioTDAClient, productKey, "ABC123456780");
+        registerDevice(ioTDAClient, productKey, "ABC123456781");
     }
     
     /**
@@ -153,6 +153,7 @@ public class DeviceSolution {
         body.withNodeId(deviceName);  // T 设备标识码，通常使用IMEI、MAC地址或Serial No作为node_id   -- deviceName
         body.withProductId(productKey); // T 设备关联的产品ID，用于唯一标识一个产品模型  -- productKey
         request.withBody(body);
+        request.withInstanceId("8700f314-280a-4f87-8ef6-89b6fe11bf01");
         
         try {
             AddDeviceResponse response = client.addDevice(request);
