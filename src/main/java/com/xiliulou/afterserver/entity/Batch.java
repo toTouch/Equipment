@@ -105,7 +105,6 @@ public class Batch {
     private String supplierName;
     
     // 换电柜类型(0:阿里云SaaS换电柜,1:api换电柜,3:华为云saas)
-    @TableField(exist = false)
     private Integer batteryReplacementCabinetType;
     
     // 阿里云的SaaS换电柜服务类型
