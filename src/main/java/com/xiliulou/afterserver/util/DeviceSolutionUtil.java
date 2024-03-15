@@ -115,7 +115,7 @@ public class DeviceSolutionUtil {
      * @param deviceName 设备名称
      */
     public void registerDevice(IoTDAClient client, String productKey, String deviceName) {
-        AddDeviceRequest request = new AddDeviceRequest();
+        AddDeviceRequest request = getAddDeviceRequest();
         AddDevice body = new AddDevice();
         
         body.withDeviceName(deviceName); // F 设备名称 要传进来的参数
@@ -139,6 +139,12 @@ public class DeviceSolutionUtil {
             System.out.println(e.getErrorCode());
             System.out.println(e.getErrorMsg());
         }
+    }
+    
+    private static AddDeviceRequest getAddDeviceRequest() {
+        AddDeviceRequest request = new AddDeviceRequest();
+        request.withInstanceId("8700f314-280a-4f87-8ef6-89b6fe11bf01");
+        return request;
     }
     
     /**
