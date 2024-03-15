@@ -13,6 +13,7 @@
         <result property="supplierId" column="supplier_id"/>
         <result property="updateTime" column="update_time"/>
         <result property="notShipped" column="not_shipped"/>
+        <result property="batteryReplacementCabinetType" column="battery_replacement_cabinet_type"/>
     </resultMap>
     
     <!--查询单个-->
@@ -22,7 +23,8 @@
                remarks,
                create_time,
                product_num,
-               not_shipped
+               not_shipped,
+               battery_replacement_cabinet_type
         from t_batch
         where id = #{id}
     </select>
