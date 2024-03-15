@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
+import com.huaweicloud.sdk.iotda.v5.model.ShowDeviceResponse;
 import com.xiliulou.afterserver.constant.AuditProcessConstans;
 import com.xiliulou.afterserver.constant.ProductNewStatusSortConstants;
 import com.xiliulou.afterserver.entity.AuditProcess;
@@ -49,6 +50,7 @@ import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.service.UserService;
 import com.xiliulou.afterserver.service.WarehouseService;
+import com.xiliulou.afterserver.util.DeviceSolutionUtil;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
@@ -102,6 +104,8 @@ import java.util.Set;
 public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, ProductNew> implements ProductNewService {
     
     public static final int MAX_BYTES_ERROR_MESSAGE = 190;
+    @Autowired
+    private DeviceSolutionUtil deviceSolutionUtil;
     
     @Autowired
     private RegisterDeviceService registerDeviceService;
@@ -1739,6 +1743,9 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             return R.fail(null, "00000", "资产编码对应的三元组信息不全");
         }
         QueryDeviceDetailResult queryDeviceDetailResult = registerDeviceService.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
+        
+        ShowDeviceResponse showDeviceResponse = deviceSolutionUtil.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
+        
         deviceMessageVo.setDeviceSecret(queryDeviceDetailResult == null ? null : queryDeviceDetailResult.getDeviceSecret());
         return R.ok(deviceMessageVo);
     }
