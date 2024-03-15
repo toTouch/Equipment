@@ -1729,8 +1729,20 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         if (Objects.equals(deviceMessageVo.getIsUse(), ProductNew.IS_USE)) {
             return R.fail(null, "00000", "柜机对应三元组已使用");
         }
+        
         QueryDeviceDetailResult queryDeviceDetailResult = registerDeviceService.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
-        deviceMessageVo.setDeviceSecret(queryDeviceDetailResult == null ? null : queryDeviceDetailResult.getDeviceSecret());
+        
+        String secret = "";
+        if (Objects.isNull(queryDeviceDetailResult)) {
+            ShowDeviceResponse showDeviceResponse = deviceSolutionUtil.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
+            
+            if (Objects.nonNull(showDeviceResponse) && Objects.nonNull(showDeviceResponse.getAuthInfo())) {
+                secret = showDeviceResponse.getAuthInfo().getSecret();
+            } else {
+                secret = null;
+            }
+        }
+        deviceMessageVo.setDeviceSecret(queryDeviceDetailResult == null ? secret : queryDeviceDetailResult.getDeviceSecret());
         return R.ok(deviceMessageVo);
     }
     

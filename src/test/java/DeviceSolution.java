@@ -44,11 +44,11 @@ import java.util.Set;
 @Slf4j
 public class DeviceSolution {
     
-    String ak = "R0YOLDOWWEBZYUAGFQFP";  // System.getenv("CLOUD_SDK_AK");
+    String ak = "JBNJ2QSPGIQ7QFNTWWJS";  // System.getenv("CLOUD_SDK_AK");
     
-    String sk = "gWcndZnssP8QslPFFy1AhSCxQUB98ZnZQO0Df1qH"; // System.getenv("CLOUD_SDK_SK");
+    String sk = "taNpnKa1fRcmruUYMQgnIHQjlsuKkcTPpULcUMcX"; // System.getenv("CLOUD_SDK_SK");
     
-    String productKey = "product_exchange";
+    String productKey = "a1mqS72fHNi";
     // String productKey = "65f04c2d7bdccc0126c81902";
     /*
     POST /v5/iot/{project_id}/devices   project_id 	ecd4aae0a479487dbadddc67ee1e3d2f
@@ -62,7 +62,8 @@ public class DeviceSolution {
     @Test
     public void batchRegisterDevice() {
         Set<String> strings = new HashSet<>();
-        strings.add("11ABC123456780");
+        strings.add("zbzcssss001");
+        // strings.add("11ABC123456780");
         Pair<Boolean, String> booleanStringPair = deviceSolutionUtil.batchRegisterDevice(strings, productKey);
         System.out.println(booleanStringPair);
     }
