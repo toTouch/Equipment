@@ -18,6 +18,7 @@ import com.huaweicloud.sdk.iotda.v5.model.ShowDeviceResponse;
 import com.huaweicloud.sdk.iotda.v5.region.IoTDARegion;
 import com.xiliulou.afterserver.AfterServerApplication;
 import com.xiliulou.afterserver.util.DeviceSolutionUtil;
+import com.xiliulou.iot.entity.response.QueryDeviceDetailResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -36,9 +37,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-@SpringBootTest(classes = AfterServerApplication.class)
-@RunWith(SpringRunner.class)
-@ActiveProfiles("dev")
+// @SpringBootTest(classes = AfterServerApplication.class)
+// @RunWith(SpringRunner.class)
+// @ActiveProfiles("dev")
 @Slf4j
 public class DeviceSolution {
     
@@ -53,8 +54,8 @@ public class DeviceSolution {
     
     */
     
-    @Autowired
-    DeviceSolutionUtil deviceSolutionUtil;
+    // @Autowired
+    // DeviceSolutionUtil deviceSolutionUtil;
     
     @Test
     public void batchRegisterDevice() {
@@ -318,4 +319,32 @@ public class DeviceSolution {
         return "SELECT * FROM device WHERE node_id IN (" + inClauseBuilder + ")";
     }
     
+    
+    @Test
+    public void queryDeviceDetail() {
+        IoTDAClient client = getIoTDAClient(ak, sk);
+        try {
+            ShowDeviceRequest request = new ShowDeviceRequest();
+            request.setDeviceId("hw0001");
+            ShowDeviceResponse response = client.showDevice(request);
+            System.out.println("================ response =================");
+            System.out.println(response.toString());
+            // System.out.println(response.get);
+            // response.getDeviceName()
+            QueryDeviceDetailResult queryDeviceDetailResult=new QueryDeviceDetailResult();
+            queryDeviceDetailResult.setDeviceName(response.getDeviceName());
+            // queryDeviceDetailResult.setProductKey(response.());
+            //
+            // queryDeviceDetailResult.setDeviceSecret(response.getDeviceSecret());
+            // queryDeviceDetailResult.setDeviceSecret(response.getDeviceSecret());
+        } catch (ConnectionException | RequestTimeoutException e) {
+            e.printStackTrace();
+        } catch (ServiceResponseException e) {
+            e.printStackTrace();
+            System.out.println(e.getHttpStatusCode());
+            System.out.println(e.getRequestId());
+            System.out.println(e.getErrorCode());
+            System.out.println(e.getErrorMsg());
+        }
+    }
 }

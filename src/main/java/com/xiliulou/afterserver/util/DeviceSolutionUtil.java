@@ -86,6 +86,28 @@ public class DeviceSolutionUtil {
         return null;
     }
     
+    public ShowDeviceResponse queryDeviceDetail(String productKey , String deviceName) {
+        IoTDAClient ioTDAClient = getIoTDAClient();
+        try {
+            ShowDeviceRequest request = new ShowDeviceRequest();
+            request.setDeviceId(productKey+deviceName);
+            ShowDeviceResponse response = ioTDAClient.showDevice(request);
+            System.out.println("================ response =================");
+            System.out.println(response.toString());
+            // System.out.println(response.get);
+            return response;
+        } catch (ConnectionException | RequestTimeoutException e) {
+            e.printStackTrace();
+        } catch (ServiceResponseException e) {
+            e.printStackTrace();
+            System.out.println(e.getHttpStatusCode());
+            System.out.println(e.getRequestId());
+            System.out.println(e.getErrorCode());
+            System.out.println(e.getErrorMsg());
+        }
+        return null;
+    }
+    
     /**
      * 注册设备
      *
