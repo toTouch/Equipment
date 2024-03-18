@@ -156,3 +156,7 @@ iot:
 product-config:
   key: a1mqS72fHNi
   Apikey: a1Tm4CuXmXz
+  huaweiKey: a1mqS72fHNi
+  huaweiAccessKey: JBNJ2QSPGIQ7QFNTWWJS
+  huaweiAccessSecret: taNpnKa1fRcmruUYMQgnIHQjlsuKkcTPpULcUMcX
+  endpoint: 835db6b12b.st1.iotda-app.cn-north-4.myhuaweicloud.com
