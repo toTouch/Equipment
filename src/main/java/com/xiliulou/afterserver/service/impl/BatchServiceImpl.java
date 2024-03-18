@@ -307,6 +307,7 @@ public class BatchServiceImpl implements BatchService {
         if (HUAWEI_CLOUD_SaaS.equals(batch.getBatteryReplacementCabinetType())) {
             //20240314 华为云IOT注册限制每秒50次请求 此接口超时时间为30秒
             Pair<Boolean, String> booleanStringPair = deviceSolutionUtil.batchRegisterDevice(deviceNames, key);
+            log.info("batch register finished:result={} applyId={} ", booleanStringPair.getLeft(), key);
             if (!booleanStringPair.getLeft()) {
                 throw new CustomBusinessException(booleanStringPair.getRight());
             }
