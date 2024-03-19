@@ -30,7 +30,7 @@
 		<file>${log.path}/debug.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
 			<fileNamePattern>${log.path}/%d{yyyy-MM, aux}/debug.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
-			<maxFileSize>50MB</maxFileSize>
+			<maxFileSize>300MB</maxFileSize>
 			<maxHistory>30</maxHistory>
 			<totalSizeCap>4GB</totalSizeCap>
 			<cleanHistoryOnStart>true</cleanHistoryOnStart>
@@ -61,7 +61,7 @@
 		<file>${log.path}/request.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
 			<fileNamePattern>${log.path}/%d{yyyy-MM}/request.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
-			<maxFileSize>50MB</maxFileSize>
+			<maxFileSize>100MB</maxFileSize>
 			<maxHistory>30</maxHistory>
 			<totalSizeCap>4GB</totalSizeCap>
 			<cleanHistoryOnStart>true</cleanHistoryOnStart>
@@ -73,8 +73,11 @@
 			<level>info</level>
 		</filter>
 	</appender>
-
-
+	
+	<logger name="com.xiliulou.afterserver.filter.RequestFilter" level="INFO">
+		<appender-ref ref="ASYNC_REQUEST"/>
+	</logger>
+	
 	<logger name="com.xiliulou.afterserver.mapper" level="DEBUG">
 		<appender-ref ref="debug"/>
 	</logger>
