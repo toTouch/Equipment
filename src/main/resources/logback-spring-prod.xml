@@ -75,7 +75,7 @@
 	</appender>
 	
 	<logger name="com.xiliulou.afterserver.filter.RequestFilter" level="INFO">
-		<appender-ref ref="ASYNC_REQUEST"/>
+		<appender-ref ref="request"/>
 	</logger>
 	
 	<logger name="com.xiliulou.afterserver.mapper" level="DEBUG">
