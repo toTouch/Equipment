@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.controller.app;
 
 import com.xiliulou.afterserver.entity.FactoryTestConf;
+import com.xiliulou.afterserver.plugin.MyLog;
 import com.xiliulou.afterserver.service.FactoryTestConfService;
 import com.xiliulou.afterserver.service.ProductNewService;
 import com.xiliulou.afterserver.util.R;
@@ -29,6 +30,7 @@ public class JsonAppCompressionController {
     private FactoryTestConfService factoryTestConfService;
 
     @PostMapping("/check")
+    @MyLog
     public R checkCompression(@RequestBody ApiRequestQuery apiRequestQuery){
         return productNewService.checkCompression(apiRequestQuery);
     }
@@ -39,11 +41,13 @@ public class JsonAppCompressionController {
     }
 
     @PostMapping("/loadTest")
+    @MyLog
     public R loadTest(@RequestBody ApiRequestQuery apiRequestQuery){
         return productNewService.runFullLoadTest(apiRequestQuery);
     }
 
     @PostMapping("/success")
+    @MyLog
     public R successCompression(@RequestBody ApiRequestQuery apiRequestQuery){
         return productNewService.successCompression(apiRequestQuery);
     }
@@ -52,6 +56,7 @@ public class JsonAppCompressionController {
      * 压测2.0，压测结果单笔改成多笔 人机交互
      */
     @PostMapping("/loadTest2")
+    @MyLog
     public R loadTest2(@RequestBody ApiRequestQuery apiRequestQuery){
         return productNewService.runFullLoadTest2(apiRequestQuery);
     }
@@ -60,6 +65,7 @@ public class JsonAppCompressionController {
      * 配置列表`
      */
     @PostMapping("/listConf")
+    @MyLog
     public List<FactoryTestConf> listConf(@RequestBody ApiRequestQuery apiRequestQuery){
         return factoryTestConfService.getAllByApi(apiRequestQuery);
     }

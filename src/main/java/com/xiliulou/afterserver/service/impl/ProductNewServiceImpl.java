@@ -649,6 +649,10 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         
         // 更新物联网卡
         ProductNew mainProduct = mainProducts.get(0);
+        
+        
+        
+        
         // auditValueService.biandOrUnbindEntry(AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY, iotCard.getSn(), mainProduct.getId());
         log.info("url: /app/compression/check mainProduct.getNo: {}", mainProduct.getNo());
         
@@ -676,7 +680,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         
         IotCard iotCard = iotCardService.queryBySn(compression.getIotCard());
         if (Objects.isNull(iotCard)) {
-            return R.fail(null, null, "未查询到物联网卡信息");
+            log.info("未查询到物联网卡信息 {}",compression.getIotCard());
+            // return R.fail(null, null, "未查询到物联网卡信息");
         }
         
         ArrayList<ProductNew> mainProducts = new ArrayList(1);
@@ -1365,7 +1370,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         
         IotCard iotCard = iotCardService.queryBySn(compression.getIotCard());
         if (Objects.isNull(iotCard)) {
-            return R.fail(null, null, "未查询到物联网卡信息");
+            log.info("未查询到物联网卡信息",compression.getIotCard());
+            // return R.fail(null, null, "未查询到物联网卡信息");
         }
         
         ArrayList<ProductNew> mainProducts = new ArrayList(1);
@@ -1435,6 +1441,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             } else {
                 product.setStatus(ProductNewStatusSortConstants.STATUS_TESTED);
             }
+            log.info("{} pressure measurement status: {}   Test Result: {}", product.getNo(),product.getStatus(),product.getTestResult());
             productNewMapper.updateByNoNew(product);
         }
         
@@ -1543,6 +1550,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             } else {
                 product.setStatus(ProductNewStatusSortConstants.STATUS_TESTED);
             }
+            log.info("{} pressure measurement status: {}   Test Result: {}", product.getNo(),product.getStatus(),product.getTestResult());
             productNewMapper.updateByNoNew(product);
         }
         
