@@ -177,21 +177,6 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     @Autowired
     private CompressionRecordMapper compressionRecordMapper;
     
-    public static void main(String[] args) {
-        List<Integer> list = new ArrayList() {
-            {
-                add(1);
-                add(2);
-                add(1);
-            }
-        };
-        long count = list.stream().distinct().count();
-        boolean isRepeat = count < list.size();
-        System.out.println(count);// 输出2
-        System.out.println(isRepeat);// 输出true
-        
-        
-    }
     
     public static String subStringByBytes(String str) {
         if (Objects.isNull(str)) {
@@ -681,7 +666,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         IotCard iotCard = iotCardService.queryBySn(compression.getIotCard());
         if (Objects.isNull(iotCard)) {
             log.info("未查询到物联网卡信息 {}",compression.getIotCard());
-            // return R.fail(null, null, "未查询到物联网卡信息");
+            return R.fail(null, null, "未查询到物联网卡信息");
         }
         
         ArrayList<ProductNew> mainProducts = new ArrayList(1);
@@ -1373,7 +1358,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         IotCard iotCard = iotCardService.queryBySn(compression.getIotCard());
         if (Objects.isNull(iotCard)) {
             log.info("未查询到物联网卡信息",compression.getIotCard());
-            // return R.fail(null, null, "未查询到物联网卡信息");
+            return R.fail(null, null, "未查询到物联网卡信息");
         }
         
         ArrayList<ProductNew> mainProducts = new ArrayList(1);

@@ -9,8 +9,8 @@
 
     <!--查询单个-->
     <select id="queryById" resultMap="MaterialCoreConfigMap">
-        select
-id, material_core_config
+        select id,
+               material_core_config
         from t_material_core_config
         where id = #{id}
     </select>
@@ -66,7 +66,7 @@ id, material_core_config
             (#{entity.materialCoreConfig})
         </foreach>
         on duplicate key update
-material_core_config = values(material_core_config)
+        material_core_config = values(material_core_config)
     </insert>
 
     <!--通过主键修改数据-->

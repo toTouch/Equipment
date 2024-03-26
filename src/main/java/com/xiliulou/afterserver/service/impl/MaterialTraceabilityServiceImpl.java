@@ -61,7 +61,13 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         if (StringUtils.isBlank(materialTraceabilityQuery.getProductNo())) {
             return R.failMsg("资产编码不可以为空");
         }
-        
+        if (Objects.equals(materialTraceabilityQuery.getMaterialSn(), materialTraceabilityQuery.getProductNo())) {
+            return R.failMsg("请勿重复扫描柜机资产编码");
+        }
+        ProductNew queryByMeta = productNewMapper.queryByNo(materialTraceabilityQuery.getMaterialSn());
+        if (Objects.nonNull(queryByMeta)) {
+            return R.failMsg("柜机不可作为物料");
+        }
         ProductNew productNew = productNewMapper.queryByNo(materialTraceabilityQuery.getProductNo());
         if (Objects.isNull(productNew)) {
             return R.failMsg("资产编码不存在，请检查");
