@@ -3,10 +3,12 @@ package com.xiliulou.afterserver.service.impl;
 import com.xiliulou.afterserver.entity.MaterialCoreConfig;
 import com.xiliulou.afterserver.mapper.MaterialCoreConfigMapper;
 import com.xiliulou.afterserver.service.MaterialCoreConfigService;
+import com.xiliulou.afterserver.util.R;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 
@@ -52,9 +54,15 @@ public class MaterialCoreConfigServiceImpl implements MaterialCoreConfigService 
      * @return 实例对象
      */
     @Override
-    public MaterialCoreConfig insert(MaterialCoreConfig materialCoreConfig) {
+    public R insert(MaterialCoreConfig materialCoreConfig) {
+        if (materialCoreConfig.getMaterialCoreConfig().length()>300) {
+            return R.failMsg("配置内容不能超过300个字符");
+        }
+        if (StringUtils.isEmpty(materialCoreConfig.getMaterialCoreConfig())) {
+            return R.failMsg("配置内容不能为空");
+        }
         this.materialCoreConfigMapper.insert(materialCoreConfig);
-        return materialCoreConfig;
+        return R.ok();
     }
 
     /**
@@ -64,8 +72,15 @@ public class MaterialCoreConfigServiceImpl implements MaterialCoreConfigService 
      * @return 实例对象
      */
     @Override
-    public int update(MaterialCoreConfig materialCoreConfig) {
-        return this.materialCoreConfigMapper.update(materialCoreConfig);
+    public R<Object> update(MaterialCoreConfig materialCoreConfig) {
+        if (materialCoreConfig.getMaterialCoreConfig().length()>300) {
+            return R.failMsg("配置内容不能超过300个字符");
+        }
+        if (StringUtils.isEmpty(materialCoreConfig.getMaterialCoreConfig())) {
+            return R.failMsg("配置内容不能为空");
+        }
+        this.materialCoreConfigMapper.update(materialCoreConfig);
+        return R.ok();
     }
 
     /**

@@ -3,19 +3,17 @@ package com.xiliulou.afterserver.web.query;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
- * 物料追溯表(MaterialTraceability)
+ * 物料追溯表(Material)
  *
  * @author makejava
  * @since 2024-03-21 11:33:12
  */
 
 @Data
-public class MaterialTraceabilityQuery implements Serializable {
+public class MaterialQuery implements Serializable {
     
     private static final long serialVersionUID = 891201978381378054L;
     
