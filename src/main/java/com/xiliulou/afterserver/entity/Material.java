@@ -2,7 +2,6 @@ package com.xiliulou.afterserver.entity;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.alibaba.excel.annotation.format.DateTimeFormat;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -13,7 +12,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 物料追溯表(MaterialTraceability)实体类
+ * 物料追溯表(Material)实体类
  *
  * @author makejava
  * @since 2024-03-21 11:33:12
@@ -24,7 +23,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Builder
 @TableName("t_material_traceability")
-public class MaterialTraceability implements Serializable {
+public class Material implements Serializable {
     
     private static final long serialVersionUID = 891201978381378054L;
     
