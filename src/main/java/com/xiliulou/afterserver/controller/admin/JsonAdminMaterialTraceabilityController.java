@@ -6,7 +6,7 @@ import com.xiliulou.afterserver.service.MaterialCoreConfigService;
 import com.xiliulou.afterserver.service.MaterialTraceabilityService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
-import com.xiliulou.afterserver.web.query.MaterialTraceabilityQuery;
+import com.xiliulou.afterserver.web.query.MaterialQuery;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,13 +20,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
 
 /**
- * 物料追溯表(MaterialTraceability)表控制层
+ * 物料追溯表(Material)表控制层
  *
  * @author makejava
  * @since 2024-03-21 11:33:12
  */
 @RestController
-@RequestMapping("admin/materialTraceability")
+@RequestMapping("admin/material")
 public class JsonAdminMaterialTraceabilityController {
     
     /**
@@ -56,7 +56,7 @@ public class JsonAdminMaterialTraceabilityController {
      * @return 新增结果
      */
     @PostMapping("/save")
-    public R add(@RequestBody MaterialTraceabilityQuery materialTraceability) {
+    public R add(@RequestBody MaterialQuery materialTraceability) {
         if (!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)) {
             return R.fail("登陆用户非工厂类型");
         }
@@ -70,7 +70,7 @@ public class JsonAdminMaterialTraceabilityController {
      * @return 查询结果
      */
     @GetMapping("/page")
-    public R queryByPage(MaterialTraceabilityQuery materialTraceability, @RequestParam("offset") Long offset, @RequestParam("size") Long size) {
+    public R queryByPage(MaterialQuery materialTraceability, @RequestParam("offset") Long offset, @RequestParam("size") Long size) {
         if (!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)) {
             return R.fail("登陆用户非工厂类型");
         }
@@ -84,7 +84,7 @@ public class JsonAdminMaterialTraceabilityController {
      * @return 查询结果
      */
     @GetMapping("/count")
-    public R queryByPageCount(MaterialTraceabilityQuery materialTraceability) {
+    public R queryByPageCount(MaterialQuery materialTraceability) {
         if (!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)) {
             return R.fail("登陆用户非工厂类型");
         }
@@ -98,7 +98,7 @@ public class JsonAdminMaterialTraceabilityController {
      * @return 编辑结果
      */
     @PutMapping("/Unbund")
-    public R materialUnbundling(MaterialTraceabilityQuery materialTraceability) {
+    public R materialUnbundling(MaterialQuery materialTraceability) {
         if (!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)) {
             return R.fail("登陆用户非工厂类型");
         }
@@ -109,7 +109,7 @@ public class JsonAdminMaterialTraceabilityController {
      * 导出物料数据
      */
     @GetMapping("/exportExcel")
-    public void exportMaterialData(MaterialTraceabilityQuery materialTraceability, HttpServletResponse response) {
+    public void exportMaterialData(MaterialQuery materialTraceability, HttpServletResponse response) {
         if (!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)) {
             return;
         }
@@ -123,7 +123,7 @@ public class JsonAdminMaterialTraceabilityController {
      * @return 编辑结果
      */
     @PutMapping
-    public R edit(@RequestBody MaterialTraceabilityQuery materialTraceability) {
+    public R edit(@RequestBody MaterialQuery materialTraceability) {
         if (!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)) {
             return R.fail("登陆用户非工厂类型");
         }

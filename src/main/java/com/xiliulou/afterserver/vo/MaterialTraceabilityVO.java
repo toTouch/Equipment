@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 物料追溯表(MaterialTraceability)实体类
+ * 物料追溯表(Material)实体类
  *
  * @author makejava
  * @since 2024-03-21 11:33:12
