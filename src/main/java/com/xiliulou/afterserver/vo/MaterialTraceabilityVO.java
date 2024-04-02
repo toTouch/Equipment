@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 物料追溯表(MaterialTraceability)实体类
+ * 物料追溯表(Material)实体类
  *
  * @author makejava
  * @since 2024-03-21 11:33:12
@@ -24,27 +24,23 @@ import java.io.Serializable;
 @Builder
 public class MaterialTraceabilityVO implements Serializable {
     
-    /**
-     * 主键ID
-     */
-    private Long id;
     
     /**
      * 物料sn
      */
-    @ExcelProperty(value = "物料编码")
+    @ExcelProperty(value = "物料SN")
     private String materialSn;
     
     /**
      * 产品编号/资产编码
      */
-    @ExcelProperty(value = "资产编码")
+    @ExcelProperty(value = "产品编号")
     private String productNo;
     
     /**
      * 创建时间
      */
-    @ExcelProperty(value = "绑定时间")
+    @ExcelProperty(value = "录入时间")
     private String createTime;
     
     

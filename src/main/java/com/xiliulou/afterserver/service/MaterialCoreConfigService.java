@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.service;
 
 import com.xiliulou.afterserver.entity.MaterialCoreConfig;
+import com.xiliulou.afterserver.util.R;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -35,7 +36,7 @@ public interface MaterialCoreConfigService {
      * @param materialCoreConfig 实例对象
      * @return 实例对象
      */
-    MaterialCoreConfig insert(MaterialCoreConfig materialCoreConfig);
+    R insert(MaterialCoreConfig materialCoreConfig);
 
     /**
      * 修改数据
@@ -43,7 +44,7 @@ public interface MaterialCoreConfigService {
      * @param materialCoreConfig 实例对象
      * @return 实例对象
      */
-    int update(MaterialCoreConfig materialCoreConfig);
+    R<Object> update(MaterialCoreConfig materialCoreConfig);
 
     /**
      * 通过主键删除数据
