@@ -8,6 +8,7 @@ import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.mapper.MaterialTraceabilityMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.service.MaterialTraceabilityService;
+import com.xiliulou.afterserver.service.UserService;
 import com.xiliulou.afterserver.util.DataUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
@@ -15,6 +16,7 @@ import com.xiliulou.afterserver.vo.MaterialTraceabilityVO;
 import com.xiliulou.afterserver.web.query.MaterialQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -47,6 +49,9 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
     @Resource
     private ProductNewMapper productNewMapper;
     
+    @Autowired
+    private UserService userService;
+    
     /**
      * 新增数据 PDA扫码录入
      *
@@ -72,7 +77,8 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         if (Objects.isNull(productNew)) {
             return R.failMsg("资产编码不存在，请检查");
         }
-        if (!Objects.equals(SecurityUtils.getUserInfo().getUid(), productNew.getSupplierId())) {
+        User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
+        if (!Objects.equals(userById.getThirdId(), productNew.getSupplierId())) {
             return R.failMsg("当前柜机无权限操作");
         }
         
@@ -150,7 +156,8 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         if (Objects.isNull(productNew)) {
             return R.failMsg("资产编码不存在，请检查");
         }
-        if (!Objects.equals(SecurityUtils.getUserInfo().getUid(), productNew.getSupplierId())) {
+        User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
+        if (!Objects.equals(userById.getThirdId(), productNew.getSupplierId())) {
             return R.failMsg("当前柜机无权限操作");
         }
         
@@ -187,11 +194,14 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         if (!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)) {
             return R.fail("登陆用户非工厂类型");
         }
+        
         ProductNew productNew = productNewMapper.queryByNo(sn);
         if (Objects.isNull(productNew)) {
             return R.failMsg("资产编码不存在，请检查");
         }
-        if (!Objects.equals(SecurityUtils.getUserInfo().getUid(), productNew.getSupplierId())) {
+        
+        User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
+        if (!Objects.equals(userById.getThirdId(), productNew.getSupplierId())) {
             return R.failMsg("当前柜机无权限操作");
         }
         return R.ok("柜机资产编码扫描成功");
@@ -226,6 +236,10 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         long size = queryByPageCount(materialQuery);
         if (size > 1000) {
             return R.failMsg("导出数量超过1000条，请重新筛选");
+        }
+        // 导出时间限制一个月
+        if (Objects.nonNull(materialQuery.getEndTime())&& Objects.nonNull(materialQuery.getStartTime())&&(materialQuery.getEndTime()-materialQuery.getStartTime() > 30*24*60*60*1000L)) {
+            return R.failMsg("导出时间范围超过一个月，请重新筛选");
         }
         
         this.materialTraceabilityMapper.count(material);

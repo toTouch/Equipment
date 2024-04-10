@@ -97,7 +97,7 @@ public class JsonAdminMaterialTraceabilityController {
      * @param materialTraceability 实体
      * @return 编辑结果
      */
-    @PutMapping("/Unbund")
+    @PutMapping("/unbund")
     public R materialUnbundling(MaterialQuery materialTraceability) {
         if (!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)) {
             return R.fail("登陆用户非工厂类型");
@@ -133,7 +133,7 @@ public class JsonAdminMaterialTraceabilityController {
     /**
      * 更新物料核心配置
      */
-    @PutMapping("/Config")
+    @PutMapping("/config")
     public R updateConfig(String substance) {
         MaterialCoreConfig materialCoreConfig = new MaterialCoreConfig();
         materialCoreConfig.setMaterialCoreConfig(substance);
@@ -144,7 +144,7 @@ public class JsonAdminMaterialTraceabilityController {
     /**
      * 添加物料核心配置
      */
-    @PostMapping("/Config")
+    @PostMapping("/config")
     public R addConfig(String substance) {
         MaterialCoreConfig materialCoreConfig = new MaterialCoreConfig();
         materialCoreConfig.setMaterialCoreConfig(substance);
@@ -155,7 +155,7 @@ public class JsonAdminMaterialTraceabilityController {
     /**
      * 查询物料核心配置
      */
-    @GetMapping("/Config")
+    @GetMapping("/config")
     public R queryConfig() {
         return R.ok(this.materialCoreConfigService.queryById(1));
     }
