@@ -268,13 +268,9 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         Material material = new Material();
         BeanUtils.copyProperties(materialQuery, material);
         
-        long size = queryByPageCount(materialQuery);
-        if (size > 1000) {
-            return R.failMsg("导出数量超过1000条，请重新筛选");
-        }
         // 导出时间限制一个月
         if (Objects.nonNull(materialQuery.getEndTime()) && Objects.nonNull(materialQuery.getStartTime()) && (materialQuery.getEndTime() - materialQuery.getStartTime()
-                > 30 * 24 * 60 * 60 * 1000L)) {
+                > 31 * 24 * 60 * 60 * 1000L)) {
             return R.failMsg("导出时间范围超过一个月，请重新筛选");
         }
         
