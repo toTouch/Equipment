@@ -168,6 +168,9 @@
             </if>
         </set>
         where id = #{id}
+        <if test="tenantId != null">
+           and tenant_id = #{tenantId}
+        </if>
     </update>
     
     <update id="materialUnbundling">
