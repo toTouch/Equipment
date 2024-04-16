@@ -84,7 +84,6 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         
         Material material = new Material();
         material.setMaterialSn(materialQuery.getMaterialSn());
-        material.setTenantId(userById.getThirdId());
         material.setUpdateTime(System.currentTimeMillis());
         material.setDelFlag(UN_DEL_FLAG);
         Material materialFromQuery = this.materialTraceabilityMapper.selectByParameter(material);
@@ -101,6 +100,7 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         
         material.setCreateTime(System.currentTimeMillis());
         material.setProductNo(materialQuery.getProductNo());
+        material.setTenantId(userById.getThirdId());
         int insert = this.materialTraceabilityMapper.insert(material);
         if (insert < 0) {
             return R.failMsg("物料编码绑定失败，请重新扫码");
@@ -256,7 +256,7 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
             material.setTenantId(userById.getThirdId());
         }
         
-        int i = this.materialTraceabilityMapper.update(material);
+        int i = this.materialTraceabilityMapper.materialUnbundling(material);
         if (i < 0) {
             return R.failMsg("物料解绑失败，请重试");
         }

@@ -1718,7 +1718,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         if (Objects.isNull(deviceMessageVo)) {
             return R.fail(null, "00000", "柜机资产编码不存在，请核对");
         }
-        if (Objects.isNull(deviceMessageVo.getDeviceName()) || Objects.isNull(deviceMessageVo.getProductKey())) {
+        if (StringUtils.isBlank(deviceMessageVo.getDeviceName()) || StringUtils.isBlank(deviceMessageVo.getProductKey())) {
             return R.fail(null, "00000", "资产编码对应的三元组信息不全");
         }
         if (Objects.equals(deviceMessageVo.getIsUse(), ProductNew.IS_USE)) {
@@ -1747,7 +1747,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         if (Objects.isNull(deviceMessageVo)) {
             return R.fail(null, "00000", "柜机资产编码不存在，请核对");
         }
-        if (Objects.isNull(deviceMessageVo.getDeviceName()) || Objects.isNull(deviceMessageVo.getProductKey())) {
+        if (StringUtils.isBlank(deviceMessageVo.getDeviceName()) || StringUtils.isBlank(deviceMessageVo.getProductKey())) {
             return R.fail(null, "00000", "资产编码对应的三元组信息不全");
         }
         
@@ -1774,7 +1774,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         if (Objects.isNull(deviceMessageVo)) {
             return R.fail(null, "00000", "柜机资产编码不存在，请核对");
         }
-        if (Objects.isNull(deviceMessageVo.getDeviceName()) || Objects.isNull(deviceMessageVo.getProductKey())) {
+        if (StringUtils.isBlank(deviceMessageVo.getDeviceName()) || StringUtils.isBlank(deviceMessageVo.getProductKey())) {
             return R.fail(null, "00000", "资产编码对应的三元组信息不全");
         }
         if (Objects.equals(deviceMessageVo.getIsUse(), ProductNew.IS_USE)) {
