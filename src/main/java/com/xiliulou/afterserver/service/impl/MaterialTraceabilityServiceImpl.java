@@ -274,7 +274,7 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
             return R.failMsg("导出时间范围超过一个月，请重新筛选");
         }
         
-        List<Material> materialList = this.queryByPage(materialQuery, 0L, 1000L);
+        List<Material> materialList = this.queryByPage(materialQuery, 0L, 2000L);
         List<MaterialTraceabilityVO> materialTraceabilityVOS = new ArrayList<>();
         materialList.stream().forEach(materialInfo -> {
             MaterialTraceabilityVO materialTraceabilityVO = new MaterialTraceabilityVO();
