@@ -257,7 +257,7 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         }
         
         int i = this.materialTraceabilityMapper.materialUnbundling(material);
-        if (i < 0) {
+        if (i <= 0) {
             return R.failMsg("物料解绑失败，请重试");
         }
         return R.ok("物料解绑成功");
