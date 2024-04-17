@@ -155,10 +155,11 @@ iot:
   product: iot
   iotInstance: iot-060a4jn3
 
+
 product-config:
   key: a1QqoBrbcT1
   Apikey: a1aru3g173j
   huaweiKey: yl-test
-  huaweiAccessKey: R0YOLDOWWEBZYUAGFQFP
-  huaweiAccessSecret: gWcndZnssP8QslPFFy1AhSCxQUB98ZnZQO0Df1qH
+  huaweiAccessKey: JBNJ2QSPGIQ7QFNTWWJS
+  huaweiAccessSecret: taNpnKa1fRcmruUYMQgnIHQjlsuKkcTPpULcUMcX
   endpoint: 763253caa3.st1.iotda-app.cn-north-4.myhuaweicloud.com
