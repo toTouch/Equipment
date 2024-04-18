@@ -246,17 +246,27 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
     @Override
     public R materialUnbundling(MaterialQuery materialQuery) {
         Material material = new Material();
-        material.setBindingStatus(UN_BINDING);
         material.setId(materialQuery.getId());
-        material.setUpdateTime(System.currentTimeMillis());
-        material.setProductNo("");
+        Material byParameter = materialTraceabilityMapper.selectByParameter(material);
+        if (Objects.isNull(byParameter)) {
+            return R.failMsg("物料不存在");
+        }
+        
+        Material updateMaterial = new Material();
+        updateMaterial.setBindingStatus(UN_BINDING);
+        updateMaterial.setId(materialQuery.getId());
+        updateMaterial.setUpdateTime(System.currentTimeMillis());
+        updateMaterial.setProductNo("");
         
         User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
         if (!Objects.equals(userById.getUserType(), User.AFTER_USER_ROLE)) {
-            material.setTenantId(userById.getThirdId());
+            updateMaterial.setTenantId(userById.getThirdId());
+        }
+        if (!Objects.equals(byParameter.getTenantId(), userById.getThirdId())) {
+            return R.failMsg("无权操作");
         }
         
-        int i = this.materialTraceabilityMapper.materialUnbundling(material);
+        int i = this.materialTraceabilityMapper.materialUnbundling(updateMaterial);
         if (i <= 0) {
             return R.failMsg("物料解绑失败，请重试");
         }
