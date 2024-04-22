@@ -11,6 +11,8 @@ import com.huaweicloud.sdk.iotda.v5.model.AddDeviceRequest;
 import com.huaweicloud.sdk.iotda.v5.model.AddDeviceResponse;
 import com.huaweicloud.sdk.iotda.v5.model.ListDevicesRequest;
 import com.huaweicloud.sdk.iotda.v5.model.ListDevicesResponse;
+import com.huaweicloud.sdk.iotda.v5.model.ListProductsRequest;
+import com.huaweicloud.sdk.iotda.v5.model.ListProductsResponse;
 import com.huaweicloud.sdk.iotda.v5.model.SearchDevicesRequest;
 import com.huaweicloud.sdk.iotda.v5.model.SearchDevicesResponse;
 import com.huaweicloud.sdk.iotda.v5.model.SearchSql;
@@ -18,6 +20,7 @@ import com.huaweicloud.sdk.iotda.v5.model.ShowDeviceRequest;
 import com.huaweicloud.sdk.iotda.v5.model.ShowDeviceResponse;
 import com.huaweicloud.sdk.iotda.v5.region.IoTDARegion;
 import com.xiliulou.afterserver.AfterServerApplication;
+import com.xiliulou.afterserver.config.ProductConfig;
 import com.xiliulou.afterserver.util.DeviceSolutionUtil;
 import com.xiliulou.iot.entity.response.QueryDeviceDetailResult;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +44,7 @@ import java.util.Set;
 @SpringBootTest(classes = AfterServerApplication.class)
 @RunWith(SpringRunner.class)
 @ActiveProfiles("loc")
+// @ActiveProfiles("dev")
 @Slf4j
 public class DeviceSolution {
     
@@ -59,15 +63,60 @@ public class DeviceSolution {
     @Autowired
     DeviceSolutionUtil deviceSolutionUtil;
     
+    @Autowired
+    private ProductConfig productConfig;
+    
+    /**
+     * 批量创建设备 接口测试
+     */
     @Test
     public void batchRegisterDevice() {
         Set<String> strings = new HashSet<>();
         strings.add("zbzcssss001");
         // strings.add("11ABC123456780");
-        Pair<Boolean, String> booleanStringPair = deviceSolutionUtil.batchRegisterDevice(strings, productKey);
+        Pair<Boolean, String> booleanStringPair = deviceSolutionUtil.batchRegisterDevice(strings, productConfig.getHuaweiKey());
         System.out.println(booleanStringPair);
     }
     
+    /**
+     * 查询产品列表
+     *
+     */
+    private IoTDAClient getIoTDAClient() {
+        return getIoTDAClient(productConfig.getHuaweiAccessKey(), productConfig.getHuaweiAccessSecret(), null, productConfig.getEndpoint());
+    }
+    private IoTDAClient getIoTDAClient(String ak, String sk, String regionId, String endpoint) {
+        regionId = StringUtils.isEmpty(regionId) ? "cn-north-4" : regionId;
+        ICredential auth = new BasicCredentials().withDerivedPredicate(AbstractCredentials.DEFAULT_DERIVED_PREDICATE) // Used in derivative ak/sk authentication scenarios
+                .withAk(ak).withSk(sk);
+        
+        return IoTDAClient.newBuilder().withCredential(auth).withRegion(new Region(regionId, endpoint)).build();
+    }
+    @Test
+    public void queryProductList() {
+        IoTDAClient ioTDAClient = getIoTDAClient();
+        System.out.println("================ 查询产品列表 ================");
+        ListProductsRequest request = new ListProductsRequest();
+        request.withLimit(10);
+        // request.withMarker("<marker>");
+        // request.withAppId("<app_id>");
+        // request.withProductName("<product_name>");
+        request.withOffset(0);
+        try {
+            ListProductsResponse response = ioTDAClient.listProducts(request);
+            System.out.println(response.toString());
+        } catch (ConnectionException e) {
+            e.printStackTrace();
+        } catch (RequestTimeoutException e) {
+            e.printStackTrace();
+        } catch (ServiceResponseException e) {
+            e.printStackTrace();
+            System.out.println(e.getHttpStatusCode());
+            System.out.println(e.getRequestId());
+            System.out.println(e.getErrorCode());
+            System.out.println(e.getErrorMsg());
+        }
+    }
     /**
      * 注册设备
      */
