@@ -113,7 +113,7 @@ public class IotCardServiceImpl extends ServiceImpl<IotCardMapper, IotCard> impl
         }
 
         IotCard iotCardBySn = this.queryBySn(iotCard.getSn());
-        if(Objects.isNull(iotCardBySn) && !Objects.equals(iotCard.getId(), iotCardBySn.getId())){
+        if(Objects.nonNull(iotCardBySn) && !Objects.equals(iotCard.getId(), iotCardBySn.getId())){
             return R.fail("已添加该物联网卡号");
         }
 

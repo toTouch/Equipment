@@ -177,21 +177,6 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     @Autowired
     private CompressionRecordMapper compressionRecordMapper;
     
-    public static void main(String[] args) {
-        List<Integer> list = new ArrayList() {
-            {
-                add(1);
-                add(2);
-                add(1);
-            }
-        };
-        long count = list.stream().distinct().count();
-        boolean isRepeat = count < list.size();
-        System.out.println(count);// 输出2
-        System.out.println(isRepeat);// 输出true
-        
-        
-    }
     
     public static String subStringByBytes(String str) {
         if (Objects.isNull(str)) {
@@ -681,7 +666,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         IotCard iotCard = iotCardService.queryBySn(compression.getIotCard());
         if (Objects.isNull(iotCard)) {
             log.info("未查询到物联网卡信息 {}",compression.getIotCard());
-            // return R.fail(null, null, "未查询到物联网卡信息");
+            return R.fail(null, null, "未查询到物联网卡信息");
         }
         
         ArrayList<ProductNew> mainProducts = new ArrayList(1);
@@ -763,7 +748,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     }
     
     @Override
-    public R queryByBatchAndSupplier(Long batchId, Long offset, Long size) {
+    public R queryByBatchAndSupplier(Long batchId, Long offset, Long size, String productNo) {
         Long uid = SecurityUtils.getUid();
         if (Objects.isNull(uid)) {
             return R.fail("未查询到相关用户");
@@ -780,7 +765,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         }
         
         Page page = PageUtil.getPage(offset, size);
-        page = productNewMapper.selectPage(page, new QueryWrapper<ProductNew>().eq("batch_id", batchId).eq("supplier_id", user.getThirdId()).eq("del_flag", ProductNew.DEL_NORMAL));
+        page = productNewMapper.selectPage(page, new QueryWrapper<ProductNew>().eq("batch_id", batchId).eq("supplier_id", user.getThirdId()).like(StringUtils.isNotBlank(productNo),"no",productNo).eq("del_flag", ProductNew.DEL_NORMAL));
         
         List<ProductNew> list = page.getRecords();
         if (CollectionUtils.isEmpty(list)) {
@@ -840,6 +825,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         vo.setCreateTime(simp.format(new Date(productNew.getCreateTime())));
         vo.setProductStatus(getStatusName(productNew.getStatus()));
         vo.setCabinetSn(productNew.getCabinetSn()); // 资产编码打印同样实现底部增加对应柜机编码
+        vo.setDeviceName(productNew.getDeviceName());
+        vo.setProductKey(productNew.getProductKey());
         
         List<AuditProcess> auditProcessList = auditProcessService.getBaseMapper().selectList(new QueryWrapper<AuditProcess>().orderByAsc("id"));
         // 如果搜索页面配置为空，则只获取压测状态，发货状态随压测状态改变
@@ -1371,7 +1358,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         IotCard iotCard = iotCardService.queryBySn(compression.getIotCard());
         if (Objects.isNull(iotCard)) {
             log.info("未查询到物联网卡信息",compression.getIotCard());
-            // return R.fail(null, null, "未查询到物联网卡信息");
+            return R.fail(null, null, "未查询到物联网卡信息");
         }
         
         ArrayList<ProductNew> mainProducts = new ArrayList(1);
@@ -1731,7 +1718,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         if (Objects.isNull(deviceMessageVo)) {
             return R.fail(null, "00000", "柜机资产编码不存在，请核对");
         }
-        if (Objects.isNull(deviceMessageVo.getDeviceName()) || Objects.isNull(deviceMessageVo.getProductKey())) {
+        if (StringUtils.isBlank(deviceMessageVo.getDeviceName()) || StringUtils.isBlank(deviceMessageVo.getProductKey())) {
             return R.fail(null, "00000", "资产编码对应的三元组信息不全");
         }
         if (Objects.equals(deviceMessageVo.getIsUse(), ProductNew.IS_USE)) {
@@ -1760,7 +1747,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         if (Objects.isNull(deviceMessageVo)) {
             return R.fail(null, "00000", "柜机资产编码不存在，请核对");
         }
-        if (Objects.isNull(deviceMessageVo.getDeviceName()) || Objects.isNull(deviceMessageVo.getProductKey())) {
+        if (StringUtils.isBlank(deviceMessageVo.getDeviceName()) || StringUtils.isBlank(deviceMessageVo.getProductKey())) {
             return R.fail(null, "00000", "资产编码对应的三元组信息不全");
         }
         
@@ -1787,7 +1774,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         if (Objects.isNull(deviceMessageVo)) {
             return R.fail(null, "00000", "柜机资产编码不存在，请核对");
         }
-        if (Objects.isNull(deviceMessageVo.getDeviceName()) || Objects.isNull(deviceMessageVo.getProductKey())) {
+        if (StringUtils.isBlank(deviceMessageVo.getDeviceName()) || StringUtils.isBlank(deviceMessageVo.getProductKey())) {
             return R.fail(null, "00000", "资产编码对应的三元组信息不全");
         }
         if (Objects.equals(deviceMessageVo.getIsUse(), ProductNew.IS_USE)) {

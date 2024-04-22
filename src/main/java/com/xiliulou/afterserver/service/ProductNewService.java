@@ -1,13 +1,11 @@
 package com.xiliulou.afterserver.service;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.entity.ProductNew;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ApiRequestQuery;
 import com.xiliulou.afterserver.web.query.CabinetCompressionQuery;
-import com.xiliulou.afterserver.web.query.CompressionQuery;
 import com.xiliulou.afterserver.web.query.ProductNewDetailsQuery;
 import com.xiliulou.afterserver.web.query.ProductNewQuery;
 
@@ -102,7 +100,7 @@ public interface ProductNewService extends IService<ProductNew> {
 
     R findIotCard(String no);
 
-    R queryByBatchAndSupplier(Long batchId,Long offset, Long size);
+    R queryByBatchAndSupplier(Long batchId,Long offset, Long size, String productNo);
 
     R queryProductNewProcessInfo(String no, HttpServletResponse response);
 

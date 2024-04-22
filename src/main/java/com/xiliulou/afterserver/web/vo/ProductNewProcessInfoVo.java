@@ -48,4 +48,8 @@ public class ProductNewProcessInfoVo {
 
     public static final Integer STATUS_UN_FINISHED = 0;
     public static final Integer STATUS_FINISHED = 2;
+    
+    private String deviceName;
+    private String productKey;
+    
 }

@@ -1,22 +1,15 @@
 package com.xiliulou.afterserver.controller.factory;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
-import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.service.*;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.ProductNewDetailsQuery;
-import com.xiliulou.storage.service.impl.AliyunOssService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -75,6 +68,7 @@ public class JsonAdminOrderBatchController {
      */
     @GetMapping("/productNew")
     public R queryByBatchAndSupplier(@RequestParam("batchId") Long batchId,
+                                     @RequestParam(value = "productNo", required = false) String productNo,
                                      @RequestParam(value = "offset", required = false) Long offset,
                                      @RequestParam(value = "size", required = false) Long size){
         if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)){
@@ -92,7 +86,7 @@ public class JsonAdminOrderBatchController {
         //分页 手持终端第一页从零开始
         offset = offset  * size;
 
-        return productNewService.queryByBatchAndSupplier(batchId, offset, size);
+        return productNewService.queryByBatchAndSupplier(batchId, offset, size, productNo);
     }
 
     /**
