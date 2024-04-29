@@ -94,7 +94,9 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         } else if (Objects.nonNull(materialFromQuery) && StringUtils.isBlank(materialFromQuery.getProductNo())) {
             material.setId(materialFromQuery.getId());
             material.setProductNo(materialQuery.getProductNo());
-            materialTraceabilityMapper.update(material);
+            material.setTenantId(userById.getThirdId());
+            
+            materialTraceabilityMapper.update(material, null);
             return R.ok("物料编码: " + material.getMaterialSn() + "绑定成功");
         }
         
@@ -167,6 +169,7 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         }
         
         User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
+        Material materialUpdate = new Material();
         if (StringUtils.isNotBlank(materialQuery.getProductNo())) {
             ProductNew productNew = productNewMapper.queryByNo(materialQuery.getProductNo());
             if (Objects.isNull(productNew)) {
@@ -176,6 +179,12 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
             if (!Objects.equals(userById.getUserType(), User.AFTER_USER_ROLE) && !Objects.equals(userById.getThirdId(), productNew.getSupplierId())) {
                 return R.failMsg("当前柜机无权限操作");
             }
+            
+            materialUpdate.setBindingStatus(BINDING);
+            materialUpdate.setTenantId(productNew.getSupplierId());
+        } else {
+            materialUpdate.setBindingStatus(UN_BINDING);
+            materialUpdate.setTenantId(Long.valueOf(UN_BINDING));
         }
         
         Material materialParamet = new Material();
@@ -185,17 +194,10 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
             return R.failMsg("物料已录入，禁止重复录入");
         }
         
-        Material material = new Material();
-        BeanUtils.copyProperties(materialQuery, material);
-        material.setUpdateTime(System.currentTimeMillis());
-        material.setTenantId(userById.getThirdId());
-        if (Objects.nonNull(materialQuery.getProductNo())) {
-            material.setBindingStatus(BINDING);
-        } else {
-            material.setBindingStatus(UN_BINDING);
-        }
+        BeanUtils.copyProperties(materialQuery, materialUpdate);
+        materialUpdate.setUpdateTime(System.currentTimeMillis());
         
-        int i = this.materialTraceabilityMapper.update(material);
+        int i = this.materialTraceabilityMapper.update(materialUpdate,userById.getThirdId());
         return R.ok(i);
     }
     
