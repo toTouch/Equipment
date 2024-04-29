@@ -144,32 +144,32 @@
     <update id="update">
         update t_material
         <set>
-            <if test="materialSn != null and materialSn != ''">
-                material_sn = #{materialSn},
+            <if test="material.materialSn != null and material.materialSn != ''">
+                material_sn = #{material.materialSn},
             </if>
 <!--           <if test="productNo != null and productNo != ''">-->
-                product_no = #{productNo},
+                product_no = #{material.productNo},
 <!--            </if>-->
             
-            <if test="delFlag != null">
-                del_flag = #{delFlag},
+            <if test="material.delFlag != null">
+                del_flag = #{material.delFlag},
             </if>
-            <if test="bindingStatus != null">
-                binding_status = #{bindingStatus},
+            <if test="material.bindingStatus != null">
+                binding_status = #{material.bindingStatus},
             </if>
-            <if test="createTime != null">
-                create_time = #{createTime},
+            <if test="material.createTime != null">
+                create_time = #{material.createTime},
             </if>
-            <if test="updateTime != null">
-                update_time = #{updateTime},
+            <if test="material.updateTime != null">
+                update_time = #{material.updateTime},
             </if>
-            <if test="tenantId != null">
-                tenant_id = #{tenantId},
+            <if test="material.tenantId != null">
+                tenant_id = #{material.tenantId},
             </if>
         </set>
-        where id = #{id}
-        <if test="tenantId != null">
-           and tenant_id = #{tenantId}
+        where id = #{material.id}
+        <if test="thirdId != null">
+           and tenant_id = #{thirdId}
         </if>
     </update>
     
@@ -178,7 +178,8 @@
         <set>
             product_no = #{productNo},
             binding_status = #{bindingStatus},
-            update_time = #{updateTime}
+            update_time = #{updateTime},
+            tenant_id = 0
         </set>
         where id = #{id} and tenant_id = #{tenantId}
     </update>

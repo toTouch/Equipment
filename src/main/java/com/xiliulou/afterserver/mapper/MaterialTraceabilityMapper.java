@@ -52,9 +52,10 @@ public interface MaterialTraceabilityMapper {
      * 修改数据
      *
      * @param material 实例对象
+     * @param thirdId
      * @return 影响行数
      */
-    int update(Material material);
+    int update(@Param("material") Material material, @Param("thirdId") Long thirdId);
     
     /**
      * 通过主键删除数据
