@@ -33,12 +33,13 @@ public interface BatchService {
     /**
      * 查询多条数据
      *
-     * @param offset     查询起始位置
-     * @param limit      查询条数
+     * @param productType
+     * @param offset      查询起始位置
+     * @param limit       查询条数
      * @param notShipped
      * @return 对象列表
      */
-    List<Batch> queryAllByLimit(String batchNo,int offset, int limit, Long modelId, Long supplierId, Integer notShipped);
+    List<Batch> queryAllByLimit(String batchNo, String productType, int offset, int limit, Long modelId, Long supplierId, Integer notShipped);
 
     /**
      * 新增数据
@@ -64,7 +65,7 @@ public interface BatchService {
      */
     Boolean deleteById(Long id);
 
-    Long count(String batchNo, Long modelId, Long supplierId);
+    Long count(String batchNo, String productType, Long modelId, Long supplierId, Integer notShipped);
 
     List<Batch> queryByName(String batch);
 

@@ -41,6 +41,9 @@
             <if test="modelId != null">
                 and model_id = #{modelId}
             </if>
+            <if test="productType != null and productType != '' ">
+                and product_type = #{productType}
+            </if>
             <if test="supplierId != null">
                 and supplier_id = #{supplierId}
             </if>
@@ -86,8 +89,18 @@
             <if test="modelId != null">
                 and model_id = #{modelId}
             </if>
+            <if test="productType != null and productType != '' ">
+                and product_type = #{productType}
+            </if>
             <if test="supplierId != null">
                 and supplier_id = #{supplierId}
+            </if>
+            <!--0 已发货  >0 待发货   -->
+            <if test="notShipped != null and notShipped > 0 ">
+                and not_shipped > 0
+            </if>
+            <if test="notShipped != null and notShipped == 0">
+                and not_shipped = 0
             </if>
         </where>
     </select>

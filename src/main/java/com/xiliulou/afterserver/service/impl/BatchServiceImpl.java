@@ -130,14 +130,15 @@ public class BatchServiceImpl implements BatchService {
     /**
      * 查询多条数据
      *
-     * @param offset     查询起始位置
-     * @param limit      查询条数
+     * @param productType
+     * @param offset      查询起始位置
+     * @param limit       查询条数
      * @param notShipped
      * @return 对象列表
      */
     @Override
-    public List<Batch> queryAllByLimit(String batchNo, int offset, int limit, Long modelId, Long supplierId, Integer notShipped) {
-        return this.batchMapper.queryAllByLimit(batchNo, offset, limit, modelId, supplierId, notShipped);
+    public List<Batch> queryAllByLimit(String batchNo, String productType, int offset, int limit, Long modelId, Long supplierId, Integer notShipped) {
+        return this.batchMapper.queryAllByLimit(batchNo,productType, offset, limit, modelId, supplierId, notShipped);
     }
     
     /**
@@ -179,8 +180,8 @@ public class BatchServiceImpl implements BatchService {
     }
     
     @Override
-    public Long count(String batchNo, Long modelId, Long supplierId) {
-        return this.batchMapper.count(batchNo, modelId, supplierId);
+    public Long count(String batchNo, String productType, Long modelId, Long supplierId, Integer notShipped) {
+        return this.batchMapper.count(batchNo,productType, modelId, supplierId, notShipped);
     }
     
     @Override
@@ -483,6 +484,8 @@ public class BatchServiceImpl implements BatchService {
         if (CollectionUtils.isEmpty(batches)) {
             return null;
         }
+        log.info("开始更新 batches={}", batches);
+        
         return batchMapper.batchUpdateById(batches);
     }
     
