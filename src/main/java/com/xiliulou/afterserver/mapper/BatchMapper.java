@@ -27,12 +27,13 @@ public interface BatchMapper extends BaseMapper<Batch> {
     /**
      * 查询指定行数据
      *
-     * @param offset     查询起始位置
-     * @param limit      查询条数
+     * @param productType
+     * @param offset      查询起始位置
+     * @param limit       查询条数
      * @param notShipped
      * @return 对象列表
      */
-    List<Batch> queryAllByLimit(@Param("batchNo") String batchNo, @Param("offset") int offset, @Param("limit") int limit, @Param("modelId") Long modelId, @Param("supplierId") Long supplierId, @Param("notShipped") Integer notShipped);
+    List<Batch> queryAllByLimit(@Param("batchNo") String batchNo, @Param("productType") String productType, @Param("offset") int offset, @Param("limit") int limit, @Param("modelId") Long modelId, @Param("supplierId") Long supplierId, @Param("notShipped") Integer notShipped);
 
 
     /**
@@ -67,7 +68,7 @@ public interface BatchMapper extends BaseMapper<Batch> {
      */
     int deleteById(Long id);
 
-    Long count(@Param("batchNo") String batchNo, @Param("modelId")Long modelId, @Param("supplierId")Long supplierId);
+    Long count(@Param("batchNo") String batchNo, @Param("productType") String productType, @Param("modelId") Long modelId, @Param("supplierId") Long supplierId, @Param("notShipped") Integer notShipped);;
     
     Integer batchUpdateById(ArrayList<Batch> batches);
 }

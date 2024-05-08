@@ -2,7 +2,10 @@ package com.xiliulou.afterserver.controller.admin;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.xiliulou.afterserver.entity.*;
+import com.xiliulou.afterserver.entity.Batch;
+import com.xiliulou.afterserver.entity.Product;
+import com.xiliulou.afterserver.entity.ProductFile;
+import com.xiliulou.afterserver.entity.Supplier;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.mapper.ProductMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
@@ -11,12 +14,16 @@ import com.xiliulou.afterserver.service.BatchService;
 import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.util.R;
-import com.xiliulou.afterserver.util.SecurityUtils;
-import org.apache.poi.util.StringUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -68,7 +75,8 @@ public class AdminJsonBatchController {
      * 保存
      */
     @PostMapping("/admin/batch")
-    public R saveBatch(@RequestBody Batch batch){
+    public R
+    saveBatch(@RequestBody Batch batch){
         return batchService.saveBatch(batch);
     }
 
@@ -100,25 +108,29 @@ public class AdminJsonBatchController {
         }
         return R.ok();
     }
-
+    
     /**
      * 产品管理_批次列表
+     *
      * @param offset 查询起始位置
      * @param limit  查询条数
-     * @param limit  查询条数
-     *
+     * @param batchNo 批次号
+     * @param modelId 产品型号id
+     * @param supplierId 工厂id
+     * @param notShipped 未发货
+     * @return com.xiliulou.afterserver.util.R
      */
     @GetMapping("/admin/batch/list")
     public R selectOne(@RequestParam(value = "batchNo",required = false) String batchNo,
+                       @RequestParam(value = "productType",required = false)String productType,
                        @RequestParam(value = "modelId",required = false)Long modelId,
                        @RequestParam(value = "supplierId",required = false)Long supplierId,
                        @RequestParam(value = "notShipped",required = false)Integer notShipped,
                        @RequestParam(value = "offset") int offset,
                        @RequestParam(value = "limit") int limit) {
 
-        List<Batch> batches = this.batchService.queryAllByLimit(batchNo, offset, limit, modelId, supplierId, notShipped);
-        if (Objects.nonNull(batches)){
-            
+        List<Batch> batches = this.batchService.queryAllByLimit(batchNo, productType, offset, limit, modelId, supplierId, notShipped);
+        if (CollectionUtils.isNotEmpty(batches)){
             // 批次id 查询附件信息
             List<Long> collectIds = batches.stream().map(Batch::getId).collect(Collectors.toList());
             List<ProductFile> productFileList = productFileMapper.selectList(new LambdaQueryWrapper<ProductFile>().in(ProductFile::getProductId, collectIds));
@@ -154,7 +166,8 @@ public class AdminJsonBatchController {
         }
 
         // 条数
-        Long count = this.batchService.count(batchNo, modelId, supplierId);
+        Long count = this.batchService.count(batchNo, productType, modelId, supplierId, notShipped);
+        // Long count = this.batchService.count(batchNo, productType, offset, limit, modelId, supplierId, notShipped);
 
         HashMap<String, Object> stringObjectHashMap = new HashMap<>(2);
         stringObjectHashMap.put("data",batches);
