@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
@@ -20,7 +19,6 @@ import com.xiliulou.afterserver.entity.ProductSerialNumber;
 import com.xiliulou.afterserver.entity.WareHouse;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.PointMapper;
-import com.xiliulou.afterserver.mapper.PointProductBindMapper;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.mapper.ProductMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
@@ -99,9 +97,13 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     @Override
     public IPage getPage(Long offset, Long size, Integer shelfStatus, Product product) {
         Page page = PageUtil.getPage(offset, size);
-        Page selectPage = baseMapper.selectPage(page, new LambdaQueryWrapper<Product>()
+        Page selectPage = baseMapper.selectPage(page,
+                new LambdaQueryWrapper<Product>().eq(Objects.nonNull(product.getProductSeries()), Product::getProductSeries, product.getProductSeries())
                         .like(StringUtils.isNotBlank(product.getName()), Product::getName, product.getName())
-                        .eq(Objects.nonNull(product.getProductSeries()), Product::getProductSeries, product.getProductSeries())
+                        .eq(Objects.nonNull(product.getHasScreen()), Product::getHasScreen, product.getHasScreen())
+                        .eq(Objects.nonNull(product.getFireFightingType()), Product::getFireFightingType, product.getFireFightingType())
+                        .like(StringUtils.isNotBlank(product.getCode()), Product::getCode, product.getCode())
+                        .like(StringUtils.isNotBlank(product.getRemarks()), Product::getRemarks, product.getRemarks())
                         .eq(Objects.nonNull(shelfStatus), Product::getShelfStatus, shelfStatus).orderByDesc(Product::getId));
         return selectPage;
     }
@@ -126,7 +128,13 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     
     @Override
     public void exportExcel(Product product, HttpServletResponse response) {
-        List<Product> productList = list();
+        List<Product> productList = baseMapper.selectList(
+                new LambdaQueryWrapper<Product>().eq(Objects.nonNull(product.getProductSeries()), Product::getProductSeries, product.getProductSeries())
+                        .like(StringUtils.isNotBlank(product.getName()), Product::getName, product.getName())
+                        .eq(Objects.nonNull(product.getHasScreen()), Product::getHasScreen, product.getHasScreen())
+                        .eq(Objects.nonNull(product.getFireFightingType()), Product::getFireFightingType, product.getFireFightingType())
+                        .like(StringUtils.isNotBlank(product.getCode()), Product::getCode, product.getCode())
+                        .like(StringUtils.isNotBlank(product.getRemarks()), Product::getRemarks, product.getRemarks()).orderByDesc(Product::getId));
         if (ObjectUtil.isEmpty(productList)) {
             throw new CustomBusinessException("没有查询到产品型号!无法导出！");
         }
@@ -134,10 +142,37 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         for (Product p : productList) {
             ProductExcelVo productExcelVo = new ProductExcelVo();
             BeanUtil.copyProperties(p, productExcelVo);
+            switch (p.getProductSeries()) {
+                case 1:
+                    productExcelVo.setProductSeries("取餐柜");
+                    break;
+                case 2:
+                    productExcelVo.setProductSeries("餐厅柜");
+                    break;
+                case 3:
+                    productExcelVo.setProductSeries("换电柜");
+                    break;
+                case 4:
+                    productExcelVo.setProductSeries("充电柜");
+                    break;
+                case 5:
+                    productExcelVo.setProductSeries("寄存柜");
+                    break;
+                case 6:
+                    productExcelVo.setProductSeries("生鲜柜");
+                    break;
+                default:
+                    productExcelVo.setProductSeries("");
+            }
+            productExcelVo.setBuyType(p.getBuyType() == 1 ? "集采" : "非集采");
+            productExcelVo.setHasScreen(p.getHasScreen() == 1 ? "有屏" : "无屏");
+            productExcelVo.setFireFightingType(p.getFireFightingType() == 1 ? "气溶胶消防" : "水消防");
+            
             productExcelVos.add(productExcelVo);
         }
-        
-        String fileName = "产品型号.xlsx";
+        // 当前时间
+        String date = new SimpleDateFormat("yyyyMMdd").format(new Date());
+        String fileName = "产品型号" + date + ".xlsx";
         try {
             ServletOutputStream outputStream = response.getOutputStream();
             // 告诉浏览器用什么软件可以打开此文件

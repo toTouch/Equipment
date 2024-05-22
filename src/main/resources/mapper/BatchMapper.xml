@@ -54,6 +54,9 @@
             <if test="notShipped != null and notShipped == 0">
                 and not_shipped = 0
             </if>
+            <if test="remarks != null and remarks != ''">
+               and remarks like concat('%',#{remarks},'%')
+            </if>
         </where>
         order by create_time desc
         limit #{offset}, #{limit}
@@ -101,6 +104,9 @@
             </if>
             <if test="notShipped != null and notShipped == 0">
                 and not_shipped = 0
+            </if>
+            <if test="remarks != null and remarks != ''">
+                and remarks like concat('%',#{remarks},'%')
             </if>
         </where>
     </select>
