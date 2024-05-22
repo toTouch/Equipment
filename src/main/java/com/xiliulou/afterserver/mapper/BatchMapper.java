@@ -31,9 +31,11 @@ public interface BatchMapper extends BaseMapper<Batch> {
      * @param offset      查询起始位置
      * @param limit       查询条数
      * @param notShipped
+     * @param remarks
      * @return 对象列表
      */
-    List<Batch> queryAllByLimit(@Param("batchNo") String batchNo, @Param("productType") String productType, @Param("offset") int offset, @Param("limit") int limit, @Param("modelId") Long modelId, @Param("supplierId") Long supplierId, @Param("notShipped") Integer notShipped);
+    List<Batch> queryAllByLimit(@Param("batchNo") String batchNo, @Param("productType") String productType, @Param("offset") int offset, @Param("limit") int limit, @Param("modelId") Long modelId, @Param("supplierId") Long supplierId, @Param("notShipped") Integer notShipped,
+            @Param("remarks") String remarks);
 
 
     /**
@@ -68,7 +70,8 @@ public interface BatchMapper extends BaseMapper<Batch> {
      */
     int deleteById(Long id);
 
-    Long count(@Param("batchNo") String batchNo, @Param("productType") String productType, @Param("modelId") Long modelId, @Param("supplierId") Long supplierId, @Param("notShipped") Integer notShipped);;
+    Long count(@Param("batchNo") String batchNo, @Param("productType") String productType, @Param("modelId") Long modelId, @Param("supplierId") Long supplierId, @Param("notShipped") Integer notShipped,
+            @Param("remarks") String remarks);
     
     Integer batchUpdateById(ArrayList<Batch> batches);
 }
