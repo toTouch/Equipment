@@ -53,6 +53,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @program: XILIULOU
@@ -139,37 +140,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             throw new CustomBusinessException("没有查询到产品型号!无法导出！");
         }
         List<ProductExcelVo> productExcelVos = new ArrayList<>(productList.size());
-        for (Product p : productList) {
-            ProductExcelVo productExcelVo = new ProductExcelVo();
-            BeanUtil.copyProperties(p, productExcelVo);
-            switch (p.getProductSeries()) {
-                case 1:
-                    productExcelVo.setProductSeries("取餐柜");
-                    break;
-                case 2:
-                    productExcelVo.setProductSeries("餐厅柜");
-                    break;
-                case 3:
-                    productExcelVo.setProductSeries("换电柜");
-                    break;
-                case 4:
-                    productExcelVo.setProductSeries("充电柜");
-                    break;
-                case 5:
-                    productExcelVo.setProductSeries("寄存柜");
-                    break;
-                case 6:
-                    productExcelVo.setProductSeries("生鲜柜");
-                    break;
-                default:
-                    productExcelVo.setProductSeries("");
-            }
-            productExcelVo.setBuyType(p.getBuyType() == 1 ? "集采" : "非集采");
-            productExcelVo.setHasScreen(p.getHasScreen() == 1 ? "有屏" : "无屏");
-            productExcelVo.setFireFightingType(p.getFireFightingType() == 1 ? "气溶胶消防" : "水消防");
-            
-            productExcelVos.add(productExcelVo);
-        }
+        fillProductExcelVos(productList, productExcelVos);
         // 当前时间
         String date = new SimpleDateFormat("yyyyMMdd").format(new Date());
         String fileName = "产品型号" + date + ".xlsx";
@@ -185,6 +156,50 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             log.error("导出报表失败！", e);
         }
         throw new CustomBusinessException("导出报表失败！请联系客服！");
+    }
+    
+    private void fillProductExcelVos(List<Product> productList, List<ProductExcelVo> productExcelVos) {
+        for (Product p : productList) {
+            ProductExcelVo productExcelVo = new ProductExcelVo();
+            BeanUtil.copyProperties(p, productExcelVo);
+            if (Objects.nonNull(p.getProductSeries())) {
+                switch (p.getProductSeries()) {
+                    case 1:
+                        productExcelVo.setProductSeries("取餐柜");
+                        break;
+                    case 2:
+                        productExcelVo.setProductSeries("餐厅柜");
+                        break;
+                    case 3:
+                        productExcelVo.setProductSeries("换电柜");
+                        break;
+                    case 4:
+                        productExcelVo.setProductSeries("充电柜");
+                        break;
+                    case 5:
+                        productExcelVo.setProductSeries("寄存柜");
+                        break;
+                    case 6:
+                        productExcelVo.setProductSeries("生鲜柜");
+                        break;
+                    default:
+                        productExcelVo.setProductSeries("");
+                }
+            }
+            
+            Optional.ofNullable(p.getBuyType()).ifPresent(type -> {
+                productExcelVo.setBuyType(p.getBuyType() == 1 ? "集采" : "非集采");
+            });
+            
+            Optional.ofNullable(p.getHasScreen()).ifPresent(type -> {
+                productExcelVo.setHasScreen(type == 1 ? "有屏" : "无屏");
+            });
+            Optional.ofNullable(p.getFireFightingType()).ifPresent(type -> {
+                productExcelVo.setFireFightingType(type == 1 ? "气溶胶消防" : "水消防");
+            });
+            
+            productExcelVos.add(productExcelVo);
+        }
     }
     
     @Override
