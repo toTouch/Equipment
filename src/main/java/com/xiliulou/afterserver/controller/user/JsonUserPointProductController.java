@@ -155,9 +155,10 @@ public class JsonUserPointProductController {
      * 产品批次列表
      */
     @GetMapping("/user/batch/list")
-    public R selectOne(@RequestParam(value = "name",required = false) String name) {
+    public R selectOne(@RequestParam(value = "name",required = false) String name,
+            @RequestParam(value = "remarks",required = false) String remarks) {
 
-        return R.ok(this.batchService.queryAllByLimit(name, null, 0,20, null, null, null));
+        return R.ok(this.batchService.queryAllByLimit(name, null, 0,20, null, null, null, remarks));
     }
 
     /**
