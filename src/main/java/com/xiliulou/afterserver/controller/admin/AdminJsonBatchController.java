@@ -126,10 +126,11 @@ public class AdminJsonBatchController {
                        @RequestParam(value = "modelId",required = false)Long modelId,
                        @RequestParam(value = "supplierId",required = false)Long supplierId,
                        @RequestParam(value = "notShipped",required = false)Integer notShipped,
+                       @RequestParam(value = "remarks",required = false)String remarks,
                        @RequestParam(value = "offset") int offset,
                        @RequestParam(value = "limit") int limit) {
 
-        List<Batch> batches = this.batchService.queryAllByLimit(batchNo, productType, offset, limit, modelId, supplierId, notShipped);
+        List<Batch> batches = this.batchService.queryAllByLimit(batchNo, productType, offset, limit, modelId, supplierId, notShipped,remarks);
         if (CollectionUtils.isNotEmpty(batches)){
             // 批次id 查询附件信息
             List<Long> collectIds = batches.stream().map(Batch::getId).collect(Collectors.toList());
@@ -166,7 +167,7 @@ public class AdminJsonBatchController {
         }
 
         // 条数
-        Long count = this.batchService.count(batchNo, productType, modelId, supplierId, notShipped);
+        Long count = this.batchService.count(batchNo, productType, modelId, supplierId, notShipped,remarks);
         // Long count = this.batchService.count(batchNo, productType, offset, limit, modelId, supplierId, notShipped);
 
         HashMap<String, Object> stringObjectHashMap = new HashMap<>(2);
