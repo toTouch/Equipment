@@ -20,6 +20,7 @@ public class PartsQuery {
     private BigDecimal sellPrice;
     @NotNull(message="请填写物料编号")
     private String sn;
-
+    
+    private String materialType;
     private String specification;
 }
