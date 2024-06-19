@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.Parts;
 import com.xiliulou.afterserver.web.query.PartsQuery;
 import com.xiliulou.core.web.R;
+
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -63,10 +65,12 @@ public interface PartsService extends IService<Parts> {
      */
     Boolean deleteById(Long id);
 
-    R queryList(Integer size, Integer offset, String name);
+    R queryList(Integer size, Integer offset, String name, String sn);
 
     R saveOne(PartsQuery partsQuery);
-
+    
+    R partsExportExcel(String sn, String name, HttpServletResponse response);
+    
     R updateOne(PartsQuery partsQuery);
 
     R deleteOne(Long id);

@@ -44,8 +44,9 @@ public class JsonAdminPartsController {
     @GetMapping("admin/parts")
     public R queryList(@RequestParam("size") Integer size,
                        @RequestParam("offset") Integer offset,
+                       @RequestParam(value = "sn", required = false) String sn,
                        @RequestParam(value = "name", required = false) String name){
-        return  partsService.queryList(size, offset, name);
+        return  partsService.queryList(size, offset, name, sn);
     }
 
     @PostMapping("admin/parts")
@@ -109,5 +110,23 @@ public class JsonAdminPartsController {
         excelReader.read(readSheet);
         excelReader.finish();
         return result;
+    }
+    
+    /**
+     * 导出点位
+     */
+    @GetMapping("admin/parts/exportExcel")
+    public R partsExportExcel( @RequestParam(value = "sn", required = false) String sn,
+            @RequestParam(value = "name", required = false) String name,HttpServletResponse response){
+        return this.partsService.partsExportExcel(sn,name,response);
+    }
+    
+    /**
+     * 删除
+     */
+    @DeleteMapping("admin/parts/delete")
+    public R delete(@RequestParam(value = "sn", required = false) Long id){
+       this.partsService.deleteById(id);
+       return R.ok();
     }
 }

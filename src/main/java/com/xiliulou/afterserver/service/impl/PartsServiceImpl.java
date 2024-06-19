@@ -1,13 +1,19 @@
 package com.xiliulou.afterserver.service.impl;
 
+import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiliulou.afterserver.entity.Parts;
 import com.xiliulou.afterserver.mapper.PartsMapper;
 import com.xiliulou.afterserver.service.PartsService;
+import com.xiliulou.afterserver.vo.MaterialTraceabilityVO;
+import com.xiliulou.afterserver.vo.PartsExcelVo;
 import com.xiliulou.afterserver.web.query.PartsQuery;
 import com.xiliulou.afterserver.web.vo.PartsVo;
 import com.xiliulou.core.web.R;
-import java.math.BigDecimal;
+
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,11 +21,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 /**
@@ -92,7 +99,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Transactional(rollbackFor = Exception.class)
     public Integer update(Parts parts) {
        return this.partsMapper.update(parts);
-         
+       
     }
 
     /**
@@ -104,13 +111,14 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean deleteById(Long id) {
+        
         return this.partsMapper.deleteById(id) > 0;
     }
 
     @Override
-    public R queryList(Integer size, Integer offset, String name) {
-        List<Parts> parts = this.partsMapper.queryList(size, offset, name);
-        Integer count = this.partsMapper.queryCount(size, offset, name);
+    public R queryList(Integer size, Integer offset, String name, String sn) {
+        List<Parts> parts = this.partsMapper.queryList(size, offset, name, sn);
+        Integer count = this.partsMapper.queryCount(size, offset, name, sn);
 
         Map<String, Object> result = new HashMap<>();
         result.put("data", parts);
@@ -143,7 +151,33 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     public Parts queryByNameAndSpecification(String name, String specification) {
         return this.partsMapper.queryByNameAndSpecification(name, specification);
     }
-
+    
+    @Override
+    public R partsExportExcel(String sn, String name, HttpServletResponse response) {
+        List<Parts> parts = this.partsMapper.queryList(0, 3000, name, sn);
+        Integer count = this.partsMapper.queryCount(0, 3000, name, sn);
+        
+        List<PartsExcelVo> partsExcelVos = new ArrayList<>();
+        parts.stream().forEach(materialInfo -> {
+            PartsExcelVo partsExcelVo = new PartsExcelVo();
+            BeanUtils.copyProperties(materialInfo, partsExcelVo);
+            partsExcelVos.add(partsExcelVo);
+        });
+        
+        String fileName = "配件列表.xlsx";
+        try {
+            ServletOutputStream outputStream = response.getOutputStream();
+            // 告诉浏览器用什么软件可以打开此文件
+            response.setHeader("content-Type", "application/vnd.ms-excel");
+            // 下载文件的默认名称
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, StandardCharsets.UTF_8));
+            EasyExcel.write(outputStream, MaterialTraceabilityVO.class).sheet("sheet").doWrite(partsExcelVos);
+        } catch (IOException e) {
+            log.error("导出报表失败！", e);
+        }
+        return R.ok();
+    }
+    
     @Override
     public R updateOne(PartsQuery partsQuery) {
         Parts parts = queryByIdFromDB(partsQuery.getId());
@@ -179,7 +213,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
     @Override
     public R queryPull(Integer size, Integer offset, String name) {
-        return R.ok(Optional.ofNullable(this.partsMapper.queryList(size, offset, name)).orElse(new ArrayList<>()).stream().map(item -> {
+        return R.ok(Optional.ofNullable(this.partsMapper.queryList(size, offset, name, null)).orElse(new ArrayList<>()).stream().map(item -> {
             PartsVo vo = new PartsVo();
             BeanUtils.copyProperties(item, vo);
             return vo;

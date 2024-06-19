@@ -1,52 +1,50 @@
-package com.xiliulou.afterserver.entity;
+package com.xiliulou.afterserver.vo;
 
-import java.math.BigDecimal;
+import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.baomidou.mybatisplus.annotation.TableName;
+
+import java.math.BigDecimal;
 
 /**
  * (Parts)实体类
  *
- * @author Eclair
- * @since 2022-12-15 15:02:03
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@TableName("t_parts")
-public class Parts {
+public class PartsExcelVo {
     
     private Long id;
-    
+    @ExcelProperty(value = "物料型号名称")
     private String name;
+    
+    @ExcelProperty(value = "物料编号")
+    private String sn;
     /**
      * 采购价
      */
+    @ExcelProperty(value = "采购价格")
     private BigDecimal purchasePrice;
     /**
      * 出售价
      */
+    @ExcelProperty(value = "售卖价格")
     private BigDecimal sellPrice;
     /**
      * 规格
      */
+    @ExcelProperty(value = "物料规格")
     private String specification;
-
-    private String sn;
+   
     /**
      * 物料类型
      */
+    @ExcelProperty(value = "物料类别")
     private String materialType;
-    
-    private Long createTime;
-    
-    private Long updateTime;
-
-    private Integer delFlag;
 
     public static final Integer DEL_NORMAL = 0;
     public static final Integer DEL_DEL = 1;
