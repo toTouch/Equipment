@@ -8,7 +8,6 @@ import java.io.Serializable;
 /**
  * 物料追溯表(Material)
  *
- * @author makejava
  * @since 2024-03-21 11:33:12
  */
 
@@ -31,6 +30,12 @@ public class MaterialQuery implements Serializable {
      * 产品编号/资产编码
      */
     private String productNo;
+    
+    private String IMEI;
+    
+    private String atmelID;
+    
+    private Long testTime;
     
     @TableField(exist = false)
     private Long startTime;
