@@ -44,6 +44,32 @@ public class Material implements Serializable {
     @ExcelProperty(value = "资产编码")
     private String productNo;
     
+    private String imei;
+    
+    private String atmelID;
+    
+    private String testTime;
+    
+    /**
+     * 备注
+     */
+    private String remark;
+    
+    /**
+     * 物料批次id
+     */
+    private Long materialBatchNo;
+    
+    /**
+     * 物料型号id
+     */
+    private Long materialId;
+    
+    /**
+     * 物料状态(0-不合格，1-合格)
+     */
+    private Integer materialState;
+    
     /**
      * 删除标记(0-未删除，1-已删除)
      */
@@ -59,6 +85,19 @@ public class Material implements Serializable {
      * 已删除
      */
     public static final Integer DEL_FLAG = 1;
+    /**
+     * 不合规
+     */
+    public static final Integer UN_PASSING = 0;
+    /**
+     * 待检
+     */
+    public static final Integer TO_BE_INSPECTED = null;
+    
+    /**
+     * 合格
+     */
+    public static final Integer PASSING = 1;
     
     /**
      * 绑定标记(0-未绑定，1-已绑定)

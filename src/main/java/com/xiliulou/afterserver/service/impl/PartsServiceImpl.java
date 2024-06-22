@@ -2,8 +2,11 @@ package com.xiliulou.afterserver.service.impl;
 
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiliulou.afterserver.entity.MaterialBatch;
 import com.xiliulou.afterserver.entity.Parts;
+import com.xiliulou.afterserver.mapper.MaterialBatchMapper;
 import com.xiliulou.afterserver.mapper.PartsMapper;
+import com.xiliulou.afterserver.service.MaterialBatchService;
 import com.xiliulou.afterserver.service.PartsService;
 import com.xiliulou.afterserver.vo.MaterialTraceabilityVO;
 import com.xiliulou.afterserver.vo.PartsExcelVo;
@@ -40,6 +43,9 @@ import lombok.extern.slf4j.Slf4j;
 public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements PartsService {
     @Resource
     private PartsMapper partsMapper;
+    
+    @Resource
+    private MaterialBatchMapper materialBatchMapper;
 
     /**
      * 通过ID查询单条数据从DB
@@ -111,7 +117,10 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean deleteById(Long id) {
-        
+        MaterialBatch materialBatch = materialBatchMapper.existsByPartsId(id);
+        if(Objects.nonNull(materialBatch)) {
+            return false;
+        }
         return this.partsMapper.deleteById(id) > 0;
     }
 
@@ -128,6 +137,9 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
     @Override
     public R saveOne(PartsQuery partsQuery) {
+        if (Objects.nonNull(partsQuery.getMaterialType()) && partsQuery.getMaterialType().length()>30) {
+            return R.failMsg("物料类型不能超过30个字符");
+        }
         Parts partsBySn = queryBySn(partsQuery.getSn());
         if(Objects.nonNull(partsBySn)) {
             return R.fail("物料编码已存在，请检查");
@@ -171,7 +183,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             response.setHeader("content-Type", "application/vnd.ms-excel");
             // 下载文件的默认名称
             response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, StandardCharsets.UTF_8));
-            EasyExcel.write(outputStream, MaterialTraceabilityVO.class).sheet("sheet").doWrite(partsExcelVos);
+            EasyExcel.write(outputStream, PartsExcelVo.class).sheet("sheet").doWrite(partsExcelVos);
         } catch (IOException e) {
             log.error("导出报表失败！", e);
         }
@@ -180,6 +192,10 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     
     @Override
     public R updateOne(PartsQuery partsQuery) {
+        if (Objects.nonNull(partsQuery.getMaterialType()) && partsQuery.getMaterialType().length()>30) {
+            return R.failMsg("物料类型不能超过30个字符");
+        }
+        
         Parts parts = queryByIdFromDB(partsQuery.getId());
         if(Objects.isNull(parts)) {
             return R.fail("未查询到相关物料");

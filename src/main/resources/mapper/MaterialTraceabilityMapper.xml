@@ -2,40 +2,80 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xiliulou.afterserver.mapper.MaterialTraceabilityMapper">
     
-    <resultMap type="com.xiliulou.afterserver.entity.Material" id="MaterialTraceabilityMap">
-        <result property="id" column="id" jdbcType="INTEGER"/>
-        <result property="materialSn" column="material_sn" jdbcType="VARCHAR"/>
-        <result property="productNo" column="product_no" jdbcType="VARCHAR"/>
-        <result property="delFlag" column="del_flag" jdbcType="INTEGER"/>
-        <result property="bindingStatus" column="binding_status" jdbcType="INTEGER"/>
-        <result property="createTime" column="create_time" jdbcType="INTEGER"/>
-        <result property="updateTime" column="update_time" jdbcType="INTEGER"/>
-        <result property="tenantId" column="tenant_id" jdbcType="INTEGER"/>
+    <!--统计总行数-->
+    <resultMap id="MaterialTraceabilityMap" type="com.xiliulou.afterserver.entity.Material">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="material_sn" jdbcType="VARCHAR" property="materialSn"/>
+        <result column="product_no" jdbcType="VARCHAR" property="productNo"/>
+        <result column="material_id" jdbcType="INTEGER" property="materialId"/>
+        <result column="imei" jdbcType="VARCHAR" property="imei"/>
+        <result column="atmel_id" jdbcType="VARCHAR" property="atmelID"/>
+        <result column="test_time" jdbcType="VARCHAR" property="testTime"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="material_batch_no" jdbcType="VARCHAR" property="materialBatchNo"/>
+        <result column="material_state" jdbcType="INTEGER" property="materialState"/>
+        
+        <result column="del_flag" jdbcType="INTEGER" property="delFlag"/>
+        <result column="binding_status" jdbcType="INTEGER" property="bindingStatus"/>
+        <result column="create_time" jdbcType="INTEGER" property="createTime"/>
+        <result column="update_time" jdbcType="INTEGER" property="updateTime"/>
+        <result column="tenant_id" jdbcType="INTEGER" property="tenantId"/>
     </resultMap>
     
+    <delete id="deleteById">
+        delete
+        from t_material
+        where id = #{id}
+    </delete>
+    
     <!--查询单个 根据主键 -->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into t_material(material_sn, product_no, material_id, del_flag, binding_status, create_time, update_time, tenant_id,
+                               imei, atmel_id, test_time, remark, material_batch_no, material_state)
+        values (#{materialSn}, #{productNo},#{materialId}, #{delFlag}, #{bindingStatus}, #{createTime}, #{updateTime}, #{tenantId},
+                #{imei}, #{atmelID}, #{testTime}, #{remark}, #{materialBatchNo}, #{materialState})
+    </insert>
+    
+    <!--查询指定行数据-->
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into t_material(material_sn, product_no, material_id, del_flag, binding_status, create_time, update_time, tenant_id,
+        imei, atmel_id, test_time, remark, material_batch_no, material_state)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.materialSn},#{entity.productNo},#{entities.materialId}, #{entity.delFlag},#{entity.bindingStatus},#{entity.createTime},#{entity.updateTime},#{entity.tenantId},
+            #{entity.imei},#{entity.atmelID},#{entity.testTime},#{entity.remark},#{entity.materialBatchNO},#{entity.materialState})
+        </foreach>
+    </insert>
+    
+    <!-- 根据参数查询 -->
     <select id="selectById" resultMap="MaterialTraceabilityMap">
         select id,
                material_sn,
                product_no,
+               material_id,
                del_flag,
                binding_status,
                create_time,
                update_time,
-               tenant_id
+               tenant_id,
+               imei,
+               atmel_id,
+               test_time,
+               remark,
+               material_batch_no,
+               material_state
         from t_material
         where id = #{id}
     </select>
-    
-    <!--查询指定行数据-->
     <select id="selectListByLimit" resultMap="MaterialTraceabilityMap">
         select
-        id,material_sn,product_no,del_flag,binding_status,create_time,update_time,tenant_id
-        from t_material
+        tm.id,material_sn,product_no,del_flag,binding_status,tm.create_time,tm.update_time,tm.tenant_id,
+        imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id
+        from t_material tm
         <where>
             del_flag = 0
             <if test="query.id != null">
-                and id = #{query.id}
+                and tm.id = #{query.id}
             </if>
             <if test="query.materialSn != null and query.materialSn != ''">
                 and material_sn like concat('%',#{query.materialSn},'%')
@@ -43,23 +83,30 @@
             <if test="query.productNo != null and query.productNo != ''">
                 and product_no like concat('%',#{query.productNo},'%')
             </if>
+            <if test="query.imei != null and query.imei != ''">
+                and tmb.material_batch_no like concat('%',#{query.},'%')
+            </if>
+            <if test="query.materialBatchId != null and query.materialBatchId != ''">
+                and material_batch_no like concat('%',#{query.materialBatchNo},'%')
+            </if>
+            <if test="query.materialState != null">
+                and material_state = #{query.materialState}
+            </if>
             <if test="query.bindingStatus != null">
                 and binding_status = #{query.bindingStatus}
             </if>
             <if test="query.startTime != null">
-                and create_time &gt;= #{query.startTime}
+                and tm.create_time &gt;= #{query.startTime}
             </if>
             <if test="query.endTime != null">
-                and create_time &lt;= #{query.endTime}
+                and tm.create_time &lt;= #{query.endTime}
             </if>
             <if test="query.tenantId != null">
-                and tenant_id = #{query.tenantId}
+                and tm.tenant_id = #{query.tenantId}
             </if>
         </where>
         order by id desc limit #{offset}, #{size}
     </select>
-    
-    <!--统计总行数-->
     <select id="count" resultType="java.lang.Long">
         select count(1)
         from t_material
@@ -88,11 +135,10 @@
             </if>
         </where>
     </select>
-    
-    <!-- 根据参数查询 -->
     <select id="selectByParameter" resultType="com.xiliulou.afterserver.entity.Material">
         select
-        id,material_sn,product_no,del_flag,binding_status,create_time,update_time,tenant_id
+        id,material_sn,product_no,del_flag,binding_status,create_time,update_time,tenant_id,
+        imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id
         from t_material
         <where>
             del_flag = 0
@@ -126,30 +172,80 @@
         limit #{offset}, #{size}
     </select>
     
-    <!--新增所有列-->
-    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into t_material(material_sn, product_no, del_flag, binding_status, create_time, update_time, tenant_id)
-        values (#{materialSn}, #{productNo}, #{delFlag}, #{bindingStatus}, #{createTime}, #{updateTime}, #{tenantId})
-    </insert>
+    <select id="queryAllByList" resultType="com.xiliulou.afterserver.entity.Material">
+        select
+        id,material_sn,product_no,del_flag,binding_status,create_time,update_time,tenant_id,
+        imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id
+        from t_material
+        <where>
+            del_flag = 0
+            <if test="id != null">
+                and id in
+                <foreach close=")" collection="strings" item="batch" open="(" separator=",">
+                    #{batch.id}
+                </foreach>
+            </if>
+        </where>
+    </select>
     
-    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into t_material(material_sn, product_no, del_flag, binding_status, create_time, update_time, tenant_id)
-        values
-        <foreach collection="entities" item="entity" separator=",">
-            (#{entity.materialSn},#{entity.productNo},#{entity.delFlag},#{entity.bindingStatus},#{entity.createTime},#{entity.updateTime},#{entity.tenantId})
-        </foreach>
-    </insert>
+    <select id="exitsByBindingStatus" resultType="com.xiliulou.afterserver.entity.Material">
+        select id,material_sn,product_no,del_flag,binding_status,create_time,update_time,tenant_id,
+               imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id
+        from t_material
+        where binding_status = 1
+        and material_batch_no = #{materialBatchNo} limit 1;
+    </select>
+    
+    <!--新增所有列-->
+    <select id="listAllByImeis" resultType="com.xiliulou.afterserver.entity.Material">
+        select
+        id,material_sn,product_no,del_flag,binding_status,create_time,update_time,tenant_id,
+        imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id
+        from t_material
+        <where>
+            del_flag = 0
+            <foreach close=")" collection="imeis" item="batch" open="and imei in (" separator=",">
+                #{batch}
+            </foreach>
+        </where>
+    </select>
+    
+    <select id="ListAllByAtemlIDs" resultType="com.xiliulou.afterserver.entity.Material">
+        select
+        id,material_sn,product_no,del_flag,binding_status,create_time,update_time,tenant_id,
+        imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id
+        from t_material
+        <where>
+            del_flag = 0
+            <foreach close=")" collection="atemlIDs" item="batch" open="and atmel_id in (" separator=",">
+                #{batch}
+            </foreach>
+        </where>
+    </select>
     
     <!--通过主键修改数据-->
+    <select id="ListAllBySns" resultType="com.xiliulou.afterserver.entity.Material">
+        select
+        id,material_sn,product_no,del_flag,binding_status,create_time,update_time,tenant_id,
+        imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id
+        from t_material
+        <where>
+            del_flag = 0
+            <foreach close=")" collection="sns" item="batch" open="and imei in (" separator=",">
+                #{batch}
+            </foreach>
+        </where>
+    </select>
+    
     <update id="update">
         update t_material
         <set>
             <if test="material.materialSn != null and material.materialSn != ''">
                 material_sn = #{material.materialSn},
             </if>
-<!--           <if test="productNo != null and productNo != ''">-->
-                product_no = #{material.productNo},
-<!--            </if>-->
+            <!--           <if test="productNo != null and productNo != ''">-->
+            product_no = #{material.productNo},
+            <!--            </if>-->
             
             <if test="material.delFlag != null">
                 del_flag = #{material.delFlag},
@@ -166,13 +262,32 @@
             <if test="material.tenantId != null">
                 tenant_id = #{material.tenantId},
             </if>
+            <if test="material.imei != null and material.imei != ''">
+                imei = #{material.imei},
+            </if>
+            <if test="material.atmelID != null and material.atmelID != ''">
+                atmel_id = #{material.atmelID},
+            </if>
+            <if test="material.testTime != null">
+                test_time = #{material.testTime},
+            </if>
+            <if test="material.remark != null and material.remark != ''">
+                remark = #{material.remark},
+            </if>
+            <if test="material.materialBatchId != null and material.materialBatchId != ''">
+                material_batch_no = #{material.materialBatchNo},
+            </if>
+            <if test="material.materialState != null">
+                material_state = #{material.materialState},
+            </if>
         </set>
         where id = #{material.id}
         <if test="thirdId != null">
-           and tenant_id = #{thirdId}
+            and tenant_id = #{thirdId}
         </if>
     </update>
     
+    <!--通过主键删除-->
     <update id="materialUnbundling">
         update t_material
         <set>
@@ -184,12 +299,15 @@
         where id = #{id} and tenant_id = #{tenantId}
     </update>
     
-    <!--通过主键删除-->
-    <delete id="deleteById">
-        delete
-        from t_material
+    <!--逻辑删除-->
+    <update id="removeById">
+        update t_material
+        <set>
+            del_flag = 1,
+            update_time = #{updateTime}
+        </set>
         where id = #{id}
-    </delete>
+    </update>
 
 </mapper>
 

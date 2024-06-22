@@ -3,8 +3,9 @@ package com.xiliulou.afterserver.mapper;
 import com.xiliulou.afterserver.entity.Material;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Collection;
 import java.util.List;
-
+import java.util.Set;
 
 public interface MaterialTraceabilityMapper {
     
@@ -70,5 +71,14 @@ public interface MaterialTraceabilityMapper {
     int materialUnbundling(Material material);
     
     List<String> selectMaterialSnListBySN(@Param("productNo") String productNo, @Param("offset") Long offset, @Param("size") Long size);
+    
+    List<Material> listAllByImeis(List<String> imeis);
+    
+    List<Material> ListAllByAtemlIDs(List<String> atemlIDs);
+    
+    List<Material> ListAllBySns(List<String> sns);
+    
+    Material exitsByBindingStatus(Material material);
 }
+
 

@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiliulou.afterserver.mapper.MaterialBatchMapper">
+    
+    <resultMap type="com.xiliulou.afterserver.entity.MaterialBatch" id="MaterialBatchMap">
+        <result property="materialBatchNo" column="material_batch_no" jdbcType="VARCHAR"/>
+        <result property="materialId" column="material_id" jdbcType="INTEGER"/>
+        <result property="sn" column="sn" jdbcType="VARCHAR"/>
+        <result property="materialTypeName" column="material_type_name" jdbcType="VARCHAR"/>
+        <result property="supplierId" column="supplier_id" jdbcType="INTEGER"/>
+        <result property="materialCount" column="material_count" jdbcType="INTEGER"/>
+        <result property="unqualifiedCount" column="unqualified_count" jdbcType="INTEGER"/>
+        <result property="qualifiedCount" column="qualified_count" jdbcType="INTEGER"/>
+        <result property="materialBatchRemark" column="material_batch_remark" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="INTEGER"/>
+        <result property="updateTime" column="update_time" jdbcType="INTEGER"/>
+        <result property="tenantId" column="tenant_id" jdbcType="INTEGER"/>
+        <result property="qualityReportUrl" column="quality_report_url" jdbcType="VARCHAR"/>
+        <result property="id" column="id" jdbcType="INTEGER"/>
+    </resultMap>
+    <sql id="query_where">
+        <if test="entity.materialBatchNo != null and entity.materialBatchNo != ''">
+            and sn like concat('%',#{entity.materialBatchNo},'%')
+        </if>
+        <if test="entity.materialId != null">
+            and tmb.material_id = #{entity.materialId}
+        </if>
+        <if test="entity.materialTypeName != null and entity.materialTypeName != ''">
+            and tp.name as material_type_name like concat('%',#{entity.materialTypeName},'%')
+        </if>
+        <if test="entity.supplierId != null">
+            and supplier_id = #{entity.supplierId}
+        </if>
+        <if test="entity.materialCount != null">
+            and material_count = #{entity.materialCount}
+        </if>
+        <if test="entity.unqualifiedCount != null">
+            and unqualified_count = #{entity.unqualifiedCount}
+        </if>
+        <if test="entity.qualifiedCount != null">
+            and qualified_count = #{entity.qualifiedCount}
+        </if>
+        <if test="entity.materialBatchRemark != null and entity.materialBatchRemark != ''">
+            and material_batch_remark = #{entity.materialBatchRemark}
+        </if>
+        
+        <if test="entity.tenantId != null">
+            and tenant_id = #{entity.tenantId}
+        </if>
+        <if test="entity.qualityReportUrl != null and entity.qualityReportUrl != ''">
+            and quality_report_url = #{entity.qualityReportUrl}
+        </if>
+        <if test="entity.id != null">
+            and tmb.id = #{entity.id}
+        </if>
+    </sql>
+    
+    <!--查询单个-->
+    <select id="selectById" resultMap="MaterialBatchMap">
+        select material_batch_no,
+               material_id,
+               tp.name as material_type_name,
+               tp.sn,
+               supplier_id,
+               material_count,
+               unqualified_count,
+               qualified_count,
+               material_batch_remark,
+               tmb.create_time,
+               tmb.update_time,
+               tenant_id,
+               quality_report_url,
+               tmb.id
+        from t_material_batch tmb left join t_parts tp on tmb.material_id = tp.id
+        where tmb.id = #{id}
+    </select>
+    
+    <!--查询指定行数据-->
+    <select id="selectPage" resultMap="MaterialBatchMap">
+        select
+        material_batch_no, tp.sn, tp.name as material_type_name, supplier_id, material_count, unqualified_count, qualified_count, material_batch_remark, create_time, update_time,
+        tenant_id, quality_report_url, tmb.id
+        from t_material_batch tmb
+        left join t_parts tp on t_material_batch.material_id = t_parts.id
+        <where>
+          <include refid="query_where"/>
+        </where>
+        order by id desc
+        limit #{offset}, #{size}
+    </select>
+    
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from t_material_batch tmb
+        left join t_parts tp on t_material_batch.material_id = t_parts.id
+        <where>
+            <include refid="query_where"/>
+        </where>
+    </select>
+    
+    <select id="existsByPartsId" resultMap="MaterialBatchMap">
+        select id
+        from t_material_batch tmb
+        where tmb.material_id = #{partsId} limit 1
+    </select>
+  
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into t_material_batch(material_batch_no, material_id, supplier_id, material_count, unqualified_count, qualified_count, material_batch_remark,
+                                     create_time, update_time, tenant_id, quality_report_url)
+        values (#{materialBatchNo}, #{materialId}, #{supplierId}, #{materialCount}, #{unqualifiedCount}, #{qualifiedCount}, #{materialBatchRemark},
+                #{createTime}, #{updateTime}, #{tenantId}, #{qualityReportUrl})
+    </insert>
+    
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into t_material_batch(material_batch_no, material_id, supplier_id, material_count, unqualified_count, qualified_count, material_batch_remark,
+        create_time, update_time, tenant_id, quality_report_url)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.materialBatchNo}, #{entity.materialId}, #{entity.supplierId}, #{entity.materialCount}, #{entity.unqualifiedCount},
+            #{entity.qualifiedCount}, #{entity.materialBatchRemark}, #{entity.createTime}, #{entity.updateTime}, #{entity.tenantId}, #{entity.qualityReportUrl})
+        </foreach>
+    </insert>
+    
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into t_material_batch(material_batch_no, material_id, supplier_id, material_count, unqualified_count, qualified_count, material_batch_remark,
+        create_time, update_time, tenant_id, quality_report_url)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.materialBatchNo}, #{entity.materialId}, #{entity.supplierId}, #{entity.materialCount}, #{entity.unqualifiedCount},
+            #{entity.qualifiedCount}, #{entity.materialBatchRemark}, #{entity.createTime}, #{entity.updateTime}, #{entity.tenantId}, #{entity.qualityReportUrl})
+        </foreach>
+        on duplicate key update
+        material_batch_no = values(material_batch_no),
+        material_id = values(material_id),
+        supplier_id = values(supplier_id),
+        material_count = values(material_count),
+        unqualified_count = values(unqualified_count),
+        qualified_count = values(qualified_count),
+        material_batch_remark = values(material_batch_remark),
+        create_time = values(create_time),
+        update_time = values(update_time),
+        tenant_id = values(tenant_id),
+        quality_report_url = values(quality_report_url)
+    </insert>
+    
+    <!--通过主键修改数据-->
+    <update id="update">
+        update t_material_batch
+        <set>
+            <if test="materialBatchNo != null and materialBatchNo != ''">
+                material_batch_no = #{materialBatchNo},
+            </if>
+            <if test="materialId != null">
+                material_id = #{materialId},
+            </if>
+            <if test="supplierId != null">
+                supplier_id = #{supplierId},
+            </if>
+            <if test="materialCount != null">
+                material_count = #{materialCount},
+            </if>
+            <if test="unqualifiedCount != null">
+                unqualified_count = #{unqualifiedCount},
+            </if>
+            <if test="qualifiedCount != null">
+                qualified_count = #{qualifiedCount},
+            </if>
+            <if test="materialBatchRemark != null and materialBatchRemark != ''">
+                material_batch_remark = #{materialBatchRemark},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="tenantId != null">
+                tenant_id = #{tenantId},
+            </if>
+            <if test="qualityReportUrl != null and qualityReportUrl != ''">
+                quality_report_url = #{qualityReportUrl},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    
+    <!--逻辑删除数据-->
+    <update id="removeById">
+        update t_material_batch
+        <set>
+            <if test="materialBatchNo != null and materialBatchNo != ''">
+                material_batch_no = #{materialBatchNo},
+            </if>
+            <if test="materialId != null">
+                material_id = #{materialId},
+            </if>
+            <if test="supplierId != null">
+                supplier_id = #{supplierId},
+            </if>
+            <if test="materialCount != null">
+                material_count = #{materialCount},
+            </if>
+            <if test="unqualifiedCount != null">
+                unqualified_count = #{unqualifiedCount},
+            </if>
+            <if test="qualifiedCount != null">
+                qualified_count = #{qualifiedCount},
+            </if>
+            <if test="materialBatchRemark != null and materialBatchRemark != ''">
+                material_batch_remark = #{materialBatchRemark},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="tenantId != null">
+                tenant_id = #{tenantId},
+            </if>
+            <if test="qualityReportUrl != null and qualityReportUrl != ''">
+                quality_report_url = #{qualityReportUrl},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from t_material_batch
+        where id = #{id}
+    </delete>
+    <delete id="deleteByBatcherId">
+        delete
+        from t_material
+        where material_batch_id = #{id}
+    </delete>
+
+</mapper>

@@ -126,7 +126,9 @@ public class JsonAdminPartsController {
      */
     @DeleteMapping("admin/parts/delete")
     public R delete(@RequestParam(value = "sn", required = false) Long id){
-       this.partsService.deleteById(id);
-       return R.ok();
+        if (this.partsService.deleteById(id)) {
+            return R.ok();
+        }
+       return R.fail("该物料已绑定批次，请先删除批次");
     }
 }
