@@ -83,7 +83,7 @@
         imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id,tp.name,tp.sn
         from t_material tm left join t_parts tp on tp.id = tm.material_id
         <where>
-            del_flag = 0
+            tm.del_flag  = 0
             <if test="query.id != null">
                 and tm.id = #{query.id}
             </if>
@@ -127,7 +127,7 @@
         select count(1)
         from t_material tm left join t_parts tp on tp.id = tm.material_id
         <where>
-            del_flag = 0
+            tm.del_flag = 0
             <if test="id != null">
                 and id = #{id}
             </if>
@@ -137,11 +137,11 @@
             <if test="productNo != null and productNo != ''">
                 and product_no like concat('%',#{productNo},'%')
             </if>
-            <if test="query.sn != null">
-                and tp.sn = #{query.sn}
+            <if test="sn != null">
+                and tp.sn = #{sn}
             </if>
-            <if test="query.name != null and query.name != ''">
-                and tp.name like concat('%',#{query.name},'%')
+            <if test="name != null and name != ''">
+                and tp.name like concat('%',#{name},'%')
             </if>
             <if test="bindingStatus != null">
                 and binding_status = #{bindingStatus}
@@ -163,7 +163,7 @@
         imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id,tp.name,tp.sn
         from t_material tm left join t_parts tp on tp.id = tm.material_id
         <where>
-            del_flag = 0
+            tm.del_flag  = 0
             <if test="id != null">
                 and id = #{id}
             </if>
@@ -200,7 +200,7 @@
         imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id,tp.name,tp.sn
         from t_material tm left join t_parts tp on tp.id = tm.material_id
         <where>
-            del_flag = 0
+            tm.del_flag  = 0
             <if test="id != null">
                 and id in
                 <foreach close=")" collection="strings" item="batch" open="(" separator=",">
@@ -225,7 +225,7 @@
                imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id,tp.name,tp.sn
         from t_material tm left join t_parts tp on tp.id = tm.material_id
         <where>
-            del_flag = 0
+            tm.del_flag  = 0
             <foreach close=")" collection="imeis" item="batch" open="and imei in (" separator=",">
                 #{batch}
             </foreach>
@@ -238,7 +238,7 @@
                imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id,tp.name,tp.sn
         from t_material tm left join t_parts tp on tp.id = tm.material_id
         <where>
-            del_flag = 0
+            tm.del_flag  = 0
             <foreach close=")" collection="atemlIDs" item="batch" open="and atmel_id in (" separator=",">
                 #{batch}
             </foreach>
@@ -252,7 +252,7 @@
                imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id,tp.name,tp.sn
         from t_material tm left join t_parts tp on tp.id = tm.material_id
         <where>
-            del_flag = 0
+            tm.del_flag  = 0
             <foreach close=")" collection="sns" item="batch" open="and imei in (" separator=",">
                 #{batch}
             </foreach>
@@ -264,7 +264,7 @@
         from t_material tm left join t_parts tp on tp.id = tm.material_id
         where binding_status = 1
         <where>
-            del_flag = 0
+            tm.del_flag  = 0
             <foreach close=")" collection="ids" item="batch" open="and id in (" separator=",">
                 #{batch}
             </foreach>
@@ -274,11 +274,11 @@
     
     <select id="selectListByIds" resultType="com.xiliulou.afterserver.entity.Material">
         select
-        tm.id,material_sn,product_no,tm.del_flag,binding_status,tm.create_time,tm.update_time,tenant_id,
+        tm.id,material_sn,product_no,tm.tm.del_flag ,binding_status,tm.create_time,tm.update_time,tenant_id,
                imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id,tp.name,tp.sn
         from t_material tm left join t_parts tp on tp.id = tm.material_id
         <where>
-            del_flag = 0
+            tm.del_flag  = 0
             <foreach close=")" collection="ids" item="batch" open="and id in (" separator=",">
                 #{batch}
             </foreach>
@@ -290,7 +290,7 @@
         imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id,tp.name,tp.sn
         from t_material tm left join t_parts tp on tp.id = tm.material_id
         <where>
-            del_flag = 0
+            tm.del_flag  = 0
             <foreach close=")" collection="nos" item="batch" open="and product_no in " separator=",">
                 #{batch}
             </foreach>
