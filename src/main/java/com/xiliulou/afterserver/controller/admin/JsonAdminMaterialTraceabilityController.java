@@ -178,7 +178,7 @@ public class JsonAdminMaterialTraceabilityController {
      * @return 删除是否成功
      */
     @DeleteMapping("/delete")
-    public R deleteById(List<Long> ids) {
+    public R deleteById(List<Long> ids) throws Exception {
         return this.materialTraceabilityService.deleteByIds(ids);
     }
     

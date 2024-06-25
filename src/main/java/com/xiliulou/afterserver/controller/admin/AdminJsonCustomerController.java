@@ -60,12 +60,10 @@ public class AdminJsonCustomerController extends BaseController {
     /**
      * 提供给前端 获取客户和产品型号和数量
      *
-     * @param offset
-     * @param size
      * @param customer
      * @return
      */
-    @GetMapping("admin/customer/list")
+    @GetMapping("admin/customer/customerList")
     public R list(Customer customer) {
         return customerService.getCustomerList(customer);
     }
