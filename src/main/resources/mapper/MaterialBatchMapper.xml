@@ -26,7 +26,7 @@
             and tmb.material_id = #{entity.materialId}
         </if>
         <if test="entity.materialTypeName != null and entity.materialTypeName != ''">
-            and tp.name as material_type_name like concat('%',#{entity.materialTypeName},'%')
+            and tp.name like concat('%',#{entity.materialTypeName},'%')
         </if>
         <if test="entity.supplierId != null">
             and supplier_id = #{entity.supplierId}
@@ -78,10 +78,10 @@
     <!--查询指定行数据-->
     <select id="selectPage" resultMap="MaterialBatchMap">
         select
-        material_batch_no, tp.sn, tp.name as material_type_name, supplier_id, material_count, unqualified_count, qualified_count, material_batch_remark, create_time, update_time,
+        material_batch_no, tp.sn, tp.name as material_type_name, material_id, supplier_id, material_count, unqualified_count, qualified_count, material_batch_remark, tmb.create_time, tmb.update_time,
         tenant_id, quality_report_url, tmb.id
         from t_material_batch tmb
-        left join t_parts tp on t_material_batch.material_id = t_parts.id
+        left join t_parts tp on tmb.material_id = tp.id
         <where>
           <include refid="query_where"/>
         </where>
@@ -93,7 +93,7 @@
     <select id="count" resultType="java.lang.Long">
         select count(1)
         from t_material_batch tmb
-        left join t_parts tp on t_material_batch.material_id = t_parts.id
+        left join t_parts tp on tmb.material_id = tp.id
         <where>
             <include refid="query_where"/>
         </where>
@@ -275,10 +275,11 @@
         from t_material_batch
         where id = #{id}
     </delete>
+    
     <delete id="deleteByBatcherId">
         delete
         from t_material
-        where material_batch_id = #{id}
+        where id = #{id}
     </delete>
 
 </mapper>

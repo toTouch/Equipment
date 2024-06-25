@@ -17,6 +17,7 @@ import com.xiliulou.afterserver.service.UserService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.vo.MaterialBatchExcelVo;
+import com.xiliulou.afterserver.web.query.MaterialQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,8 +95,21 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
      */
     @Override
     public List<MaterialBatch> listByLimit(MaterialBatch materialBatch, Long offset, Long size) {
+        List<MaterialBatch> materialBatches = this.materialBatchMapper.selectPage(materialBatch, offset, size);
+        if (CollectionUtils.isEmpty(materialBatches)) {
+           return materialBatches;
+        }
+        Set<Long> supplierIds = materialBatches.stream().map(MaterialBatch::getSupplierId).collect(Collectors.toSet());
+        List<Supplier> supplierList = supplierService.listBySupplierIds(supplierIds);
         
-        return this.materialBatchMapper.selectPage(materialBatch, offset, size);
+        Map<Long, String> longStringMap = supplierList.stream().collect(Collectors.toMap(Supplier::getId, Supplier::getName, (k1, k2) -> k1));
+        materialBatches.forEach(temp -> {
+            temp.setSupplierName(longStringMap.get(temp.getSupplierId()));
+        });
+        
+        return materialBatches;
+        
+        
     }
     
     /**
@@ -243,9 +258,10 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
     
     // 导入Excel
     @Override
-    public R materialExportUpload(List<Material> materials, Long materialBatchId) {
+    public R materialExportUpload(List<MaterialQuery> materials, Long materialBatchId) {
         // 提取数据重复项
-        R r = checkMaterialBatchDuplicate(materials);
+        List<Material> materialList = new ArrayList<>();
+        R r = checkMaterialBatchDuplicate(materials,materialList);
         if (r.getCode() != 0) {
             return r;
         }
@@ -255,17 +271,17 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
             return R.failMsg("批次号不存在");
         }
         User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
-        materials.forEach(material -> {
+        materialList.forEach(material -> {
             material.setMaterialBatchNo(materialBatchQuery.getMaterialBatchNo());
+            material.setMaterialId(materialBatchQuery.getMaterialId());
+            material.setDelFlag(UN_DEL_FLAG);
+            material.setBindingStatus(UN_DEL_FLAG);
             material.setCreateTime(System.currentTimeMillis());
             material.setUpdateTime(System.currentTimeMillis());
-            material.setTenantId(userById.getThirdId());
-            material.setDelFlag(UN_DEL_FLAG);
-            // material.setMaterialState(PASSING);
-            material.setBindingStatus(BINDING);
+            material.setTenantId(0L);
         });
         for (int i = 0; i < materials.size() / 200 + 1; i++) {
-            materialMapper.insertBatch(materials);
+            materialMapper.insertBatch(materialList);
         }
         
         // 更新数据
@@ -292,7 +308,7 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
     
     
     // 获取导入重复数据
-    public R checkMaterialBatchDuplicate(List<Material> materials) {
+    public R checkMaterialBatchDuplicate(List<MaterialQuery> materials,List<Material> materialList) {
         HashMap<String, Integer> imeiHashMap = new HashMap<String, Integer>();
         HashMap<String, Integer> atemlIDHashMap = new HashMap<String, Integer>();
         HashMap<String, Integer> snHashMap = new HashMap<String, Integer>();
@@ -300,20 +316,33 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
         ArrayList<String> atemlIDs = new ArrayList<>();
         ArrayList<String> sns = new ArrayList<>();
         
-        for (Material material : materials) {
-            getMaterialBatchDuplicateData(imeiHashMap, material.getImei(), imeis);
-            getMaterialBatchDuplicateData(atemlIDHashMap, material.getAtmelID(), atemlIDs);
-            getMaterialBatchDuplicateData(snHashMap, material.getMaterialSn(), sns);
+        for (MaterialQuery materialQuery : materials) {
+            getMaterialBatchDuplicateData(imeiHashMap, materialQuery.getImei(), imeis);
+            getMaterialBatchDuplicateData(atemlIDHashMap, materialQuery.getAtmelID(), atemlIDs);
+            getMaterialBatchDuplicateData(snHashMap, materialQuery.getMaterialSn(), sns);
             
+            Material material = new Material();
             // 时间格式校验
-            if (StringUtils.isNotBlank(material.getTestTime())) {
+            if (StringUtils.isNotBlank(materialQuery.getTestTime())) {
                 try {
                     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                    dateFormat.parse(material.getTestTime().trim());
+                    Date parse = dateFormat.parse(materialQuery.getTestTime().trim());
+                    material.setTestTime(parse.getTime());
                 } catch (ParseException e) {
                     return R.failMsg("表格内测试日期非日期格式，请检查");
                 }
             }
+            BeanUtils.copyProperties(materialQuery, material);
+            if (StringUtils.isBlank(materialQuery.getImei())) {
+                material.setImei("");
+            }
+            if (StringUtils.isBlank(materialQuery.getAtmelID())) {
+                material.setAtmelID("");
+            }
+            if (StringUtils.isBlank(materialQuery.getMaterialSn())){
+                material.setMaterialSn("");
+            }
+            materialList.add(material);
         }
         
         if (!imeis.isEmpty()) {

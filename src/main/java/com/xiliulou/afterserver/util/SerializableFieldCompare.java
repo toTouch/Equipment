@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.util;
 
+import com.xiliulou.afterserver.entity.Material;
 import com.xiliulou.afterserver.plugin.FieldCompare;
 import org.apache.commons.lang3.StringUtils;
 import java.beans.PropertyDescriptor;
@@ -7,12 +8,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class SerializableFieldCompare {
-    public static <T> List<String> compare (Class<T> type, T newObject, T  oldObject ) throws Exception {
+    public static <T> List<String> compare (Class<T> type, Material newObject, Material  oldObject ) throws Exception {
         List<String> logList = new ArrayList<>();
         Class<?> newObj = newObject.getClass();
         Class<?> oldObj = oldObject.getClass();
@@ -72,5 +75,27 @@ public class SerializableFieldCompare {
             }
         }
         return map;
+    }
+    
+    public static List<String> compare(Material newObject, Material oldObject) {
+        
+        List<String> logList = new ArrayList<>();
+        if (Objects.isNull(oldObject)){
+            return logList;
+        }
+        
+        if (!Objects.equals(newObject.getProductNo(), oldObject.getProductNo())) {
+            logList.add("资产编码由：[" + oldObject.getProductNo() + "]更改为了：[" + newObject.getProductNo() + "]");
+        }
+        
+        if (!Objects.equals(newObject.getRemark(), oldObject.getRemark())) {
+            logList.add("备注由：[" + oldObject.getRemark() + "]更改为了：[" + newObject.getRemark() + "]");
+        }
+        
+        if (!Objects.equals(newObject.getMaterialState(), oldObject.getMaterialState())) {
+            logList.add("物料状态由：[" + oldObject.getMaterialState() + "]更改为了：[" + newObject.getMaterialState() + "]");
+        }
+        
+        return logList;
     }
 }

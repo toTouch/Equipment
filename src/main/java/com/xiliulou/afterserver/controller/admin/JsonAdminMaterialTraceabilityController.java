@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import retrofit2.http.PUT;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -178,7 +179,7 @@ public class JsonAdminMaterialTraceabilityController {
      * @return 删除是否成功
      */
     @DeleteMapping("/delete")
-    public R deleteById(List<Long> ids) throws Exception {
+    public R deleteById( @RequestParam(required = false) List<Long> ids) throws Exception {
         return this.materialTraceabilityService.deleteByIds(ids);
     }
     

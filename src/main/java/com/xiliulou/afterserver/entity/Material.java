@@ -50,7 +50,7 @@ public class Material implements Serializable {
     
     private String atmelID;
     
-    private String testTime;
+    private Long testTime;
     
     /**
      * 备注
@@ -152,6 +152,8 @@ public class Material implements Serializable {
     @TableField(exist = false)
     @ExcelIgnore
     private String sn;
+    
+    private String materialBatchId;
     
 }
 

@@ -38,6 +38,7 @@ import java.util.StringJoiner;
 
 import static com.xiliulou.afterserver.entity.Material.BINDING;
 import static com.xiliulou.afterserver.entity.Material.PASSING;
+import static com.xiliulou.afterserver.entity.Material.TO_BE_INSPECTED;
 import static com.xiliulou.afterserver.entity.Material.UN_BINDING;
 import static com.xiliulou.afterserver.entity.Material.UN_DEL_FLAG;
 import static com.xiliulou.afterserver.entity.Material.UN_PASSING;
@@ -112,7 +113,10 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
     @Override
     public R changeMaterialState(List<Long> ids, Integer confirm, Integer status, String remark) throws Exception {
         if (Objects.nonNull(confirm)) {
-            materialTraceabilityMapper.updateMaterialStateByIds(ids, System.currentTimeMillis(), remark);
+            if (Objects.equals(status, UN_PASSING)) {
+            
+            }
+            materialTraceabilityMapper.updateMaterialStateByIds(ids, System.currentTimeMillis(), remark, status);
         }
         
         List<Material> materials = materialTraceabilityMapper.selectListByIds(ids);
@@ -125,12 +129,14 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         }
         
         List<MaterialBatch> materialBatchesQuery = materialBatchService.queryByNos(batchNoToCountMap.keySet());
-        
+        // 更新物料批次
+        if (Objects.isNull(materialBatchesQuery)) {
+            return R.fail("批次信息不存在");
+        }
         // 更新物料状态
-        materialTraceabilityMapper.updateMaterialStateByIds(ids,System.currentTimeMillis(), remark);
+        materialTraceabilityMapper.updateMaterialStateByIds(ids,System.currentTimeMillis(), remark,status);
         List<Material> tempMaterials = materialTraceabilityMapper.selectListByIds(ids);
         
-        // 更新物料批次
         materialBatchesQuery.forEach(temp -> {
             if (Objects.equals(Material.PASSING, status)){
                 temp.setQualifiedCount(batchNoToCountMap.get(temp.getMaterialBatchNo()));
@@ -148,11 +154,12 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         // 添加记录
         for (Material oldMaterial : tempMaterials) {
             Material newMaterial = new Material();
+            BeanUtils.copyProperties(oldMaterial, newMaterial);
             newMaterial.setId(oldMaterial.getId());
             newMaterial.setRemark(oldMaterial.getRemark());
             newMaterial.setMaterialState(status);
             
-            BeanUtils.copyProperties(oldMaterial, newMaterial);
+            
             record(oldMaterial,newMaterial);
         }
         return R.ok();
@@ -210,6 +217,7 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         
         Material materialParameter = new Material();
         materialParameter.setMaterialSn(materialQuery.getMaterialSn());
+        materialParameter.setId(materialQuery.getId());
         Material materialFromQuery = this.materialTraceabilityMapper.selectByParameter(materialParameter);
         if (Objects.isNull(materialFromQuery)) {
             return R.failMsg("物料编码不存在");
@@ -217,14 +225,11 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         if (UN_PASSING.equals(materialFromQuery.getMaterialState())) {
             return R.failMsg("物料不合格，请勿录入");
         }
-        if (Objects.isNull(materialFromQuery.getMaterialState())) {
-            return R.failMsg("物料未质检，请勿录入");
-        }
-        if (Objects.nonNull(materialFromQuery.getProductNo())) {
-            return R.failMsg("物料已绑定柜机，请勿录入");
-        }
      
         BeanUtils.copyProperties(materialQuery, materialUpdate);
+        if (Objects.equals(materialQuery.getMaterialState(),UN_PASSING)){
+            materialUpdate.setProductNo(null);
+        }
         materialUpdate.setUpdateTime(System.currentTimeMillis());
         
         int i = this.materialTraceabilityMapper.update(materialUpdate,userById.getThirdId());
@@ -386,8 +391,11 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
             materialOperationMapper.insert(materialOperation);
             return;
         }
+        if (Objects.isNull(oldValue)) {
+            return;
+        }
         
-        List<String> compare = SerializableFieldCompare.compare(Material.class, newValue, oldValue);
+        List<String> compare = SerializableFieldCompare.compare( newValue, oldValue);
         if (compare.isEmpty()) {
             return;
         }

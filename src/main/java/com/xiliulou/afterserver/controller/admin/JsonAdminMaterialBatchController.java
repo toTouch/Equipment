@@ -5,6 +5,7 @@ import com.xiliulou.afterserver.entity.Material;
 import com.xiliulou.afterserver.entity.MaterialBatch;
 import com.xiliulou.afterserver.service.MaterialBatchService;
 import com.xiliulou.afterserver.util.R;
+import com.xiliulou.afterserver.web.query.MaterialQuery;
 import org.springframework.web.bind.annotation.*;
 import shaded.org.apache.commons.lang3.StringUtils;
 
@@ -67,7 +68,7 @@ public class JsonAdminMaterialBatchController {
      */
     @PostMapping("/save")
     public R add(@RequestBody MaterialBatch materialBatch) {
-        if (StringUtils.isNotBlank(materialBatch.getMaterialBatchNo())) {
+        if (StringUtils.isBlank(materialBatch.getMaterialBatchNo())) {
             return R.failMsg("批次号不能为空");
         }
         if (Objects.isNull(materialBatch.getMaterialId())) {
@@ -77,7 +78,7 @@ public class JsonAdminMaterialBatchController {
             return R.failMsg("供应商不能为空");
         }
        
-        return R.ok(this.materialBatchService.insert(materialBatch));
+        return this.materialBatchService.insert(materialBatch);
     }
 
     /**
@@ -88,7 +89,7 @@ public class JsonAdminMaterialBatchController {
      */
     @PutMapping("/edit")
     public R edit(@RequestBody MaterialBatch materialBatch) {
-        return R.ok(this.materialBatchService.update(materialBatch));
+        return this.materialBatchService.update(materialBatch);
     }
     
     /**
@@ -103,7 +104,7 @@ public class JsonAdminMaterialBatchController {
      */
     @DeleteMapping("/delete")
     public R deleteById(Long id) {
-        return R.ok(this.materialBatchService.deleteById(id));
+        return this.materialBatchService.deleteById(id);
     }
     
     /**
@@ -118,7 +119,7 @@ public class JsonAdminMaterialBatchController {
      * 导入物料批次
      */
     @PostMapping("/admin/supplier/upload")
-    public R upload(@RequestBody List<Material> materials,Long materialBatchId) throws IOException {
+    public R upload(@RequestBody List<MaterialQuery> materials,Long materialBatchId) throws IOException {
         if (CollectionUtils.isEmpty(materials)) {
             return R.failMsg("文件内容为空");
         }

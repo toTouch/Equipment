@@ -124,4 +124,6 @@ public interface PointNewService extends IService<PointNew> {
     R productNewDeliverMaterialHistoryExportExcel(String batchNo, String sn, String deviceName, String cabinetSn, String tenantName, Long startTime, Long endTime);
     
     R printClientInfo(Long pid);
+    
+    R productNewDeliverMaterialPanelExportExcel(String batchNo, String sn, String deviceName, String cabinetSn, String tenantName, Long startTime, Long endTime);
 }

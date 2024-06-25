@@ -49,6 +49,12 @@ public class MaterialBatch implements Serializable {
     private Long supplierId;
     
     /**
+     * 供应商名称
+     */
+    @TableField(exist = false)
+    private String supplierName;
+    
+    /**
      * 物料数量
      */
     private Integer materialCount;

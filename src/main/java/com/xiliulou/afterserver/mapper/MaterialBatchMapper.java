@@ -36,7 +36,7 @@ public interface MaterialBatchMapper {
      * @param materialBatch 查询条件
      * @return 总行数
      */
-    long count(MaterialBatch materialBatch);
+    long count(@Param("entity") MaterialBatch materialBatch);
     
     /**
      * 新增数据

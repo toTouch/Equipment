@@ -18,9 +18,15 @@ public class MaterialHistoryVo {
     private Long deliverTime;
     
     /**
+     * 生产日期
+     */
+    private Long productionTime;
+    
+    /**
      * 运营商名称
      */
     private String tenantName;
+    private String supplierName;
     
     /**
      * Y8030010
@@ -42,7 +48,7 @@ public class MaterialHistoryVo {
      */
     private List<MaterialCellVo> connectorBoard;
     
-    private List<MaterialCellVo> atmelID;
+    private String atmelID;
     
     /**
      * Y5030010

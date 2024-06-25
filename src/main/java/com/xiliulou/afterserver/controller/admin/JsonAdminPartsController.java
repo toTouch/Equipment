@@ -89,8 +89,6 @@ public class JsonAdminPartsController {
     /**
      * 物料种类/配件列表拉取
      *
-     * @param size
-     * @param offset
      * @param name
      * @return
      */
