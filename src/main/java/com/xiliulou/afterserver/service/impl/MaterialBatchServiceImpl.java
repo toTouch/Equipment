@@ -157,6 +157,14 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
      */
     @Override
     public R update(MaterialBatch materialBatch) {
+        if (Objects.nonNull(materialBatch.getQualityReportUrl())) {
+            MaterialBatch updateUrl = new MaterialBatch();
+            updateUrl.setId(materialBatch.getId());
+            updateUrl.setQualityReportUrl(materialBatch.getQualityReportUrl());
+            this.materialBatchMapper.update(materialBatch);
+            return R.ok();
+        }
+        
         R<Object> failMsg = insertOrUpdateBatchCheck(materialBatch);
         if (Objects.nonNull(failMsg)) {
             return failMsg;

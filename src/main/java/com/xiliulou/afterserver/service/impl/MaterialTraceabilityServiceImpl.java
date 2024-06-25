@@ -230,6 +230,7 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         int i = this.materialTraceabilityMapper.update(materialUpdate,userById.getThirdId());
         
         record(materialFromQuery, materialUpdate);
+        
         return R.ok(i);
     }
     
@@ -257,12 +258,19 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
      * @return 是否成功
      */
     @Override
-    public R deleteByIds(List<Long> ids) {
+    public R deleteByIds(List<Long> ids) throws Exception {
         Material material = this.materialTraceabilityMapper.exitsByBindingStatusList(ids);
         if (Objects.nonNull(material)) {
             return R.failMsg("该批次内已有物料绑定柜机，不可删除批次");
         }
-    
+        
+        List<Material> tempMaterials = materialTraceabilityMapper.selectListByIds(ids);
+        for (Material oldMaterial : tempMaterials) {
+            Material newMaterial = null;
+            BeanUtils.copyProperties(oldMaterial, newMaterial);
+            record(oldMaterial,newMaterial);
+        }
+        
         this.materialTraceabilityMapper.deleteByIds(ids);
         return R.ok();
     }
@@ -368,14 +376,26 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
     }
     
     public void record(Material oldValue, Material newValue) throws Exception {
+        User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
+        if (Objects.isNull(newValue)) {
+            MaterialOperation materialOperation = new MaterialOperation();
+            materialOperation.setMaterialId(oldValue.getId());
+            materialOperation.setOperationTime(System.currentTimeMillis());
+            materialOperation.setOperationContent(oldValue.getMaterialSn()+"物料已删除");
+            materialOperation.setOperationAccount(userById.getUserName());
+            materialOperationMapper.insert(materialOperation);
+            return;
+        }
+        
         List<String> compare = SerializableFieldCompare.compare(Material.class, newValue, oldValue);
         if (compare.isEmpty()) {
             return;
         }
         StringJoiner operationContent = new StringJoiner(",");
-        User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
         compare.forEach(operationContent::add);
+        
         MaterialOperation materialOperation = new MaterialOperation();
+        materialOperation.setMaterialId(oldValue.getId());
         materialOperation.setOperationTime(System.currentTimeMillis());
         materialOperation.setOperationContent(operationContent.toString());
         materialOperation.setOperationAccount(userById.getUserName());

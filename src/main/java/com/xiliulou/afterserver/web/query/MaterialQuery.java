@@ -71,10 +71,16 @@ public class MaterialQuery implements Serializable {
      */
     private Integer materialState;
     
+    /**
+     * 物料型号名称
+     */
     @TableField(exist = false)
     @ExcelIgnore
     private String name;
     
+    /**
+     * 物料型号编码
+     */
     @TableField(exist = false)
     @ExcelIgnore
     private String sn;

@@ -40,7 +40,15 @@ public class JsonAdminPartsController {
      */
     @Resource
     private PartsService partsService;
-
+    
+    /**
+     * 物料类型列表
+     * @param size
+     * @param offset
+     * @param sn
+     * @param name
+     * @return
+     */
     @GetMapping("admin/parts")
     public R queryList(@RequestParam("size") Integer size,
                        @RequestParam("offset") Integer offset,
@@ -113,7 +121,7 @@ public class JsonAdminPartsController {
     }
     
     /**
-     * 导出点位
+     * 导出物料类型
      */
     @GetMapping("admin/parts/exportExcel")
     public R partsExportExcel( @RequestParam(value = "sn", required = false) String sn,

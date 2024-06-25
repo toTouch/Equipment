@@ -809,6 +809,12 @@ public class AdminJsonPointNewController {
         
     }
     
+    /**
+     * 产品信息
+     *
+     * @param pid
+     * @return
+     */
     @GetMapping("/admin/pointNew/client/info/{pid}")
     public R printClientInfo(@PathVariable("pid") Long pid) {
         return pointNewService.printClientInfo(pid);
@@ -898,6 +904,17 @@ public class AdminJsonPointNewController {
         pointNewService.productNewDeliverExportExcel(batchNo, sn, deviceName, cabinetSn, tenantName, startTime, endTime, response);
     }
     
+    /**
+     * 物料履历导出
+     *
+     * @param batchNo
+     * @param sn
+     * @param deviceName
+     * @param cabinetSn
+     * @param tenantName
+     * @param startTime
+     * @param endTime
+     */
     @GetMapping("admin/productNew/deliver/materialHistory/exportExcel")
     // todo 客户查询
     public void productNewDeliverMaterialHistoryExportExcel(@RequestParam(value = "batchNo", required = false) String batchNo, @RequestParam(value = "sn", required = false) String sn,

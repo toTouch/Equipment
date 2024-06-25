@@ -20,6 +20,10 @@ public class MaterialOperation implements Serializable {
     private static final long serialVersionUID = 770888308984313936L;
     
     private Integer id;
+    /**
+     * 物料id 物料表id
+     */
+    private Long materialId;
     
     /**
      * 操作时间
