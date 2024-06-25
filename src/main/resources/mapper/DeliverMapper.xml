@@ -130,27 +130,15 @@
     </select>
     <select id="getDeliverInfo" resultType="com.xiliulou.afterserver.entity.Deliver">
         SELECT
-        d.id,
-        d.customer_id,
-        d.phone,
-        d.city,
-        d.province,
-        d.destination,
-        d.deliver_cost,
-        d.deliver_time,
-        d.create_time,
-        d.express_company,
-        d.express_no,
-        d.point_id,
-        d.product,
-        d.quantity,
-        d.state,
-        d.no,
-        d.tenant_name,
-        d.remark
+            tpn.NO,
+            tpn.id,
+            d.NO,
+            d.tenant_name,
+            d.remark
         FROM
-        deliver AS d
-        WHERE
-        d.express_no = #{sn}
+            t_product_new tpn
+                LEFT JOIN t_deliver_log tdl ON tpn.id = tdl.product_id
+                LEFT JOIN xiliulou_crm.deliver d ON d.id = tdl.deliver_id
+        WHERE tpn.`status` IN (1,2,3,4,5) and tpn.no = #{sn}
     </select>
 </mapper>

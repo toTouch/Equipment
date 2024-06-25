@@ -106,7 +106,7 @@ public class SupplierServiceImpl extends ServiceImpl<SupplierMapper, Supplier> i
     }
     
     @Override
-    public List<Supplier> ListBySupplierIds(Set<Long> supplierIds) {
+    public List<Supplier> listBySupplierIds(Set<Long> supplierIds) {
         return this.baseMapper.selectListByIds(supplierIds);
     }
     

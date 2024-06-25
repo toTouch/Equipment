@@ -157,7 +157,7 @@ public class FactoryTestConfServiceImpl extends ServiceImpl<FactoryTestConfMappe
         if (CollectionUtils.isEmpty(factoryTestConfSet)) {
             return Collections.emptyMap();
         }
-        List<Supplier> supplierList = supplierService.ListBySupplierIds(factoryTestConfSet);
+        List<Supplier> supplierList = supplierService.listBySupplierIds(factoryTestConfSet);
         
         if (CollectionUtils.isEmpty(supplierList)) {
             return Collections.emptyMap();

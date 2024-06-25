@@ -73,21 +73,21 @@ public interface MaterialTraceabilityMapper {
     
     List<String> selectMaterialSnListBySN(@Param("productNo") String productNo, @Param("offset") Long offset, @Param("size") Long size);
     
-    List<Material> listAllByImeis(List<String> imeis);
+    List<Material> listAllByImeis(@Param("imeis") List<String> imeis);
     
-    List<Material> ListAllByAtemlIDs(List<String> atemlIDs);
+    List<Material> ListAllByAtemlIDs(@Param("atemlIDs") List<String> atemlIDs);
     
-    List<Material> ListAllBySns(List<String> sns);
+    List<Material> ListAllBySns(@Param("sns") List<String> sns);
     
     Material exitsByBindingStatus(Material material);
     
-    Material exitsByBindingStatusList(List<Long> ids);
+    Material exitsByBindingStatusList(@Param("ids") List<Long> ids);
     
-    Material updateMaterialStateByIds(List<Long> ids, Long updateTime, String remark);
+    Integer updateMaterialStateByIds(@Param("ids") List<Long> ids, @Param("updateTime") Long updateTime, @Param("remark") String remark, @Param("materialState") Integer materialState);
     
-    List<Material> selectListByIds(List<Long> ids);
+    List<Material> selectListByIds(@Param("ids") List<Long> ids);
     
-    List<Material> selectListByNos(List<String> collect);
+    List<Material> selectListByNos(@Param("collect") List<String> collect);
 }
 
 

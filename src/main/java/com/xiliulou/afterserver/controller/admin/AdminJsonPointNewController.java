@@ -911,16 +911,22 @@ public class AdminJsonPointNewController {
      * @param sn
      * @param deviceName
      * @param cabinetSn
-     * @param tenantName
+     * @param tenantName 客户
      * @param startTime
      * @param endTime
      */
     @GetMapping("admin/productNew/deliver/materialHistory/exportExcel")
-    // todo 客户查询
     public void productNewDeliverMaterialHistoryExportExcel(@RequestParam(value = "batchNo", required = false) String batchNo, @RequestParam(value = "sn", required = false) String sn,
             @RequestParam(value = "deviceName", required = false) String deviceName, @RequestParam(value = "cabinetSn", required = false) String cabinetSn,
             @RequestParam(value = "tenantName", required = false) String tenantName, @RequestParam(value = "startTime", required = false) Long startTime,
             @RequestParam(value = "endTime", required = false) Long endTime) {
         pointNewService.productNewDeliverMaterialHistoryExportExcel(batchNo, sn, deviceName, cabinetSn, tenantName, startTime, endTime);
+    }
+    @GetMapping("admin/productNew/deliver/materialHistory/exportExcel1")
+    public void productNewDeliverMaterialPanelExportExcel(@RequestParam(value = "batchNo", required = false) String batchNo, @RequestParam(value = "sn", required = false) String sn,
+            @RequestParam(value = "deviceName", required = false) String deviceName, @RequestParam(value = "cabinetSn", required = false) String cabinetSn,
+            @RequestParam(value = "tenantName", required = false) String tenantName, @RequestParam(value = "startTime", required = false) Long startTime,
+            @RequestParam(value = "endTime", required = false) Long endTime) {
+        pointNewService.productNewDeliverMaterialPanelExportExcel(batchNo, sn, deviceName, cabinetSn, tenantName, startTime, endTime);
     }
 }

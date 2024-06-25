@@ -549,7 +549,9 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                 OrderDeliverVo orderDeliverVo = new OrderDeliverVo();
                 orderDeliverVo.setNo(item.getNo());
                 orderDeliverVo.setRemark(item.getRemark());
-                orderDeliverVo.setCustomerName(customer.getName());
+                if (Objects.nonNull(customer)) {
+                    orderDeliverVo.setCustomerName(customer.getName());
+                }
                 
                 ArrayList<Integer> productIds = JSON.parseObject(item.getProduct(), ArrayList.class);
                 ArrayList<String> quantityIds = JSON.parseObject(item.getQuantity(), ArrayList.class);

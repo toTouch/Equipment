@@ -67,4 +67,6 @@ public class ProductNewDeliverVo {
      */
     private Long testEndTime;
 
+    private Long  supplierId;
+    private String supplierName;
 }

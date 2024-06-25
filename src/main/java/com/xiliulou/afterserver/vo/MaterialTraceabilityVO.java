@@ -60,6 +60,8 @@ public class MaterialTraceabilityVO implements Serializable {
     @ExcelProperty(value = "录入时间")
     private String createTime;
     
+    @ExcelIgnore
+    private String materialBatchId;
     
     
 }
