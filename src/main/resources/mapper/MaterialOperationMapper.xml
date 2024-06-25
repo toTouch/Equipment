@@ -4,6 +4,7 @@
     
     <resultMap type="com.xiliulou.afterserver.entity.MaterialOperation" id="MaterialOperationMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="materialId" column="material_id" jdbcType="INTEGER"/>
         <result property="operationTime" column="operation_time" jdbcType="INTEGER"/>
         <result property="operationContent" column="operation_content" jdbcType="VARCHAR"/>
         <result property="operationAccount" column="operation_account" jdbcType="VARCHAR"/>
@@ -12,7 +13,7 @@
     <!--查询单个-->
     <select id="selectById" resultMap="MaterialOperationMap">
         select id,
-               operation_time,
+               operation_time,material_id,
                operation_content,
                operation_account
         from t_material_operation
@@ -22,11 +23,14 @@
     <!--查询指定行数据-->
     <select id="selectPage" resultMap="MaterialOperationMap">
         select
-        id, operation_time, operation_content, operation_account
+        id, material_id, operation_time, operation_content, operation_account
         from t_material_operation
         <where>
             <if test="entity.id != null">
                 and id = #{entity.id}
+            </if>
+            <if test="entity.materialId != null">
+                and material_id = #{entity.materialId}
             </if>
             <if test="entity.operationTime != null">
                 and operation_time = #{entity.operationTime}
@@ -49,6 +53,9 @@
             <if test="id != null">
                 and id = #{id}
             </if>
+            <if test="entity.materialId != null">
+                and material_id = #{entity.materialId}
+            </if>
             <if test="operationTime != null">
                 and operation_time = #{operationTime}
             </if>
@@ -63,15 +70,15 @@
     
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into t_material_operation(operation_time, operation_content, operation_account)
-        values (#{operationTime}, #{operationContent}, #{operationAccount})
+        insert into t_material_operation(material_id, operation_time, operation_content, operation_account)
+        values (#{materialId}, #{operationTime}, #{operationContent}, #{operationAccount})
     </insert>
     
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into t_material_operation(operation_time, operation_content, operation_account)
+        insert into t_material_operation(material_id, operation_time, operation_content, operation_account)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.operationTime}, #{entity.operationContent}, #{entity.operationAccount})
+            (#{entity.materialId}, #{entity.operationTime}, #{entity.operationContent}, #{entity.operationAccount})
         </foreach>
     </insert>
     

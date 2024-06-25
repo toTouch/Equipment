@@ -55,7 +55,7 @@ public interface MaterialTraceabilityService {
      * @param ids 主键
      * @return 是否成功
      */
-    R deleteByIds(List<Long> ids);
+    R deleteByIds(List<Long> ids) throws Exception;
     
     R checkSn(String sn);
     

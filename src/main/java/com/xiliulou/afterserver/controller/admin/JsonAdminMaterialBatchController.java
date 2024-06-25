@@ -118,7 +118,7 @@ public class JsonAdminMaterialBatchController {
      * 导入物料批次
      */
     @PostMapping("/admin/supplier/upload")
-    public R upload(List<Material> materials,Long materialBatchId) throws IOException {
+    public R upload(@RequestBody List<Material> materials,Long materialBatchId) throws IOException {
         if (CollectionUtils.isEmpty(materials)) {
             return R.failMsg("文件内容为空");
         }
