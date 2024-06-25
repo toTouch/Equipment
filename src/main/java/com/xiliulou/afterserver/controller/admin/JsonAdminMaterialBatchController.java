@@ -118,14 +118,14 @@ public class JsonAdminMaterialBatchController {
      * 导入物料批次
      */
     @PostMapping("/admin/supplier/upload")
-    public R upload(List<Material> materials,Integer materialBatchId) throws IOException {
+    public R upload(List<Material> materials,Long materialBatchId) throws IOException {
         if (CollectionUtils.isEmpty(materials)) {
             return R.failMsg("文件内容为空");
         }
         if (materials.size() > 3000) {
             return R.failMsg("文件内容不能超过1000条");
         }
-        return this.materialBatchService.materialExportUpload(materials,materialBatchId);
+        return this.materialBatchService.materialExportUpload(materials, materialBatchId);
     }
 }
 

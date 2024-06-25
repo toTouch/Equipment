@@ -4,6 +4,7 @@ import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.xiliulou.afterserver.plugin.FieldCompare;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -42,6 +43,7 @@ public class Material implements Serializable {
      * 产品编号/资产编码
      */
     @ExcelProperty(value = "资产编码")
+    @FieldCompare(chineseName = "资产编码")
     private String productNo;
     
     private String imei;
@@ -53,12 +55,13 @@ public class Material implements Serializable {
     /**
      * 备注
      */
+    @FieldCompare(chineseName = "备注")
     private String remark;
     
     /**
-     * 物料批次id
+     * 物料批次No
      */
-    private Long materialBatchNo;
+    private String materialBatchNo;
     
     /**
      * 物料型号id
@@ -68,6 +71,7 @@ public class Material implements Serializable {
     /**
      * 物料状态(0-不合格，1-合格)
      */
+    @FieldCompare(chineseName = "物料状态", properties = "0:不合格，1:合格")
     private Integer materialState;
     
     /**
@@ -140,6 +144,14 @@ public class Material implements Serializable {
     @TableField(exist = false)
     @ExcelIgnore
     private Long endTime;
+    
+    @TableField(exist = false)
+    @ExcelIgnore
+    private String name;
+    
+    @TableField(exist = false)
+    @ExcelIgnore
+    private String sn;
     
 }
 

@@ -26,6 +26,10 @@ public class ProductNewProcessInfoVo {
      */
     private Long batchId;
     /**
+     * 产品型号
+     */
+    private String modelName;
+    /**
      * 批次号
      */
     private String batchNo;

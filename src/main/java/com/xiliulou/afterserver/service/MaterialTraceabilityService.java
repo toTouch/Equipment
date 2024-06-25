@@ -39,7 +39,7 @@ public interface MaterialTraceabilityService {
      * @param materialTraceability 实例对象
      * @return 实例对象
      */
-    R insert(MaterialQuery materialTraceability);
+    R insert(MaterialQuery materialTraceability) throws Exception;
     
     /**
      * 修改数据
@@ -47,21 +47,23 @@ public interface MaterialTraceabilityService {
      * @param materialTraceability 实例对象
      * @return 实例对象
      */
-    R update(MaterialQuery materialTraceability);
+    R update(MaterialQuery materialTraceability) throws Exception;
     
     /**
      * 通过主键删除数据
      *
-     * @param id 主键
+     * @param ids 主键
      * @return 是否成功
      */
-    boolean deleteById(Long id);
+    R deleteByIds(List<Long> ids);
     
     R checkSn(String sn);
     
-    R materialUnbundling(MaterialQuery materialTraceability);
+    R materialUnbundling(MaterialQuery materialTraceability) throws Exception;
     
     R exportExcel(MaterialQuery materialTraceability, HttpServletResponse response);
     
     long queryByPageCount(MaterialQuery materialTraceability);
+    
+    R changeMaterialState(List<Long> ids, Integer confirm, Integer status, String remark) throws Exception;
 }

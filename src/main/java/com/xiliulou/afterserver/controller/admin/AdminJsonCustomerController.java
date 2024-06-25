@@ -56,6 +56,19 @@ public class AdminJsonCustomerController extends BaseController {
         return R.ok(customerService.getCustomerPage(offset, size, customer));
 
     }
+    
+    /**
+     * 提供给前端 获取客户和产品型号和数量
+     *
+     * @param offset
+     * @param size
+     * @param customer
+     * @return
+     */
+    @GetMapping("admin/customer/list")
+    public R list(Customer customer) {
+        return customerService.getCustomerList(customer);
+    }
 
     @PutMapping("admin/customer")
     public R update(@RequestBody Customer customer) {

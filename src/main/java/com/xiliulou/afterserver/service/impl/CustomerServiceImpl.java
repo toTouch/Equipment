@@ -34,6 +34,8 @@ import java.util.Objects;
 public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> implements CustomerService {
     @Autowired
     PointNewMapper pointNewMapper;
+    @Autowired
+    CustomerMapper customerMapper;
 
     @Override
     public IPage getCustomerPage(Long offset, Long size, Customer customer) {
@@ -84,5 +86,16 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         List<PageSearchVo> listVo = baseMapper.customerSearch(offset, size, name);
         return R.ok(listVo);
     }
-
+    
+    @Override
+    public Customer queryById(Long customerId) {
+        return customerMapper.selectById(customerId);
+    }
+    
+    @Override
+    public R getCustomerList(Customer customer) {
+        List<Customer> customers = customerMapper.selectByParamer(customer);
+        return R.ok(customers);
+    }
+    
 }

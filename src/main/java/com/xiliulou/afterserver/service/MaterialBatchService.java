@@ -6,6 +6,7 @@ import com.xiliulou.afterserver.util.R;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Set;
 
 /**
  * (MaterialBatch)表服务接口
@@ -73,5 +74,9 @@ public interface MaterialBatchService {
     
     R materialBatchExportExcel(MaterialBatch materialBatch, HttpServletResponse response);
     
-    R materialExportUpload(List<Material> material, Integer materialBatchId);
+    R materialExportUpload(List<Material> material, Long materialBatchId);
+    
+    List<MaterialBatch> queryByNos(Set<String> strings);
+    
+    Integer updateByMaterialBatchs(List<MaterialBatch> materialBatchesQuery);
 }

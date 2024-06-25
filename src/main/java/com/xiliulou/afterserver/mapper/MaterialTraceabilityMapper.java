@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.mapper;
 
 import com.xiliulou.afterserver.entity.Material;
+import com.xiliulou.afterserver.web.vo.MaterialHistoryVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Collection;
@@ -64,7 +65,7 @@ public interface MaterialTraceabilityMapper {
      * @param id 主键
      * @return 影响行数
      */
-    int deleteById(@Param("id") Long id);
+    int deleteByIds(@Param("id") List<Long> id);
     
     Material selectByParameter(Material material);
     
@@ -79,6 +80,14 @@ public interface MaterialTraceabilityMapper {
     List<Material> ListAllBySns(List<String> sns);
     
     Material exitsByBindingStatus(Material material);
+    
+    Material exitsByBindingStatusList(List<Long> ids);
+    
+    Material updateMaterialStateByIds(List<Long> ids, Long updateTime, String remark);
+    
+    List<Material> selectListByIds(List<Long> ids);
+    
+    List<Material> selectListByNos(List<String> collect);
 }
 
 

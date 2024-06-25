@@ -103,12 +103,16 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     @Autowired
     private RedisService redisService;
     
+    @Autowired
+    private DeliverMapper deliverMapper;
+    
     @Override
     public IPage getPage(Long offset, Long size, DeliverQuery deliver) {
         
         Page page = PageUtil.getPage(offset, size);
         Page selectPage = baseMapper.selectPage(page, new LambdaQueryWrapper<Deliver>().eq(Objects.nonNull(deliver.getState()), Deliver::getState, deliver.getState())
                 .eq(Objects.nonNull(deliver.getCreateUid()), Deliver::getCreateUid, deliver.getCreateUid())
+                .eq(Objects.nonNull(deliver.getTenantName()), Deliver::getTenantName, deliver.getTenantName())
                 .like(Objects.nonNull(deliver.getExpressNo()), Deliver::getExpressNo, deliver.getExpressNo())
                 .like(Objects.nonNull(deliver.getExpressCompany()), Deliver::getExpressCompany, deliver.getExpressCompany())
                 .like(Objects.nonNull(deliver.getNo()), Deliver::getNo, deliver.getNo()).orderByDesc(Deliver::getCreateTime)
@@ -534,16 +538,18 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         Page page = PageUtil.getPage(offset, size);
         page = baseMapper.selectPage(page,
                 new QueryWrapper<Deliver>().eq("city_type", Deliver.CITY_TYPE_FACTORY).eq("city", supplier.getName()).eq("state", 1).orderByDesc("create_time"));
-        
         List<Deliver> list = page.getRecords();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         
         List<OrderDeliverVo> data = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(list)) {
             list.stream().forEach(item -> {
+                Customer customer = customerService.queryById(item.getCustomerId());
+                
                 OrderDeliverVo orderDeliverVo = new OrderDeliverVo();
                 orderDeliverVo.setNo(item.getNo());
                 orderDeliverVo.setRemark(item.getRemark());
+                orderDeliverVo.setCustomerName(customer.getName());
                 
                 ArrayList<Integer> productIds = JSON.parseObject(item.getProduct(), ArrayList.class);
                 ArrayList<String> quantityIds = JSON.parseObject(item.getQuantity(), ArrayList.class);
@@ -1008,5 +1014,13 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                 break;
         }
         return statusStr;
+    }
+    
+    public Deliver getDeliverInfo(String sn) {
+        if (StringUtils.isBlank(sn)) {
+            return null;
+        }
+        Deliver deliver = deliverMapper.getDeliverInfo(sn);
+            return deliver;
     }
 }
