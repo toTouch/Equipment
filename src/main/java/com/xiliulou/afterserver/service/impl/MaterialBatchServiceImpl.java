@@ -65,8 +65,9 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
     @Resource
     private PartsMapper partsMapper;
     
-    @Resource
+    @Autowired
     private UserService userService;
+    
     
     @Autowired
     private MaterialOperationMapper materialOperationMapper;
