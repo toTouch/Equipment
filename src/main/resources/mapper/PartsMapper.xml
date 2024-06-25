@@ -151,4 +151,15 @@
         from t_parts
         where name = #{name} and specification = #{specification} and del_flag = 0
     </select>
+    
+    <select id="listByName" resultType="com.xiliulou.afterserver.entity.Parts">
+        select id,name,sn
+        from t_parts
+        <where>
+            <if test="name != null and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+        </where>
+        limit 0,20
+    </select>
 </mapper>

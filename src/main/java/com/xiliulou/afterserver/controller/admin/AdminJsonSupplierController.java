@@ -44,8 +44,11 @@ public class AdminJsonSupplierController extends BaseController {
     public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, Supplier supplier) {
         return R.ok(supplierService.getPage(offset, size, supplier));
     }
-
-
+    
+    @GetMapping("/admin/supplier/pull")
+    public R querySupplierPull(@RequestParam(value = "name", required = false) String name){
+        return R.ok(supplierService.querySupplierPull(name));
+    }
     @PostMapping("admin/supplier")
     public R insert(@RequestBody Supplier supplier) {
         if(StringUtils.isBlank(supplier.getArea())){

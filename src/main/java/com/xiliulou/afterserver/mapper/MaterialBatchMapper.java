@@ -92,8 +92,8 @@ public interface MaterialBatchMapper {
     
     int deleteByBatcherId(Long batchId);
     
-    List<MaterialBatch> queryByNos(Set<String> nos);
+    List<MaterialBatch> queryByNos(@Param("nos") Set<String> nos);
     
-    Integer updateByMaterialBatchs(List<MaterialBatch> materialBatchesQuery);
+    Integer updateByMaterialBatchs(@Param("materialBatchesQuery") List<MaterialBatch> materialBatchesQuery);
 }
 

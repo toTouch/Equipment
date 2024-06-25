@@ -165,6 +165,12 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     }
     
     @Override
+    public R listByName(String name) {
+        List<Parts> parts = partsMapper.listByName(name);
+        return R.ok(parts);
+    }
+    
+    @Override
     public R partsExportExcel(String sn, String name, HttpServletResponse response) {
         List<Parts> parts = this.partsMapper.queryList(0, 3000, name, sn);
         Integer count = this.partsMapper.queryCount(0, 3000, name, sn);

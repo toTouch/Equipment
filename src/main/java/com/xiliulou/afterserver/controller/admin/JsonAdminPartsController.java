@@ -85,7 +85,20 @@ public class JsonAdminPartsController {
         }
         return  partsService.queryPull(size, offset, name);
     }
-
+    
+    /**
+     * 物料种类/配件列表拉取
+     *
+     * @param size
+     * @param offset
+     * @param name
+     * @return
+     */
+    @GetMapping("admin/parts/list")
+    public R queryList( @RequestParam(value = "name", required = false) String name){
+        return  partsService.listByName(name);
+    }
+    
     /**
      * 导入
      */
