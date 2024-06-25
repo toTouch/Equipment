@@ -128,4 +128,29 @@
 
         ORDER BY d.create_time DESC
     </select>
+    <select id="getDeliverInfo" resultType="com.xiliulou.afterserver.entity.Deliver">
+        SELECT
+        d.id,
+        d.customer_id,
+        d.phone,
+        d.city,
+        d.province,
+        d.destination,
+        d.deliver_cost,
+        d.deliver_time,
+        d.create_time,
+        d.express_company,
+        d.express_no,
+        d.point_id,
+        d.product,
+        d.quantity,
+        d.state,
+        d.no,
+        d.tenant_name,
+        d.remark
+        FROM
+        deliver AS d
+        WHERE
+        d.express_no = #{sn}
+    </select>
 </mapper>

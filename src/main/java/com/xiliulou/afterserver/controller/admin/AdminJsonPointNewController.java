@@ -809,6 +809,11 @@ public class AdminJsonPointNewController {
         
     }
     
+    @GetMapping("/admin/pointNew/client/info/{pid}")
+    public R printClientInfo(@PathVariable("pid") Long pid) {
+        return pointNewService.printClientInfo(pid);
+    }
+    
     @GetMapping("/admin/pointNew/info/{pid}")
     public R printInfo(@PathVariable("pid") Long pid) {
         return pointNewService.pointInfo(pid);
@@ -891,5 +896,14 @@ public class AdminJsonPointNewController {
             @RequestParam(value = "tenantName", required = false) String tenantName, @RequestParam(value = "startTime", required = false) Long startTime,
             @RequestParam(value = "endTime", required = false) Long endTime, HttpServletResponse response) {
         pointNewService.productNewDeliverExportExcel(batchNo, sn, deviceName, cabinetSn, tenantName, startTime, endTime, response);
+    }
+    
+    @GetMapping("admin/productNew/deliver/materialHistory/exportExcel")
+    // todo 客户查询
+    public void productNewDeliverMaterialHistoryExportExcel(@RequestParam(value = "batchNo", required = false) String batchNo, @RequestParam(value = "sn", required = false) String sn,
+            @RequestParam(value = "deviceName", required = false) String deviceName, @RequestParam(value = "cabinetSn", required = false) String cabinetSn,
+            @RequestParam(value = "tenantName", required = false) String tenantName, @RequestParam(value = "startTime", required = false) Long startTime,
+            @RequestParam(value = "endTime", required = false) Long endTime) {
+        pointNewService.productNewDeliverMaterialHistoryExportExcel(batchNo, sn, deviceName, cabinetSn, tenantName, startTime, endTime);
     }
 }

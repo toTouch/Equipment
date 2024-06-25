@@ -104,7 +104,16 @@
         from t_material_batch tmb
         where tmb.material_id = #{partsId} limit 1
     </select>
-  
+    <select id="queryByNos" resultType="com.xiliulou.afterserver.entity.MaterialBatch">
+        select id, material_batch_no, material_id, supplier_id, material_count, unqualified_count, qualified_count, material_batch_remark,
+               create_time, update_time, tenant_id, quality_report_url
+        from t_material_batch tmb
+        where material_batch_no in
+        <foreach collection="nos" item="no" open="(" separator="," close=")">
+            #{no}
+        </foreach>
+    </select>
+    
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into t_material_batch(material_batch_no, material_id, supplier_id, material_count, unqualified_count, qualified_count, material_batch_remark,
@@ -225,6 +234,39 @@
             </if>
         </set>
         where id = #{id}
+    </update>
+    <update id="updateByMaterialBatchs">
+        update t_material_batch
+        <set>
+            <if test="materialBatchNo != null and materialBatchNo != ''">
+                material_batch_no = #{materialBatchNo},
+            </if>
+            <if test="materialId != null">
+                material_id = #{materialId},
+            </if>
+            <if test="supplierId != null">
+                supplier_id = #{supplierId},
+            </if>
+            <if test="materialCount != null">
+                material_count = #{materialCount},
+            </if>
+            <if test="unqualifiedCount != null">
+                unqualified_count = #{unqualifiedCount},
+            </if>
+            <if test="qualifiedCount != null">
+                qualified_count = #{qualifiedCount},
+            </if>
+            <if test="materialBatchRemark != null and materialBatchRemark != ''">
+                material_batch_remark = #{materialBatchRemark},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        where id in
+        <foreach collection="materialBatchsQuery" item="item" separator="," open="(" close=")">
+            #{item.id}
+        </foreach>
     </update>
     
     <!--通过主键删除-->

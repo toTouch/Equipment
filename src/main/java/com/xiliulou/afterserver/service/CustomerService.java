@@ -26,4 +26,8 @@ public interface CustomerService extends IService<Customer> {
     List<CustomerPullVo> queryCustomerPull(String name);
 
     R customerSearch(Long offset, Long size, String name);
+    
+    Customer queryById(Long customerId);
+    
+    R getCustomerList(Customer customer);
 }

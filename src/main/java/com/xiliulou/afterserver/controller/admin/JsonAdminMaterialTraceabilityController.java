@@ -7,8 +7,8 @@ import com.xiliulou.afterserver.service.MaterialTraceabilityService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.MaterialQuery;
-import org.apache.poi.util.StringUtil;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -61,7 +62,7 @@ public class JsonAdminMaterialTraceabilityController {
      * @return 新增结果
      */
     @PostMapping("/save")
-    public R add(@RequestBody MaterialQuery materialTraceability) {
+    public R add(@RequestBody MaterialQuery materialTraceability) throws Exception {
         if (!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)) {
             return R.fail("登陆用户非工厂类型");
         }
@@ -75,12 +76,13 @@ public class JsonAdminMaterialTraceabilityController {
      * @return 编辑结果
      */
     @PutMapping("/unbund")
-    public R materialUnbundling(@RequestBody MaterialQuery materialTraceability) {
+    public R materialUnbundling(@RequestBody MaterialQuery materialTraceability) throws Exception {
         if (!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)) {
             return R.fail("登陆用户非工厂类型");
         }
         return this.materialTraceabilityService.materialUnbundling(materialTraceability);
     }
+    
     @GetMapping("/pda/page")
     public R queryByPagePDA(MaterialQuery materialTraceability, @RequestParam("offset") Long offset, @RequestParam("size") Long size) {
         if (!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)) {
@@ -130,7 +132,7 @@ public class JsonAdminMaterialTraceabilityController {
      */
     @GetMapping("/exportExcel")
     public R exportMaterialData(MaterialQuery materialTraceability, HttpServletResponse response) {
-       return this.materialTraceabilityService.exportExcel(materialTraceability, response);
+        return this.materialTraceabilityService.exportExcel(materialTraceability, response);
     }
     
     /**
@@ -140,7 +142,7 @@ public class JsonAdminMaterialTraceabilityController {
      * @return 编辑结果
      */
     @PutMapping
-    public R edit(@RequestBody MaterialQuery materialTraceability) {
+    public R edit(@RequestBody MaterialQuery materialTraceability) throws Exception {
         return this.materialTraceabilityService.update(materialTraceability);
     }
     
@@ -150,7 +152,7 @@ public class JsonAdminMaterialTraceabilityController {
     @PutMapping("/config")
     public R updateConfig(@RequestBody MaterialCoreConfig materialConfig) {
         materialConfig.setId(1);
-        return  this.materialCoreConfigService.update(materialConfig);
+        return this.materialCoreConfigService.update(materialConfig);
     }
     
     /**
@@ -175,9 +177,17 @@ public class JsonAdminMaterialTraceabilityController {
      * @param id 主键
      * @return 删除是否成功
      */
-    // @DeleteMapping
-    public R deleteById(Long id) {
-        return R.ok(this.materialTraceabilityService.deleteById(id));
+    @DeleteMapping("/delete")
+    public R deleteById(List<Long> ids) {
+        return this.materialTraceabilityService.deleteByIds(ids);
+    }
+    
+    /**
+     * 批量改换物料状态
+     */
+    @PutMapping("/changeMaterialState")
+    public R changeMaterialState(@RequestBody List<Long> ids, Integer confirm, Integer status, String remark) throws Exception {
+        return this.materialTraceabilityService.changeMaterialState(ids, status, confirm,remark);
     }
     
 }

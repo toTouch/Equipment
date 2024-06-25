@@ -10,4 +10,13 @@
         </where>
         limit #{offset}, #{size}
     </select>
+    
+    <select id="selectByParamer" resultType="com.xiliulou.afterserver.entity.Customer">
+        select id, name from customer
+        <where>
+            <if test="customer.name != null and customer.name != ''">
+                name like concat('%', #{customer.name}, '%')
+            </if>
+        </where>
+    </select>
 </mapper>

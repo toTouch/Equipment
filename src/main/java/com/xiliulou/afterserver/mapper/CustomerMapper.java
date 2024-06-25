@@ -15,4 +15,6 @@ public interface CustomerMapper extends BaseMapper<Customer> {
     List<CustomerPullVo> queryCustomerPull(String name);
 
     List<PageSearchVo> customerSearch(@Param("offset") Long offset, @Param("size")Long size, @Param("name")String name);
+    
+    List<Customer> selectByParamer(@Param("customer") Customer customer);
 }

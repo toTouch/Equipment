@@ -20,12 +20,22 @@
         <result column="create_time" jdbcType="INTEGER" property="createTime"/>
         <result column="update_time" jdbcType="INTEGER" property="updateTime"/>
         <result column="tenant_id" jdbcType="INTEGER" property="tenantId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="sn" jdbcType="VARCHAR" property="sn"/>
     </resultMap>
     
     <delete id="deleteById">
         delete
         from t_material
         where id = #{id}
+    </delete>
+    <delete id="deleteByIds">
+        delete
+        from t_material
+        where id in
+        <foreach collection="id" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </delete>
     
     <!--查询单个 根据主键 -->
@@ -49,29 +59,29 @@
     
     <!-- 根据参数查询 -->
     <select id="selectById" resultMap="MaterialTraceabilityMap">
-        select id,
+        select tm.id,
                material_sn,
                product_no,
                material_id,
-               del_flag,
+               tm.del_flag,
                binding_status,
-               create_time,
-               update_time,
+               tm.create_time,
+               tm.update_time,
                tenant_id,
                imei,
                atmel_id,
                test_time,
                remark,
                material_batch_no,
-               material_state
-        from t_material
-        where id = #{id}
+               material_state,tp.name,tp.sn
+        from t_material tm left join t_parts tp on tp.id = tm.material_id
+        where tm.id = #{id}
     </select>
     <select id="selectListByLimit" resultMap="MaterialTraceabilityMap">
         select
-        tm.id,material_sn,product_no,del_flag,binding_status,tm.create_time,tm.update_time,tm.tenant_id,
-        imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id
-        from t_material tm
+        tm.id,material_sn,product_no,tm.del_flag,binding_status,tm.create_time,tm.update_time,tm.tenant_id,
+        imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id,tp.name,tp.sn
+        from t_material tm left join t_parts tp on tp.id = tm.material_id
         <where>
             del_flag = 0
             <if test="query.id != null">
@@ -83,6 +93,12 @@
             <if test="query.productNo != null and query.productNo != ''">
                 and product_no like concat('%',#{query.productNo},'%')
             </if>
+            <if test="query.sn != null">
+                and tp.sn = #{query.sn}
+            </if>
+            <if test="query.name != null and query.name != ''">
+                and tp.name like concat('%',#{query.name},'%')
+            </if>
             <if test="query.imei != null and query.imei != ''">
                 and tmb.material_batch_no like concat('%',#{query.},'%')
             </if>
@@ -90,7 +106,7 @@
                 and material_batch_no like concat('%',#{query.materialBatchNo},'%')
             </if>
             <if test="query.materialState != null">
-                and material_state = #{query.materialState}
+                and material_state != 0
             </if>
             <if test="query.bindingStatus != null">
                 and binding_status = #{query.bindingStatus}
@@ -109,7 +125,7 @@
     </select>
     <select id="count" resultType="java.lang.Long">
         select count(1)
-        from t_material
+        from t_material tm left join t_parts tp on tp.id = tm.material_id
         <where>
             del_flag = 0
             <if test="id != null">
@@ -120,6 +136,12 @@
             </if>
             <if test="productNo != null and productNo != ''">
                 and product_no like concat('%',#{productNo},'%')
+            </if>
+            <if test="query.sn != null">
+                and tp.sn = #{query.sn}
+            </if>
+            <if test="query.name != null and query.name != ''">
+                and tp.name like concat('%',#{query.name},'%')
             </if>
             <if test="bindingStatus != null">
                 and binding_status = #{bindingStatus}
@@ -137,9 +159,9 @@
     </select>
     <select id="selectByParameter" resultType="com.xiliulou.afterserver.entity.Material">
         select
-        id,material_sn,product_no,del_flag,binding_status,create_time,update_time,tenant_id,
-        imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id
-        from t_material
+        tm.id,material_sn,product_no,tm.del_flag,binding_status,tm.create_time,tm.update_time,tenant_id,
+        imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id,tp.name,tp.sn
+        from t_material tm left join t_parts tp on tp.id = tm.material_id
         <where>
             del_flag = 0
             <if test="id != null">
@@ -174,9 +196,9 @@
     
     <select id="queryAllByList" resultType="com.xiliulou.afterserver.entity.Material">
         select
-        id,material_sn,product_no,del_flag,binding_status,create_time,update_time,tenant_id,
-        imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id
-        from t_material
+        tm.id,material_sn,product_no,tm.del_flag,binding_status,tm.create_time,tm.update_time,tenant_id,
+        imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id,tp.name,tp.sn
+        from t_material tm left join t_parts tp on tp.id = tm.material_id
         <where>
             del_flag = 0
             <if test="id != null">
@@ -189,9 +211,9 @@
     </select>
     
     <select id="exitsByBindingStatus" resultType="com.xiliulou.afterserver.entity.Material">
-        select id,material_sn,product_no,del_flag,binding_status,create_time,update_time,tenant_id,
-               imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id
-        from t_material
+        select tm.id,material_sn,product_no,tm.del_flag,binding_status,tm.create_time,tm.update_time,tenant_id,
+               imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id,tp.name,tp.sn
+        from t_material tm left join t_parts tp on tp.id = tm.material_id
         where binding_status = 1
         and material_batch_no = #{materialBatchNo} limit 1;
     </select>
@@ -199,9 +221,9 @@
     <!--新增所有列-->
     <select id="listAllByImeis" resultType="com.xiliulou.afterserver.entity.Material">
         select
-        id,material_sn,product_no,del_flag,binding_status,create_time,update_time,tenant_id,
-        imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id
-        from t_material
+        tm.id,material_sn,product_no,tm.del_flag,binding_status,tm.create_time,tm.update_time,tenant_id,
+               imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id,tp.name,tp.sn
+        from t_material tm left join t_parts tp on tp.id = tm.material_id
         <where>
             del_flag = 0
             <foreach close=")" collection="imeis" item="batch" open="and imei in (" separator=",">
@@ -212,9 +234,9 @@
     
     <select id="ListAllByAtemlIDs" resultType="com.xiliulou.afterserver.entity.Material">
         select
-        id,material_sn,product_no,del_flag,binding_status,create_time,update_time,tenant_id,
-        imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id
-        from t_material
+        tm.id,material_sn,product_no,tm.del_flag,binding_status,tm.create_time,tm.update_time,tenant_id,
+               imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id,tp.name,tp.sn
+        from t_material tm left join t_parts tp on tp.id = tm.material_id
         <where>
             del_flag = 0
             <foreach close=")" collection="atemlIDs" item="batch" open="and atmel_id in (" separator=",">
@@ -226,12 +248,50 @@
     <!--通过主键修改数据-->
     <select id="ListAllBySns" resultType="com.xiliulou.afterserver.entity.Material">
         select
-        id,material_sn,product_no,del_flag,binding_status,create_time,update_time,tenant_id,
-        imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id
-        from t_material
+        tm.id,material_sn,product_no,tm.del_flag,binding_status,tm.create_time,tm.update_time,tenant_id,
+               imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id,tp.name,tp.sn
+        from t_material tm left join t_parts tp on tp.id = tm.material_id
         <where>
             del_flag = 0
             <foreach close=")" collection="sns" item="batch" open="and imei in (" separator=",">
+                #{batch}
+            </foreach>
+        </where>
+    </select>
+    <select id="exitsByBindingStatusList" resultType="com.xiliulou.afterserver.entity.Material">
+        select tm.id,material_sn,product_no,tm.del_flag,binding_status,tm.create_time,tm.update_time,tenant_id,
+               imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id,tp.name,tp.sn
+        from t_material tm left join t_parts tp on tp.id = tm.material_id
+        where binding_status = 1
+        <where>
+            del_flag = 0
+            <foreach close=")" collection="ids" item="batch" open="and id in (" separator=",">
+                #{batch}
+            </foreach>
+        </where>
+        limit 1;
+    </select>
+    
+    <select id="selectListByIds" resultType="com.xiliulou.afterserver.entity.Material">
+        select
+        tm.id,material_sn,product_no,tm.del_flag,binding_status,tm.create_time,tm.update_time,tenant_id,
+               imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id,tp.name,tp.sn
+        from t_material tm left join t_parts tp on tp.id = tm.material_id
+        <where>
+            del_flag = 0
+            <foreach close=")" collection="ids" item="batch" open="and id in (" separator=",">
+                #{batch}
+            </foreach>
+        </where>
+    </select>
+    <select id="selectListByNos" resultType="com.xiliulou.afterserver.entity.Material">
+        select
+        tm.id,material_sn,product_no,tm.del_flag,binding_status,tm.create_time,tm.update_time,tenant_id,
+        imei,atmel_id,test_time,remark,material_batch_no,material_state,material_id,tp.name,tp.sn
+        from t_material tm left join t_parts tp on tp.id = tm.material_id
+        <where>
+            del_flag = 0
+            <foreach close=")" collection="nos" item="batch" open="and product_no in " separator=",">
                 #{batch}
             </foreach>
         </where>
@@ -307,6 +367,18 @@
             update_time = #{updateTime}
         </set>
         where id = #{id}
+    </update>
+    <update id="updateMaterialStateByIds">
+        update t_material
+        <set>
+            material_state = #{materialState},
+            update_time = #{updateTime}
+            remark = #{remark}
+        </set>
+        where del_flag = 0 and id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
     </update>
 
 </mapper>

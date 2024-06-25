@@ -8,6 +8,7 @@ import com.xiliulou.afterserver.entity.MaterialBatch;
 import com.xiliulou.afterserver.entity.Supplier;
 import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.mapper.MaterialBatchMapper;
+import com.xiliulou.afterserver.mapper.MaterialOperationMapper;
 import com.xiliulou.afterserver.mapper.MaterialTraceabilityMapper;
 import com.xiliulou.afterserver.mapper.PartsMapper;
 import com.xiliulou.afterserver.service.MaterialBatchService;
@@ -18,6 +19,7 @@ import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.vo.MaterialBatchExcelVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -39,7 +41,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.xiliulou.afterserver.entity.Material.BINDING;
-import static com.xiliulou.afterserver.entity.Material.PASSING;
 import static com.xiliulou.afterserver.entity.Material.UN_DEL_FLAG;
 
 /**
@@ -66,6 +67,9 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
     
     @Resource
     private UserService userService;
+    
+    @Autowired
+    private MaterialOperationMapper materialOperationMapper;
     
     /**
      * 通过ID查询单条数据
@@ -169,10 +173,8 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
      */
     @Override
     public R deleteById(Long id) {
-        // todo 删除，需批次内物料的没有关联产品，若不可删除，提示：“该批次内已有物料绑定柜机，不可删除批次”
-        //  物料批次删除后，将该批次关联的「物料SN、Atmel ID、IMEL code、测试时间、质检报告链接」一并删除
         Material material = new Material();
-        material.setMaterialBatchId(id);
+        material.setId(id);
         material.setBindingStatus(BINDING);
         if (Objects.nonNull(this.materialMapper.exitsByBindingStatus(material))) {
             return R.failMsg("该批次内已有物料绑定柜机，不可删除批次");
@@ -232,16 +234,20 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
     
     // 导入Excel
     @Override
-    public R materialExportUpload(List<Material> materials, Integer materialBatchId) {
+    public R materialExportUpload(List<Material> materials, Long materialBatchId) {
         // 提取数据重复项
         R r = checkMaterialBatchDuplicate(materials);
         if (r.getCode() != 0) {
             return r;
         }
         // 批量入库
+        MaterialBatch materialBatchQuery = materialBatchMapper.selectById(Math.toIntExact(materialBatchId));
+        if (Objects.isNull(materialBatchQuery)) {
+            return R.failMsg("批次号不存在");
+        }
         User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
         materials.forEach(material -> {
-            material.setMaterialBatchId(Long.valueOf(materialBatchId));
+            material.setMaterialBatchNo(materialBatchQuery.getMaterialBatchNo());
             material.setCreateTime(System.currentTimeMillis());
             material.setUpdateTime(System.currentTimeMillis());
             material.setTenantId(userById.getThirdId());
@@ -256,9 +262,23 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
         // 更新数据
         MaterialBatch materialBatch = new MaterialBatch();
         materialBatch.setMaterialCount(materials.size());
-        materialBatch.setId(materialBatchId);
+        materialBatch.setId(Math.toIntExact(materialBatchId));
         materialBatchMapper.update(materialBatch);
         return R.ok();
+    }
+    
+    @Override
+    public List<MaterialBatch> queryByNos(Set<String> nos) {
+        if (CollectionUtils.isEmpty(nos)) {
+            return null;
+        }
+        return materialBatchMapper.queryByNos(nos);
+    }
+    
+    @Override
+    public Integer updateByMaterialBatchs(List<MaterialBatch> materialBatchesQuery) {
+        materialBatchMapper.updateByMaterialBatchs(materialBatchesQuery);
+        return null;
     }
     
     // 获取导入重复数据

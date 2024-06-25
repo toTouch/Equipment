@@ -821,6 +821,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         vo.setNo(productNew.getNo());
         vo.setBatchId(productNew.getBatchId());
         vo.setBatchNo(batch.getBatchNo());
+        vo.setModelName(productNew.getModelName());
         vo.setAuditProcessList(voList);
         vo.setCreateTime(simp.format(new Date(productNew.getCreateTime())));
         vo.setProductStatus(getStatusName(productNew.getStatus()));

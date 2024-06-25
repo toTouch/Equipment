@@ -13,6 +13,10 @@ import java.util.List;
 public class OrderDeliverVo {
     private String no;
     private List<OrderDeliverContentVo> content;
+    /**
+     * 客户名称
+     */
+    private String customerName;
     private String remark;
     private String createTime;
 }
