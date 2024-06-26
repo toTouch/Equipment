@@ -10,6 +10,7 @@ import com.xiliulou.afterserver.web.query.MaterialQuery;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +21,8 @@ import retrofit2.http.PUT;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -178,9 +181,10 @@ public class JsonAdminMaterialTraceabilityController {
      * @param id 主键
      * @return 删除是否成功
      */
-    @DeleteMapping("/delete")
-    public R deleteById( @RequestParam(required = false) List<Long> ids) throws Exception {
-        return this.materialTraceabilityService.deleteByIds(ids);
+    @PostMapping("/delete")
+    public R deleteById(@RequestBody Long[] ids) throws Exception {
+        List<Long> idList = Arrays.asList(ids);
+        return this.materialTraceabilityService.deleteByIds(idList);
     }
     
     /**

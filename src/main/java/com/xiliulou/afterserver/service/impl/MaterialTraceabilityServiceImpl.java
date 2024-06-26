@@ -1,12 +1,16 @@
 package com.xiliulou.afterserver.service.impl;
 
 import com.alibaba.excel.EasyExcel;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.xiliulou.afterserver.entity.Material;
 import com.xiliulou.afterserver.entity.MaterialBatch;
+import com.xiliulou.afterserver.entity.MaterialDelRecord;
 import com.xiliulou.afterserver.entity.MaterialOperation;
 import com.xiliulou.afterserver.entity.ProductNew;
 import com.xiliulou.afterserver.entity.User;
+import com.xiliulou.afterserver.mapper.MaterialBatchMapper;
+import com.xiliulou.afterserver.mapper.MaterialDelRecordMapper;
 import com.xiliulou.afterserver.mapper.MaterialOperationMapper;
 import com.xiliulou.afterserver.mapper.MaterialTraceabilityMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
@@ -35,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 import static com.xiliulou.afterserver.entity.Material.BINDING;
 import static com.xiliulou.afterserver.entity.Material.PASSING;
@@ -66,7 +71,13 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
     private MaterialBatchService materialBatchService;
     
     @Autowired
+    private MaterialDelRecordMapper materialDelRecordMapper;
+    
+    @Autowired
     private MaterialOperationMapper materialOperationMapper;
+    
+    @Autowired
+    private MaterialBatchMapper materialBatchMapper;
     
     /**
      * 新增数据 PDA扫码录入
@@ -130,35 +141,33 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         
         List<MaterialBatch> materialBatchesQuery = materialBatchService.queryByNos(batchNoToCountMap.keySet());
         // 更新物料批次
-        if (Objects.isNull(materialBatchesQuery)) {
+        if (CollectionUtils.isEmpty(materialBatchesQuery)) {
             return R.fail("批次信息不存在");
         }
         // 更新物料状态
         materialTraceabilityMapper.updateMaterialStateByIds(ids,System.currentTimeMillis(), remark,status);
         List<Material> tempMaterials = materialTraceabilityMapper.selectListByIds(ids);
         
-        materialBatchesQuery.forEach(temp -> {
-            if (Objects.equals(Material.PASSING, status)){
-                temp.setQualifiedCount(batchNoToCountMap.get(temp.getMaterialBatchNo()));
-                temp.setUnqualifiedCount(temp.getMaterialCount() - batchNoToCountMap.get(temp.getMaterialBatchNo()));
-            }
-            if (Objects.equals(UN_PASSING, status)){
-                temp.setUnqualifiedCount(batchNoToCountMap.get(temp.getMaterialBatchNo()));
-                temp.setQualifiedCount(temp.getMaterialCount() - batchNoToCountMap.get(temp.getMaterialBatchNo()));
-            }
-            materialBatchService.update(temp);
-        });
+        // materialBatchesQuery.forEach(temp -> {
+        //     if (Objects.equals(Material.PASSING, status)){
+        //         temp.setQualifiedCount(batchNoToCountMap.get(temp.getMaterialBatchNo()));
+        //         temp.setUnqualifiedCount(temp.getMaterialCount() - batchNoToCountMap.get(temp.getMaterialBatchNo()));
+        //     }
+        //     if (Objects.equals(UN_PASSING, status)){
+        //         temp.setUnqualifiedCount(batchNoToCountMap.get(temp.getMaterialBatchNo()));
+        //         temp.setQualifiedCount(temp.getMaterialCount() - batchNoToCountMap.get(temp.getMaterialBatchNo()));
+        //     }
+        //     materialBatchService.update(temp);
+        // });
         
-        materialBatchService.updateByMaterialBatchs(materialBatchesQuery);
         
         // 添加记录
         for (Material oldMaterial : tempMaterials) {
             Material newMaterial = new Material();
-            BeanUtils.copyProperties(oldMaterial, newMaterial);
             newMaterial.setId(oldMaterial.getId());
             newMaterial.setRemark(oldMaterial.getRemark());
             newMaterial.setMaterialState(status);
-            
+            BeanUtils.copyProperties(oldMaterial, newMaterial);
             
             record(oldMaterial,newMaterial);
         }
@@ -270,12 +279,20 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         }
         
         List<Material> tempMaterials = materialTraceabilityMapper.selectListByIds(ids);
-        for (Material oldMaterial : tempMaterials) {
-            Material newMaterial = null;
-            BeanUtils.copyProperties(oldMaterial, newMaterial);
-            record(oldMaterial,newMaterial);
-        }
+        User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
         
+        for (Material oldMaterial : tempMaterials) {
+            Material newMaterial = new Material();
+            BeanUtils.copyProperties(oldMaterial, newMaterial);
+            MaterialDelRecord materialDelRecord = new MaterialDelRecord();
+            materialDelRecord.setMaterialSn(oldMaterial.getSn());
+            materialDelRecord.setMaterialName(oldMaterial.getName());
+            materialDelRecord.setTenantName(userById.getUserName());
+            materialDelRecord.setCreateTime(System.currentTimeMillis());
+            materialDelRecordMapper.insert(materialDelRecord);
+            
+        }
+    
         this.materialTraceabilityMapper.deleteByIds(ids);
         return R.ok();
     }

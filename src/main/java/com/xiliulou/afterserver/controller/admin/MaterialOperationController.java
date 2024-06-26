@@ -2,7 +2,9 @@ package com.xiliulou.afterserver.controller.admin;
 
 import com.xiliulou.afterserver.entity.MaterialOperation;
 import com.xiliulou.afterserver.service.MaterialOperationService;
-import org.springframework.http.ResponseEntity;
+import com.xiliulou.afterserver.service.impl.MaterialDelRecordServiceImpl;
+import com.xiliulou.afterserver.util.R;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +26,9 @@ public class MaterialOperationController {
     @Resource
     private MaterialOperationService materialOperationService;
     
+    @Autowired
+    private MaterialDelRecordServiceImpl materialDelRecordService;
+    
     /**
      * 分页查询
      *
@@ -33,8 +38,12 @@ public class MaterialOperationController {
      * @return 查询结果
      */
     @GetMapping
-    public ResponseEntity<List<MaterialOperation>> queryByPage(MaterialOperation materialOperation, Long offset, Long size) {
-        return ResponseEntity.ok(this.materialOperationService.listByLimit(materialOperation, offset, size));
+    public R queryByPage(MaterialOperation materialOperation, Long offset, Long size) {
+        return R.ok(this.materialOperationService.listByLimit(materialOperation, offset, size));
+    }
+    @GetMapping("/delete")
+    public R queryDelListByPage(Long offset, Long size) {
+        return R.ok(materialDelRecordService.listByLimit(null,offset, size));
     }
     
     /**
@@ -44,32 +53,11 @@ public class MaterialOperationController {
      * @return 单条数据
      */
     @GetMapping("/{id}")
-    public ResponseEntity<MaterialOperation> queryById(@PathVariable("id") Integer id) {
-        return ResponseEntity.ok(this.materialOperationService.queryById(id));
+    public R<MaterialOperation> queryById(@PathVariable("id") Integer id) {
+        return R.ok(this.materialOperationService.queryById(id));
     }
     
-    /**
-     * 新增数据
-     *
-     * @param materialOperation 实体
-     * @return 新增结果
-     */
-    // @PostMapping
-    public ResponseEntity<MaterialOperation> add(MaterialOperation materialOperation) {
-        return ResponseEntity.ok(this.materialOperationService.insert(materialOperation));
-    }
-    
-    /**
-     * 编辑数据
-     *
-     * @param materialOperation 实体
-     * @return 编辑结果
-     */
-    // @PutMapping
-    public ResponseEntity<MaterialOperation> edit(MaterialOperation materialOperation) {
-        return ResponseEntity.ok(this.materialOperationService.update(materialOperation));
-    }
-    
+   
     /**
      * 删除数据
      *
@@ -77,8 +65,8 @@ public class MaterialOperationController {
      * @return 删除是否成功
      */
     @DeleteMapping
-    public ResponseEntity<Boolean> deleteById(Integer id) {
-        return ResponseEntity.ok(this.materialOperationService.deleteById(id));
+    public R<Boolean> deleteById(Integer id) {
+        return R.ok(this.materialOperationService.deleteById(id));
     }
     
 }

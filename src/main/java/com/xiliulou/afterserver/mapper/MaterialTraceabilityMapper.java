@@ -1,12 +1,9 @@
 package com.xiliulou.afterserver.mapper;
 
 import com.xiliulou.afterserver.entity.Material;
-import com.xiliulou.afterserver.web.vo.MaterialHistoryVo;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 public interface MaterialTraceabilityMapper {
     
@@ -32,7 +29,7 @@ public interface MaterialTraceabilityMapper {
      * @param material 查询条件
      * @return 总行数
      */
-    long count(Material material);
+    long count(@Param("query") Material material);
     
     /**
      * 新增数据
@@ -87,7 +84,9 @@ public interface MaterialTraceabilityMapper {
     
     List<Material> selectListByIds(@Param("ids") List<Long> ids);
     
-    List<Material> selectListByNos(@Param("collect") List<String> collect);
+    List<Material> selectListByNos(@Param("nos") List<String> collect);
+    
+    List<Material> selectCountListByNos(@Param("nos") List<String> nos, @Param("unPassing") Integer unPassing);
 }
 
 

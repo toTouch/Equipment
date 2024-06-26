@@ -134,4 +134,6 @@ public interface PointNewMapper extends BaseMapper<PointNew> {
     List<ProductNewDeliverVo> productNewDeliverList(@Param("offset") Long offset, @Param("size")  Long size,  @Param("batchNo")String batchNo, @Param("sn")String sn, @Param("deviceName")String deviceName,@Param("cabinetSn")String cabinetSn, @Param("tenantName")String tenantName, @Param("startTime")Long startTime, @Param("endTime")Long endTime);
     Integer productNewDeliverCount( @Param("batchNo")String batchNo, @Param("sn")String sn, @Param("deviceName")String deviceName,@Param("cabinetSn")String cabinetSn,@Param("tenantName")String tenantName, @Param("startTime")Long startTime, @Param("endTime")Long endTime);
     List<ProductNewDeliverVo> productNewDeliverExport( @Param("batchNo")String batchNo, @Param("sn")String sn, @Param("deviceName")String deviceName,@Param("cabinetSn")String cabinetSn,@Param("tenantName")String tenantName, @Param("startTime")Long startTime, @Param("endTime")Long endTime);
+    
+    List<ProductNewDeliverVo> selectDeliverBatchIds(@Param("ids") List<Long> ids);
 }

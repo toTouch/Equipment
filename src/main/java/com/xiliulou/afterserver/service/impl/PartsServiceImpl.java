@@ -172,8 +172,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     
     @Override
     public R partsExportExcel(String sn, String name, HttpServletResponse response) {
-        List<Parts> parts = this.partsMapper.queryList(0, 3000, name, sn);
-        Integer count = this.partsMapper.queryCount(0, 3000, name, sn);
+        List<Parts> parts = this.partsMapper.queryList(3000, 0, name, sn);
+        Integer count = this.partsMapper.queryCount(3000, 0, name, sn);
         
         List<PartsExcelVo> partsExcelVos = new ArrayList<>();
         parts.stream().forEach(materialInfo -> {
