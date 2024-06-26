@@ -20,7 +20,7 @@
     </resultMap>
     <sql id="query_where">
         <if test="entity.materialBatchNo != null and entity.materialBatchNo != ''">
-            and sn like concat('%',#{entity.materialBatchNo},'%')
+            and material_batch_no like concat('%',#{entity.materialBatchNo},'%')
         </if>
         <if test="entity.materialId != null">
             and tmb.material_id = #{entity.materialId}
@@ -112,6 +112,12 @@
         <foreach collection="nos" item="no" open="(" separator="," close=")">
             #{no}
         </foreach>
+    </select>
+    <select id="selectByMaterialBatchNo" resultType="com.xiliulou.afterserver.entity.MaterialBatch">
+        select id, material_batch_no, material_id, supplier_id, material_count, unqualified_count, qualified_count, material_batch_remark,
+               create_time, update_time, tenant_id, quality_report_url
+        from t_material_batch tmb
+        where material_batch_no = #{materialBatchNo}
     </select>
     
     <!--新增所有列-->
@@ -278,7 +284,7 @@
     
     <delete id="deleteByBatcherId">
         delete
-        from t_material
+        from t_material_batch
         where id = #{id}
     </delete>
 

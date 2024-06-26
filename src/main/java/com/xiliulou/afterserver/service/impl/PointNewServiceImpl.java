@@ -78,6 +78,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -866,9 +867,10 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     }
     
     @Override
-    public R productNewDeliverMaterialHistoryExportExcel(String batchNo, String sn, String deviceName, String cabinetSn, String tenantName, Long startTime, Long endTime) {
+    public R productNewDeliverMaterialHistoryExportExcel(Long[] ids) {
         ArrayList<MaterialHistoryVo> materialHistoryVos = new ArrayList<>();
-        List<ProductNewDeliverVo> productNewDeliverVos = pointNewMapper.productNewDeliverExport(batchNo, sn, deviceName, cabinetSn, tenantName, startTime, endTime);
+        // List<ProductNewDeliverVo> productNewDeliverVos = pointNewMapper.productNewDeliverExport(batchNo, sn, deviceName, cabinetSn, tenantName, startTime, endTime);
+        List<ProductNewDeliverVo> productNewDeliverVos = pointNewMapper.selectDeliverBatchIds(Arrays.asList(ids));
         
         if (CollectionUtils.isEmpty(productNewDeliverVos)) {
             return R.ok();
@@ -880,39 +882,38 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         // 获取 productNewDeliverVos 的设备编码
         List<String> collect = productNewDeliverVos.stream().map(ProductNewDeliverVo::getNo).collect(Collectors.toList());
         
-        List<Material> materialByIds =  materialTraceabilityMapper.selectListByNos(collect);
-        if (CollectionUtils.isEmpty(materialByIds)) {
-            return R.ok();
+        List<Material> materialByIds = materialTraceabilityMapper.selectListByNos(collect);
+        // 根据物料编号分组
+        Map<String, List<Material>> materialGroup = new HashMap<>();
+        if (CollectionUtils.isNotEmpty(materialByIds)) {
+            materialGroup = materialByIds.stream().collect(Collectors.groupingBy(Material::getSn));
         }
         
-        // 根据物料编号分组
-        Map<String, List<Material>> materialGroup = materialByIds.stream().collect(Collectors.groupingBy(Material::getSn));
-        
-        productNewDeliverVos.forEach(temp -> {
+        for (ProductNewDeliverVo temp : productNewDeliverVos) {
             MaterialHistoryVo materialHistoryVo = new MaterialHistoryVo();
             materialHistoryVo.setCabinetSn(temp.getCabinetSn());
-            materialHistoryVo.setDeliverTime(Long.valueOf(temp.getDeviceName()));
+            materialHistoryVo.setDeliverTime(temp.getDeliverTime());
             materialHistoryVo.setTenantName(temp.getTenantName());
             materialHistoryVo.setProductionTime(temp.getCreateTime());
-            // 生成列表
-            materialHistoryVo.setTouchPanel(generateLists("Y8030010", materialGroup));
-            materialHistoryVo.setLinuxBoard(generateLists("Y8030017", materialGroup));
-            materialHistoryVo.setSixInOne(generateLists("Y5030015", materialGroup));
-            if (CollectionUtils.isNotEmpty(materialGroup.get("Y5030011"))){
-                materialHistoryVo.setAtmelID(materialGroup.get("Y5030011").get(0).getAtmelID());
-            }
-            materialHistoryVo.setCommunicationBoard(generateLists("Y5030011", materialGroup));
-            materialHistoryVo.setACCharger(generateLists("Y5030010", materialGroup));
-            materialHistoryVo.setDCDCBoard(generateLists("Y5030012", materialGroup));
-            materialHistoryVo.setModule4G(generateLists("Y5000322", materialGroup));
-            if (CollectionUtils.isNotEmpty(materialGroup.get("Y5000322"))) {
-                materialHistoryVo.setImei(materialGroup.get("Y5000322").get(0).getImei());
-            }
             
+            // 生成列表
+            if (CollectionUtils.isNotEmpty(materialGroup)) {
+                materialHistoryVo.setTouchPanel(generateLists("Y8030010", materialGroup));
+                materialHistoryVo.setLinuxBoard(generateLists("Y8030017", materialGroup));
+                materialHistoryVo.setSixInOne(generateLists("Y5030015", materialGroup));
+                if (CollectionUtils.isNotEmpty(materialGroup.get("Y5030011"))) {
+                    materialHistoryVo.setAtmelID(materialGroup.get("Y5030011").get(0).getAtmelID());
+                }
+                materialHistoryVo.setCommunicationBoard(generateLists("Y5030011", materialGroup));
+                materialHistoryVo.setACCharger(generateLists("Y5030010", materialGroup));
+                materialHistoryVo.setDCDCBoard(generateLists("Y5030012", materialGroup));
+                materialHistoryVo.setModule4G(generateLists("Y5000322", materialGroup));
+                if (CollectionUtils.isNotEmpty(materialGroup.get("Y5000322"))) {
+                    materialHistoryVo.setImei(materialGroup.get("Y5000322").get(0).getImei());
+                }
+            }
             materialHistoryVos.add(materialHistoryVo);
-        });
-        
-      
+        }
         
         return R.ok(materialHistoryVos);
     }
@@ -963,9 +964,9 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     }
     
     @Override
-    public R productNewDeliverMaterialPanelExportExcel(String batchNo, String sn, String deviceName, String cabinetSn, String tenantName, Long startTime, Long endTime) {
-        ArrayList<MaterialHistoryVo> materialHistoryVos = new ArrayList<>();
-        List<ProductNewDeliverVo> productNewDeliverVos = pointNewMapper.productNewDeliverExport(batchNo, sn, deviceName, cabinetSn, tenantName, startTime, endTime);
+    public R productNewDeliverMaterialPanelExportExcel(Long[] ids) {
+        // List<ProductNewDeliverVo> productNewDeliverVos = pointNewMapper.productNewDeliverExport(batchNo, sn, deviceName, cabinetSn, tenantName, startTime, endTime);
+        List<ProductNewDeliverVo> productNewDeliverVos = pointNewMapper.selectDeliverBatchIds(Arrays.asList(ids));
         
         if (CollectionUtils.isEmpty(productNewDeliverVos)) {
             return R.ok();
@@ -977,33 +978,33 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         // 获取 productNewDeliverVos 的设备编码
         List<String> collect = productNewDeliverVos.stream().map(ProductNewDeliverVo::getNo).collect(Collectors.toList());
         
-        List<Material> materialByIds =  materialTraceabilityMapper.selectListByNos(collect);
-        if (CollectionUtils.isEmpty(materialByIds)) {
-            return R.ok();
-        }
+        List<Material> materialByIds = materialTraceabilityMapper.selectListByNos(collect);
         List<Long> collectSupplierIds = productNewDeliverVos.stream().map(ProductNewDeliverVo::getSupplierId).collect(Collectors.toList());
         List<Supplier> supplierList = supplierMapper.selectList(new LambdaQueryWrapper<Supplier>().in(Supplier::getId, collectSupplierIds));
         Map<Long, Supplier> longSupplierMap = supplierList.stream().collect(Collectors.toMap(Supplier::getId, Function.identity(), (oldValue, newValue) -> newValue));
         
         // 根据物料编号分组
-        Map<String, List<Material>> materialGroup = materialByIds.stream().collect(Collectors.groupingBy(Material::getSn));
-        productNewDeliverVos.forEach(temp -> {
+        Map<String, List<Material>> materialGroup = new HashMap<>();
+        if (CollectionUtils.isNotEmpty(materialByIds)) {
+            materialGroup = materialByIds.stream().collect(Collectors.groupingBy(Material::getSn));
+        }
+        for (ProductNewDeliverVo temp : productNewDeliverVos) {
             MaterialHistoryVo materialHistoryVo = new MaterialHistoryVo();
             materialHistoryVo.setCabinetSn(temp.getCabinetSn());
-            materialHistoryVo.setDeliverTime(Long.valueOf(temp.getDeviceName()));
+            materialHistoryVo.setDeliverTime(temp.getDeliverTime());
             materialHistoryVo.setTenantName(temp.getTenantName());
             materialHistoryVo.setProductionTime(temp.getCreateTime());
-            if (Objects.nonNull(temp.getTestEndTime())){
+            if (Objects.nonNull(temp.getTestEndTime())) {
                 materialHistoryVo.setSupplierName(longSupplierMap.get(temp.getSupplierId()).getName());
             }
             // 生成列表
-            if (CollectionUtils.isNotEmpty(materialGroup.get("Y5030011"))){
+            if (CollectionUtils.isNotEmpty(materialGroup.get("Y5030011"))) {
                 materialHistoryVo.setAtmelID(materialGroup.get("Y5030011").get(0).getAtmelID());
             }
             materialHistoryVo.setCommunicationBoard(generateLists("Y5030011", materialGroup));
-        });
+        };
         
-        return null;
+        return R.ok(productNewDeliverVos);
     }
     
 }

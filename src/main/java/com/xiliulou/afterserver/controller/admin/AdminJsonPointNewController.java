@@ -51,6 +51,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -915,18 +916,12 @@ public class AdminJsonPointNewController {
      * @param startTime
      * @param endTime
      */
-    @GetMapping("admin/productNew/deliver/materialHistory/exportExcel")
-    public void productNewDeliverMaterialHistoryExportExcel(@RequestParam(value = "batchNo", required = false) String batchNo, @RequestParam(value = "sn", required = false) String sn,
-            @RequestParam(value = "deviceName", required = false) String deviceName, @RequestParam(value = "cabinetSn", required = false) String cabinetSn,
-            @RequestParam(value = "tenantName", required = false) String tenantName, @RequestParam(value = "startTime", required = false) Long startTime,
-            @RequestParam(value = "endTime", required = false) Long endTime) {
-        pointNewService.productNewDeliverMaterialHistoryExportExcel(batchNo, sn, deviceName, cabinetSn, tenantName, startTime, endTime);
+    @PostMapping("admin/productNew/deliver/materialHistory/exportExcel")
+    public R productNewDeliverMaterialHistoryExportExcel(@RequestBody Long[] ids) {
+       return pointNewService.productNewDeliverMaterialHistoryExportExcel(ids);
     }
-    @GetMapping("admin/productNew/deliver/materialHistory/exportExcel1")
-    public void productNewDeliverMaterialPanelExportExcel(@RequestParam(value = "batchNo", required = false) String batchNo, @RequestParam(value = "sn", required = false) String sn,
-            @RequestParam(value = "deviceName", required = false) String deviceName, @RequestParam(value = "cabinetSn", required = false) String cabinetSn,
-            @RequestParam(value = "tenantName", required = false) String tenantName, @RequestParam(value = "startTime", required = false) Long startTime,
-            @RequestParam(value = "endTime", required = false) Long endTime) {
-        pointNewService.productNewDeliverMaterialPanelExportExcel(batchNo, sn, deviceName, cabinetSn, tenantName, startTime, endTime);
+    @PostMapping("admin/productNew/deliver/materialHistory/exportExcel1")
+    public R productNewDeliverMaterialPanelExportExcel(@RequestBody Long[] ids) {
+       return pointNewService.productNewDeliverMaterialPanelExportExcel(ids);
     }
 }

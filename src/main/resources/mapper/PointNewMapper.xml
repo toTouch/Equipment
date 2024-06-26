@@ -591,4 +591,17 @@
         </if>
         order by tpn.create_time desc
     </select>
+    
+    <select id="selectDeliverBatchIds" resultType="com.xiliulou.afterserver.web.vo.ProductNewDeliverVo">
+        select tpn.id,tpn.no,t.batch_no,tpn.product_key,tpn.device_name,tpn.cabinet_sn,tpn.is_use,tpn.create_time,d.tenant_name,
+        p.name as productName,tdl.create_time as deliverTime,tpn.test_end_time,tpn.test_result,t.supplier_id
+        from t_product_new  tpn  left join product p on tpn.model_id =p.id left join  t_batch t on tpn.batch_id=t.id
+        left join t_deliver_log tdl on tdl.product_id = tpn.id
+        left join deliver d   on d.id=tdl.deliver_id
+        where p.product_series=3 and tpn.del_flag=0
+        <foreach collection="ids" item="item" open="and tpn.id in (" separator="," close=")">
+            #{item}
+        </foreach>
+        order by tpn.create_time desc
+    </select>
 </mapper>

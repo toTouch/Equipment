@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -13,6 +14,7 @@ import java.io.Serializable;
  * (MaterialBatch)实体类
  *
  * @author zhangbozhi
+ *
  * @since 2024-06-19 15:06:15
  */
 public class MaterialBatchQuery implements Serializable {
@@ -81,6 +83,7 @@ public class MaterialBatchQuery implements Serializable {
     
     private Integer id;
     
+    private List<Integer> tags;
     
 }
 

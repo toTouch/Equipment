@@ -94,6 +94,8 @@ public interface MaterialBatchMapper {
     
     List<MaterialBatch> queryByNos(@Param("nos") Set<String> nos);
     
-    Integer updateByMaterialBatchs(@Param("materialBatchesQuery") List<MaterialBatch> materialBatchesQuery);
+    Integer updateByMaterialBatchs(List<MaterialBatch> materialBatchesQuery);
+    
+    MaterialBatch selectByMaterialBatchNo(@Param("materialBatchNo") String materialBatchNo);
 }
 

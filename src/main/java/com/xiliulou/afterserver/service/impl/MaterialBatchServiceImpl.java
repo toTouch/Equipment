@@ -42,6 +42,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.xiliulou.afterserver.constant.CommonConstants.FAIL;
 import static com.xiliulou.afterserver.entity.Material.BINDING;
 import static com.xiliulou.afterserver.entity.Material.UN_DEL_FLAG;
 
@@ -95,16 +96,34 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
      */
     @Override
     public List<MaterialBatch> listByLimit(MaterialBatch materialBatch, Long offset, Long size) {
+        
         List<MaterialBatch> materialBatches = this.materialBatchMapper.selectPage(materialBatch, offset, size);
         if (CollectionUtils.isEmpty(materialBatches)) {
-           return materialBatches;
+            return materialBatches;
         }
+        
         Set<Long> supplierIds = materialBatches.stream().map(MaterialBatch::getSupplierId).collect(Collectors.toSet());
         List<Supplier> supplierList = supplierService.listBySupplierIds(supplierIds);
+        
+        // 获取批次ID
+        List<String> nos = materialBatches.stream().map(MaterialBatch::getMaterialBatchNo).collect(Collectors.toList());
+        List<Material> passingList = materialMapper.selectCountListByNos(nos, Material.UN_PASSING);
+        List<Material> unPassingList = materialMapper.selectCountListByNos(nos, Material.PASSING);
+        List<Material> countList = materialMapper.selectCountListByNos(nos, null);
+        
+        Map<String, Integer> batchIdMap = passingList.stream().collect(Collectors.toMap(Material::getMaterialBatchNo, Material::getCount, (k1, k2) -> k1));
+        Map<String, Integer> unbatchIdMap = unPassingList.stream().collect(Collectors.toMap(Material::getMaterialBatchNo, Material::getCount, (k1, k2) -> k1));
+        Map<String, Integer> countMap = countList.stream().collect(Collectors.toMap(Material::getMaterialBatchNo, Material::getCount, (k1, k2) -> k1));
         
         Map<Long, String> longStringMap = supplierList.stream().collect(Collectors.toMap(Supplier::getId, Supplier::getName, (k1, k2) -> k1));
         materialBatches.forEach(temp -> {
             temp.setSupplierName(longStringMap.get(temp.getSupplierId()));
+            if (Objects.nonNull(temp.getId())) {
+                temp.setQualifiedCount(Objects.isNull(batchIdMap.get(temp.getMaterialBatchNo())) ? 0 : batchIdMap.get(temp.getMaterialBatchNo()));
+                temp.setUnqualifiedCount(Objects.isNull(unbatchIdMap.get(temp.getMaterialBatchNo())) ? 0 : unbatchIdMap.get(temp.getMaterialBatchNo()));
+                temp.setMaterialCount(Objects.isNull(countMap.get(temp.getMaterialBatchNo())) ? 0 : countMap.get(temp.getMaterialBatchNo()));
+            }
+            
         });
         
         return materialBatches;
@@ -141,6 +160,9 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
         materialBatch.setCreateTime(System.currentTimeMillis());
         materialBatch.setUpdateTime(System.currentTimeMillis());
         
+        if (Objects.nonNull(materialBatch.getMaterialBatchRemark())) {
+            materialBatch.setMaterialBatchRemark(materialBatch.getMaterialBatchRemark().trim());
+        }
         this.materialBatchMapper.insert(materialBatch);
         return R.ok();
     }
@@ -159,7 +181,9 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
         if (Objects.isNull(supplierService.queryById(materialBatch.getSupplierId()))) {
             return R.failMsg("供应商不存在");
         }
-        if (this.materialBatchMapper.existsByPartsId(materialBatch.getMaterialId()) != null) {
+        // 批次号重复
+        MaterialBatch materialBatchSelect = this.materialBatchMapper.existsByPartsId(materialBatch.getMaterialId());
+        if (Objects.nonNull(materialBatchSelect) && !Objects.equals(materialBatchSelect.getId(), materialBatch.getId())) {
             return R.failMsg("该物料已存在批次号");
         }
         return null;
@@ -184,6 +208,9 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
         R<Object> failMsg = insertOrUpdateBatchCheck(materialBatch);
         if (Objects.nonNull(failMsg)) {
             return failMsg;
+        }
+        if (Objects.nonNull(materialBatch.getMaterialBatchRemark())) {
+            materialBatch.setMaterialBatchRemark(materialBatch.getMaterialBatchRemark().trim());
         }
         this.materialBatchMapper.update(materialBatch);
         return R.ok();
@@ -261,16 +288,16 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
     public R materialExportUpload(List<MaterialQuery> materials, Long materialBatchId) {
         // 提取数据重复项
         List<Material> materialList = new ArrayList<>();
-        R r = checkMaterialBatchDuplicate(materials,materialList);
+        R r = checkMaterialBatchDuplicate(materials, materialList);
         if (r.getCode() != 0) {
             return r;
         }
-        // 批量入库
+        
         MaterialBatch materialBatchQuery = materialBatchMapper.selectById(Math.toIntExact(materialBatchId));
         if (Objects.isNull(materialBatchQuery)) {
             return R.failMsg("批次号不存在");
         }
-        User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
+        
         materialList.forEach(material -> {
             material.setMaterialBatchNo(materialBatchQuery.getMaterialBatchNo());
             material.setMaterialId(materialBatchQuery.getMaterialId());
@@ -280,15 +307,11 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
             material.setUpdateTime(System.currentTimeMillis());
             material.setTenantId(0L);
         });
+        // 批量入库
         for (int i = 0; i < materials.size() / 200 + 1; i++) {
             materialMapper.insertBatch(materialList);
         }
-        
-        // 更新数据
-        MaterialBatch materialBatch = new MaterialBatch();
-        materialBatch.setMaterialCount(materials.size());
-        materialBatch.setId(Math.toIntExact(materialBatchId));
-        materialBatchMapper.update(materialBatch);
+       
         return R.ok();
     }
     
@@ -302,13 +325,12 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
     
     @Override
     public Integer updateByMaterialBatchs(List<MaterialBatch> materialBatchesQuery) {
-        materialBatchMapper.updateByMaterialBatchs(materialBatchesQuery);
-        return null;
+        return materialBatchMapper.updateByMaterialBatchs(materialBatchesQuery);
     }
     
     
     // 获取导入重复数据
-    public R checkMaterialBatchDuplicate(List<MaterialQuery> materials,List<Material> materialList) {
+    public R checkMaterialBatchDuplicate(List<MaterialQuery> materials, List<Material> materialList) {
         HashMap<String, Integer> imeiHashMap = new HashMap<String, Integer>();
         HashMap<String, Integer> atemlIDHashMap = new HashMap<String, Integer>();
         HashMap<String, Integer> snHashMap = new HashMap<String, Integer>();
@@ -339,20 +361,20 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
             if (StringUtils.isBlank(materialQuery.getAtmelID())) {
                 material.setAtmelID("");
             }
-            if (StringUtils.isBlank(materialQuery.getMaterialSn())){
+            if (StringUtils.isBlank(materialQuery.getMaterialSn())) {
                 material.setMaterialSn("");
             }
             materialList.add(material);
         }
         
         if (!imeis.isEmpty()) {
-            return R.fail(String.valueOf(imeis), "表格内IMEL code有重复，请检查");
+            return R.fail(String.valueOf(imeis), FAIL.toString(), "表格内IMEL code有重复，请检查");
         }
         if (!atemlIDs.isEmpty()) {
-            return R.fail(String.valueOf(atemlIDs), "表格内Atmel ID有重复，请检查");
+            return R.fail(String.valueOf(atemlIDs), FAIL.toString(), "表格内Atmel ID有重复，请检查");
         }
         if (!sns.isEmpty()) {
-            return R.fail(String.valueOf(sns), "表格内物料SN有重复，请检查");
+            return R.fail(String.valueOf(sns), FAIL.toString(), "表格内物料SN有重复，请检查");
         }
         if (imeiHashMap.size() != materials.size()) {
             return R.failMsg("表格中物料SN有未填项，请检查");
@@ -361,19 +383,21 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
         return dbDuplicateCheck(imeiHashMap.keySet(), atemlIDHashMap.keySet(), snHashMap.keySet());
     }
     
-    private R dbDuplicateCheck( Set<String> imeis, Set<String> atemlIDs, Set<String> sns) {
+    private R dbDuplicateCheck(Set<String> imeis, Set<String> atemlIDs, Set<String> sns) {
         List<Material> imeiRepeat = new ArrayList<>();
         List<Material> atemlIDRepeat = new ArrayList<>();
         List<Material> snRepeat = new ArrayList<>();
-        
+        HashMap<Object, Object> resultMap = new HashMap<>();
         for (int i = 0; i < imeis.size() / 200 + 1; i++) {
             List<String> collect = imeis.stream().skip(i * 200).limit(200).collect(Collectors.toList());
             if (!collect.isEmpty()) {
                 imeiRepeat.addAll(materialMapper.listAllByImeis(collect));
             }
         }
+        
         if (!imeiRepeat.isEmpty()) {
-            return R.fail(String.valueOf(imeiRepeat), "IMEI code已存在，请勿重复导入");
+            List<String> collect = imeiRepeat.stream().map(Material::getImei).collect(Collectors.toList());
+            resultMap.put("codes", collect);
         }
         
         for (int i = 0; i < atemlIDs.size() / 200 + 1; i++) {
@@ -383,7 +407,9 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
             }
         }
         if (!atemlIDRepeat.isEmpty()) {
-            return R.fail(String.valueOf(atemlIDRepeat), "Atmel ID已存在，请勿重复导入");
+            List<String> collect = imeiRepeat.stream().map(Material::getAtmelID).collect(Collectors.toList());
+            resultMap.put("ids", collect);
+            // return R.fail(String.valueOf(atemlIDRepeat), "Atmel ID已存在，请勿重复导入");
         }
         
         for (int i = 0; i < sns.size() / 200 + 1; i++) {
@@ -393,7 +419,12 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
             }
         }
         if (!snRepeat.isEmpty()) {
-            return R.fail(String.valueOf(snRepeat), "物料SN已存在，请勿重复导入");
+            List<String> collect = imeiRepeat.stream().map(Material::getSn).collect(Collectors.toList());
+            resultMap.put("sns", collect);
+            // return R.fail(String.valueOf(snRepeat), "物料SN已存在，请勿重复导入");
+        }
+        if (!resultMap.isEmpty()) {
+            return R.fail(resultMap, FAIL.toString(), "表格内物料信息有重复，请检查");
         }
         return R.ok();
     }

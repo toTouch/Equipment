@@ -6,6 +6,7 @@ import com.xiliulou.afterserver.entity.MaterialBatch;
 import com.xiliulou.afterserver.service.MaterialBatchService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.MaterialQuery;
+import com.xiliulou.afterserver.web.query.MaterialUploadQuery;
 import org.springframework.web.bind.annotation.*;
 import shaded.org.apache.commons.lang3.StringUtils;
 
@@ -119,7 +120,12 @@ public class JsonAdminMaterialBatchController {
      * 导入物料批次
      */
     @PostMapping("/admin/supplier/upload")
-    public R upload(@RequestBody List<MaterialQuery> materials,Long materialBatchId) throws IOException {
+    public R upload(@RequestBody MaterialUploadQuery materialUploadQuery) throws IOException {
+        if (Objects.isNull(materialUploadQuery)) {
+            return R.ok();
+        }
+        List<MaterialQuery> materials = materialUploadQuery.getMaterials();
+        long materialBatchId = materialUploadQuery.getMaterialBatchId();
         if (CollectionUtils.isEmpty(materials)) {
             return R.failMsg("文件内容为空");
         }

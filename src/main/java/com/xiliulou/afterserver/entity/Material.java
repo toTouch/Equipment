@@ -153,6 +153,10 @@ public class Material implements Serializable {
     @ExcelIgnore
     private String sn;
     
+    @TableField(exist = false)
+    @ExcelIgnore
+    private Integer count;
+    
     private String materialBatchId;
     
 }

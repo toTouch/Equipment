@@ -2,12 +2,10 @@ package com.xiliulou.afterserver.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.PointNew;
-import com.xiliulou.afterserver.mapper.PointNewMapper;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.PointAuditStatusQuery;
 import com.xiliulou.afterserver.web.query.PointQuery;
 import com.xiliulou.afterserver.web.vo.PointNewPullVo;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
@@ -121,9 +119,9 @@ public interface PointNewService extends IService<PointNew> {
     R productNewDeliverExportExcel(String batchNo, String sn, String deviceName, String cabinetSn, String tenantName, Long startTime, Long endTime, HttpServletResponse response);
     
     
-    R productNewDeliverMaterialHistoryExportExcel(String batchNo, String sn, String deviceName, String cabinetSn, String tenantName, Long startTime, Long endTime);
+    R productNewDeliverMaterialHistoryExportExcel(Long[] ids);
     
     R printClientInfo(Long pid);
     
-    R productNewDeliverMaterialPanelExportExcel(String batchNo, String sn, String deviceName, String cabinetSn, String tenantName, Long startTime, Long endTime);
+    R productNewDeliverMaterialPanelExportExcel(Long[] ids);
 }
