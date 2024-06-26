@@ -102,7 +102,7 @@
             <if test="query.imei != null and query.imei != ''">
                 and tmb.material_batch_no like concat('%',#{query.imei},'%')
             </if>
-            <if test="query.materialBatchId != null and query.materialBatchId != ''">
+            <if test="query.materialBatchNo != null and query.materialBatchNo != ''">
                 and material_batch_no like concat('%',#{query.materialBatchNo},'%')
             </if>
             <if test="query.materialState != null">
@@ -149,7 +149,7 @@
             <if test="query.imei != null and query.imei != ''">
                 and tmb.material_batch_no like concat('%',#{query.imei},'%')
             </if>
-            <if test="query.materialBatchId != null and query.materialBatchId != ''">
+            <if test="query.materialBatchNo != null and query.materialBatchNo != ''">
                 and material_batch_no like concat('%',#{query.materialBatchNo},'%')
             </if>
             <if test="query.materialState != null">
