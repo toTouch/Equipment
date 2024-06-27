@@ -189,7 +189,7 @@ public class JsonAdminMaterialTraceabilityController {
     public R changeMaterialState(@RequestBody MaterialQuery materialQuery) throws Exception {
         String remark = materialQuery.getRemark();
         List<Long> ids = materialQuery.getIds();
-        Integer status = materialQuery.getStates();
+        Integer status = materialQuery.getStatus();
         Integer confirm = materialQuery.getConfirm();
         return this.materialTraceabilityService.changeMaterialState(ids, status, confirm, remark);
     }
