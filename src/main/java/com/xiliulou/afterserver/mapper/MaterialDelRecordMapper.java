@@ -6,10 +6,10 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * 物料追溯表(MaterialDelRecord)表数据库访问层
+ * 物料删除追溯表(MaterialDelRecord)表数据库访问层
  *
  * @author zhangbozhi
- * @since 2024-06-27 00:12:49
+ * @since 2024-06-27 20:44:29
  */
 public interface MaterialDelRecordMapper {
     

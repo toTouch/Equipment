@@ -66,6 +66,9 @@ public class JsonAdminMaterialTraceabilityController {
         if (!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)) {
             return R.fail("登陆用户非工厂类型");
         }
+        if (StringUtils.isEmpty(materialTraceability.getRemark()) || materialTraceability.getRemark().length() > 50) {
+            return R.failMsg("sn不能为空");
+        }
         return this.materialTraceabilityService.insert(materialTraceability);
     }
     
@@ -91,6 +94,13 @@ public class JsonAdminMaterialTraceabilityController {
         return R.ok(this.materialTraceabilityService.queryByPage(materialTraceability, offset, size));
     }
     
+    @GetMapping("/pda/list")
+    public R queryByListPDA(MaterialQuery materialTraceability, @RequestParam("offset") Long offset, @RequestParam("size") Long size) {
+        if (!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)) {
+            return R.fail("登陆用户非工厂类型");
+        }
+        return R.ok(this.materialTraceabilityService.queryByList(materialTraceability, offset, size));
+    }
     /**
      * 分页count
      *
@@ -191,7 +201,7 @@ public class JsonAdminMaterialTraceabilityController {
         List<Long> ids = materialQuery.getIds();
         Integer status = materialQuery.getStatus();
         Integer confirm = materialQuery.getConfirm();
-        return this.materialTraceabilityService.changeMaterialState(ids, status, confirm, remark);
+        return this.materialTraceabilityService.changeMaterialState(ids, confirm, status, remark);
     }
     
 }

@@ -413,7 +413,7 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
         }
         
         if (!imeiRepeat.isEmpty()) {
-            List<String> collect = imeiRepeat.stream().map(Material::getImei).filter(StringUtils::isBlank).collect(Collectors.toList());
+            List<String> collect = imeiRepeat.stream().map(Material::getImei).filter(StringUtils::isNotBlank).collect(Collectors.toList());
             resultMap.put("codes", collect);
         }
         
@@ -424,9 +424,10 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
             }
         }
         if (!atemlIDRepeat.isEmpty()) {
-            List<String> collect = atemlIDRepeat.stream().map(Material::getAtmelID).filter(StringUtils::isBlank).collect(Collectors.toList());
-            resultMap.put("ids", collect);
-            // return R.fail(String.valueOf(atemlIDRepeat), "Atmel ID已存在，请勿重复导入");
+            List<String> collect = atemlIDRepeat.stream().map(Material::getAtmelID).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+            if (!collect.isEmpty()) {
+                resultMap.put("ids", collect);
+            }// return R.fail(String.valueOf(atemlIDRepeat), "Atmel ID已存在，请勿重复导入");
         }
         
         for (int i = 0; i < sns.size() / 200 + 1; i++) {
@@ -436,7 +437,7 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
             }
         }
         if (!snRepeat.isEmpty()) {
-            List<String> collect = snRepeat.stream().map(Material::getSn).filter(StringUtils::isBlank).collect(Collectors.toList());
+            List<String> collect = snRepeat.stream().map(Material::getMaterialSn).filter(StringUtils::isNotBlank).collect(Collectors.toList());
             resultMap.put("sns", collect);
             // return R.fail(String.valueOf(snRepeat), "物料SN已存在，请勿重复导入");
         }

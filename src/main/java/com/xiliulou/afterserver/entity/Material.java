@@ -96,7 +96,7 @@ public class Material implements Serializable {
     /**
      * 待检
      */
-    public static final Integer TO_BE_INSPECTED = null;
+    public static final Integer TO_BE_INSPECTED = 2;
     
     /**
      * 合格
@@ -151,6 +151,9 @@ public class Material implements Serializable {
     
     @TableField(exist = false)
     @ExcelIgnore
+    /**
+     * 物料sn
+     */
     private String sn;
     
     @TableField(exist = false)

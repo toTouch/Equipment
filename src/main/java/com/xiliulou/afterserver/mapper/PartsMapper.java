@@ -72,5 +72,5 @@ public interface PartsMapper  extends BaseMapper<Parts>{
 
     Parts queryByNameAndSpecification(@Param("name")String name, @Param("specification")String specification);
     
-    List<Parts> listByName(String name);
+    List<Parts> listByName(@Param("name") String name, @Param("sn") String sn);
 }

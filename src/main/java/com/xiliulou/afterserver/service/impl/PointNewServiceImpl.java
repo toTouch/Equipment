@@ -913,6 +913,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             List<MaterialCellVo> y5030015 = generateLists("Y5030015", materialGroup);
             List<MaterialCellVo> y5030011 = generateLists("Y5030011", materialGroup);
             List<MaterialCellVo> y5030010 = generateLists("Y5030010", materialGroup);
+            List<MaterialCellVo> y5000301 = generateLists("Y5000301", materialGroup);
             List<MaterialCellVo> y5030012 = generateLists("Y5030012", materialGroup);
             List<MaterialCellVo> y5000322 = generateLists("Y5000322", materialGroup);
             
@@ -922,8 +923,9 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             if (CollectionUtils.isNotEmpty(materialGroup.get("Y5030011"))) {
                 materialHistoryVo.setAtmelID(materialGroup.get("Y5030011").get(0).getAtmelID());
             }
-            materialHistoryVo.setCommunicationBoard(y5030011);
-            materialHistoryVo.setACCharger(y5030010);
+            materialHistoryVo.setConnectorBoard(y5030011);
+            materialHistoryVo.setCommunicationBoard(y5030010);
+            materialHistoryVo.setACCharger(y5000301);
             materialHistoryVo.setDCDCBoard(y5030012);
             materialHistoryVo.setModule4G(y5000322);
             if (CollectionUtils.isNotEmpty(materialGroup.get("Y5000322"))) {
@@ -932,14 +934,15 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             return;
         }
         
-        materialHistoryVo.setTouchPanel(getMaterialCellVos("y8030010"));
-        materialHistoryVo.setLinuxBoard(getMaterialCellVos("y8030017"));
-        materialHistoryVo.setSixInOne(getMaterialCellVos("y5030015"));
+        materialHistoryVo.setTouchPanel(getMaterialCellVos("Y8030010"));
+        materialHistoryVo.setLinuxBoard(getMaterialCellVos("Y8030017"));
+        materialHistoryVo.setSixInOne(getMaterialCellVos("Y5030015"));
         materialHistoryVo.setAtmelID("");
-        materialHistoryVo.setCommunicationBoard(getMaterialCellVos("y5030011"));
-        materialHistoryVo.setACCharger(getMaterialCellVos("y5030010"));
-        materialHistoryVo.setDCDCBoard(getMaterialCellVos("y5030012"));
-        materialHistoryVo.setModule4G(getMaterialCellVos("y5000322"));
+        materialHistoryVo.setConnectorBoard(getMaterialCellVos("Y5030011"));
+        materialHistoryVo.setCommunicationBoard(getMaterialCellVos("Y5030010"));
+        materialHistoryVo.setACCharger(getMaterialCellVos("Y5030010"));
+        materialHistoryVo.setDCDCBoard(getMaterialCellVos("Y5030012"));
+        materialHistoryVo.setModule4G(getMaterialCellVos("Y5000322"));
         materialHistoryVo.setImei("");
        
     }
@@ -977,7 +980,13 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             return R.failMsg("该点位不存在");
         }
         PointNew pointNewResult = new PointNew();
-        pointNewResult.setCustomerName(pointNew.getCustomerName());
+        if (Objects.nonNull(pointNew.getCustomerId())) {
+            Customer byId = customerService.getById(pointNew.getCustomerId());
+            if (Objects.nonNull(byId)) {
+                pointNewResult.setCustomerName(byId.getName());
+            }
+        }
+        
         pointNewResult.setProductInfo(pointNew.getProductInfo());
         
         List<Product> productAll = productService.list();
@@ -1024,6 +1033,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         if (CollectionUtils.isNotEmpty(materialByIds)) {
             materialGroup = materialByIds.stream().collect(Collectors.groupingBy(Material::getSn));
         }
+        List<MaterialHistoryVo> productNewDeliverVoResult = new ArrayList<>();
         for (ProductNewDeliverVo temp : productNewDeliverVos) {
             MaterialHistoryVo materialHistoryVo = new MaterialHistoryVo();
             materialHistoryVo.setCabinetSn(temp.getCabinetSn());
@@ -1033,14 +1043,20 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             if (Objects.nonNull(temp.getTestEndTime())) {
                 materialHistoryVo.setSupplierName(longSupplierMap.get(temp.getSupplierId()).getName());
             }
-            // 生成列表
-            if (CollectionUtils.isNotEmpty(materialGroup.get("Y5030011"))) {
-                materialHistoryVo.setAtmelID(materialGroup.get("Y5030011").get(0).getAtmelID());
+            if (CollectionUtils.isNotEmpty(materialGroup)) {
+                // 生成列表
+                if (CollectionUtils.isNotEmpty(materialGroup.get("Y5030011"))) {
+                    materialHistoryVo.setAtmelID(materialGroup.get("Y5030011").get(0).getAtmelID());
+                }
+                materialHistoryVo.setCommunicationBoard(generateLists("Y5030011", materialGroup));
+            }else {
+                materialHistoryVo.setAtmelID("");
+                materialHistoryVo.setCommunicationBoard(getMaterialCellVos("Y5030011"));
             }
-            materialHistoryVo.setCommunicationBoard(generateLists("Y5030011", materialGroup));
+            productNewDeliverVoResult.add(materialHistoryVo);
         };
         
-        return R.ok(productNewDeliverVos);
+        return R.ok(productNewDeliverVoResult);
     }
     
 }

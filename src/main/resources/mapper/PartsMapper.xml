@@ -95,10 +95,7 @@
       <if test="specification != null and specification != ''">
         specification = #{specification},
       </if>
-      
-      <if test="materialType != null and materialType != ''">
         material_type = #{materialType},
-      </if>
     </set>
     where id = #{id}
   </update>

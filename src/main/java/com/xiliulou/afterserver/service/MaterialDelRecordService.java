@@ -5,10 +5,10 @@ import com.xiliulou.afterserver.entity.MaterialDelRecord;
 import java.util.List;
 
 /**
- * 物料追溯表(MaterialDelRecord)表服务接口
+ * 物料删除追溯表(MaterialDelRecord)表服务接口
  *
  * @author zhangbozhi
- * @since 2024-06-27 00:12:51
+ * @since 2024-06-27 20:44:34
  */
 public interface MaterialDelRecordService {
     

@@ -6,9 +6,7 @@ import com.xiliulou.afterserver.entity.MaterialBatch;
 import com.xiliulou.afterserver.entity.Parts;
 import com.xiliulou.afterserver.mapper.MaterialBatchMapper;
 import com.xiliulou.afterserver.mapper.PartsMapper;
-import com.xiliulou.afterserver.service.MaterialBatchService;
 import com.xiliulou.afterserver.service.PartsService;
-import com.xiliulou.afterserver.vo.MaterialTraceabilityVO;
 import com.xiliulou.afterserver.vo.PartsExcelVo;
 import com.xiliulou.afterserver.web.query.PartsQuery;
 import com.xiliulou.afterserver.web.vo.PartsVo;
@@ -166,7 +164,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     
     @Override
     public R listByName(String name, String sn) {
-        List<Parts> parts = partsMapper.listByName(name);
+        List<Parts> parts = partsMapper.listByName(name,sn);
         return R.ok(parts);
     }
     
@@ -216,7 +214,12 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         if(Objects.nonNull(partsNameAndSpecification) && !Objects.equals(partsNameAndSpecification.getId(), parts.getId())) {
             return R.fail("相同规格物料已存在，请检查");
         }
-
+        
+        // 物料批次
+        MaterialBatch materialBatch = materialBatchMapper.selectByPartsId(partsQuery.getId());
+        if (Objects.nonNull(materialBatch)) {
+            R.fail("该物料已绑定批次，请先删除批次");
+        }
         Parts updateParts = new Parts();
         BeanUtils.copyProperties(partsQuery, updateParts);
         parts.setUpdateTime(System.currentTimeMillis());

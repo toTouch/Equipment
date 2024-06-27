@@ -29,9 +29,13 @@
         from t_material
         where id = #{id}
     </delete>
+    
     <delete id="deleteByIds">
-        delete
-        from t_material
+        update t_material
+        <set>
+            del_flag = 1,
+            update_time = #{updateTime}
+        </set>
         where id in
         <foreach collection="id" item="item" open="(" separator="," close=")">
             #{item}
@@ -100,7 +104,7 @@
                 and product_no like concat('%',#{query.productNo},'%')
             </if>
             <if test="query.sn != null and query.sn != ''">
-                and tp.sn = #{query.sn}
+                and tp.sn like concat('%',#{query.sn},'%')
             </if>
             <if test="query.name != null and query.name != ''">
                 and tp.name like concat('%',#{query.name},'%')
@@ -130,7 +134,7 @@
                 and tm.tenant_id = #{query.tenantId}
             </if>
         </where>
-        order by tm.id desc limit #{offset}, #{size}
+        order by tm.update_time desc limit #{offset}, #{size}
     </select>
     <select id="count" resultType="java.lang.Long">
         select count(1)
@@ -274,7 +278,7 @@
         from t_material tm left join t_parts tp on tp.id = tm.material_id
         <where>
             tm.del_flag  = 0
-            <foreach close=")" collection="sns" item="batch" open="and imei in (" separator=",">
+            <foreach close=")" collection="sns" item="batch" open="and material_sn in (" separator=",">
                 #{batch}
             </foreach>
         </where>
@@ -410,8 +414,8 @@
             material_state = #{materialState},
             update_time = #{updateTime},
             remark = #{remark}
-            <if test="materialState == 0">
-                product_no = null
+            <if test="materialState == 0 or materialState == 2">
+                ,product_no = null, binding_status = 0
             </if>
         </set>
         where del_flag = 0 and id in

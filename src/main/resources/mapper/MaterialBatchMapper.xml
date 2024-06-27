@@ -124,6 +124,12 @@
         from t_material_batch
         where material_batch_no = #{batchNo} limit 1
     </select>
+    <select id="selectByPartsId" resultType="com.xiliulou.afterserver.entity.MaterialBatch">
+        select id, material_batch_no, material_id, supplier_id, material_count, unqualified_count, qualified_count, material_batch_remark,
+               create_time, update_time, tenant_id, quality_report_url
+        from t_material_batch tmb
+        where material_id = #{partsId}
+    </select>
     
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">

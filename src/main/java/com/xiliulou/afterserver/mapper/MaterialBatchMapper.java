@@ -99,5 +99,7 @@ public interface MaterialBatchMapper {
     MaterialBatch selectByMaterialBatchNo(@Param("materialBatchNo") String materialBatchNo);
     
     MaterialBatch existsByBatchNo(@Param("batchNo") String batchNo);
+    
+    MaterialBatch selectByPartsId(@Param("partsId") Long partsId);
 }
 
