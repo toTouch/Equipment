@@ -119,6 +119,11 @@
         from t_material_batch tmb
         where material_batch_no = #{materialBatchNo}
     </select>
+    <select id="existsByBatchNo" resultType="com.xiliulou.afterserver.entity.MaterialBatch">
+        select id
+        from t_material_batch
+        where material_batch_no = #{batchNo} limit 1
+    </select>
     
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">

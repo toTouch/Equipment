@@ -158,7 +158,7 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
         if (Objects.nonNull(failMsg)) {
             return failMsg;
         }
-        MaterialBatch materialBatchSelect = this.materialBatchMapper.existsByPartsId(materialBatch.getMaterialId());
+        MaterialBatch materialBatchSelect = this.materialBatchMapper.existsByBatchNo(materialBatch.getMaterialBatchNo());
         if (Objects.nonNull(materialBatchSelect)) {
             return R.failMsg("该物料已存在批次号");
         }
@@ -210,10 +210,11 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
         
         R<Object> failMsg = insertOrUpdateBatchCheck(materialBatch);
         // 批次号重复
-        MaterialBatch materialBatchSelect = this.materialBatchMapper.existsByPartsId(materialBatch.getMaterialId());
-        if (Objects.nonNull(materialBatchSelect) && Objects.equals(materialBatchSelect.getId(), materialBatch.getId())) {
+        MaterialBatch materialBatchSelect = this.materialBatchMapper.existsByBatchNo(materialBatch.getMaterialBatchNo());
+        if (Objects.nonNull(materialBatchSelect) && !Objects.equals(materialBatchSelect.getId(), materialBatch.getId())) {
             return R.failMsg("该物料已存在批次号");
         }
+        
         if (Objects.nonNull(failMsg)) {
             return failMsg;
         }
@@ -380,8 +381,17 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
             materialList.add(material);
         }
         
-    
-        if (imeiHashMap.size() != materials.size()) {
+        if (!imeis.isEmpty()) {
+            return R.fail(String.valueOf(imeis), FAIL.toString(), "表格内IMEL code有重复，请检查");
+        }
+        if (!atemlIDs.isEmpty()) {
+            return R.fail(String.valueOf(atemlIDs), FAIL.toString(), "表格内Atmel ID有重复，请检查");
+        }
+        if (!sns.isEmpty()) {
+            return R.fail(String.valueOf(sns), FAIL.toString(), "表格内物料SN有重复，请检查");
+        }
+        
+        if (snHashMap.size() != materials.size()) {
             return R.failMsg("表格中物料SN有未填项，请检查");
         }
         

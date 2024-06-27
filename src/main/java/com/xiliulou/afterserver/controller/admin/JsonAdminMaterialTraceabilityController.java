@@ -174,7 +174,6 @@ public class JsonAdminMaterialTraceabilityController {
     /**
      * 删除数据
      *
-     * @param id 主键
      * @return 删除是否成功
      */
     @PostMapping("/delete")
@@ -190,7 +189,7 @@ public class JsonAdminMaterialTraceabilityController {
     public R changeMaterialState(@RequestBody MaterialQuery materialQuery) throws Exception {
         String remark = materialQuery.getRemark();
         List<Long> ids = materialQuery.getIds();
-        Integer status = materialQuery.getMaterialState();
+        Integer status = materialQuery.getStates();
         Integer confirm = materialQuery.getConfirm();
         return this.materialTraceabilityService.changeMaterialState(ids, status, confirm, remark);
     }

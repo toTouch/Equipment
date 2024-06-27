@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.vo;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +18,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Builder
 public class PartsExcelVo {
-    
+    @ExcelIgnore
     private Long id;
     @ExcelProperty(value = "物料型号名称")
     private String name;
