@@ -66,7 +66,9 @@ import com.xiliulou.mq.service.RocketMqService;
 import com.xiliulou.storage.config.StorageConfig;
 import com.xiliulou.storage.service.impl.AliyunOssService;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.pool.TypePool;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.poi.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -897,25 +899,59 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             materialHistoryVo.setProductionTime(temp.getCreateTime());
             
             // 生成列表
-            if (CollectionUtils.isNotEmpty(materialGroup)) {
-                materialHistoryVo.setTouchPanel(generateLists("Y8030010", materialGroup));
-                materialHistoryVo.setLinuxBoard(generateLists("Y8030017", materialGroup));
-                materialHistoryVo.setSixInOne(generateLists("Y5030015", materialGroup));
-                if (CollectionUtils.isNotEmpty(materialGroup.get("Y5030011"))) {
-                    materialHistoryVo.setAtmelID(materialGroup.get("Y5030011").get(0).getAtmelID());
-                }
-                materialHistoryVo.setCommunicationBoard(generateLists("Y5030011", materialGroup));
-                materialHistoryVo.setACCharger(generateLists("Y5030010", materialGroup));
-                materialHistoryVo.setDCDCBoard(generateLists("Y5030012", materialGroup));
-                materialHistoryVo.setModule4G(generateLists("Y5000322", materialGroup));
-                if (CollectionUtils.isNotEmpty(materialGroup.get("Y5000322"))) {
-                    materialHistoryVo.setImei(materialGroup.get("Y5000322").get(0).getImei());
-                }
-            }
+            fillMaterialHistory(materialGroup, materialHistoryVo);
             materialHistoryVos.add(materialHistoryVo);
         }
         
         return R.ok(materialHistoryVos);
+    }
+    
+    private void fillMaterialHistory(Map<String, List<Material>> materialGroup, MaterialHistoryVo materialHistoryVo) {
+        if (CollectionUtils.isNotEmpty(materialGroup)) {
+            List<MaterialCellVo> y8030010 = generateLists("Y8030010", materialGroup);
+            List<MaterialCellVo> y8030017 = generateLists("Y8030017", materialGroup);
+            List<MaterialCellVo> y5030015 = generateLists("Y5030015", materialGroup);
+            List<MaterialCellVo> y5030011 = generateLists("Y5030011", materialGroup);
+            List<MaterialCellVo> y5030010 = generateLists("Y5030010", materialGroup);
+            List<MaterialCellVo> y5030012 = generateLists("Y5030012", materialGroup);
+            List<MaterialCellVo> y5000322 = generateLists("Y5000322", materialGroup);
+            
+            materialHistoryVo.setTouchPanel(y8030010);
+            materialHistoryVo.setLinuxBoard(y8030017);
+            materialHistoryVo.setSixInOne(y5030015);
+            if (CollectionUtils.isNotEmpty(materialGroup.get("Y5030011"))) {
+                materialHistoryVo.setAtmelID(materialGroup.get("Y5030011").get(0).getAtmelID());
+            }
+            materialHistoryVo.setCommunicationBoard(y5030011);
+            materialHistoryVo.setACCharger(y5030010);
+            materialHistoryVo.setDCDCBoard(y5030012);
+            materialHistoryVo.setModule4G(y5000322);
+            if (CollectionUtils.isNotEmpty(materialGroup.get("Y5000322"))) {
+                materialHistoryVo.setImei(materialGroup.get("Y5000322").get(0).getImei());
+            }
+            return;
+        }
+        
+        materialHistoryVo.setTouchPanel(getMaterialCellVos("y8030010"));
+        materialHistoryVo.setLinuxBoard(getMaterialCellVos("y8030017"));
+        materialHistoryVo.setSixInOne(getMaterialCellVos("y5030015"));
+        materialHistoryVo.setAtmelID("");
+        materialHistoryVo.setCommunicationBoard(getMaterialCellVos("y5030011"));
+        materialHistoryVo.setACCharger(getMaterialCellVos("y5030010"));
+        materialHistoryVo.setDCDCBoard(getMaterialCellVos("y5030012"));
+        materialHistoryVo.setModule4G(getMaterialCellVos("y5000322"));
+        materialHistoryVo.setImei("");
+       
+    }
+    
+    private static List<MaterialCellVo> getMaterialCellVos(String materialPn) {
+        List<MaterialCellVo> defaultList = new ArrayList<>();
+        MaterialCellVo materialCellVo = new MaterialCellVo();
+        materialCellVo.setPn(materialPn);
+        materialCellVo.setSn("");
+        materialCellVo.setName("");
+        defaultList.add(materialCellVo);
+        return defaultList;
     }
     
     private List<MaterialCellVo> generateLists(String sn, Map<String, List<Material>> materialGroup) {

@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.xiliulou.afterserver.entity.Material;
 import com.xiliulou.afterserver.entity.MaterialBatch;
 import com.xiliulou.afterserver.entity.Supplier;
-import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.mapper.MaterialBatchMapper;
 import com.xiliulou.afterserver.mapper.MaterialOperationMapper;
 import com.xiliulou.afterserver.mapper.MaterialTraceabilityMapper;
@@ -16,7 +15,6 @@ import com.xiliulou.afterserver.service.MaterialTraceabilityService;
 import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.service.UserService;
 import com.xiliulou.afterserver.util.R;
-import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.vo.MaterialBatchExcelVo;
 import com.xiliulou.afterserver.web.query.MaterialQuery;
 import lombok.extern.slf4j.Slf4j;
@@ -239,7 +237,7 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
         material.setMaterialBatchNo(materialBatch.getMaterialBatchNo());
         material.setBindingStatus(BINDING);
         Material byBindingStatus = this.materialMapper.exitsByBindingStatus(material);
-        if (Objects.nonNull(byBindingStatus) && StringUtils.isNotBlank(byBindingStatus.getProductNo()) ) {
+        if (Objects.nonNull(byBindingStatus) && StringUtils.isNotBlank(byBindingStatus.getProductNo())) {
             return R.failMsg("该批次内已有物料绑定柜机，不可删除批次");
         }
         
@@ -268,7 +266,11 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
      */
     @Override
     public R materialBatchExportExcel(MaterialBatch materialBatchQueue, HttpServletResponse response) {
-        List<MaterialBatch> materialBatches = materialBatchMapper.selectPage(materialBatchQueue, 0L, 3000L);
+        List<MaterialBatch> materialBatches = new ArrayList<>();
+        Long count = count(materialBatchQueue);
+        for (int i = 0; i < count / 200 + 1; i++) {
+            materialBatches.addAll(listByLimit(materialBatchQueue, i * 200L, 200L));
+        }
         IPage page = supplierService.getPage(0L, 3000L, new Supplier());
         List<Supplier> records = page.getRecords();
         Map<Long, String> longStringMap = records.stream().collect(Collectors.toMap(Supplier::getId, Supplier::getName));
@@ -325,7 +327,7 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
         for (int i = 0; i < materials.size() / 200 + 1; i++) {
             materialMapper.insertBatch(materialList);
         }
-       
+        
         return R.ok();
     }
     
@@ -411,7 +413,7 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
         }
         
         if (!imeiRepeat.isEmpty()) {
-            List<String> collect = imeiRepeat.stream().map(Material::getImei).collect(Collectors.toList());
+            List<String> collect = imeiRepeat.stream().map(Material::getImei).filter(StringUtils::isBlank).collect(Collectors.toList());
             resultMap.put("codes", collect);
         }
         
@@ -422,7 +424,7 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
             }
         }
         if (!atemlIDRepeat.isEmpty()) {
-            List<String> collect = imeiRepeat.stream().map(Material::getAtmelID).collect(Collectors.toList());
+            List<String> collect = atemlIDRepeat.stream().map(Material::getAtmelID).filter(StringUtils::isBlank).collect(Collectors.toList());
             resultMap.put("ids", collect);
             // return R.fail(String.valueOf(atemlIDRepeat), "Atmel ID已存在，请勿重复导入");
         }
@@ -434,7 +436,7 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
             }
         }
         if (!snRepeat.isEmpty()) {
-            List<String> collect = imeiRepeat.stream().map(Material::getSn).collect(Collectors.toList());
+            List<String> collect = snRepeat.stream().map(Material::getSn).filter(StringUtils::isBlank).collect(Collectors.toList());
             resultMap.put("sns", collect);
             // return R.fail(String.valueOf(snRepeat), "物料SN已存在，请勿重复导入");
         }
@@ -445,7 +447,7 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
     }
     
     private void getMaterialBatchDuplicateData(HashMap<String, Integer> hashMap, String key, ArrayList<String> repeats) {
-        if (hashMap.get(key) != null) {
+        if (hashMap.get(key) != null && StringUtils.isNotBlank(key)) {
             Integer value = hashMap.get(key);
             hashMap.put(key, value + 1);
             repeats.add(key);
