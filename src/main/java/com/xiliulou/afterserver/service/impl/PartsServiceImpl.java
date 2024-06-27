@@ -165,7 +165,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     }
     
     @Override
-    public R listByName(String name) {
+    public R listByName(String name, String sn) {
         List<Parts> parts = partsMapper.listByName(name);
         return R.ok(parts);
     }

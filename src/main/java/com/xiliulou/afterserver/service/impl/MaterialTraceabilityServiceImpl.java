@@ -124,9 +124,6 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
     @Override
     public R changeMaterialState(List<Long> ids, Integer confirm, Integer status, String remark) throws Exception {
         if (Objects.nonNull(confirm)) {
-            if (Objects.equals(status, UN_PASSING)) {
-            
-            }
             materialTraceabilityMapper.updateMaterialStateByIds(ids, System.currentTimeMillis(), remark, status);
         }
         

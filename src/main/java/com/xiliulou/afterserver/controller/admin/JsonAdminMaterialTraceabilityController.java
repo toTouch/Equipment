@@ -8,20 +8,16 @@ import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.web.query.MaterialQuery;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import retrofit2.http.PUT;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -191,8 +187,12 @@ public class JsonAdminMaterialTraceabilityController {
      * 批量改换物料状态
      */
     @PutMapping("/changeMaterialState")
-    public R changeMaterialState(@RequestBody List<Long> ids, Integer confirm, Integer status, String remark) throws Exception {
-        return this.materialTraceabilityService.changeMaterialState(ids, status, confirm,remark);
+    public R changeMaterialState(@RequestBody MaterialQuery materialQuery) throws Exception {
+        String remark = materialQuery.getRemark();
+        List<Long> ids = materialQuery.getIds();
+        Integer status = materialQuery.getMaterialState();
+        Integer confirm = materialQuery.getConfirm();
+        return this.materialTraceabilityService.changeMaterialState(ids, status, confirm, remark);
     }
     
 }

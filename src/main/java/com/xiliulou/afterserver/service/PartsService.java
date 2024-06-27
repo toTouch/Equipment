@@ -81,5 +81,5 @@ public interface PartsService extends IService<Parts> {
 
     Parts queryByNameAndSpecification(String name, String specification);
     
-    R listByName(String name);
+    R listByName(String name, String sn);
 }

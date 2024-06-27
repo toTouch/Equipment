@@ -544,14 +544,10 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         List<OrderDeliverVo> data = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(list)) {
             list.stream().forEach(item -> {
-                Customer customer = customerService.queryById(item.getCustomerId());
-                
                 OrderDeliverVo orderDeliverVo = new OrderDeliverVo();
                 orderDeliverVo.setNo(item.getNo());
                 orderDeliverVo.setRemark(item.getRemark());
-                if (Objects.nonNull(customer)) {
-                    orderDeliverVo.setCustomerName(customer.getName());
-                }
+                orderDeliverVo.setCustomerName(item.getTenantName());
                 
                 ArrayList<Integer> productIds = JSON.parseObject(item.getProduct(), ArrayList.class);
                 ArrayList<String> quantityIds = JSON.parseObject(item.getQuantity(), ArrayList.class);

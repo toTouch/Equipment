@@ -93,8 +93,8 @@ public class JsonAdminPartsController {
      * @return
      */
     @GetMapping("admin/parts/list")
-    public R queryList( @RequestParam(value = "name", required = false) String name){
-        return  partsService.listByName(name);
+    public R queryList( @RequestParam(value = "name", required = false) String name,@RequestParam(value = "sn", required = false) String sn){
+        return  partsService.listByName(name,sn);
     }
     
     /**

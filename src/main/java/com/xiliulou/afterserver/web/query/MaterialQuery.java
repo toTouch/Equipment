@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 物料追溯表(Material)实体类
@@ -91,5 +92,11 @@ public class MaterialQuery implements Serializable {
     
     @TableField(exist = false)
     private Long endTime;
+    
+    @TableField(exist = false)
+    @ExcelIgnore
+    private List<Long> ids;
+    
+    private Integer confirm;
 }
 
