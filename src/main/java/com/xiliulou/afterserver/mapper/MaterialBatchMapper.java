@@ -97,5 +97,7 @@ public interface MaterialBatchMapper {
     Integer updateByMaterialBatchs(List<MaterialBatch> materialBatchesQuery);
     
     MaterialBatch selectByMaterialBatchNo(@Param("materialBatchNo") String materialBatchNo);
+    
+    MaterialBatch existsByBatchNo(@Param("batchNo") String batchNo);
 }
 

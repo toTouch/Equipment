@@ -71,6 +71,7 @@ public class MaterialQuery implements Serializable {
      * 物料状态(0-不合格，1-合格)
      */
     private Integer materialState;
+    private Integer states;
     
     /**
      * 物料型号名称

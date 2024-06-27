@@ -123,16 +123,10 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
     
     @Override
     public R changeMaterialState(List<Long> ids, Integer confirm, Integer status, String remark) throws Exception {
-        if (Objects.nonNull(confirm)) {
-            materialTraceabilityMapper.updateMaterialStateByIds(ids, System.currentTimeMillis(), remark, status);
-        }
         
         List<Material> materials = materialTraceabilityMapper.selectListByIds(ids);
         HashMap<String,Integer> batchNoToCountMap = new HashMap<>();
         for (Material material : materials) {
-            if (Objects.equals(material.getBindingStatus(), BINDING)) {
-                return R.fail("已选择项中有物料已绑定柜机，请重新选择后操作");
-            }
             batchNoToCountMap.put(material.getMaterialBatchNo(), batchNoToCountMap.getOrDefault(material.getMaterialBatchNo(), 0) + 1);
         }
         
