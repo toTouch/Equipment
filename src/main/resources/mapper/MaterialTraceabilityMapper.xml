@@ -38,6 +38,12 @@
         </foreach>
     </delete>
     
+    <delete id="deleteByMaterialBatchNo">
+        delete
+        from t_material
+        where material_batch_no = #{materialBatchNo}
+    </delete>
+    
     <!--查询单个 根据主键 -->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into t_material(material_sn, product_no, material_id, del_flag, binding_status, create_time, update_time, tenant_id,

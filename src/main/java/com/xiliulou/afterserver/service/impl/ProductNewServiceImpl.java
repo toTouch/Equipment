@@ -32,6 +32,7 @@ import com.xiliulou.afterserver.entity.WareHouse;
 import com.xiliulou.afterserver.mapper.CompressionRecordMapper;
 import com.xiliulou.afterserver.mapper.PointNewMapper;
 import com.xiliulou.afterserver.mapper.PointProductBindMapper;
+import com.xiliulou.afterserver.mapper.ProductMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.service.AuditProcessService;
 import com.xiliulou.afterserver.service.AuditValueService;
@@ -92,6 +93,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * (ProductNew)表服务实现类
@@ -176,6 +179,9 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     
     @Autowired
     private CompressionRecordMapper compressionRecordMapper;
+    
+    @Autowired
+    private ProductMapper productMapper;
     
     
     public static String subStringByBytes(String str) {
@@ -791,7 +797,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     @Override
     public R queryProductNewProcessInfo(String no, HttpServletResponse response) {
         ProductNew productNew = this.queryByNo(no);
-        
+       
+       
         User user = userService.getUserById(SecurityUtils.getUid());
         if (Objects.isNull(user)) {
             log.error("QUERY PROCESS INFO ERROR! not found uid! uid={}", SecurityUtils.getUid());
@@ -802,7 +809,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             log.error("QUERY PROCESS INFO ERROR! not found no! no={}", no);
             return R.fail(null, "资产编码不存在");
         }
-        
+        Product product = productMapper.selectById(productNew.getModelId());
         if (!Objects.equals(productNew.getSupplierId(), user.getThirdId())) {
             log.error("QUERY PROCESS INFO ERROR! current user inconsistent  factory! supplierId={}, userThirdId", productNew.getSupplierId(), user.getThirdId());
             return R.fail(null, "柜机厂家与登录厂家不一致，请重新登陆");
@@ -821,7 +828,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         vo.setNo(productNew.getNo());
         vo.setBatchId(productNew.getBatchId());
         vo.setBatchNo(batch.getBatchNo());
-        vo.setModelName(productNew.getModelName());
+        vo.setModelName(product.getName());
         vo.setAuditProcessList(voList);
         vo.setCreateTime(simp.format(new Date(productNew.getCreateTime())));
         vo.setProductStatus(getStatusName(productNew.getStatus()));

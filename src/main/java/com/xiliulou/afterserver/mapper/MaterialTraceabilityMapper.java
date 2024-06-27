@@ -87,6 +87,8 @@ public interface MaterialTraceabilityMapper {
     List<Material> selectListByNos(@Param("nos") List<String> collect);
     
     List<Material> selectCountListByNos(@Param("nos") List<String> nos, @Param("unPassing") Integer unPassing);
+    
+    Integer deleteByMaterialBatchNo(Material material);
 }
 
 

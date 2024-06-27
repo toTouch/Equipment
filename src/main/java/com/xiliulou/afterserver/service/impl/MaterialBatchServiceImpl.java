@@ -12,6 +12,7 @@ import com.xiliulou.afterserver.mapper.MaterialOperationMapper;
 import com.xiliulou.afterserver.mapper.MaterialTraceabilityMapper;
 import com.xiliulou.afterserver.mapper.PartsMapper;
 import com.xiliulou.afterserver.service.MaterialBatchService;
+import com.xiliulou.afterserver.service.MaterialTraceabilityService;
 import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.service.UserService;
 import com.xiliulou.afterserver.util.R;
@@ -75,6 +76,9 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
     @Autowired
     private MaterialOperationMapper materialOperationMapper;
     
+    @Autowired
+    private MaterialTraceabilityService materialTraceabilityService;
+    
     /**
      * 通过ID查询单条数据
      *
@@ -107,8 +111,8 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
         
         // 获取批次ID
         List<String> nos = materialBatches.stream().map(MaterialBatch::getMaterialBatchNo).collect(Collectors.toList());
-        List<Material> passingList = materialMapper.selectCountListByNos(nos, Material.UN_PASSING);
-        List<Material> unPassingList = materialMapper.selectCountListByNos(nos, Material.PASSING);
+        List<Material> passingList = materialMapper.selectCountListByNos(nos, Material.PASSING);
+        List<Material> unPassingList = materialMapper.selectCountListByNos(nos, Material.UN_PASSING);
         List<Material> countList = materialMapper.selectCountListByNos(nos, null);
         
         Map<String, Integer> batchIdMap = passingList.stream().collect(Collectors.toMap(Material::getMaterialBatchNo, Material::getCount, (k1, k2) -> k1));
@@ -154,6 +158,10 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
         if (Objects.nonNull(failMsg)) {
             return failMsg;
         }
+        MaterialBatch materialBatchSelect = this.materialBatchMapper.existsByPartsId(materialBatch.getMaterialId());
+        if (Objects.nonNull(materialBatchSelect)) {
+            return R.failMsg("该物料已存在批次号");
+        }
         materialBatch.setMaterialCount(0);
         materialBatch.setQualifiedCount(0);
         materialBatch.setUnqualifiedCount(0);
@@ -181,11 +189,6 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
         if (Objects.isNull(supplierService.queryById(materialBatch.getSupplierId()))) {
             return R.failMsg("供应商不存在");
         }
-        // 批次号重复
-        MaterialBatch materialBatchSelect = this.materialBatchMapper.existsByPartsId(materialBatch.getMaterialId());
-        if (Objects.nonNull(materialBatchSelect) && !Objects.equals(materialBatchSelect.getId(), materialBatch.getId())) {
-            return R.failMsg("该物料已存在批次号");
-        }
         return null;
     }
     
@@ -206,6 +209,11 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
         }
         
         R<Object> failMsg = insertOrUpdateBatchCheck(materialBatch);
+        // 批次号重复
+        MaterialBatch materialBatchSelect = this.materialBatchMapper.existsByPartsId(materialBatch.getMaterialId());
+        if (Objects.nonNull(materialBatchSelect) && Objects.equals(materialBatchSelect.getId(), materialBatch.getId())) {
+            return R.failMsg("该物料已存在批次号");
+        }
         if (Objects.nonNull(failMsg)) {
             return failMsg;
         }
@@ -217,20 +225,25 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
     }
     
     /**
-     * 通过主键删除数据
+     * 物料批次通过主键删除数据
      *
      * @param id 主键
      * @return 是否成功
      */
     @Override
     public R deleteById(Long id) {
+        MaterialBatch materialBatch = materialBatchMapper.selectById(Math.toIntExact(id));
+        
         Material material = new Material();
-        material.setId(id);
+        material.setMaterialBatchNo(materialBatch.getMaterialBatchNo());
         material.setBindingStatus(BINDING);
-        if (Objects.nonNull(this.materialMapper.exitsByBindingStatus(material))) {
+        Material byBindingStatus = this.materialMapper.exitsByBindingStatus(material);
+        if (Objects.nonNull(byBindingStatus) && StringUtils.isNotBlank(byBindingStatus.getProductNo()) ) {
             return R.failMsg("该批次内已有物料绑定柜机，不可删除批次");
         }
         
+        // 删除物料
+        this.materialMapper.deleteByMaterialBatchNo(material);
         return R.ok(this.materialBatchMapper.deleteByBatcherId(id));
     }
     
@@ -367,15 +380,7 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
             materialList.add(material);
         }
         
-        if (!imeis.isEmpty()) {
-            return R.fail(String.valueOf(imeis), FAIL.toString(), "表格内IMEL code有重复，请检查");
-        }
-        if (!atemlIDs.isEmpty()) {
-            return R.fail(String.valueOf(atemlIDs), FAIL.toString(), "表格内Atmel ID有重复，请检查");
-        }
-        if (!sns.isEmpty()) {
-            return R.fail(String.valueOf(sns), FAIL.toString(), "表格内物料SN有重复，请检查");
-        }
+    
         if (imeiHashMap.size() != materials.size()) {
             return R.failMsg("表格中物料SN有未填项，请检查");
         }
