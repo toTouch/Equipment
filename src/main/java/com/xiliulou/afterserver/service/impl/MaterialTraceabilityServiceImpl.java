@@ -14,11 +14,11 @@ import com.xiliulou.afterserver.mapper.MaterialDelRecordMapper;
 import com.xiliulou.afterserver.mapper.MaterialOperationMapper;
 import com.xiliulou.afterserver.mapper.MaterialTraceabilityMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
-import com.xiliulou.afterserver.util.SerializableFieldCompare;
 import com.xiliulou.afterserver.service.MaterialBatchService;
 import com.xiliulou.afterserver.service.MaterialTraceabilityService;
 import com.xiliulou.afterserver.service.UserService;
 import com.xiliulou.afterserver.util.DataUtil;
+import com.xiliulou.afterserver.util.FieldCompare;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.vo.MaterialTraceabilityVO;
@@ -39,13 +39,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
 import static com.xiliulou.afterserver.entity.Material.BINDING;
 import static com.xiliulou.afterserver.entity.Material.PASSING;
 import static com.xiliulou.afterserver.entity.Material.TO_BE_INSPECTED;
 import static com.xiliulou.afterserver.entity.Material.UN_BINDING;
-import static com.xiliulou.afterserver.entity.Material.UN_DEL_FLAG;
 import static com.xiliulou.afterserver.entity.Material.UN_PASSING;
 
 /**
@@ -57,6 +55,8 @@ import static com.xiliulou.afterserver.entity.Material.UN_PASSING;
 @Service("materialTraceabilityService")
 @Slf4j
 public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityService {
+    
+    private static final Long ADMIN_TENANT_ID = 0L;
     
     @Resource
     private MaterialTraceabilityMapper materialTraceabilityMapper;
@@ -87,7 +87,29 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
      */
     @Override
     public R insert(MaterialQuery materialQuery) throws Exception {
-       return update(materialQuery);
+        Material materialParameter = new Material();
+        materialParameter.setMaterialSn(materialQuery.getMaterialSn());
+        materialParameter.setId(materialQuery.getId());
+        // materialParameter.setProductNo(materialQuery.getProductNo());
+        Material materialFromQuery = this.materialTraceabilityMapper.selectByParameter(materialParameter);
+        if (Objects.isNull(materialFromQuery)) {
+            return R.failMsg("物料编码不存在");
+        }
+        if (UN_PASSING.equals(materialFromQuery.getMaterialState())) {
+            return R.failMsg("物料不合格，请勿录入");
+        }
+        if (Objects.isNull(materialFromQuery.getMaterialState()) || TO_BE_INSPECTED.equals(materialFromQuery.getMaterialState())) {
+            return R.failMsg("物料未质检，请勿录入");
+        }
+        if (BINDING.equals(materialFromQuery.getBindingStatus())) {
+            return R.failMsg("物料已绑定，请勿重复录入");
+        }
+        
+        MaterialQuery query = new MaterialQuery();
+        query.setMaterialSn(materialQuery.getMaterialSn());
+        query.setId(materialQuery.getId());
+        query.setProductNo(materialQuery.getProductNo());
+        return updateData(query, materialFromQuery);
     }
     
     /**
@@ -123,9 +145,12 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
     
     @Override
     public R changeMaterialState(List<Long> ids, Integer confirm, Integer status, String remark) throws Exception {
+        if (CollectionUtils.isEmpty(ids)) {
+            return R.failMsg("请选择物料");
+        }
         
         List<Material> materials = materialTraceabilityMapper.selectListByIds(ids);
-        HashMap<String,Integer> batchNoToCountMap = new HashMap<>();
+        HashMap<String, Integer> batchNoToCountMap = new HashMap<>();
         for (Material material : materials) {
             batchNoToCountMap.put(material.getMaterialBatchNo(), batchNoToCountMap.getOrDefault(material.getMaterialBatchNo(), 0) + 1);
         }
@@ -136,21 +161,8 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
             return R.fail("批次信息不存在");
         }
         // 更新物料状态
-        materialTraceabilityMapper.updateMaterialStateByIds(ids,System.currentTimeMillis(), remark,status);
+        materialTraceabilityMapper.updateMaterialStateByIds(ids, System.currentTimeMillis(), remark, status);
         List<Material> tempMaterials = materialTraceabilityMapper.selectListByIds(ids);
-        
-        // materialBatchesQuery.forEach(temp -> {
-        //     if (Objects.equals(Material.PASSING, status)){
-        //         temp.setQualifiedCount(batchNoToCountMap.get(temp.getMaterialBatchNo()));
-        //         temp.setUnqualifiedCount(temp.getMaterialCount() - batchNoToCountMap.get(temp.getMaterialBatchNo()));
-        //     }
-        //     if (Objects.equals(UN_PASSING, status)){
-        //         temp.setUnqualifiedCount(batchNoToCountMap.get(temp.getMaterialBatchNo()));
-        //         temp.setQualifiedCount(temp.getMaterialCount() - batchNoToCountMap.get(temp.getMaterialBatchNo()));
-        //     }
-        //     materialBatchService.update(temp);
-        // });
-        
         
         // 添加记录
         for (Material oldMaterial : tempMaterials) {
@@ -160,9 +172,16 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
             newMaterial.setMaterialState(status);
             BeanUtils.copyProperties(oldMaterial, newMaterial);
             
-            record(oldMaterial,newMaterial);
+            record(oldMaterial, newMaterial);
         }
         return R.ok();
+    }
+    
+    @Override
+    public R queryByList(MaterialQuery materialQuery, Long offset, Long size) {
+        Material material = new Material();
+        BeanUtils.copyProperties(materialQuery, material);
+        return R.ok(this.materialTraceabilityMapper.selectListByLimit(material, offset, size));
     }
     
     /**
@@ -185,6 +204,26 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
      */
     @Override
     public R update(MaterialQuery materialQuery) throws Exception {
+        Material materialParameter = new Material();
+        materialParameter.setMaterialSn(materialQuery.getMaterialSn());
+        materialParameter.setId(materialQuery.getId());
+        Material materialFromQuery = this.materialTraceabilityMapper.selectByParameter(materialParameter);
+        if (Objects.isNull(materialFromQuery)) {
+            return R.failMsg("物料编码不存在");
+        }
+        if (Objects.isNull(materialQuery.getRemark()) && materialQuery.getRemark().length() > 50) {
+            return R.failMsg("备注不能为空或备注长度大于50");
+        }
+        materialQuery.setRemark(materialQuery.getRemark().trim());
+        if (Objects.equals(TO_BE_INSPECTED, materialQuery.getMaterialState()) && Objects.equals(PASSING, materialFromQuery.getMaterialState())) {
+            return R.failMsg("合格物料不能改为待检");
+        }
+        
+        return updateData(materialQuery, materialFromQuery);
+    }
+    
+    
+    public R updateData(MaterialQuery materialQuery, Material materialFromQuery) throws Exception {
         // 假设materialFromQuery是从PDA读取到的二维码内容
         if (Objects.isNull(materialQuery.getId())) {
             return R.failMsg("物料ID不可以为空");
@@ -192,18 +231,21 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         if (StringUtils.isBlank(materialQuery.getMaterialSn())) {
             return R.failMsg("物料编码不可以为空");
         }
+        
         String materialSN = extractMaterialSN(materialQuery.getMaterialSn());
         materialQuery.setMaterialSn(materialSN);
         
         User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
         Material materialUpdate = new Material();
+        BeanUtils.copyProperties(materialQuery, materialUpdate);
+        Long thirdId = userById.getThirdId();
         if (StringUtils.isNotBlank(materialQuery.getProductNo())) {
             ProductNew productNew = productNewMapper.queryByNo(materialQuery.getProductNo());
             if (Objects.isNull(productNew)) {
                 return R.failMsg("资产编码不存在，请检查");
             }
             
-            if (!Objects.equals(userById.getUserType(), User.AFTER_USER_ROLE) && !Objects.equals(userById.getThirdId(), productNew.getSupplierId())) {
+            if (!Objects.equals(userById.getUserType(), User.AFTER_USER_ROLE) && !Objects.equals(thirdId, productNew.getSupplierId())) {
                 return R.failMsg("当前柜机无权限操作");
             }
             
@@ -215,24 +257,16 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
             materialUpdate.setTenantId(Long.valueOf(UN_BINDING));
         }
         
-        Material materialParameter = new Material();
-        materialParameter.setMaterialSn(materialQuery.getMaterialSn());
-        materialParameter.setId(materialQuery.getId());
-        Material materialFromQuery = this.materialTraceabilityMapper.selectByParameter(materialParameter);
-        if (Objects.isNull(materialFromQuery)) {
-            return R.failMsg("物料编码不存在");
-        }
-        if (UN_PASSING.equals(materialFromQuery.getMaterialState())) {
-            return R.failMsg("物料不合格，请勿录入");
-        }
-     
-        BeanUtils.copyProperties(materialQuery, materialUpdate);
-        if (Objects.equals(materialQuery.getMaterialState(),UN_PASSING)){
+        if (Objects.equals(materialQuery.getMaterialState(), UN_PASSING)) {
+            materialUpdate.setBindingStatus(UN_PASSING);
             materialUpdate.setProductNo(null);
         }
         materialUpdate.setUpdateTime(System.currentTimeMillis());
+        if (Objects.isNull(materialFromQuery.getTenantId()) || Objects.equals(materialFromQuery.getTenantId(), ADMIN_TENANT_ID)) {
+            thirdId = null;
+        }
         
-        int i = this.materialTraceabilityMapper.update(materialUpdate,userById.getThirdId());
+        int i = this.materialTraceabilityMapper.update(materialUpdate, thirdId);
         
         record(materialFromQuery, materialUpdate);
         
@@ -254,8 +288,6 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
     }
     
     
-    
-    
     /**
      * 通过主键删除数据
      *
@@ -265,8 +297,11 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
     @Override
     public R deleteByIds(List<Long> ids) throws Exception {
         Material material = this.materialTraceabilityMapper.exitsByBindingStatusList(ids);
+        if (Objects.nonNull(material) && ids.size() == 1) {
+            return R.failMsg("物料已绑定柜机，不可删除");
+        }
         if (Objects.nonNull(material)) {
-            return R.failMsg("该批次内已有物料绑定柜机，不可删除批次");
+            return R.failMsg("已选择项中有物料已绑定柜机，请重新选择后操作");
         }
         
         List<Material> tempMaterials = materialTraceabilityMapper.selectListByIds(ids);
@@ -276,14 +311,15 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
             Material newMaterial = new Material();
             BeanUtils.copyProperties(oldMaterial, newMaterial);
             MaterialDelRecord materialDelRecord = new MaterialDelRecord();
-            materialDelRecord.setMaterialSn(oldMaterial.getSn());
+            materialDelRecord.setMaterialSn(oldMaterial.getMaterialSn());
             materialDelRecord.setMaterialName(oldMaterial.getName());
+            materialDelRecord.setMaterialNo(oldMaterial.getSn());
             materialDelRecord.setTenantName(userById.getUserName());
             materialDelRecord.setCreateTime(System.currentTimeMillis());
             materialDelRecordMapper.insert(materialDelRecord);
             
         }
-    
+        
         this.materialTraceabilityMapper.deleteByIds(ids);
         return R.ok();
     }
@@ -394,7 +430,7 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
             MaterialOperation materialOperation = new MaterialOperation();
             materialOperation.setMaterialId(oldValue.getId());
             materialOperation.setOperationTime(System.currentTimeMillis());
-            materialOperation.setOperationContent(oldValue.getMaterialSn()+"物料已删除");
+            materialOperation.setOperationContent(oldValue.getMaterialSn() + "物料已删除");
             materialOperation.setOperationAccount(userById.getUserName());
             materialOperationMapper.insert(materialOperation);
             return;
@@ -403,7 +439,7 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
             return;
         }
         
-        List<String> compare = SerializableFieldCompare.compare( newValue, oldValue);
+        List<String> compare = FieldCompare.materialFieldCompare(newValue, oldValue);
         if (compare.isEmpty()) {
             return;
         }

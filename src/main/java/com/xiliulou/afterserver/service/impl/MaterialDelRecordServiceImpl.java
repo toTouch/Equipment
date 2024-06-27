@@ -10,10 +10,10 @@ import java.util.List;
 import javax.annotation.Resource;
 
 /**
- * 物料追溯表(MaterialDelRecord)表服务实现类
+ * 物料删除追溯表(MaterialDelRecord)表服务实现类
  *
  * @author zhangbozhi
- * @since 2024-06-27 00:12:52
+ * @since 2024-06-27 20:44:35
  */
 @Service("materialDelRecordService")
 public class MaterialDelRecordServiceImpl implements MaterialDelRecordService {

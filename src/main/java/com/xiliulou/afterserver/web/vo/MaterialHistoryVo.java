@@ -26,6 +26,9 @@ public class MaterialHistoryVo {
      * 运营商名称
      */
     private String tenantName;
+    /**
+     * 供应商名称
+     */
     private String supplierName;
     
     /**

@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.controller.admin;
 
+import com.xiliulou.afterserver.entity.MaterialDelRecord;
 import com.xiliulou.afterserver.entity.MaterialOperation;
 import com.xiliulou.afterserver.service.MaterialOperationService;
 import com.xiliulou.afterserver.service.impl.MaterialDelRecordServiceImpl;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Resource;
 
 /**
@@ -39,11 +41,34 @@ public class MaterialOperationController {
      */
     @GetMapping
     public R queryByPage(MaterialOperation materialOperation, Long offset, Long size) {
+        if(Objects.isNull(offset)){
+            offset=0L;
+        }
+        if(Objects.isNull(size)){
+            size=100L;
+        }
         return R.ok(this.materialOperationService.listByLimit(materialOperation, offset, size));
     }
     @GetMapping("/delete")
     public R queryDelListByPage(Long offset, Long size) {
-        return R.ok(materialDelRecordService.listByLimit(null,offset, size));
+        if(Objects.isNull(offset)){
+            offset=0L;
+        }
+        if(Objects.isNull(size)){
+            size=100L;
+        }
+        return R.ok(materialDelRecordService.listByLimit(new MaterialDelRecord(),offset, size));
+    }
+    
+    @GetMapping("/delete/count")
+    public R queryDelListByCount(Long offset, Long size) {
+        if(Objects.isNull(offset)){
+            offset=0L;
+        }
+        if(Objects.isNull(size)){
+            size=100L;
+        }
+        return R.ok(materialDelRecordService.count(new MaterialDelRecord()));
     }
     
     /**

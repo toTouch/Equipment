@@ -44,10 +44,10 @@ public interface MaterialTraceabilityService {
     /**
      * 修改数据
      *
-     * @param materialTraceability 实例对象
+     * @param materialQuery     实例对象
      * @return 实例对象
      */
-    R update(MaterialQuery materialTraceability) throws Exception;
+    R update(MaterialQuery materialQuery) throws Exception;
     
     /**
      * 通过主键删除数据
@@ -66,4 +66,6 @@ public interface MaterialTraceabilityService {
     long queryByPageCount(MaterialQuery materialTraceability);
     
     R changeMaterialState(List<Long> ids, Integer confirm, Integer status, String remark) throws Exception;
+    
+    R queryByList(MaterialQuery materialTraceability, Long offset, Long size);
 }
