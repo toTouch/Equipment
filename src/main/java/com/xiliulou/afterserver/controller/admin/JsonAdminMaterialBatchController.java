@@ -97,10 +97,7 @@ public class JsonAdminMaterialBatchController {
      */
     @PutMapping("/edit")
     public R edit(@RequestBody MaterialBatch materialBatch) {
-        if (StringUtils.isBlank(materialBatch.getMaterialBatchNo())) {
-            return R.failMsg("批次号不能为空");
-        }
-        
+       
         return this.materialBatchService.update(materialBatch);
     }
     

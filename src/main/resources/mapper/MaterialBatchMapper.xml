@@ -193,7 +193,7 @@
             <if test="qualifiedCount != null">
                 qualified_count = #{qualifiedCount},
             </if>
-            <if test="materialBatchRemark != null and materialBatchRemark != ''">
+            <if test="materialBatchRemark != null">
                 material_batch_remark = #{materialBatchRemark},
             </if>
             <if test="createTime != null">

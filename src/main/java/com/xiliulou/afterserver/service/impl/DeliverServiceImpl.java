@@ -21,6 +21,7 @@ import com.xiliulou.afterserver.constant.ProductNewStatusSortConstants;
 import com.xiliulou.afterserver.entity.*;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.DeliverMapper;
+import com.xiliulou.afterserver.mapper.PointNewMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.mapper.WareHouseProductDetailsMapper;
 import com.xiliulou.afterserver.service.*;
@@ -39,6 +40,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -50,6 +52,9 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static com.xiliulou.afterserver.entity.Deliver.DESTINATION_TYPE_POINT;
+import static com.xiliulou.afterserver.entity.PointNew.DEL_NORMAL;
 
 /**
  * @program: XILIULOU
@@ -63,6 +68,9 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
     
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private PointNewMapper pointNewMapper;
     
     @Autowired
     private CustomerService customerService;
@@ -147,6 +155,21 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             
             if (Objects.equals(records.getState(), 1)) {
                 records.setDeliver(true);
+            }
+            
+            if (Objects.equals(records.getDestinationType(), DESTINATION_TYPE_POINT) && org.apache.commons.lang3.StringUtils.isEmpty(records.getTenantName())) {
+                PointNew pointNew = pointNewMapper.selectOne(
+                        new LambdaQueryWrapper<PointNew>()
+                                .eq(StringUtils.isNotBlank(records.getDestination()), PointNew::getName, records.getDestination())
+                                .eq(PointNew::getDelFlag, DEL_NORMAL));
+                
+                if (Objects.nonNull(pointNew) && Objects.nonNull(pointNew.getCustomerId())) {
+                    Customer byId = customerService.getById(pointNew.getCustomerId());
+                    if (Objects.nonNull(byId)) {
+                        records.setTenantName(byId.getName());
+                    }
+                }
+
             }
             
             //            第三方类型 1：客户 2：供应商 3:服务商';

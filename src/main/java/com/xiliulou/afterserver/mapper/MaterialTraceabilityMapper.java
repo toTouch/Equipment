@@ -60,9 +60,10 @@ public interface MaterialTraceabilityMapper {
      * 通过主键删除数据
      *
      * @param id 主键
+     * @param l
      * @return 影响行数
      */
-    int deleteByIds(@Param("id") List<Long> id);
+    int deleteByIds(@Param("id") List<Long> id, @Param("updateTime") long updateTime);
     
     Material selectByParameter(Material material);
     

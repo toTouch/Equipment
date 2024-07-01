@@ -24,8 +24,9 @@ public class FieldCompare {
             return logList;
         }
         
-        if ((Objects.nonNull(newObject.getProductNo())&& !StringUtils.isEmpty(oldObject.getProductNo()))
-                && !Objects.equals(newObject.getProductNo(), oldObject.getProductNo())) {
+        normalizedObject(newObject, oldObject);
+        
+        if (!Objects.equals(newObject.getProductNo(), oldObject.getProductNo())) {
             logList.add(formatLogString("资产编码", oldObject.getProductNo(), newObject.getProductNo()));
         }
         
@@ -45,6 +46,28 @@ public class FieldCompare {
         
         return logList;
     }
+    
+    private static void normalizedObject(Material newObject, Material oldObject) {
+        if (StringUtils.isEmpty(newObject.getProductNo())) {
+            newObject.setProductNo("");
+        }
+        if (StringUtils.isEmpty(oldObject.getProductNo())) {
+            oldObject.setProductNo("");
+        }
+        if (StringUtils.isEmpty(newObject.getRemark())) {
+            newObject.setRemark("");
+        }
+        if (StringUtils.isEmpty(oldObject.getRemark())) {
+            oldObject.setRemark("");
+        }
+        if (Objects.isNull(newObject.getMaterialState())) {
+            newObject.setMaterialState(TO_BE_INSPECTED);
+        }
+        if (Objects.isNull(oldObject.getMaterialState())) {
+            oldObject.setMaterialState(TO_BE_INSPECTED);
+        }
+    }
+    
     private static String formatLogString(String fieldName, String oldValue, String newValue) {
         return fieldName + "由：[\"" + getLogString(oldValue) + "\"]更改为了：[\"" + getLogString(newValue) + "\"]";
     }

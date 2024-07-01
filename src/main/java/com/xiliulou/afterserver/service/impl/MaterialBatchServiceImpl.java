@@ -206,6 +206,10 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
             return R.ok();
         }
         
+        if (shaded.org.apache.commons.lang3.StringUtils.isBlank(materialBatch.getMaterialBatchNo())) {
+            return R.failMsg("批次号不能为空");
+        }
+        
         R<Object> failMsg = insertOrUpdateBatchCheck(materialBatch);
         // 批次号重复
         MaterialBatch materialBatchSelect = this.materialBatchMapper.existsByBatchNo(materialBatch.getMaterialBatchNo());
@@ -324,9 +328,8 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
             material.setTenantId(0L);
         });
         // 批量入库
-        for (int i = 0; i < materials.size() / 200 + 1; i++) {
-            materialMapper.insertBatch(materialList);
-        }
+        materialMapper.insertBatch(materialList);
+        
         
         return R.ok();
     }
@@ -406,7 +409,7 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
         List<Material> snRepeat = new ArrayList<>();
         HashMap<Object, Object> resultMap = new HashMap<>();
         for (int i = 0; i < imeis.size() / 200 + 1; i++) {
-            List<String> collect = imeis.stream().skip(i * 200).limit(200).collect(Collectors.toList());
+            List<String> collect = imeis.stream().skip(i * 200).limit(200).filter(StringUtils::isNotBlank).collect(Collectors.toList());
             if (!collect.isEmpty()) {
                 imeiRepeat.addAll(materialMapper.listAllByImeis(collect));
             }
@@ -418,7 +421,7 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
         }
         
         for (int i = 0; i < atemlIDs.size() / 200 + 1; i++) {
-            List<String> collect = atemlIDs.stream().skip(i * 200).limit(200).collect(Collectors.toList());
+            List<String> collect = atemlIDs.stream().skip(i * 200).limit(200).filter(StringUtils::isNotBlank).collect(Collectors.toList());
             if (!collect.isEmpty()) {
                 atemlIDRepeat.addAll(materialMapper.ListAllByAtemlIDs(collect));
             }
@@ -431,7 +434,7 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
         }
         
         for (int i = 0; i < sns.size() / 200 + 1; i++) {
-            List<String> collect = sns.stream().skip(i * 200).limit(200).collect(Collectors.toList());
+            List<String> collect = sns.stream().skip(i * 200).limit(200).filter(StringUtils::isNotBlank).collect(Collectors.toList());
             if (!collect.isEmpty()) {
                 snRepeat.addAll(materialMapper.ListAllBySns(collect));
             }
