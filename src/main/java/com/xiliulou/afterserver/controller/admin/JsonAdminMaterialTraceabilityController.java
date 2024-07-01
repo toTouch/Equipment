@@ -66,9 +66,6 @@ public class JsonAdminMaterialTraceabilityController {
         if (!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)) {
             return R.fail("登陆用户非工厂类型");
         }
-        if (StringUtils.isEmpty(materialTraceability.getRemark()) || materialTraceability.getRemark().length() > 50) {
-            return R.failMsg("sn不能为空");
-        }
         return this.materialTraceabilityService.insert(materialTraceability);
     }
     
@@ -99,7 +96,7 @@ public class JsonAdminMaterialTraceabilityController {
         if (!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)) {
             return R.fail("登陆用户非工厂类型");
         }
-        return R.ok(this.materialTraceabilityService.queryByList(materialTraceability, offset, size));
+        return this.materialTraceabilityService.queryByList(materialTraceability, offset, size);
     }
     /**
      * 分页count

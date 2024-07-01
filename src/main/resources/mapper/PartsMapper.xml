@@ -20,7 +20,8 @@
         select
           id, name, purchase_price, sell_price, sn, create_time, update_time, del_flag , specification, material_type
         from t_parts
-        where id = #{id}
+        where del_flag = 0
+            and id = #{id}
     </select>
 
   <!--查询指定行数据-->
@@ -153,6 +154,7 @@
         select id,name,sn
         from t_parts
         <where>
+            del_flag = 0
             <if test="name != null and name != ''">
                 and name like concat('%', #{name}, '%')
             </if>

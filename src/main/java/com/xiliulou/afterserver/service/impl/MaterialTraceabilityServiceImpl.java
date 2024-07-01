@@ -89,8 +89,7 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
     public R insert(MaterialQuery materialQuery) throws Exception {
         Material materialParameter = new Material();
         materialParameter.setMaterialSn(materialQuery.getMaterialSn());
-        materialParameter.setId(materialQuery.getId());
-        // materialParameter.setProductNo(materialQuery.getProductNo());
+
         Material materialFromQuery = this.materialTraceabilityMapper.selectByParameter(materialParameter);
         if (Objects.isNull(materialFromQuery)) {
             return R.failMsg("物料编码不存在");
@@ -102,13 +101,16 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
             return R.failMsg("物料未质检，请勿录入");
         }
         if (BINDING.equals(materialFromQuery.getBindingStatus())) {
-            return R.failMsg("物料已绑定，请勿重复录入");
+            return R.failMsg("物料已绑定柜机，请勿重复录入");
         }
         
         MaterialQuery query = new MaterialQuery();
         query.setMaterialSn(materialQuery.getMaterialSn());
-        query.setId(materialQuery.getId());
         query.setProductNo(materialQuery.getProductNo());
+        query.setId(materialFromQuery.getId());
+        query.setMaterialState(materialFromQuery.getMaterialState());
+        query.setRemark(materialFromQuery.getRemark());
+        
         return updateData(query, materialFromQuery);
     }
     
@@ -161,16 +163,16 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
             return R.fail("批次信息不存在");
         }
         // 更新物料状态
-        materialTraceabilityMapper.updateMaterialStateByIds(ids, System.currentTimeMillis(), remark, status);
         List<Material> tempMaterials = materialTraceabilityMapper.selectListByIds(ids);
+        materialTraceabilityMapper.updateMaterialStateByIds(ids, System.currentTimeMillis(), remark, status);
         
         // 添加记录
         for (Material oldMaterial : tempMaterials) {
             Material newMaterial = new Material();
-            newMaterial.setId(oldMaterial.getId());
-            newMaterial.setRemark(oldMaterial.getRemark());
-            newMaterial.setMaterialState(status);
             BeanUtils.copyProperties(oldMaterial, newMaterial);
+            newMaterial.setId(oldMaterial.getId());
+            newMaterial.setRemark(remark);
+            newMaterial.setMaterialState(status);
             
             record(oldMaterial, newMaterial);
         }
@@ -211,11 +213,11 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         if (Objects.isNull(materialFromQuery)) {
             return R.failMsg("物料编码不存在");
         }
-        if (Objects.isNull(materialQuery.getRemark()) && materialQuery.getRemark().length() > 50) {
+        if (StringUtils.isBlank(materialQuery.getRemark()) || materialQuery.getRemark().length() > 50) {
             return R.failMsg("备注不能为空或备注长度大于50");
         }
         materialQuery.setRemark(materialQuery.getRemark().trim());
-        if (Objects.equals(TO_BE_INSPECTED, materialQuery.getMaterialState()) && Objects.equals(PASSING, materialFromQuery.getMaterialState())) {
+        if (Objects.equals(UN_PASSING, materialQuery.getMaterialState()) && Objects.equals(PASSING, materialFromQuery.getMaterialState())) {
             return R.failMsg("合格物料不能改为待检");
         }
         
@@ -262,6 +264,7 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
             materialUpdate.setProductNo(null);
         }
         materialUpdate.setUpdateTime(System.currentTimeMillis());
+        materialUpdate.setMaterialState(materialQuery.getMaterialState());
         if (Objects.isNull(materialFromQuery.getTenantId()) || Objects.equals(materialFromQuery.getTenantId(), ADMIN_TENANT_ID)) {
             thirdId = null;
         }
@@ -320,7 +323,7 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
             
         }
         
-        this.materialTraceabilityMapper.deleteByIds(ids);
+        this.materialTraceabilityMapper.deleteByIds(ids,System.currentTimeMillis());
         return R.ok();
     }
     
@@ -384,6 +387,9 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         if (i <= 0) {
             return R.failMsg("物料解绑失败，请重试");
         }
+        
+        byParameter.setRemark(null);
+        byParameter.setMaterialState(null);
         record(byParameter, updateMaterial);
         return R.ok("物料解绑成功");
     }

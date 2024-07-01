@@ -229,6 +229,11 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
     @Override
     public R deleteOne(Long id) {
+        MaterialBatch materialBatch = materialBatchMapper.existsByPartsId(id);
+        if(Objects.nonNull(materialBatch)) {
+            return R.fail("该物料已绑定批次，请先删除批次");
+        }
+        
         Parts updateParts = new Parts();
         updateParts.setId(id);
         updateParts.setUpdateTime(System.currentTimeMillis());

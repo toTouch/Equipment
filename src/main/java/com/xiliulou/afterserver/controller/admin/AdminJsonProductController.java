@@ -9,6 +9,7 @@ import com.xiliulou.afterserver.web.query.ProductSerialNumberQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,6 +53,9 @@ public class AdminJsonProductController {
     @PostMapping("admin/product")
     @Transactional(rollbackFor = Exception.class)
     public R insert(@RequestBody Product product) {
+        if (!StringUtils.isEmpty(product.getName()) && product.getName().length() > 50) {
+            return R.fail("型号名称为空或长度超过50");
+        }
         Product productOld = productService.getByName(product.getName());
         if (Objects.nonNull(productOld)) {
             return R.fail("类型【" + product.getName() + "】已存在");
@@ -75,6 +79,9 @@ public class AdminJsonProductController {
     
     @PutMapping("admin/product")
     public R update(@RequestBody Product product) {
+        if (!StringUtils.isEmpty(product.getName()) && product.getName().length() > 50) {
+            return R.fail("型号名称为空或长度超过50");
+        }
         Product productOld = productService.getByName(product.getName());
         if (Objects.nonNull(productOld) && !Objects.equals(productOld.getId(), product.getId())) {
             return R.fail("类型【" + product.getName() + "】已存在");

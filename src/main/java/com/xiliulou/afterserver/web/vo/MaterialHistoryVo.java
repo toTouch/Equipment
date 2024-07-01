@@ -13,6 +13,11 @@ public class MaterialHistoryVo {
     private String cabinetSn;
     
     /**
+     * 资产编码
+     */
+    private String no;
+    
+    /**
      * 发货时间
      */
     private Long deliverTime;
