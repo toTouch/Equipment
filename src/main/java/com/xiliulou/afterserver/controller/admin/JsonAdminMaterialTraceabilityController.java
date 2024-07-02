@@ -22,6 +22,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import static com.xiliulou.afterserver.entity.Material.PASSING;
+import static com.xiliulou.afterserver.entity.Material.UN_PASSING;
+
 /**
  * 物料追溯表(Material)表控制层
  *
@@ -198,7 +201,15 @@ public class JsonAdminMaterialTraceabilityController {
         List<Long> ids = materialQuery.getIds();
         Integer status = materialQuery.getStatus();
         Integer confirm = materialQuery.getConfirm();
-        return this.materialTraceabilityService.changeMaterialState(ids, confirm, status, remark);
+        if (com.baomidou.mybatisplus.core.toolkit.StringUtils.isBlank(materialQuery.getRemark()) || materialQuery.getRemark().length() > 50) {
+            return R.failMsg("备注不能为空或备注长度大于50");
+        }
+        materialQuery.setRemark(materialQuery.getRemark().trim());
+        if (Objects.equals(UN_PASSING, status)
+                || Objects.equals(PASSING, status)) {
+            return this.materialTraceabilityService.changeMaterialState(ids, confirm, status, remark);
+        }
+        return R.failMsg("合格物料不能改为待检");
     }
     
 }
