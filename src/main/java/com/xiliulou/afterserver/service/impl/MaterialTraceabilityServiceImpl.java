@@ -158,10 +158,7 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         }
         
         List<MaterialBatch> materialBatchesQuery = materialBatchService.queryByNos(batchNoToCountMap.keySet());
-        // 更新物料批次
-        if (CollectionUtils.isEmpty(materialBatchesQuery)) {
-            return R.fail("批次信息不存在");
-        }
+      
         // 更新物料状态
         List<Material> tempMaterials = materialTraceabilityMapper.selectListByIds(ids);
         materialTraceabilityMapper.updateMaterialStateByIds(ids, System.currentTimeMillis(), remark, status);
@@ -217,11 +214,12 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
             return R.failMsg("备注不能为空或备注长度大于50");
         }
         materialQuery.setRemark(materialQuery.getRemark().trim());
-        if (Objects.equals(UN_PASSING, materialQuery.getMaterialState()) && Objects.equals(PASSING, materialFromQuery.getMaterialState())) {
-            return R.failMsg("合格物料不能改为待检");
+        if (Objects.equals(UN_PASSING, materialQuery.getMaterialState())
+                || Objects.equals(PASSING, materialQuery.getMaterialState())) {
+            return updateData(materialQuery, materialFromQuery);
         }
+        return R.failMsg("合格物料不能改为待检");
         
-        return updateData(materialQuery, materialFromQuery);
     }
     
     

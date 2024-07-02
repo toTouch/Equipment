@@ -158,7 +158,7 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
         }
         MaterialBatch materialBatchSelect = this.materialBatchMapper.existsByBatchNo(materialBatch.getMaterialBatchNo());
         if (Objects.nonNull(materialBatchSelect)) {
-            return R.failMsg("该物料已存在批次号");
+            return R.failMsg("批次号已存在，请修改");
         }
         materialBatch.setMaterialCount(0);
         materialBatch.setQualifiedCount(0);
@@ -214,7 +214,7 @@ public class MaterialBatchServiceImpl implements MaterialBatchService {
         // 批次号重复
         MaterialBatch materialBatchSelect = this.materialBatchMapper.existsByBatchNo(materialBatch.getMaterialBatchNo());
         if (Objects.nonNull(materialBatchSelect) && !Objects.equals(materialBatchSelect.getId(), materialBatch.getId())) {
-            return R.failMsg("该物料已存在批次号");
+            return R.failMsg("批次号已存在，请修改");
         }
         
         if (Objects.nonNull(failMsg)) {
