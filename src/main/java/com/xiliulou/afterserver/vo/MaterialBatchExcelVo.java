@@ -29,7 +29,7 @@ public class MaterialBatchExcelVo implements Serializable {
     /**
      * 物料编号id(物料型号编号id)
      */
-    @ExcelProperty("物料型号")
+    @ExcelProperty("物料编号")
     private String sn;
     
     /**

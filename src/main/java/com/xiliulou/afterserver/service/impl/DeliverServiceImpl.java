@@ -157,20 +157,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
                 records.setDeliver(true);
             }
             
-            if (Objects.equals(records.getDestinationType(), DESTINATION_TYPE_POINT) && org.apache.commons.lang3.StringUtils.isEmpty(records.getTenantName())) {
-                PointNew pointNew = pointNewMapper.selectOne(
-                        new LambdaQueryWrapper<PointNew>()
-                                .eq(StringUtils.isNotBlank(records.getDestination()), PointNew::getName, records.getDestination())
-                                .eq(PointNew::getDelFlag, DEL_NORMAL));
-                
-                if (Objects.nonNull(pointNew) && Objects.nonNull(pointNew.getCustomerId())) {
-                    Customer byId = customerService.getById(pointNew.getCustomerId());
-                    if (Objects.nonNull(byId)) {
-                        records.setTenantName(byId.getName());
-                    }
-                }
 
-            }
             
             //            第三方类型 1：客户 2：供应商 3:服务商';
             if (Objects.nonNull(records.getThirdCompanyType())) {

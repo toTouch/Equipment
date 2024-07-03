@@ -123,6 +123,12 @@ public class AdminJsonProductController {
     
     @GetMapping("admin/product/serialNumber/page")
     public R getSerialNumberPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, ProductSerialNumberQuery productSerialNumber) {
+        if(Objects.isNull(offset) || offset < 0) {
+            offset = 0L;
+        }
+        if(Objects.isNull(size) || size < 0 || size > 1000) {
+            size = 1000L;
+        }
         return productService.getSerialNumberPage(offset, size, productSerialNumber);
     }
     
@@ -132,7 +138,13 @@ public class AdminJsonProductController {
     }
     
     @GetMapping("/admin/product/list")
-    public R productList() {
+    public R productList(@RequestParam(value = "offset", required = false) Long offset, @RequestParam(value = "size", required = false) Long size) {
+        if(Objects.isNull(offset) || offset < 0) {
+            offset = 0L;
+        }
+        if(Objects.isNull(size) || size < 0 || size > 1000) {
+            size = 1000L;
+        }
         return productService.productList();
     }
     
