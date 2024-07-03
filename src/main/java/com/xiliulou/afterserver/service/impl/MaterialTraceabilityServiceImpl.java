@@ -166,7 +166,6 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         // 添加记录
         for (Material oldMaterial : tempMaterials) {
             Material newMaterial = new Material();
-            BeanUtils.copyProperties(oldMaterial, newMaterial);
             newMaterial.setId(oldMaterial.getId());
             newMaterial.setRemark(remark);
             newMaterial.setMaterialState(status);
