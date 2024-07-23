@@ -413,8 +413,8 @@ public class BatchServiceImpl implements BatchService {
             
             if (CollectionUtils.isNotEmpty(customDeviceName)) {
                 // 收集已存在的产品集的deviceName字段
-                String deviceNamecollect = customDeviceName.stream().map(ProductNew::getDeviceName).distinct().limit(10).collect(Collectors.joining("、"));
-                throw new CustomBusinessException("deviceName已存在" + deviceNamecollect);
+                String deviceNameCollect = customDeviceName.stream().map(ProductNew::getDeviceName).distinct().limit(10).collect(Collectors.joining("、"));
+                throw new CustomBusinessException("deviceName已存在" + deviceNameCollect);
             }
         }
     }
@@ -428,6 +428,8 @@ public class BatchServiceImpl implements BatchService {
                 return productConfig.getApiKey();
             case 3:
                 return productConfig.getHuaweiKey();
+            case 4:
+                return productConfig.getTcpKey();
             default:
                 return null;
         }

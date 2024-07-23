@@ -11,6 +11,7 @@ public class ProductConfig {
     private String key;
     private String apiKey;
     private String huaweiKey;
+    private String tcpKey;
     private String huaweiAccessKey;
     private String huaweiAccessSecret;
     private String endpoint;
