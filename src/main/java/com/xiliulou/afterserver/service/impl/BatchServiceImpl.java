@@ -284,7 +284,7 @@ public class BatchServiceImpl implements BatchService {
             DeviceApplyCounter snCounter = deviceApplyCounterMapper.queryByDateAndType(cabinet);
             cabinet.setCount(Objects.isNull(snCounter) ? 1L : snCounter.getCount() + 1);
             deviceApplyCounterMapper.insertOrUpdate(cabinet);
-            if (Objects.equals(batch.getSyncCabinetSn(),TRUE)) {
+            if (Objects.equals(batch.getSyncCabinetSn(),TRUE) && Objects.equals(batch.getBatteryReplacementCabinetType(), TCP_ELECTRIC_SWAP_CABINET)) {
                 productNew.setCabinetSn(deviceName);
             }else {
                 productNew.setCabinetSn(cabinetSn + String.format("%04d", cabinet.getCount()));
@@ -383,20 +383,22 @@ public class BatchServiceImpl implements BatchService {
      */
     private void deduplicationAndVerificationDeviceNames(Batch batch, List<String> customDeviceNameList, Product product, String key) {
         if (CollectionUtils.isNotEmpty(customDeviceNameList) && Objects.equals(product.getProductSeries(), BATTERY_REPLACEMENT_CABINET)) {
+            customDeviceNameList = customDeviceNameList.stream().filter(StringUtils::isNotBlank).collect(Collectors.toList());
             List<String> customDeviceNameDisList = customDeviceNameList.stream().distinct().collect(Collectors.toList());
-            if (customDeviceNameList.size() != customDeviceNameDisList.size()) {
-                throw new CustomBusinessException("deviceName有重复");
-            }
             if (customDeviceNameList.size() != batch.getProductNum()) {
                 throw new CustomBusinessException("deviceName数量与产品数量不匹配");
             }
+            if (customDeviceNameList.size() != customDeviceNameDisList.size()) {
+                throw new CustomBusinessException("deviceName有重复");
+            }
+            
             
             for (int i = 0; i < customDeviceNameList.size(); i++) {
                 String deviceName = customDeviceNameList.get(i);
-                if ( !Objects.equals(batch.getBatteryReplacementCabinetType(), TCP_ELECTRIC_SWAP_CABINET) && deviceName.length() < 5 || deviceName.length() > 12) {
+                if ( !Objects.equals(batch.getBatteryReplacementCabinetType(), TCP_ELECTRIC_SWAP_CABINET) &&  deviceName.length() < 5 || deviceName.length() > 12) {
                     throw new CustomBusinessException("deviceName长度必须在5-12位间");
                 }
-                if (isContainNonAlphanumeric(deviceName)) {
+                if (!Objects.equals(batch.getBatteryReplacementCabinetType(), TCP_ELECTRIC_SWAP_CABINET) && isContainNonAlphanumeric(deviceName)) {
                     throw new CustomBusinessException("deviceName仅支持字母和数字");
                 }
                 
