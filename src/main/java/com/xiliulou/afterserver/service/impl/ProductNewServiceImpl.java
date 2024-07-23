@@ -96,6 +96,11 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.xiliulou.afterserver.entity.Batch.ALIYUN_SaaS_ELECTRIC_SWAP_CABINET;
+import static com.xiliulou.afterserver.entity.Batch.API_ELECTRIC_SWAP_CABINET;
+import static com.xiliulou.afterserver.entity.Batch.HUAWEI_CLOUD_SaaS;
+import static com.xiliulou.afterserver.entity.Batch.TCP_ELECTRIC_SWAP_CABINET;
+
 /**
  * (ProductNew)表服务实现类
  *
@@ -1732,22 +1737,43 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         if (Objects.equals(deviceMessageVo.getIsUse(), ProductNew.IS_USE)) {
             return R.fail(null, "00000", "柜机对应三元组已使用");
         }
+        ProductNew productNew = productNewMapper.selectById(deviceMessageVo.getProductId());
+        Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
+        if (Objects.isNull(batch)) {
+            return R.fail("批次号选择有误，请检查");
+        }
+        // 查询 华为云/阿里云/TCP ds
+       String secret = getGetDeviceSecret(batch, deviceMessageVo);
         
-        QueryDeviceDetailResult queryDeviceDetailResult = registerDeviceService.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
+        deviceMessageVo.setDeviceSecret(secret);
+        return R.ok(deviceMessageVo);
+    }
+    
+    private String getGetDeviceSecret(Batch batch, DeviceMessageVo deviceMessageVo) {
+        QueryDeviceDetailResult queryDeviceDetailResult = new QueryDeviceDetailResult();
+        if (ALIYUN_SaaS_ELECTRIC_SWAP_CABINET.equals(batch.getBatteryReplacementCabinetType()) || API_ELECTRIC_SWAP_CABINET.equals(batch.getBatteryReplacementCabinetType())) {
+             queryDeviceDetailResult = registerDeviceService.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
+             return queryDeviceDetailResult.getDeviceSecret();
+        }
         
-        String secret = "";
-        if (Objects.isNull(queryDeviceDetailResult)) {
+        if (HUAWEI_CLOUD_SaaS.equals(batch.getBatteryReplacementCabinetType())) {
             ShowDeviceResponse showDeviceResponse = deviceSolutionUtil.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
+            String secret = "";
             
             if (Objects.nonNull(showDeviceResponse) && Objects.nonNull(showDeviceResponse.getAuthInfo())) {
                 secret = showDeviceResponse.getAuthInfo().getSecret();
             } else {
                 secret = null;
             }
+            return secret;
         }
-        deviceMessageVo.setDeviceSecret(queryDeviceDetailResult == null ? secret : queryDeviceDetailResult.getDeviceSecret());
-        return R.ok(deviceMessageVo);
+        
+        if (TCP_ELECTRIC_SWAP_CABINET.equals(batch.getBatteryReplacementCabinetType())){
+            return deviceMessageVo.getDeviceName();
+        }
+        return null;
     }
+    
     
     @Override
     public R getDeviceMessage(String no) {

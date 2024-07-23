@@ -159,6 +159,7 @@ iot:
 product-config:
   key: a1QqoBrbcT1
   Apikey: a1aru3g173j
+  tcpKey: a1Tx6CgP2Kqa
   huaweiKey: yl-test
   huaweiAccessKey: JBNJ2QSPGIQ7QFNTWWJS
   huaweiAccessSecret: taNpnKa1fRcmruUYMQgnIHQjlsuKkcTPpULcUMcX
