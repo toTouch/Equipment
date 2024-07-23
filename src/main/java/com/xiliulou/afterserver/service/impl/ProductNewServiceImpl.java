@@ -1785,19 +1785,15 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             return R.fail(null, "00000", "资产编码对应的三元组信息不全");
         }
         
-        QueryDeviceDetailResult queryDeviceDetailResult = registerDeviceService.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
-        
-        String secret = "";
-        if (Objects.isNull(queryDeviceDetailResult)) {
-            ShowDeviceResponse showDeviceResponse = deviceSolutionUtil.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
-            
-            if (Objects.nonNull(showDeviceResponse) && Objects.nonNull(showDeviceResponse.getAuthInfo())) {
-                secret = showDeviceResponse.getAuthInfo().getSecret();
-            } else {
-                secret = null;
-            }
+        ProductNew productNew = productNewMapper.selectById(deviceMessageVo.getProductId());
+        Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
+        if (Objects.isNull(batch)) {
+            return R.fail("批次号选择有误，请检查");
         }
-        deviceMessageVo.setDeviceSecret(queryDeviceDetailResult == null ? secret : queryDeviceDetailResult.getDeviceSecret());
+        // 查询 华为云/阿里云/TCP ds
+        String secret = getGetDeviceSecret(batch, deviceMessageVo);
+        
+        deviceMessageVo.setDeviceSecret(secret);
         return R.ok(deviceMessageVo);
     }
     

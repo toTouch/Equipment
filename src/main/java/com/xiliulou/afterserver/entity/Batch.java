@@ -108,7 +108,7 @@ public class Batch {
      * 同步柜机SN
      */
     @TableField(exist = false)
-    private String syncCabinetSn;
+    private Integer syncCabinetSn;
     
     // 换电柜类型(0:阿里云SaaS换电柜,1:api换电柜,3:华为云saas, 4: TCP柜机)
     private Integer batteryReplacementCabinetType;
