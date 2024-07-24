@@ -229,6 +229,10 @@ public class BatchServiceImpl implements BatchService {
         
         // 去重并校验deviceNames
         List<String> customDeviceNameList = batch.getCustomDeviceNameList();
+        for (int i = 0; i < customDeviceNameList.size(); i++) {
+            String deviceName = customDeviceNameList.get(i);
+            customDeviceNameList.set(i, deviceName.trim());
+        }
         deduplicationAndVerificationDeviceNames(batch, customDeviceNameList, product, key);
         
         Set<String> deviceNames = new HashSet<String>();
@@ -243,7 +247,7 @@ public class BatchServiceImpl implements BatchService {
             productNew.setDelFlag(ProductNew.DEL_NORMAL);
             
             // 换电柜逻辑
-            initEleCabinetData(product, deviceApplyCounter, customDeviceNameList, i, productNew, key, cabinet, cabinetSn, deviceNames,batch);
+            initEleCabinetData(product, deviceApplyCounter, customDeviceNameList, i, productNew, key, cabinet, cabinetSn, deviceNames, batch);
             
             productNewMapper.insertOne(productNew);
             PointProductBind bind = new PointProductBind();
@@ -267,8 +271,7 @@ public class BatchServiceImpl implements BatchService {
     }
     
     // 换电柜数据处理逻辑
-    private void initEleCabinetData(Product product, DeviceApplyCounter deviceApplyCounter,
-            List<String> customDeviceNameList, int i, ProductNew productNew, String key,
+    private void initEleCabinetData(Product product, DeviceApplyCounter deviceApplyCounter, List<String> customDeviceNameList, int i, ProductNew productNew, String key,
             DeviceApplyCounter cabinet, String cabinetSn, Set<String> deviceNames, Batch batch) {
         if (Objects.equals(product.getProductSeries(), BATTERY_REPLACEMENT_CABINET)) {
             DeviceApplyCounter counter = deviceApplyCounterMapper.queryByDateAndType(deviceApplyCounter);
@@ -284,9 +287,9 @@ public class BatchServiceImpl implements BatchService {
             DeviceApplyCounter snCounter = deviceApplyCounterMapper.queryByDateAndType(cabinet);
             cabinet.setCount(Objects.isNull(snCounter) ? 1L : snCounter.getCount() + 1);
             deviceApplyCounterMapper.insertOrUpdate(cabinet);
-            if (Objects.equals(batch.getSyncCabinetSn(),TRUE) && Objects.equals(batch.getBatteryReplacementCabinetType(), TCP_ELECTRIC_SWAP_CABINET)) {
+            if (Objects.equals(batch.getSyncCabinetSn(), TRUE) && Objects.equals(batch.getBatteryReplacementCabinetType(), TCP_ELECTRIC_SWAP_CABINET)) {
                 productNew.setCabinetSn(deviceName);
-            }else {
+            } else {
                 productNew.setCabinetSn(cabinetSn + String.format("%04d", cabinet.getCount()));
             }
             deviceNames.add(deviceName);
@@ -392,14 +395,13 @@ public class BatchServiceImpl implements BatchService {
                 throw new CustomBusinessException("deviceName有重复");
             }
             
-            
             for (int i = 0; i < customDeviceNameList.size(); i++) {
                 String deviceName = customDeviceNameList.get(i);
-                if ( deviceName.length() > 50) {
+                if (deviceName.length() > 50) {
                     throw new CustomBusinessException("deviceName 超出长度限制 50");
                 }
                 
-                if ( !Objects.equals(batch.getBatteryReplacementCabinetType(), TCP_ELECTRIC_SWAP_CABINET) &&  (deviceName.length() < 5 || deviceName.length() > 12)) {
+                if (!Objects.equals(batch.getBatteryReplacementCabinetType(), TCP_ELECTRIC_SWAP_CABINET) && (deviceName.length() < 5 || deviceName.length() > 12)) {
                     throw new CustomBusinessException("deviceName长度必须在5-12位间");
                 }
                 
