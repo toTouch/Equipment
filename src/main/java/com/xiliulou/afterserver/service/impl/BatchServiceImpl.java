@@ -395,9 +395,14 @@ public class BatchServiceImpl implements BatchService {
             
             for (int i = 0; i < customDeviceNameList.size(); i++) {
                 String deviceName = customDeviceNameList.get(i);
-                if ( !Objects.equals(batch.getBatteryReplacementCabinetType(), TCP_ELECTRIC_SWAP_CABINET) &&  deviceName.length() < 5 || deviceName.length() > 12) {
+                if ( deviceName.length() > 50) {
+                    throw new CustomBusinessException("deviceName 超出长度限制 50");
+                }
+                
+                if ( !Objects.equals(batch.getBatteryReplacementCabinetType(), TCP_ELECTRIC_SWAP_CABINET) &&  (deviceName.length() < 5 || deviceName.length() > 12)) {
                     throw new CustomBusinessException("deviceName长度必须在5-12位间");
                 }
+                
                 if (!Objects.equals(batch.getBatteryReplacementCabinetType(), TCP_ELECTRIC_SWAP_CABINET) && isContainNonAlphanumeric(deviceName)) {
                     throw new CustomBusinessException("deviceName仅支持字母和数字");
                 }
