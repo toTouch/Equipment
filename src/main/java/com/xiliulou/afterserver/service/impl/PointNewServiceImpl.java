@@ -66,9 +66,7 @@ import com.xiliulou.mq.service.RocketMqService;
 import com.xiliulou.storage.config.StorageConfig;
 import com.xiliulou.storage.service.impl.AliyunOssService;
 import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.pool.TypePool;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.poi.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -907,7 +905,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             materialHistoryVo.setProductionTime(temp.getCreateTime());
             
             // 生成列表
-            fillMaterialHistory(materialGroup, materialHistoryVo);
+            fillMaterialHistory(temp.getNo(),materialGroup, materialHistoryVo);
             materialHistoryVos.add(materialHistoryVo);
         }
         
@@ -957,7 +955,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
                     materialHistoryVo.setAtmelID(materialGroup.get("Y5030011").get(0).getAtmelID());
                     materialHistoryVo.setProductionTime(materialGroup.get("Y5030011").get(0).getTestTime());
                 }
-                materialHistoryVo.setCommunicationBoard(generateLists("Y5030011", materialGroup));
+                materialHistoryVo.setCommunicationBoard(generateLists(temp.getNo(), "Y5030011", materialGroup));
             }else {
                 materialHistoryVo.setAtmelID("");
                 materialHistoryVo.setCommunicationBoard(getMaterialCellVos("Y5030011"));
@@ -967,17 +965,17 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         
         return R.ok(productNewDeliverVoResult);
     }
-    
-    private void fillMaterialHistory(Map<String, List<Material>> materialGroup, MaterialHistoryVo materialHistoryVo) {
+     // 这里有问题 没有筛选柜机数据
+    private void fillMaterialHistory(String no, Map<String, List<Material>> materialGroup, MaterialHistoryVo materialHistoryVo) {
         if (true || CollectionUtils.isNotEmpty(materialGroup)) {
-            List<MaterialCellVo> y8030010 = generateLists("Y8030010", materialGroup);
-            List<MaterialCellVo> y8030017 = generateLists("Y8030017", materialGroup);
-            List<MaterialCellVo> y5030015 = generateLists("Y5030015", materialGroup);
-            List<MaterialCellVo> y5030011 = generateLists("Y5030011", materialGroup);
-            List<MaterialCellVo> y5030010 = generateLists("Y5030010", materialGroup);
-            List<MaterialCellVo> y5000301 = generateLists("Y5000301", materialGroup);
-            List<MaterialCellVo> y5030012 = generateLists("Y5030012", materialGroup);
-            List<MaterialCellVo> y5000322 = generateLists("Y5000322", materialGroup);
+            List<MaterialCellVo> y8030010 = generateLists(no,"Y8030010", materialGroup);
+            List<MaterialCellVo> y8030017 = generateLists(no,"Y8030017", materialGroup);
+            List<MaterialCellVo> y5030015 = generateLists(no,"Y5030015", materialGroup);
+            List<MaterialCellVo> y5030011 = generateLists(no,"Y5030011", materialGroup);
+            List<MaterialCellVo> y5030010 = generateLists(no,"Y5030010", materialGroup);
+            List<MaterialCellVo> y5000301 = generateLists(no,"Y5000301", materialGroup);
+            List<MaterialCellVo> y5030012 = generateLists(no,"Y5030012", materialGroup);
+            List<MaterialCellVo> y5000322 = generateLists(no,"Y5000322", materialGroup);
             
             materialHistoryVo.setTouchPanel(y8030010);
             materialHistoryVo.setLinuxBoard(y8030017);
@@ -1019,17 +1017,19 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         return defaultList;
     }
     
-    private List<MaterialCellVo> generateLists(String sn, Map<String, List<Material>> materialGroup) {
+    private List<MaterialCellVo> generateLists(String no, String sn, Map<String, List<Material>> materialGroup) {
         List<MaterialCellVo> materialCellVos = new ArrayList<>();
         if (CollectionUtils.isEmpty(materialGroup.get(sn))) {
             return getMaterialCellVos(sn);
         }
         materialGroup.get(sn).forEach(tp -> {
-            MaterialCellVo materialCellVo = new MaterialCellVo();
-            materialCellVo.setPn(sn);
-            materialCellVo.setSn(tp.getMaterialSn());
-            materialCellVo.setName(tp.getName());
-            materialCellVos.add(materialCellVo);
+            if (Objects.equals(no, tp.getProductNo())) {
+                MaterialCellVo materialCellVo = new MaterialCellVo();
+                materialCellVo.setPn(sn);
+                materialCellVo.setSn(tp.getMaterialSn());
+                materialCellVo.setName(tp.getName());
+                materialCellVos.add(materialCellVo);
+            }
         });
         return materialCellVos;
     }
