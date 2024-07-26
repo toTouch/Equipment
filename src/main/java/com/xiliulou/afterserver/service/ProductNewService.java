@@ -3,6 +3,7 @@ package com.xiliulou.afterserver.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiliulou.afterserver.entity.File;
 import com.xiliulou.afterserver.entity.ProductNew;
+import com.xiliulou.afterserver.entity.request.ProductNewRequest;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ApiRequestQuery;
 import com.xiliulou.afterserver.web.query.CabinetCompressionQuery;
@@ -44,7 +45,7 @@ public interface ProductNewService extends IService<ProductNew> {
      * @param limit  查询条数
      * @return 对象列表
      */
-    List<ProductNew> queryAllByLimit(int offset, int limit, String no, Long modelId, Long startTime, Long endTime, List<Long> list, String testType,String cabinetSn);
+    List<ProductNew> queryAllByLimit(int offset, int limit, ProductNewRequest request, List<Long> list);
 
     /**
      * 新增数据
@@ -79,9 +80,9 @@ public interface ProductNewService extends IService<ProductNew> {
     R updateList(List<ProductNew> productNewList);
 
     ProductNew prdouctInfoByNo(String no);
-
-    Integer count(String no,Long modelId,Long startTime,Long endTime, List<Long> list, String testType,String cabinetSn);
-
+    
+    Integer count(int offset, int limit, ProductNewRequest request, List<Long> list);
+    
     R getProductFile(Long id, Integer fileType);
 
     R updateStatusFromBatch(List<Long> ids, Integer status);
@@ -110,7 +111,7 @@ public interface ProductNewService extends IService<ProductNew> {
 
     R factorySaveFile(File file);
 
-    R pointList(Integer offset, Integer limit, String no, Long modelId, Long pointId, Integer pointType, Long startTime, Long endTime, String testType,String cabinetSn);
+    R selectListProductNews(Integer offset, Integer limit, ProductNewRequest request);
 
     public ProductNew queryByNo(String no);
 

@@ -95,6 +95,9 @@
             <if test="cabinetSn != null and cabinetSn != ''">
                 and p.cabinet_sn like concat('%', #{cabinetSn},'%')
             </if>
+            <if test="batchId != null">
+                and p.batch_id = #{batchId}
+            </if>
         </where>
         order by create_time desc
         limit #{offset}, #{limit}
@@ -168,6 +171,9 @@
             </if>
             <if test="cabinetSn != null and cabinetSn != ''">
                 and p.cabinet_sn like concat('%', #{cabinetSn},'%')
+            </if>
+            <if test="batchId != null">
+                and p.batch_id = #{batchId}
             </if>
         </where>
     </select>

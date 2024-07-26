@@ -29,6 +29,7 @@ import com.xiliulou.afterserver.entity.ProductNewTestContent;
 import com.xiliulou.afterserver.entity.Supplier;
 import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.entity.WareHouse;
+import com.xiliulou.afterserver.entity.request.ProductNewRequest;
 import com.xiliulou.afterserver.mapper.CompressionRecordMapper;
 import com.xiliulou.afterserver.mapper.PointNewMapper;
 import com.xiliulou.afterserver.mapper.PointProductBindMapper;
@@ -231,8 +232,16 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
      * @return 对象列表
      */
     @Override
-    public List<ProductNew> queryAllByLimit(int offset, int limit, String no, Long modelId, Long startTime, Long endTime, List<Long> list, String testType, String cabinetSn) {
-        return this.productNewMapper.queryAllByLimit(offset, limit, no, modelId, startTime, endTime, list, testType, cabinetSn);
+    public List<ProductNew> queryAllByLimit(int offset, int limit, ProductNewRequest request, List<Long> list) {
+        String no=request.getNo();
+        Long modelId = request.getModelId();
+        Long startTime = request.getStartTime();
+        Long endTime = request.getEndTime();
+        String testType = request.getTestType();
+        String cabinetSn = request.getCabinetSn();
+        Long batchId = request.getBatchId();
+        
+        return this.productNewMapper.queryAllByLimit(offset, limit, no, modelId, startTime, endTime, list, testType, cabinetSn, batchId);
     }
     
     /**
@@ -478,8 +487,15 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     }
     
     @Override
-    public Integer count(String no, Long modelId, Long startTime, Long endTime, List<Long> list, String testType, String cabinetSn) {
-        return this.productNewMapper.countProduct(no, modelId, startTime, endTime, list, testType, cabinetSn);
+    public Integer count(int offset, int limit, ProductNewRequest request, List<Long> list){
+        String no=request.getNo();
+        Long modelId = request.getModelId();
+        Long startTime = request.getStartTime();
+        Long endTime = request.getEndTime();
+        String testType = request.getTestType();
+        String cabinetSn = request.getCabinetSn();
+        Long batchId = request.getBatchId();
+        return this.productNewMapper.countProduct(no, modelId, startTime, endTime, list, testType, cabinetSn, batchId);
     }
     
     @Override
@@ -1086,10 +1102,15 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     }
     
     @Override
-    public R pointList(Integer offset, Integer limit, String no, Long modelId, Long pointId, Integer pointType, Long startTime, Long endTime, String testType, String cabinetSn) {
+    public R selectListProductNews(Integer offset, Integer limit, ProductNewRequest request ) {
+        if (StringUtils.isNotBlank(request.getBatchName())) {
+            List<Batch> batches = batchService.queryByName(request.getBatchName());
+            request.setBatchId(batches.get(0).getId());
+        }
+        
         List<Long> productIds = null;
-        if (Objects.nonNull(pointId) || Objects.nonNull(pointType)) {
-            productIds = pointProductBindService.queryProductIdsByPidAndPtype(pointId, pointType);
+        if (Objects.nonNull(request.getPointId()) || Objects.nonNull(request.getPointType())) {
+            productIds = pointProductBindService.queryProductIdsByPidAndPtype(request.getPointId(), request.getPointType());
             // 这里如果没查到就添加一个默认的，否则productIds为空，列表返回全部
             if (CollectionUtils.isEmpty(productIds)) {
                 productIds = new ArrayList<>();
@@ -1097,7 +1118,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             }
         }
         // 分页查询 结果集
-        List<ProductNew> productNews = this.queryAllByLimit(offset, limit, no, modelId, startTime, endTime, productIds, testType, cabinetSn);
+        List<ProductNew> productNews = this.queryAllByLimit(offset, limit, request, productIds);
         
         productNews.parallelStream().forEach(item -> {
             
@@ -1180,7 +1201,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             //            item.setQualityInspectionFileList(qualityInspection);
         });
         
-        Integer count = this.count(no, modelId, startTime, endTime, productIds, testType, cabinetSn);
+        Integer count = this.count(offset, limit, request, productIds);
         
         HashMap<String, Object> stringObjectHashMap = new HashMap<>(2);
         stringObjectHashMap.put("data", productNews);
