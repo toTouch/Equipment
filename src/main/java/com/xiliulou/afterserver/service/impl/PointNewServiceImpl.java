@@ -952,8 +952,10 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             if (CollectionUtils.isNotEmpty(materialGroup)) {
                 // 生成列表
                 if (CollectionUtils.isNotEmpty(materialGroup.get("Y5030011"))) {
-                    materialHistoryVo.setAtmelID(materialGroup.get("Y5030011").get(0).getAtmelID());
-                    materialHistoryVo.setProductionTime(materialGroup.get("Y5030011").get(0).getTestTime());
+                    if (Objects.equals(temp.getNo(), materialGroup.get("Y5030011").get(0).getImei())){
+                        materialHistoryVo.setAtmelID(materialGroup.get("Y5030011").get(0).getAtmelID());
+                        materialHistoryVo.setProductionTime(materialGroup.get("Y5030011").get(0).getTestTime());
+                    }
                 }
                 materialHistoryVo.setCommunicationBoard(generateLists(temp.getNo(), "Y5030011", materialGroup));
             }else {
@@ -981,7 +983,9 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             materialHistoryVo.setLinuxBoard(y8030017);
             materialHistoryVo.setSixInOne(y5030015);
             if (CollectionUtils.isNotEmpty(materialGroup.get("Y5030011"))) {
-                materialHistoryVo.setAtmelID(materialGroup.get("Y5030011").get(0).getAtmelID());
+                if (Objects.equals(no, materialGroup.get("Y5030011").get(0).getImei())) {
+                    materialHistoryVo.setAtmelID(materialGroup.get("Y5030011").get(0).getAtmelID());
+                }
             }
             materialHistoryVo.setConnectorBoard(y5030011);
             materialHistoryVo.setCommunicationBoard(y5030010);
@@ -989,7 +993,9 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             materialHistoryVo.setDCDCBoard(y5030012);
             materialHistoryVo.setModule4G(y5000322);
             if (CollectionUtils.isNotEmpty(materialGroup.get("Y5000322"))) {
-                materialHistoryVo.setImei(materialGroup.get("Y5000322").get(0).getImei());
+                if (Objects.equals(no, materialGroup.get("Y5000322").get(0).getImei())){
+                    materialHistoryVo.setImei(materialGroup.get("Y5000322").get(0).getImei());
+                }
             }
             return;
         }
@@ -1031,6 +1037,9 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
                 materialCellVos.add(materialCellVo);
             }
         });
+        if (CollectionUtils.isEmpty(materialCellVos)) {
+            return getMaterialCellVos(sn);
+        }
         return materialCellVos;
     }
     
