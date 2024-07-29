@@ -29,6 +29,7 @@ import com.xiliulou.afterserver.entity.ProductNewTestContent;
 import com.xiliulou.afterserver.entity.Supplier;
 import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.entity.WareHouse;
+import com.xiliulou.afterserver.entity.request.ProductNewRequest;
 import com.xiliulou.afterserver.mapper.CompressionRecordMapper;
 import com.xiliulou.afterserver.mapper.PointNewMapper;
 import com.xiliulou.afterserver.mapper.PointProductBindMapper;
@@ -95,6 +96,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static com.xiliulou.afterserver.entity.Batch.ALIYUN_SaaS_ELECTRIC_SWAP_CABINET;
+import static com.xiliulou.afterserver.entity.Batch.API_ELECTRIC_SWAP_CABINET;
+import static com.xiliulou.afterserver.entity.Batch.HUAWEI_CLOUD_SaaS;
+import static com.xiliulou.afterserver.entity.Batch.TCP_ELECTRIC_SWAP_CABINET;
 
 /**
  * (ProductNew)表服务实现类
@@ -226,8 +232,16 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
      * @return 对象列表
      */
     @Override
-    public List<ProductNew> queryAllByLimit(int offset, int limit, String no, Long modelId, Long startTime, Long endTime, List<Long> list, String testType, String cabinetSn) {
-        return this.productNewMapper.queryAllByLimit(offset, limit, no, modelId, startTime, endTime, list, testType, cabinetSn);
+    public List<ProductNew> queryAllByLimit(int offset, int limit, ProductNewRequest request, List<Long> list) {
+        String no=request.getNo();
+        Long modelId = request.getModelId();
+        Long startTime = request.getStartTime();
+        Long endTime = request.getEndTime();
+        String testType = request.getTestType();
+        String cabinetSn = request.getCabinetSn();
+        Long batchId = request.getBatchId();
+        
+        return this.productNewMapper.queryAllByLimit(offset, limit, no, modelId, startTime, endTime, list, testType, cabinetSn, batchId);
     }
     
     /**
@@ -473,8 +487,15 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     }
     
     @Override
-    public Integer count(String no, Long modelId, Long startTime, Long endTime, List<Long> list, String testType, String cabinetSn) {
-        return this.productNewMapper.countProduct(no, modelId, startTime, endTime, list, testType, cabinetSn);
+    public Integer count(int offset, int limit, ProductNewRequest request, List<Long> list){
+        String no=request.getNo();
+        Long modelId = request.getModelId();
+        Long startTime = request.getStartTime();
+        Long endTime = request.getEndTime();
+        String testType = request.getTestType();
+        String cabinetSn = request.getCabinetSn();
+        Long batchId = request.getBatchId();
+        return this.productNewMapper.countProduct(no, modelId, startTime, endTime, list, testType, cabinetSn, batchId);
     }
     
     @Override
@@ -1081,10 +1102,21 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     }
     
     @Override
-    public R pointList(Integer offset, Integer limit, String no, Long modelId, Long pointId, Integer pointType, Long startTime, Long endTime, String testType, String cabinetSn) {
+    public R selectListProductNews(Integer offset, Integer limit, ProductNewRequest request ) {
+        if (StringUtils.isNotBlank(request.getBatchName())) {
+            List<Batch> batches = batchService.queryByName(request.getBatchName());
+            if (CollectionUtils.isEmpty(batches)) {
+                HashMap<String, Object> stringObjectHashMap = new HashMap<>(2);
+                stringObjectHashMap.put("data", new ArrayList<>());
+                stringObjectHashMap.put("count", 0);
+                return R.ok(stringObjectHashMap);
+            }
+            request.setBatchId(batches.get(0).getId());
+        }
+        
         List<Long> productIds = null;
-        if (Objects.nonNull(pointId) || Objects.nonNull(pointType)) {
-            productIds = pointProductBindService.queryProductIdsByPidAndPtype(pointId, pointType);
+        if (Objects.nonNull(request.getPointId()) || Objects.nonNull(request.getPointType())) {
+            productIds = pointProductBindService.queryProductIdsByPidAndPtype(request.getPointId(), request.getPointType());
             // 这里如果没查到就添加一个默认的，否则productIds为空，列表返回全部
             if (CollectionUtils.isEmpty(productIds)) {
                 productIds = new ArrayList<>();
@@ -1092,7 +1124,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             }
         }
         // 分页查询 结果集
-        List<ProductNew> productNews = this.queryAllByLimit(offset, limit, no, modelId, startTime, endTime, productIds, testType, cabinetSn);
+        List<ProductNew> productNews = this.queryAllByLimit(offset, limit, request, productIds);
         
         productNews.parallelStream().forEach(item -> {
             
@@ -1175,7 +1207,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             //            item.setQualityInspectionFileList(qualityInspection);
         });
         
-        Integer count = this.count(no, modelId, startTime, endTime, productIds, testType, cabinetSn);
+        Integer count = this.count(offset, limit, request, productIds);
         
         HashMap<String, Object> stringObjectHashMap = new HashMap<>(2);
         stringObjectHashMap.put("data", productNews);
@@ -1732,22 +1764,43 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         if (Objects.equals(deviceMessageVo.getIsUse(), ProductNew.IS_USE)) {
             return R.fail(null, "00000", "柜机对应三元组已使用");
         }
+        ProductNew productNew = productNewMapper.selectById(deviceMessageVo.getProductId());
+        Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
+        if (Objects.isNull(batch)) {
+            return R.fail("批次号选择有误，请检查");
+        }
+        // 查询 华为云/阿里云/TCP ds
+       String secret = getGetDeviceSecret(batch, deviceMessageVo);
         
-        QueryDeviceDetailResult queryDeviceDetailResult = registerDeviceService.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
+        deviceMessageVo.setDeviceSecret(secret);
+        return R.ok(deviceMessageVo);
+    }
+    
+    private String getGetDeviceSecret(Batch batch, DeviceMessageVo deviceMessageVo) {
+        QueryDeviceDetailResult queryDeviceDetailResult = new QueryDeviceDetailResult();
+        if (ALIYUN_SaaS_ELECTRIC_SWAP_CABINET.equals(batch.getBatteryReplacementCabinetType()) || API_ELECTRIC_SWAP_CABINET.equals(batch.getBatteryReplacementCabinetType())) {
+             queryDeviceDetailResult = registerDeviceService.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
+             return queryDeviceDetailResult.getDeviceSecret();
+        }
         
-        String secret = "";
-        if (Objects.isNull(queryDeviceDetailResult)) {
+        if (HUAWEI_CLOUD_SaaS.equals(batch.getBatteryReplacementCabinetType())) {
             ShowDeviceResponse showDeviceResponse = deviceSolutionUtil.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
+            String secret = "";
             
             if (Objects.nonNull(showDeviceResponse) && Objects.nonNull(showDeviceResponse.getAuthInfo())) {
                 secret = showDeviceResponse.getAuthInfo().getSecret();
             } else {
                 secret = null;
             }
+            return secret;
         }
-        deviceMessageVo.setDeviceSecret(queryDeviceDetailResult == null ? secret : queryDeviceDetailResult.getDeviceSecret());
-        return R.ok(deviceMessageVo);
+        
+        if (TCP_ELECTRIC_SWAP_CABINET.equals(batch.getBatteryReplacementCabinetType())){
+            return deviceMessageVo.getDeviceName();
+        }
+        return null;
     }
+    
     
     @Override
     public R getDeviceMessage(String no) {
@@ -1759,19 +1812,15 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             return R.fail(null, "00000", "资产编码对应的三元组信息不全");
         }
         
-        QueryDeviceDetailResult queryDeviceDetailResult = registerDeviceService.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
-        
-        String secret = "";
-        if (Objects.isNull(queryDeviceDetailResult)) {
-            ShowDeviceResponse showDeviceResponse = deviceSolutionUtil.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
-            
-            if (Objects.nonNull(showDeviceResponse) && Objects.nonNull(showDeviceResponse.getAuthInfo())) {
-                secret = showDeviceResponse.getAuthInfo().getSecret();
-            } else {
-                secret = null;
-            }
+        ProductNew productNew = productNewMapper.selectById(deviceMessageVo.getProductId());
+        Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
+        if (Objects.isNull(batch)) {
+            return R.fail("批次号选择有误，请检查");
         }
-        deviceMessageVo.setDeviceSecret(queryDeviceDetailResult == null ? secret : queryDeviceDetailResult.getDeviceSecret());
+        // 查询 华为云/阿里云/TCP ds
+        String secret = getGetDeviceSecret(batch, deviceMessageVo);
+        
+        deviceMessageVo.setDeviceSecret(secret);
         return R.ok(deviceMessageVo);
     }
     
