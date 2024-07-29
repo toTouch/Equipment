@@ -1105,7 +1105,9 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     public R selectListProductNews(Integer offset, Integer limit, ProductNewRequest request ) {
         if (StringUtils.isNotBlank(request.getBatchName())) {
             List<Batch> batches = batchService.queryByName(request.getBatchName());
-            request.setBatchId(batches.get(0).getId());
+            if (CollectionUtils.isNotEmpty(batches)) {
+                request.setBatchId(batches.get(0).getId());
+            }
         }
         
         List<Long> productIds = null;
