@@ -39,7 +39,7 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
      */
     List<ProductNew> queryAllByLimit(@Param("offset") int offset, @Param("limit") int limit, @Param("no") String no, @Param("modelId") Long modelId,
             @Param("startTime") Long startTime, @Param("endTime") Long endTime, @Param("list") List<Long> list, @Param("testType") String testType,
-            @Param("cabinetSn") String cabinetSn);
+            @Param("cabinetSn") String cabinetSn, @Param("batchId") Long batchId);
     
     
     /**
@@ -83,7 +83,7 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
     int deleteById(Long id);
     
     Integer countProduct(@Param("no") String no, @Param("modelId") Long modelId, @Param("startTime") Long startTime, @Param("endTime") Long endTime, @Param("list") List<Long> list,
-            @Param("testType") String testType, @Param("cabinetSn") String cabinetSn);
+            @Param("testType") String testType, @Param("cabinetSn") String cabinetSn, @Param("batchId") Long batchId);
     
     int updateStatusFromBatch(@Param("ids") List<Long> ids, @Param("status") Integer status);
     

@@ -1,6 +1,8 @@
 package com.xiliulou.afterserver.controller.admin;
 
 import com.xiliulou.afterserver.entity.File;
+import com.xiliulou.afterserver.entity.ProductNew;
+import com.xiliulou.afterserver.entity.request.ProductNewRequest;
 import com.xiliulou.afterserver.service.ProductNewService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.web.query.ProductNewQuery;
@@ -93,12 +95,8 @@ public class AdminJsonProductNewController {
      */
     
     @GetMapping("/admin/productNew/list")
-    public R pointList(@RequestParam("offset") Integer offset, @RequestParam("limit") Integer limit, @RequestParam(value = "no", required = false) String no,
-            @RequestParam(value = "modelId", required = false) Long modelId, @RequestParam(value = "pointId", required = false) Long pointId,
-            @RequestParam(value = "pointType", required = false) Integer pointType, @RequestParam(value = "startTime", required = false) Long startTime,
-            @RequestParam(value = "endTime", required = false) Long endTime, @RequestParam(value = "testType", required = false) String testType,
-            @RequestParam(value = "cabinetSn", required = false) String cabinetSn) {
-        return productNewService.pointList(offset, limit, no, modelId, pointId, pointType, startTime, endTime, testType, cabinetSn);
+    public R pointList(@RequestParam("offset") Integer offset, @RequestParam("limit") Integer limit, ProductNewRequest request) {
+        return productNewService.selectListProductNews(offset, limit, request);
         
     }
     

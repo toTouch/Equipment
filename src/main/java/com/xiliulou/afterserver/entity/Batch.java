@@ -104,7 +104,13 @@ public class Batch {
     @TableField(exist = false)
     private String supplierName;
     
-    // 换电柜类型(0:阿里云SaaS换电柜,1:api换电柜,3:华为云saas)
+    /**
+     * 同步柜机SN
+     */
+    @TableField(exist = false)
+    private Integer syncCabinetSn;
+    
+    // 换电柜类型(0:阿里云SaaS换电柜,1:api换电柜,3:华为云saas, 4: TCP柜机)
     private Integer batteryReplacementCabinetType;
     
     // 阿里云的SaaS换电柜服务类型
@@ -115,6 +121,10 @@ public class Batch {
     
     // 华为云的SaaS服务
     public static final Integer HUAWEI_CLOUD_SaaS = 3;
+    // TCP 柜机
+    public static final Integer TCP_ELECTRIC_SWAP_CABINET = 4;
+    
+    public static final Integer TRUE = 1;
     
     
     // 自定义设备名称
