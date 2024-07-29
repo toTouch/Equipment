@@ -18,6 +18,12 @@ public class DeviceMessageVo {
      * 物联网deviceName
      */
     private String deviceName;
+    
+    /**
+     * 产品编码 sn
+     */
+    private String cabinetSn;
+    
     /**
      * 物联网deviceSecret
      */
