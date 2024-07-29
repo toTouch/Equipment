@@ -128,7 +128,7 @@
         select id, material_batch_no, material_id, supplier_id, material_count, unqualified_count, qualified_count, material_batch_remark,
                create_time, update_time, tenant_id, quality_report_url
         from t_material_batch tmb
-        where material_id = #{partsId}
+        where material_id = #{partsId} limit 1
     </select>
     
     <!--新增所有列-->
