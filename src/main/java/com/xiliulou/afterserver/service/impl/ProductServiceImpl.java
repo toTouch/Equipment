@@ -269,7 +269,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     
     @Override
     public R getSerialNumberPage(Long offset, Long size, ProductSerialNumberQuery productSerialNumber) {
-        List<ProductNew> data = productNewMapper.selectNoPull(offset,size);
+        List<ProductNew> data = productNewMapper.selectNoPull(productSerialNumber.getNo(),offset,size);
         Map records = new HashMap();
         records.put("records", data);
         return R.ok(records);

@@ -126,8 +126,8 @@ public class AdminJsonProductController {
         if(Objects.isNull(offset) || offset < 0) {
             offset = 0L;
         }
-        if(Objects.isNull(size) || size < 0 || size > 1000) {
-            size = 1000L;
+        if(Objects.isNull(size) || size < 0 || size > 200) {
+            size = 50L;
         }
         return productService.getSerialNumberPage(offset, size, productSerialNumber);
     }

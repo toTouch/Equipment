@@ -90,8 +90,7 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
     @Select("select max(serial_num) from t_product_new where code = #{code} and del_flag = 0")
     Integer queryMaxSerialNum(String code);
     
-    @Select("select id, no from t_product_new where del_flag = 0  limit #{offset}, #{size}")
-    List<ProductNew> selectNoPull(@Param("offset") Long offset, @Param("size") Long size);
+    List<ProductNew> selectNoPull(@Param("no") String no,@Param("offset") Long offset, @Param("size") Long size);
     
     @Update("update t_product_new set test_file = #{testFile}, test_result = #{testResult}, status = #{status}, test_type = #{testType} ,error_message = #{errorMessage},test_end_time = #{testEndTime} where no = #{no}")
     Integer updateByNoNew(ProductNew productNew);
