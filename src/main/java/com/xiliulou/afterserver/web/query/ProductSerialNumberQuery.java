@@ -14,6 +14,7 @@ import lombok.Data;
 public class ProductSerialNumberQuery extends ProductSerialNumber {
 
     private String prefix;
+    private String no;
     //左区间
     private Long leftInterval;
     //右区间

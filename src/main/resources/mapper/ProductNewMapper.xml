@@ -261,6 +261,14 @@
             </foreach>
         </if>
     </select>
+    <select id="selectNoPull" resultType="com.xiliulou.afterserver.entity.ProductNew">
+        select id, no from t_product_new
+        where del_flag = 0
+        <if test="no != null and no != ''">
+            and no like concat('%',#{no},'%')
+        </if>
+        limit #{offset}, #{size}
+    </select>
     
     <update id="update">
         update t_product_new
