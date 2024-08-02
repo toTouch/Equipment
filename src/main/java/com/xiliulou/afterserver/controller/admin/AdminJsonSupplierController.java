@@ -54,24 +54,24 @@ public class AdminJsonSupplierController extends BaseController {
         if(StringUtils.isBlank(supplier.getArea())){
             return R.fail("请添加城市");
         }
-        if(StringUtils.isBlank(supplier.getSimpleName())){
-            return R.fail("请添加代码");
-        }else{
-            Matcher matcher = CODE_PATTERN.matcher(supplier.getSimpleName());
-            if (!matcher.matches()) {
-                return R.fail("代码格式不正确");
-            }
-        }
         BaseMapper<Supplier> baseMapper = supplierService.getBaseMapper();
         Supplier supplierOld = baseMapper.selectOne(new QueryWrapper<Supplier>().eq("name", supplier.getName()));
         if(Objects.nonNull(supplierOld)){
             return R.fail("供应商列表已存在【" + supplier.getName()  + "】");
         }
-        supplierOld = baseMapper.selectOne(new QueryWrapper<Supplier>().eq("simple_name", supplier.getSimpleName()));
-        if(Objects.nonNull(supplierOld)){
-            return R.fail("供应商代码已存在【" + supplier.getSimpleName()  + "】");
+        
+        if(StringUtils.isNotBlank(supplier.getSimpleName())){
+            Matcher matcher = CODE_PATTERN.matcher(supplier.getSimpleName());
+            if (!matcher.matches()) {
+                return R.fail("代码格式不正确");
+            }
+            
+            supplierOld = baseMapper.selectOne(new QueryWrapper<Supplier>().eq("simple_name", supplier.getSimpleName()));
+            if(Objects.nonNull(supplierOld)){
+                return R.fail("供应商代码已存在【" + supplier.getSimpleName()  + "】");
+            }
         }
-
+       
         supplier.setCreateTime(System.currentTimeMillis());
         return R.ok(supplierService.save(supplier));
     }
@@ -81,22 +81,21 @@ public class AdminJsonSupplierController extends BaseController {
         if(StringUtils.isBlank(supplier.getArea())){
             return R.fail("请添加城市");
         }
-        if(StringUtils.isBlank(supplier.getSimpleName())){
-            return R.fail("请添加代码");
-        }else{
-            Matcher matcher = CODE_PATTERN.matcher(supplier.getSimpleName());
-            if (!matcher.matches()) {
-                return R.fail("代码格式不正确");
-            }
-        }
         BaseMapper<Supplier> baseMapper = supplierService.getBaseMapper();
         Supplier supplierOld = baseMapper.selectOne(new QueryWrapper<Supplier>().eq("name", supplier.getName()));
         if (Objects.nonNull(supplierOld) && !Objects.equals(supplier.getId(), supplierOld.getId())) {
             return R.fail("供应商列表已存在【" + supplier.getName() + "】");
         }
-        supplierOld = baseMapper.selectOne(new QueryWrapper<Supplier>().eq("simple_name", supplier.getSimpleName()));
-        if (Objects.nonNull(supplierOld) && !Objects.equals(supplier.getId(), supplierOld.getId())) {
-            return R.fail("供应商代码已存在【" + supplier.getSimpleName() + "】");
+        
+        if(StringUtils.isNotBlank(supplier.getSimpleName())){
+            Matcher matcher = CODE_PATTERN.matcher(supplier.getSimpleName());
+            if (!matcher.matches()) {
+                return R.fail("代码格式不正确");
+            }
+            supplierOld = baseMapper.selectOne(new QueryWrapper<Supplier>().eq("simple_name", supplier.getSimpleName()));
+            if (Objects.nonNull(supplierOld) && !Objects.equals(supplier.getId(), supplierOld.getId())) {
+                return R.fail("供应商代码已存在【" + supplier.getSimpleName() + "】");
+            }
         }
         return R.ok(supplierService.updateById(supplier));
     }
