@@ -969,7 +969,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         
         return R.ok(productNewDeliverVoResult);
     }
-     // 这里有问题 没有筛选柜机数据
+     //
     private void fillMaterialHistory(String no, Map<String, List<Material>> materialGroup, MaterialHistoryVo materialHistoryVo) {
         if (true || CollectionUtils.isNotEmpty(materialGroup)) {
             List<MaterialCellVo> y8030010 = generateLists(no,"Y8030010", materialGroup);

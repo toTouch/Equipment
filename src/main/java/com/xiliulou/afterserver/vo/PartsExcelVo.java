@@ -46,6 +46,12 @@ public class PartsExcelVo {
      */
     @ExcelProperty(value = "物料类别")
     private String materialType;
+    
+    /**
+     * 物料别名
+     */
+    @ExcelProperty(value = "物料别名")
+    private String materialAlias;
 
     public static final Integer DEL_NORMAL = 0;
     public static final Integer DEL_DEL = 1;
