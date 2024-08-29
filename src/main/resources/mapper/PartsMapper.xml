@@ -1,114 +1,145 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xiliulou.afterserver.mapper.PartsMapper">
-
-  <resultMap type="com.xiliulou.afterserver.entity.Parts" id="PartsMap">
-    <result property="id" column="id" jdbcType="INTEGER"/>
-    <result property="name" column="name" jdbcType="VARCHAR"/>
-    <result property="purchasePrice" column="purchase_price" jdbcType="DECIMAL"/>
-    <result property="sellPrice" column="sell_price" jdbcType="DECIMAL"/>
-    <result property="createTime" column="create_time" jdbcType="INTEGER"/>
-    <result property="updateTime" column="update_time" jdbcType="INTEGER"/>
-    <result property="sn" column="sn" jdbcType="VARCHAR"/>
-    <result property="delFlag" column="del_flag" jdbcType="INTEGER"/>
-    <result property="specification" column="specification" jdbcType="VARCHAR"/>
-  </resultMap>
-
-  <!--查询单个-->
-  <select id="queryById" resultMap="PartsMap">
-        select
-          id, name, purchase_price, sell_price, sn, create_time, update_time, del_flag , specification, material_type
+    
+    <resultMap type="com.xiliulou.afterserver.entity.Parts" id="PartsMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="purchasePrice" column="purchase_price" jdbcType="DECIMAL"/>
+        <result property="sellPrice" column="sell_price" jdbcType="DECIMAL"/>
+        <result property="createTime" column="create_time" jdbcType="INTEGER"/>
+        <result property="updateTime" column="update_time" jdbcType="INTEGER"/>
+        <result property="sn" column="sn" jdbcType="VARCHAR"/>
+        <result property="delFlag" column="del_flag" jdbcType="INTEGER"/>
+        <result property="specification" column="specification" jdbcType="VARCHAR"/>
+        <result property="materialAlias" column="material_alias" jdbcType="VARCHAR"/>
+    </resultMap>
+    
+    <!--查询单个-->
+    <select id="queryById" resultMap="PartsMap">
+        select id,
+               name,
+               purchase_price,
+               sell_price,
+               sn,
+               create_time,
+               update_time,
+               del_flag,
+               specification,
+               material_type,
+               material_alias
         from t_parts
         where del_flag = 0
-            and id = #{id}
+          and id = #{id}
     </select>
-
-  <!--查询指定行数据-->
-  <select id="queryAllByLimit" resultMap="PartsMap">
-        select
-          id, name, purchase_price, sell_price, sn, create_time, update_time, del_flag, specification, material_type
+    
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="PartsMap">
+        select id,
+               name,
+               purchase_price,
+               sell_price,
+               sn,
+               create_time,
+               update_time,
+               del_flag,
+               specification,
+               material_type,
+               material_alias
         from t_parts
         limit #{offset}, #{limit}
     </select>
-
-  <!--通过实体作为筛选条件查询-->
-  <select id="queryAll" resultMap="PartsMap">
-    select
-    id, name, purchase_price, sell_price, sn, create_time, update_time, del_flag, specification, material_type
-    from t_parts
-    <where>
-      <if test="id != null">
-        and id = #{id}
-      </if>
-      <if test="name != null and name != ''">
-        and name = #{name}
-      </if>
-      <if test="purchasePrice != null">
-        and purchase_price = #{purchasePrice}
-      </if>
-      <if test="sellPrice != null">
-        and sell_price = #{sellPrice}
-      </if>
-      <if test="createTime != null">
-        and create_time = #{createTime}
-      </if>
-      <if test="updateTime != null">
-        and update_time = #{updateTime}
-      </if>
-      <if test="sn != null and sn != ''">
-        and sn = #{sn}
-      </if>
-    </where>
-  </select>
-
-  <!--新增所有列-->
-  <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
-        insert into t_parts(name, purchase_price, sell_price, sn, create_time, update_time, del_flag, specification, material_type)
-        values (#{name}, #{purchasePrice}, #{sellPrice}, #{sn}, #{createTime}, #{updateTime}, #{delFlag}, #{specification}, #{materialType})
-    </insert>
-
-  <!--通过主键修改数据-->
-  <update id="update">
-    update t_parts
-    <set>
-      <if test="name != null and name != ''">
-        name = #{name},
-      </if>
-      <if test="purchasePrice != null">
-        purchase_price = #{purchasePrice},
-      </if>
-      <if test="sellPrice != null">
-        sell_price = #{sellPrice},
-      </if>
-      <if test="createTime != null">
-        create_time = #{createTime},
-      </if>
-      <if test="updateTime != null">
-        update_time = #{updateTime},
-      </if>
-      <if test="sn != null and sn != ''">
-        sn = #{sn},
-      </if>
-      <if test="delFlag != null">
-        del_flag = #{delFlag},
-      </if>
-      <if test="specification != null and specification != ''">
-        specification = #{specification},
-      </if>
-        material_type = #{materialType},
-    </set>
-    where id = #{id}
-  </update>
-
-  <!--通过主键删除-->
-  <delete id="deleteById">
-        delete from t_parts where id = #{id}
-    </delete>
-
-  <select id="queryList" resultMap="PartsMap">
+    
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="PartsMap">
         select
-          id, name, purchase_price, sell_price, sn, create_time, update_time, del_flag, specification, material_type
+        id, name, purchase_price, sell_price, sn, create_time, update_time, del_flag, specification,
+        material_type, material_alias
+        from t_parts
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="purchasePrice != null">
+                and purchase_price = #{purchasePrice}
+            </if>
+            <if test="sellPrice != null">
+                and sell_price = #{sellPrice}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="sn != null and sn != ''">
+                and sn = #{sn}
+            </if>
+            <if test="materialAlias != null and materialAlias != ''">
+                material_alias = #{materialAlias},
+            </if>
+        </where>
+    </select>
+    
+    <!--新增所有列-->
+    <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
+        insert into t_parts(name, purchase_price, sell_price, sn, create_time, update_time, del_flag,
+                            specification, material_type, material_alias)
+        values (#{name}, #{purchasePrice}, #{sellPrice}, #{sn}, #{createTime}, #{updateTime}, #{delFlag},
+                #{specification}, #{materialType}, #{materialAlias})
+    </insert>
+    
+    <!--通过主键修改数据-->
+    <update id="update">
+        update t_parts
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="purchasePrice != null">
+                purchase_price = #{purchasePrice},
+            </if>
+            <if test="sellPrice != null">
+                sell_price = #{sellPrice},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="sn != null and sn != ''">
+                sn = #{sn},
+            </if>
+            <if test="materialAlias != null and materialAlias != ''">
+                material_alias = #{materialAlias},
+            </if>
+            <if test="delFlag != null">
+                del_flag = #{delFlag},
+            </if>
+            <if test="specification != null and specification != ''">
+                specification = #{specification},
+            </if>
+            material_type = #{materialType},
+        </set>
+        where id = #{id}
+    </update>
+    
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from t_parts
+        where id = #{id}
+    </delete>
+    
+    <select id="queryList" resultMap="PartsMap">
+        select
+        id, name, purchase_price, sell_price, sn, create_time, update_time, del_flag, specification,
+        material_type, material_alias
         from t_parts
         <where>
             and del_flag = 0
@@ -122,10 +153,10 @@
         order by create_time desc
         limit #{offset}, #{size}
     </select>
-
+    
     <select id="queryCount" resultType="integer">
         select
-            count(*)
+        count(*)
         from t_parts
         <where>
             and del_flag = 0
@@ -137,17 +168,38 @@
             </if>
         </where>
     </select>
-
+    
     <select id="queryBySn" resultMap="PartsMap">
-        select id, name, purchase_price, sell_price, sn, create_time, update_time, specification, material_type
+        select id,
+               name,
+               purchase_price,
+               sell_price,
+               sn,
+               create_time,
+               update_time,
+               specification,
+               material_type,
+               material_alias
         from t_parts
-        where sn = #{sn} and del_flag = 0
+        where sn = #{sn}
+          and del_flag = 0
     </select>
-
+    
     <select id="queryByNameAndSpecification" resultMap="PartsMap">
-        select id, name, purchase_price, sell_price, sn, create_time, update_time, specification, material_type
+        select id,
+               name,
+               purchase_price,
+               sell_price,
+               sn,
+               create_time,
+               update_time,
+               specification,
+               material_type,
+               material_alias
         from t_parts
-        where name = #{name} and specification = #{specification} and del_flag = 0
+        where name = #{name}
+          and specification = #{specification}
+          and del_flag = 0
     </select>
     
     <select id="listByName" resultType="com.xiliulou.afterserver.entity.Parts">

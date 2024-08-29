@@ -21,6 +21,11 @@ public class PartsQuery {
     @NotNull(message="请填写物料编号")
     private String sn;
     
+    /**
+     * 物料别名
+     */
+    private String materialAlias;
+    
     // 物料类型
     private String materialType;
     private String specification;

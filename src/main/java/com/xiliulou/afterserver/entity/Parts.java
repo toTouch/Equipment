@@ -42,6 +42,11 @@ public class Parts {
      */
     private String materialType;
     
+    /**
+     * 物料别名
+     */
+    private String materialAlias;
+    
     private Long createTime;
     
     private Long updateTime;
