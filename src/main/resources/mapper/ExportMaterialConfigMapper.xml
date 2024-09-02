@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiliulou.afterserver.mapper.ExportMaterialConfigMapper">
+    
+    <resultMap type="com.xiliulou.afterserver.entity.ExportMaterialConfig" id="ExportMaterialConfigMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="pn" column="pn" jdbcType="VARCHAR"/>
+        <result property="materialAlias" column="material_alias" jdbcType="VARCHAR"/>
+        <result property="associationStatus" column="association_status" jdbcType="INTEGER"/>
+        <result property="sort" column="sort" jdbcType="INTEGER"/>
+        <result property="supplierId" column="supplier_id" jdbcType="INTEGER"/>
+    </resultMap>
+    
+    <!--查询单个-->
+    <select id="selectById" resultMap="ExportMaterialConfigMap">
+        select id,
+               pn,
+               material_alias,
+               association_status,
+               sort,
+               supplier_id
+        from t_export_material_config
+        where id = #{id}
+    </select>
+    
+    <!--查询指定行数据-->
+    <select id="selectPage" resultMap="ExportMaterialConfigMap">
+        select
+        id, pn, material_alias, association_status, sort, supplier_id
+        from t_export_material_config
+        <where>
+            <if test="entity.id != null">
+                and id = #{entity.id}
+            </if>
+            <if test="entity.pn != null and entity.pn != ''">
+                and pn = #{entity.pn}
+            </if>
+            <if test="entity.materialAlias != null and entity.materialAlias != ''">
+                and material_alias = #{entity.materialAlias}
+            </if>
+            <if test="entity.associationStatus != null">
+                and association_status = #{entity.associationStatus}
+            </if>
+            <if test="entity.sort != null">
+                and sort = #{entity.sort}
+            </if>
+            <if test="entity.supplierId != null">
+                and supplier_id = #{entity.supplierId}
+            </if>
+        </where>
+        limit #{offset}, #{size}
+    </select>
+    
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from t_export_material_config
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="pn != null and pn != ''">
+                and pn = #{pn}
+            </if>
+            <if test="materialAlias != null and materialAlias != ''">
+                and material_alias = #{materialAlias}
+            </if>
+            <if test="associationStatus != null">
+                and association_status = #{associationStatus}
+            </if>
+            <if test="sort != null">
+                and sort = #{sort}
+            </if>
+            <if test="supplierId != null">
+                and supplier_id = #{supplierId}
+            </if>
+        </where>
+    </select>
+    
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into t_export_material_config(pn, material_alias, association_status, sort, supplier_id)
+        values (#{pn}, #{materialAlias}, #{associationStatus}, #{sort}, #{supplierId})
+    </insert>
+    
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into t_export_material_config(pn, material_alias, association_status, sort, supplier_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.pn}, #{entity.materialAlias}, #{entity.associationStatus}, #{entity.sort}, #{entity.supplierId})
+        </foreach>
+    </insert>
+    
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into t_export_material_config(pn, material_alias, association_status, sort, supplier_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.pn}, #{entity.materialAlias}, #{entity.associationStatus}, #{entity.sort}, #{entity.supplierId})
+        </foreach>
+        on duplicate key update
+        pn = values(pn),
+        material_alias = values(material_alias),
+        association_status = values(association_status),
+        sort = values(sort),
+        supplier_id = values(supplier_id)
+    </insert>
+    
+    <!--通过主键修改数据-->
+    <update id="update">
+        update t_export_material_config
+        <set>
+            <if test="pn != null and pn != ''">
+                pn = #{pn},
+            </if>
+            <if test="materialAlias != null and materialAlias != ''">
+                material_alias = #{materialAlias},
+            </if>
+            <if test="associationStatus != null">
+                association_status = #{associationStatus},
+            </if>
+            <if test="sort != null">
+                sort = #{sort},
+            </if>
+            <if test="supplierId != null">
+                supplier_id = #{supplierId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    
+    <!--逻辑删除数据-->
+    <update id="removeById">
+        update t_export_material_config
+        <set>
+            <if test="pn != null and pn != ''">
+                pn = #{pn},
+            </if>
+            <if test="materialAlias != null and materialAlias != ''">
+                material_alias = #{materialAlias},
+            </if>
+            <if test="associationStatus != null">
+                association_status = #{associationStatus},
+            </if>
+            <if test="sort != null">
+                sort = #{sort},
+            </if>
+            <if test="supplierId != null">
+                supplier_id = #{supplierId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from t_export_material_config
+        where id = #{id}
+    </delete>
+    
+    <!--批量删除数据-->
+    <delete id="deleteAll">
+        delete
+        from t_export_material_config
+    </delete>
+
+</mapper>

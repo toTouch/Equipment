@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class MaterialCellVo {
-    private String pn;
+    private String materialAlias;
     private String sn;
     private String name;
 }
