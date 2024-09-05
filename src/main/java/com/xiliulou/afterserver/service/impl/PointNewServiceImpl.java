@@ -879,6 +879,13 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     @Override
     public R productNewDeliverMaterialHistoryExportExcel(Long[] ids) {
         ArrayList<Map> materialHistoryVos = new ArrayList<>();
+        
+        User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
+// 暂时没有做工厂级别权限控制       if (redisService.hasKey(ExportMaterialConfig.EXPORT_MATERIAL_CONFIG_CALL_BACK + userById.getThirdId())) {
+        if (redisService.hasKey(ExportMaterialConfig.EXPORT_MATERIAL_CONFIG_CALL_BACK)) {
+            return R.failMsg("物料导出配置编辑中，请稍后再试");
+        }
+        
         List<ExportMaterialConfig> exportMaterialConfigs = exportMaterialConfigMapper.selectPage(new ExportMaterialConfig(), 0L, 20L);
         if (CollectionUtils.isEmpty(exportMaterialConfigs)) {
             return R.failMsg("请先配置物料导出顺序");
@@ -932,6 +939,13 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     
     @Override
     public R productNewDeliverMaterialPanelExportExcel(Long[] ids) {
+        User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
+        
+        // 暂时没有做工厂级别权限控制       if (redisService.hasKey(ExportMaterialConfig.EXPORT_MATERIAL_CONFIG_CALL_BACK + userById.getThirdId())) {
+        if (redisService.hasKey(ExportMaterialConfig.EXPORT_MATERIAL_CONFIG_CALL_BACK)) {
+            return R.failMsg("物料导出配置编辑中，请稍后再试");
+        }
+        
         List<ExportMaterialConfig> exportMaterialConfigs = exportMaterialConfigMapper.selectPage(new ExportMaterialConfig(), 0L, 20L);
         if (CollectionUtils.isEmpty(exportMaterialConfigs)) {
             return R.failMsg("请先配置物料导出顺序");
@@ -974,8 +988,12 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             }
             
             ExportMaterialConfig exportMaterialConfig = exportMaterialConfigs.stream().filter(e -> {
-                return Objects.equals(e.getAssociationStatus(), ATMEL);
-            }).findFirst().get();
+                return Objects.equals(e.getPn(), "y5030011");
+            }).findFirst().orElse(null);
+            // 判空
+            if (Objects.isNull(exportMaterialConfig)) {
+                return R.failMsg("物料配置 y5030011 缺失");
+            }
             LinkedHashMap materialHistoryMap = new LinkedHashMap<>();
             if (CollectionUtils.isNotEmpty(materialGroup)) {
                 // 生成列表
@@ -1029,50 +1047,6 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
                 materialHistoryVo.put("AtmelID", "");
             }
         }
-        
-        //        if (CollectionUtils.isNotEmpty(materialGroup)) {
-        //            List<MaterialCellVo> y8030010 = generateLists(no, "Y8030010", exportMaterialConfig.getMaterialAlias(), materialGroup);
-        //            List<MaterialCellVo> y8030017 = generateLists(no, "Y8030017", exportMaterialConfig.getMaterialAlias(), materialGroup);
-        //            List<MaterialCellVo> y5030015 = generateLists(no, "Y5030015", exportMaterialConfig.getMaterialAlias(), materialGroup);
-        //            List<MaterialCellVo> y5030011 = generateLists(no, "Y5030011", exportMaterialConfig.getMaterialAlias(), materialGroup);
-        //            List<MaterialCellVo> y5030010 = generateLists(no, "Y5030010", exportMaterialConfig.getMaterialAlias(), materialGroup);
-        //            List<MaterialCellVo> y5000301 = generateLists(no, "Y5000301", exportMaterialConfig.getMaterialAlias(), materialGroup);
-        //            List<MaterialCellVo> y5030012 = generateLists(no, "Y5030012", exportMaterialConfig.getMaterialAlias(), materialGroup);
-        //            List<MaterialCellVo> y5000322 = generateLists(no, "Y5000322", exportMaterialConfig.getMaterialAlias(), materialGroup);
-        //
-        //            materialHistoryVo.setTouchPanel(y8030010);
-        //            materialHistoryVo.setLinuxBoard(y8030017);
-        //            materialHistoryVo.setSixInOne(y5030015);
-        //            if (CollectionUtils.isNotEmpty(materialGroup.get("Y5030011"))) {
-        //                List<Material> materials = materialGroup.get("Y5030011").stream().filter(x -> Objects.equals(x.getProductNo(), no)).collect(Collectors.toList());
-        //                if (CollectionUtils.isNotEmpty(materials)) {
-        //                    materialHistoryVo.setAtmelID(materials.get(0).getAtmelID());
-        //                }
-        //            }
-        //            materialHistoryVo.setConnectorBoard(y5030011);
-        //            materialHistoryVo.setCommunicationBoard(y5030010);
-        //            materialHistoryVo.setACCharger(y5000301);
-        //            materialHistoryVo.setDCDCBoard(y5030012);
-        //            materialHistoryVo.setModule4G(y5000322);
-        //            if (CollectionUtils.isNotEmpty(materialGroup.get("Y5000322"))) {
-        //                List<Material> materials = materialGroup.get("Y5000322").stream().filter(x -> Objects.equals(x.getProductNo(), no)).collect(Collectors.toList());
-        //                if (CollectionUtils.isNotEmpty(materials)) {
-        //                    materialHistoryVo.setImei(materialGroup.get("Y5000322").get(0).getImei());
-        //                }
-        //            }
-        //            return;
-        //        }
-        //
-        //        materialHistoryVo.setTouchPanel(getMaterialCellVos("Y8030010"));
-        //        materialHistoryVo.setLinuxBoard(getMaterialCellVos("Y8030017"));
-        //        materialHistoryVo.setSixInOne(getMaterialCellVos("Y5030015"));
-        //        materialHistoryVo.setAtmelID("");
-        //        materialHistoryVo.setConnectorBoard(getMaterialCellVos("Y5030011"));
-        //        materialHistoryVo.setCommunicationBoard(getMaterialCellVos("Y5030010"));
-        //        materialHistoryVo.setACCharger(getMaterialCellVos("Y5030010"));
-        //        materialHistoryVo.setDCDCBoard(getMaterialCellVos("Y5030012"));
-        //        materialHistoryVo.setModule4G(getMaterialCellVos("Y5000322"));
-        //        materialHistoryVo.setImei("");
         
     }
     

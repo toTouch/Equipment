@@ -20,8 +20,8 @@ import java.rmi.ServerException;
 import java.util.HashSet;
 import java.util.Set;
 
-@SpringBootTest(classes = AfterServerApplication.class)
-@RunWith(SpringRunner.class)
+//@SpringBootTest(classes = AfterServerApplication.class)
+//@RunWith(SpringRunner.class)
 @ActiveProfiles("loc")
 // @ActiveProfiles("dev")
 @Slf4j
@@ -68,5 +68,16 @@ public class AliProducerTest {
         System.out.println("===================== 换电柜 批量检查自定义设备名称的合法性 ==========================");
         Long result1 = registerDeviceService.batchCheckDeviceNames("a1QqoBrbcT1", s);
         System.out.println(result1);
+    }
+    
+    @Test
+    public void finalTest() {
+        System.out.println("hello world");
+        try {
+            System.out.println("hello world  111");
+            return;
+        }finally {
+            System.out.println("hello world  222");
+        }
     }
 }
