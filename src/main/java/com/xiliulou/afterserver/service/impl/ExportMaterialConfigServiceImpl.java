@@ -5,15 +5,19 @@ import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.mapper.ExportMaterialConfigMapper;
 import com.xiliulou.afterserver.service.ExportMaterialConfigService;
 import com.xiliulou.afterserver.service.UserService;
+import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.cache.redis.RedisService;
-import org.checkerframework.checker.units.qual.A;
+import io.jsonwebtoken.lang.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 物料导出配置表(ExportMaterialConfig)表服务实现类
@@ -75,10 +79,15 @@ public class ExportMaterialConfigServiceImpl implements ExportMaterialConfigServ
      * @return 实例对象
      */
     @Override
-    public Integer insert(List<ExportMaterialConfig> exportMaterialConfigs) {
+    public R insert(List<ExportMaterialConfig> exportMaterialConfigs) {
         if (exportMaterialConfigs.isEmpty()) {
             return null;
         }
+        R<String> checkResult = dataCheck(exportMaterialConfigs);
+        if (checkResult != null) {
+            return checkResult;
+        }
+        
         User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
         for (int i = 0; i < exportMaterialConfigs.size(); i++) {
             exportMaterialConfigs.get(i).setSort(i);
@@ -86,7 +95,20 @@ public class ExportMaterialConfigServiceImpl implements ExportMaterialConfigServ
                 exportMaterialConfigs.get(i).setSupplierId(userById.getThirdId());
             }
         }
-        return this.exportMaterialConfigMapper.insertBatch(exportMaterialConfigs);
+        return R.ok(this.exportMaterialConfigMapper.insertBatch(exportMaterialConfigs));
+    }
+    
+    private static R<String> dataCheck(List<ExportMaterialConfig> exportMaterialConfigs) {
+        // 判断重复
+        Set<String> pns = exportMaterialConfigs.stream().map(ExportMaterialConfig::getPn).collect(Collectors.toSet());
+        if (!CollectionUtils.isEmpty(pns) && Objects.equals(exportMaterialConfigs.size(), pns.size())) {
+            return R.fail("物料编号不可重复");
+        }
+        List<Integer> statusList = exportMaterialConfigs.stream().map(ExportMaterialConfig::getAssociationStatus).collect(Collectors.toList());
+        if (!Collections.isEmpty(statusList) && statusList.size() != statusList.stream().distinct().count()) {
+            return R.fail("关联字段不可重复");
+        }
+        return null;
     }
     
     /**
@@ -96,12 +118,17 @@ public class ExportMaterialConfigServiceImpl implements ExportMaterialConfigServ
      * @return 实例对象
      */
     @Override
-    public Integer update(List<ExportMaterialConfig> exportMaterialConfigs) {
+    public R update(List<ExportMaterialConfig> exportMaterialConfigs) {
         User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
+        R<String> checkResult = dataCheck(exportMaterialConfigs);
+        if (checkResult != null) {
+            return checkResult;
+        }
+        
         // 导出会用到 此配置 故加锁保持一致性
         redisService.set(ExportMaterialConfig.EXPORT_MATERIAL_CONFIG_CALL_BACK + userById.getThirdId(), String.valueOf(System.currentTimeMillis()));
         exportMaterialConfigMapper.deleteAll();
-        Integer result = insert(exportMaterialConfigs);
+        R result = insert(exportMaterialConfigs);
         
         redisService.delete(ExportMaterialConfig.EXPORT_MATERIAL_CONFIG_CALL_BACK + userById.getThirdId());
         return result;

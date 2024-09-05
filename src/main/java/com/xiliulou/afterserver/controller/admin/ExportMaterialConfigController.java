@@ -15,7 +15,7 @@ import javax.annotation.Resource;
  * @since 2024-08-30 11:21:06
  */
 @RestController
-@RequestMapping("exportMaterialConfig")
+@RequestMapping("admin/exportMaterialConfig")
 public class ExportMaterialConfigController {
     
     @Resource
@@ -48,7 +48,7 @@ public class ExportMaterialConfigController {
      */
     @PostMapping
     public R add(@RequestBody List<ExportMaterialConfig>  exportMaterialConfigs) {
-        return R.ok(this.exportMaterialConfigService.insert(exportMaterialConfigs));
+        return this.exportMaterialConfigService.insert(exportMaterialConfigs);
     }
     
     /**
@@ -59,7 +59,7 @@ public class ExportMaterialConfigController {
      */
     @PutMapping
     public R edit(@RequestBody List<ExportMaterialConfig>  exportMaterialConfigs) {
-        return R.ok(this.exportMaterialConfigService.update(exportMaterialConfigs));
+        return this.exportMaterialConfigService.update(exportMaterialConfigs);
     }
     
     /**

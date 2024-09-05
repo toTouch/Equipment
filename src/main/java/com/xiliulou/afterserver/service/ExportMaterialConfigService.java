@@ -1,6 +1,7 @@
 package com.xiliulou.afterserver.service;
 
 import com.xiliulou.afterserver.entity.ExportMaterialConfig;
+import com.xiliulou.afterserver.util.R;
 
 import java.util.List;
 
@@ -42,7 +43,7 @@ public interface ExportMaterialConfigService {
      * @param exportMaterialConfig 实例对象
      * @return 实例对象
      */
-    Integer insert(List<ExportMaterialConfig> exportMaterialConfig);
+    R insert(List<ExportMaterialConfig> exportMaterialConfig);
     
     /**
      * 修改数据
@@ -50,7 +51,7 @@ public interface ExportMaterialConfigService {
      * @param exportMaterialConfig 实例对象
      * @return 实例对象
      */
-    Integer update(List<ExportMaterialConfig> exportMaterialConfigs);
+    R update(List<ExportMaterialConfig> exportMaterialConfigs);
     
     /**
      * 通过主键删除数据
