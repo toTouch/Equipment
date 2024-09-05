@@ -138,6 +138,9 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         if (Objects.nonNull(partsQuery.getMaterialType()) && partsQuery.getMaterialType().length()>30) {
             return R.failMsg("物料类型不能超过30个字符");
         }
+        if (Objects.nonNull(partsQuery.getMaterialAlias()) && partsQuery.getMaterialAlias().length()>50) {
+            return R.failMsg("物料别名不能超过50个字符");
+        }
         Parts partsBySn = queryBySn(partsQuery.getSn());
         if(Objects.nonNull(partsBySn)) {
             return R.fail("物料编码已存在，请检查");
@@ -198,6 +201,9 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     public R updateOne(PartsQuery partsQuery) {
         if (Objects.nonNull(partsQuery.getMaterialType()) && partsQuery.getMaterialType().length()>30) {
             return R.failMsg("物料类型不能超过30个字符");
+        }
+        if (Objects.nonNull(partsQuery.getMaterialAlias()) && partsQuery.getMaterialAlias().length()>50) {
+            return R.failMsg("物料别名不能超过50个字符");
         }
         
         Parts parts = queryByIdFromDB(partsQuery.getId());
