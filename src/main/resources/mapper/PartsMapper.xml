@@ -203,7 +203,7 @@
     </select>
     
     <select id="listByName" resultType="com.xiliulou.afterserver.entity.Parts">
-        select id,name,sn
+        select id,name,sn,material_alias
         from t_parts
         <where>
             del_flag = 0
