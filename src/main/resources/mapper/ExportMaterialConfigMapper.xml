@@ -27,27 +27,27 @@
     <!--查询指定行数据-->
     <select id="selectPage" resultMap="ExportMaterialConfigMap">
         select
-        temc.id, pn, material_alias, association_status, sort, supplier_id,name
+        temc.id, temc.pn, temc.material_alias, temc.association_status, temc.sort, temc.supplier_id,tp.name
         from t_export_material_config temc
         left join t_parts tp on tp.sn = temc.pn
         <where>
             <if test="entity.id != null">
-                and id = #{entity.id}
+                and temc.id = #{entity.id}
             </if>
             <if test="entity.pn != null and entity.pn != ''">
-                and pn = #{entity.pn}
+                and temc.pn = #{entity.pn}
             </if>
             <if test="entity.materialAlias != null and entity.materialAlias != ''">
-                and material_alias = #{entity.materialAlias}
+                and temc.material_alias = #{entity.materialAlias}
             </if>
             <if test="entity.associationStatus != null">
-                and association_status = #{entity.associationStatus}
+                and temc.association_status = #{entity.associationStatus}
             </if>
             <if test="entity.sort != null">
-                and sort = #{entity.sort}
+                and temc.sort = #{entity.sort}
             </if>
             <if test="entity.supplierId != null">
-                and supplier_id = #{entity.supplierId}
+                and temc.supplier_id = #{entity.supplierId}
             </if>
         </where>
         limit #{offset}, #{size}
