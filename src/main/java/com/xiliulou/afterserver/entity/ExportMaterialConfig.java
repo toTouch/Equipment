@@ -27,6 +27,11 @@ public class ExportMaterialConfig implements Serializable {
     private String pn;
     
     /**
+     * 物料名称
+     */
+    private String name;
+    
+    /**
      * 物料别名
      */
     private String materialAlias;

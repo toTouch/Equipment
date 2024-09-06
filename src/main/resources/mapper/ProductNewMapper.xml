@@ -424,4 +424,19 @@
             #{c}
         </foreach>
     </update>
+    <update id="updateTestResultFromBatch">
+        update t_product_new
+        set  test_result = #{testResult}
+        where id in
+        <foreach close=")" collection="ids" item="c" open="(" separator=",">
+            #{c}
+        </foreach>
+
+    </update>
+    <update id="clearTestResult">
+        UPDATE `xiliulou_crm`.`t_product_new` SET `status` = 0, `test_result` = NULL, `is_use` = 1 WHERE no in
+        <foreach close=")" collection="ids" item="c" open="(" separator=",">
+            #{c}
+        </foreach>
+    </update>
 </mapper>

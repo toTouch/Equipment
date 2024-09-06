@@ -1,5 +1,7 @@
 package com.xiliulou.afterserver.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -94,9 +96,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.xiliulou.afterserver.constant.ProductNewStatusSortConstants.STATUS_PRODUCTION;
+import static com.xiliulou.afterserver.constant.ProductNewStatusSortConstants.STATUS_TESTED;
 import static com.xiliulou.afterserver.entity.Batch.ALIYUN_SaaS_ELECTRIC_SWAP_CABINET;
 import static com.xiliulou.afterserver.entity.Batch.API_ELECTRIC_SWAP_CABINET;
 import static com.xiliulou.afterserver.entity.Batch.HUAWEI_CLOUD_SaaS;
@@ -233,7 +236,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
      */
     @Override
     public List<ProductNew> queryAllByLimit(int offset, int limit, ProductNewRequest request, List<Long> list) {
-        String no=request.getNo();
+        String no = request.getNo();
         Long modelId = request.getModelId();
         Long startTime = request.getStartTime();
         Long endTime = request.getEndTime();
@@ -487,8 +490,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     }
     
     @Override
-    public Integer count(int offset, int limit, ProductNewRequest request, List<Long> list){
-        String no=request.getNo();
+    public Integer count(int offset, int limit, ProductNewRequest request, List<Long> list) {
+        String no = request.getNo();
         Long modelId = request.getModelId();
         Long startTime = request.getStartTime();
         Long endTime = request.getEndTime();
@@ -641,7 +644,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
                 AuditProcess auditProcess = auditProcessService.getByType(AuditProcess.TYPE_PRE);
                 Integer status = auditProcessService.getAuditProcessStatus(auditProcess, product);
                 if ((!Objects.equals(status, AuditProcessVo.STATUS_FINISHED) || !Objects.equals(product.getStatus(), ProductNewStatusSortConstants.STATUS_PRE_DETECTION))
-                        && !Objects.equals(product.getStatus(), ProductNewStatusSortConstants.STATUS_TESTED)) {
+                        && !Objects.equals(product.getStatus(), STATUS_TESTED)) {
                     errorStatus.add(product.getNo());
                 }
             }
@@ -661,9 +664,6 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         
         // 更新物联网卡
         ProductNew mainProduct = mainProducts.get(0);
-        
-        
-        
         
         // auditValueService.biandOrUnbindEntry(AuditProcessConstans.PRODUCT_IOT_AUDIT_ENTRY, iotCard.getSn(), mainProduct.getId());
         log.info("url: /app/compression/check mainProduct.getNo: {}", mainProduct.getNo());
@@ -692,7 +692,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         
         IotCard iotCard = iotCardService.queryBySn(compression.getIotCard());
         if (Objects.isNull(iotCard)) {
-            log.info("未查询到物联网卡信息 {}",compression.getIotCard());
+            log.info("未查询到物联网卡信息 {}", compression.getIotCard());
             return R.fail(null, null, "未查询到物联网卡信息");
         }
         
@@ -746,7 +746,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             if (Objects.equals(status, AuditProcessVo.STATUS_FINISHED)) {
                 product.setStatus(ProductNewStatusSortConstants.STATUS_POST_DETECTION);
             } else {
-                product.setStatus(ProductNewStatusSortConstants.STATUS_TESTED);
+                product.setStatus(STATUS_TESTED);
             }
             productNewMapper.updateByNo(product);
         }
@@ -792,7 +792,9 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         }
         
         Page page = PageUtil.getPage(offset, size);
-        page = productNewMapper.selectPage(page, new QueryWrapper<ProductNew>().eq("batch_id", batchId).eq("supplier_id", user.getThirdId()).like(StringUtils.isNotBlank(productNo),"no",productNo).eq("del_flag", ProductNew.DEL_NORMAL));
+        page = productNewMapper.selectPage(page,
+                new QueryWrapper<ProductNew>().eq("batch_id", batchId).eq("supplier_id", user.getThirdId()).like(StringUtils.isNotBlank(productNo), "no", productNo)
+                        .eq("del_flag", ProductNew.DEL_NORMAL));
         
         List<ProductNew> list = page.getRecords();
         if (CollectionUtils.isEmpty(list)) {
@@ -818,8 +820,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     @Override
     public R queryProductNewProcessInfo(String no, HttpServletResponse response) {
         ProductNew productNew = this.queryByNo(no);
-       
-       
+        
         User user = userService.getUserById(SecurityUtils.getUid());
         if (Objects.isNull(user)) {
             log.error("QUERY PROCESS INFO ERROR! not found uid! uid={}", SecurityUtils.getUid());
@@ -1056,13 +1057,13 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     
     private String statusErrorMsg(Integer status) {
         String msg = "";
-        if (Objects.equals(status, ProductNewStatusSortConstants.STATUS_PRODUCTION)) {
+        if (Objects.equals(status, STATUS_PRODUCTION)) {
             msg += "产品生产中，请检验柜机后发货";
         }
         if (Objects.equals(status, ProductNewStatusSortConstants.STATUS_PRE_DETECTION)) {
             msg += "前置检测完成，请将其余检验完成发货";
         }
-        if (Objects.equals(status, ProductNewStatusSortConstants.STATUS_TESTED)) {
+        if (Objects.equals(status, STATUS_TESTED)) {
             msg += "产品已测试，请将其余检验完成发货";
         }
         boolean isDeliver =
@@ -1102,7 +1103,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     }
     
     @Override
-    public R selectListProductNews(Integer offset, Integer limit, ProductNewRequest request ) {
+    public R selectListProductNews(Integer offset, Integer limit, ProductNewRequest request) {
         if (StringUtils.isNotBlank(request.getBatchName())) {
             List<Batch> batches = batchService.queryByName(request.getBatchName());
             if (CollectionUtils.isEmpty(batches)) {
@@ -1397,7 +1398,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         
         IotCard iotCard = iotCardService.queryBySn(compression.getIotCard());
         if (Objects.isNull(iotCard)) {
-            log.info("未查询到物联网卡信息",compression.getIotCard());
+            log.info("未查询到物联网卡信息", compression.getIotCard());
             return R.fail(null, null, "未查询到物联网卡信息");
         }
         
@@ -1466,9 +1467,9 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             if (Objects.equals(status, AuditProcessVo.STATUS_FINISHED)) {
                 product.setStatus(ProductNewStatusSortConstants.STATUS_POST_DETECTION);
             } else {
-                product.setStatus(ProductNewStatusSortConstants.STATUS_TESTED);
+                product.setStatus(STATUS_TESTED);
             }
-            log.info("{} pressure measurement status: {}   Test Result: {}", product.getNo(),product.getStatus(),product.getTestResult());
+            log.info("{} pressure measurement status: {}   Test Result: {}", product.getNo(), product.getStatus(), product.getTestResult());
             productNewMapper.updateByNoNew(product);
         }
         
@@ -1575,9 +1576,9 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             if (Objects.equals(status, AuditProcessVo.STATUS_FINISHED)) {
                 product.setStatus(ProductNewStatusSortConstants.STATUS_POST_DETECTION);
             } else {
-                product.setStatus(ProductNewStatusSortConstants.STATUS_TESTED);
+                product.setStatus(STATUS_TESTED);
             }
-            log.info("{} pressure measurement status: {}   Test Result: {}", product.getNo(),product.getStatus(),product.getTestResult());
+            log.info("{} pressure measurement status: {}   Test Result: {}", product.getNo(), product.getStatus(), product.getTestResult());
             productNewMapper.updateByNoNew(product);
         }
         
@@ -1629,7 +1630,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
                 AuditProcess auditProcess = auditProcessService.getByType(AuditProcess.TYPE_PRE);
                 Integer status = auditProcessService.getAuditProcessStatus(auditProcess, product);
                 if ((!Objects.equals(status, AuditProcessVo.STATUS_FINISHED) || !Objects.equals(product.getStatus(), ProductNewStatusSortConstants.STATUS_PRE_DETECTION))
-                        && !Objects.equals(product.getStatus(), ProductNewStatusSortConstants.STATUS_TESTED)) {
+                        && !Objects.equals(product.getStatus(), STATUS_TESTED)) {
                     errorStatus.add(product.getNo());
                 }
             }
@@ -1770,7 +1771,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             return R.fail("批次号选择有误，请检查");
         }
         // 查询 华为云/阿里云/TCP ds
-       String secret = getGetDeviceSecret(batch, deviceMessageVo);
+        String secret = getGetDeviceSecret(batch, deviceMessageVo);
         
         deviceMessageVo.setDeviceSecret(secret);
         return R.ok(deviceMessageVo);
@@ -1779,8 +1780,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     private String getGetDeviceSecret(Batch batch, DeviceMessageVo deviceMessageVo) {
         QueryDeviceDetailResult queryDeviceDetailResult = new QueryDeviceDetailResult();
         if (ALIYUN_SaaS_ELECTRIC_SWAP_CABINET.equals(batch.getBatteryReplacementCabinetType()) || API_ELECTRIC_SWAP_CABINET.equals(batch.getBatteryReplacementCabinetType())) {
-             queryDeviceDetailResult = registerDeviceService.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
-             return queryDeviceDetailResult.getDeviceSecret();
+            queryDeviceDetailResult = registerDeviceService.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
+            return queryDeviceDetailResult.getDeviceSecret();
         }
         
         if (HUAWEI_CLOUD_SaaS.equals(batch.getBatteryReplacementCabinetType())) {
@@ -1795,7 +1796,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             return secret;
         }
         
-        if (TCP_ELECTRIC_SWAP_CABINET.equals(batch.getBatteryReplacementCabinetType())){
+        if (TCP_ELECTRIC_SWAP_CABINET.equals(batch.getBatteryReplacementCabinetType())) {
             return deviceMessageVo.getDeviceName();
         }
         return null;
@@ -1864,5 +1865,38 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         } else {
             return R.fail("SYSTEM.0002", "参数不合法");
         }
+    }
+    
+    @Override
+    public R updateProductNewStatus(ProductNewQuery productNewQuery) {
+        
+        List<String> sns = StrUtil.split(productNewQuery.getNos(), "\\r?\\n", 0, true, true);
+        if (CollectionUtil.isEmpty(sns)) {
+            return R.fail("SYSTEM.0002", "参数不合法");
+        }
+        if (sns.size() > 20) {
+            return R.fail("SYSTEM.0002", "柜机编码数不能超过20个");
+        }
+        List<ProductNew> beforeModification = productNewMapper.selectList(
+                new LambdaQueryWrapper<ProductNew>().in(ProductNew::getNo, sns).eq(ProductNew::getDelFlag, ProductNew.DEL_NORMAL));
+        List<Long> ids = beforeModification.stream().map(ProductNew::getId).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(ids)) {
+            return R.fail("SYSTEM.0002", "参数不合法");
+        }
+        
+        ProductNew updateProductNew = new ProductNew();
+        updateProductNew.setStatus(productNewQuery.getStatus());
+        updateProductNew.setUpdateTime(System.currentTimeMillis());
+        
+        if (Objects.equals(updateProductNew.getStatus(), STATUS_PRODUCTION)) {
+            productNewMapper.clearTestResult(ids, productNewQuery.getStatus());
+            return R.ok(productNewMapper.updateByConditions(updateProductNew));
+        }else if (Objects.equals(updateProductNew.getStatus(), STATUS_TESTED)){
+            productNewMapper.updateTestResultFromBatch(ids, productNewQuery.getStatus());
+        }else{
+            return R.fail("SYSTEM.0002", "参数不合法");
+        }
+        
+        return null;
     }
 }

@@ -117,4 +117,8 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
      * 查询产品 id, no, supplier_id 信息
      */
     List<ProductNew> selectListByNoList(@Param("noList") List<String> noList);
+    
+    Integer updateTestResultFromBatch(@Param("ids") List<Long> ids, @Param("testResult") Integer testResult);
+    
+    Integer clearTestResult(List<Long> ids, Integer status);
 }
