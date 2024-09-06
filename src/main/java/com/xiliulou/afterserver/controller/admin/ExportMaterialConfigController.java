@@ -58,7 +58,8 @@ public class ExportMaterialConfigController {
      * @return 编辑结果
      */
     @PutMapping
-    public R edit(@RequestBody List<ExportMaterialConfig>  exportMaterialConfigs) {
+    public R
+    edit(@RequestBody List<ExportMaterialConfig>  exportMaterialConfigs) {
         return this.exportMaterialConfigService.update(exportMaterialConfigs);
     }
     

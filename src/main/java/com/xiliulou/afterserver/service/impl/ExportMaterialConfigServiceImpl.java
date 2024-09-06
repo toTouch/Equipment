@@ -101,11 +101,11 @@ public class ExportMaterialConfigServiceImpl implements ExportMaterialConfigServ
     private static R<String> dataCheck(List<ExportMaterialConfig> exportMaterialConfigs) {
         // 判断重复
         Set<String> pns = exportMaterialConfigs.stream().map(ExportMaterialConfig::getPn).collect(Collectors.toSet());
-        if (!CollectionUtils.isEmpty(pns) && Objects.equals(exportMaterialConfigs.size(), pns.size())) {
+        if (!CollectionUtils.isEmpty(pns) && !Objects.equals(exportMaterialConfigs.size(), pns.size())) {
             return R.fail("物料编号不可重复");
         }
         List<Integer> statusList = exportMaterialConfigs.stream().map(ExportMaterialConfig::getAssociationStatus).collect(Collectors.toList());
-        if (!Collections.isEmpty(statusList) && statusList.size() != statusList.stream().distinct().count()) {
+        if (!Collections.isEmpty(statusList) && !Objects.equals(statusList.size(), statusList.stream().distinct().count())) {
             return R.fail("关联字段不可重复");
         }
         return null;

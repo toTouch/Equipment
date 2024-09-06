@@ -23,9 +23,14 @@ public class ProductNewQuery {
      */
     private Long expirationEndTime;
     /**
-     * 状态
+     * 状态 { value:0, label:'生产中' }, { value:1, label:'已发货' }, { value:2, label:'已收货' }, { value:3, label:'使用中' }, { value:4, label:'拆机柜' }, { value:5, label:'已报废' }, { value:6, label:'已测试' }, { value: 7, label: '前置检测完成' }, { value: 8, label: '后置检查完成' }
      */
     private Integer status;
+    
+    /**
+     * nos
+     */
+    private String nos;
     ///**
     // * 外观
     // */

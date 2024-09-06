@@ -9,6 +9,7 @@
         <result property="associationStatus" column="association_status" jdbcType="INTEGER"/>
         <result property="sort" column="sort" jdbcType="INTEGER"/>
         <result property="supplierId" column="supplier_id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
     </resultMap>
     
     <!--查询单个-->
@@ -26,8 +27,9 @@
     <!--查询指定行数据-->
     <select id="selectPage" resultMap="ExportMaterialConfigMap">
         select
-        id, pn, material_alias, association_status, sort, supplier_id
-        from t_export_material_config
+        temc.id, pn, material_alias, association_status, sort, supplier_id,name
+        from t_export_material_config temc
+        left join t_parts tp on tp.sn = temc.pn
         <where>
             <if test="entity.id != null">
                 and id = #{entity.id}

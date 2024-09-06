@@ -178,4 +178,10 @@ public class AdminJsonProductNewController {
         result.put("url", url);
         return R.ok(result);
     }
+    
+    
+    @PostMapping("/admin/productNew/update")
+    public R updateProductNewStatus(ProductNewQuery productNewQuery) {
+        return productNewService.updateProductNewStatus(productNewQuery);
+    }
 }

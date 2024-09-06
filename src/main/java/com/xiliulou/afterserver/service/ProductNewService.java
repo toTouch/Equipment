@@ -139,4 +139,7 @@ public interface ProductNewService extends IService<ProductNew> {
     R compressionEnd2(ApiRequestQuery apiRequestQuery);
     
     R queryCabinetIotType(ApiRequestQuery apiRequestQuery);
+    
+    R updateProductNewStatus(ProductNewQuery productNewQuery);
+    
 }
