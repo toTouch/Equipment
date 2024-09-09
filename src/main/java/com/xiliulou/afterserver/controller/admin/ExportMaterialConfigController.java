@@ -35,7 +35,7 @@ public class ExportMaterialConfigController {
             offset = 0L;
         }
         if (size == null) {
-            size = 10L;
+            size = 30L;
         }
         return R.ok(this.exportMaterialConfigService.listByLimit(exportMaterialConfig, offset, size));
     }
@@ -46,7 +46,7 @@ public class ExportMaterialConfigController {
      * @param exportMaterialConfigs 实体
      * @return 新增结果
      */
-    @PostMapping
+//    @PostMapping
     public R add(@RequestBody List<ExportMaterialConfig>  exportMaterialConfigs) {
         return this.exportMaterialConfigService.insert(exportMaterialConfigs);
     }

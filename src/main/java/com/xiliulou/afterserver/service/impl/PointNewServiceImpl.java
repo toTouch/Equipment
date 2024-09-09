@@ -882,7 +882,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         ArrayList<Map> materialHistoryVos = new ArrayList<>();
         
         User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
-// 暂时没有做工厂级别权限控制       if (redisService.hasKey(ExportMaterialConfig.EXPORT_MATERIAL_CONFIG_CALL_BACK + userById.getThirdId())) {
+        // 暂时没有做工厂级别权限控制       if (redisService.hasKey(ExportMaterialConfig.EXPORT_MATERIAL_CONFIG_CALL_BACK + userById.getThirdId())) {
         if (redisService.hasKey(ExportMaterialConfig.EXPORT_MATERIAL_CONFIG_CALL_BACK)) {
             return R.failMsg("物料导出配置编辑中，请稍后再试");
         }
@@ -989,37 +989,33 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             }
             
             ExportMaterialConfig exportMaterialConfig = exportMaterialConfigs.stream().filter(e -> {
-                return Objects.equals(e.getPn(), "y5030011");
+                return Objects.equals(e.getPn(), "Y5030011");
             }).findFirst().orElse(null);
             // 判空
             if (Objects.isNull(exportMaterialConfig)) {
-                return R.failMsg("物料配置 y5030011 缺失");
+                return R.failMsg("物料配置 Y5030011 缺失");
             }
             LinkedHashMap materialHistoryMap = new LinkedHashMap<>();
-            if (CollectionUtils.isNotEmpty(materialGroup)) {
-                // 生成列表
-                List<Material> y5030011 = materialGroup.get(exportMaterialConfig.getPn());
-                if (CollectionUtils.isNotEmpty(y5030011)) {
-                    List<Material> materials = y5030011.stream().filter(x -> Objects.equals(x.getProductNo(), temp.getNo())).collect(Collectors.toList());
-                    if (CollectionUtils.isNotEmpty(materials)) {
-                        materialHistoryVo.setAtmelID(materials.get(0).getAtmelID());
-                        materialHistoryVo.setProductionTime(materials.get(0).getTestTime());
-                    }
-                }
-                
-                // materialHistoryVo 转 Map
-                String jsonBean = new Gson().toJson(materialHistoryVo);
-                materialHistoryMap = new Gson().fromJson(jsonBean, LinkedHashMap.class);
-                
-                materialHistoryMap.put(exportMaterialConfig.getPn(),
-                        generateLists(temp.getNo(), exportMaterialConfig.getPn(), exportMaterialConfig.getMaterialAlias(), materialGroup));
-            } else {
-                materialHistoryVo.setAtmelID("");
-                materialHistoryMap.put(exportMaterialConfig.getMaterialAlias(), "");
+            
+            // 生成列表
+            List<Material> y5030011 = materialGroup.get(exportMaterialConfig.getPn());
+            Material material = null;
+            if (Objects.nonNull(y5030011)) {
+                material = y5030011.stream().filter(x -> {
+                    return Objects.equals(x.getProductNo(), temp.getNo());
+                }).findFirst().orElse(null);
             }
+            materialHistoryVo.setAtmelID(Objects.nonNull(material) ? material.getAtmelID() : "");
+            materialHistoryVo.setProductionTime(Objects.nonNull(material) ? material.getTestTime() : null);
+            
+            // materialHistoryVo 转 Map
+            String jsonBean = new Gson().toJson(materialHistoryVo);
+            materialHistoryMap = new Gson().fromJson(jsonBean, LinkedHashMap.class);
+            
+            materialHistoryMap.put(exportMaterialConfig.getPn(),
+                    generateLists(temp.getNo(), exportMaterialConfig.getPn(), exportMaterialConfig.getMaterialAlias(), exportMaterialConfig.getName(), materialGroup));
             productNewDeliverVoResult.add(materialHistoryMap);
         }
-        ;
         
         return R.ok(productNewDeliverVoResult);
     }
@@ -1030,7 +1026,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         for (ExportMaterialConfig exportMaterialConfig : exportMaterialConfigs) {
             String pn = exportMaterialConfig.getPn();
             List<MaterialCellVo> tempMaterialCellVoList;
-            tempMaterialCellVoList = generateLists(no, pn, exportMaterialConfig.getMaterialAlias(), materialGroup);
+            tempMaterialCellVoList = generateLists(no, pn, exportMaterialConfig.getMaterialAlias(), exportMaterialConfig.getName(), materialGroup);
             
             materialHistoryVo.put(pn, tempMaterialCellVoList);
             if (associationStatusCheck(materialGroup, exportMaterialConfig, ATMEL, pn)) {
@@ -1062,21 +1058,21 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
                 materialGroup.get(pn));
     }
     
-    private static List<MaterialCellVo> getMaterialCellVos(String materialAlias) {
+    private static List<MaterialCellVo> getMaterialCellVos(String materialAlias, String name) {
         List<MaterialCellVo> defaultList = new ArrayList<>();
         MaterialCellVo materialCellVo = new MaterialCellVo();
         materialCellVo.setMaterialAlias(materialAlias);
         materialCellVo.setSn("");
-        materialCellVo.setName("");
+        materialCellVo.setName(name);
         defaultList.add(materialCellVo);
         return defaultList;
     }
     
-    private List<MaterialCellVo> generateLists(String no, String sn, String materialAlias, Map<String, List<Material>> materialGroup) {
+    private List<MaterialCellVo> generateLists(String no, String sn, String materialAlias, String name, Map<String, List<Material>> materialGroup) {
         List<MaterialCellVo> materialCellVos = new ArrayList<>();
         // 物料分组或物料列表为空时 设置默认值
         if (CollectionUtils.isEmpty(materialGroup) || CollectionUtils.isEmpty(materialGroup.get(sn))) {
-            return getMaterialCellVos(materialAlias);
+            return getMaterialCellVos(materialAlias,name);
         }
         materialGroup.get(sn).forEach(tp -> {
             if (Objects.equals(no, tp.getProductNo())) {
@@ -1088,7 +1084,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             }
         });
         if (CollectionUtils.isEmpty(materialCellVos)) {
-            return getMaterialCellVos(sn);
+            return getMaterialCellVos(sn, name);
         }
         return materialCellVos;
     }
