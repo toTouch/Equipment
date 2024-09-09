@@ -54,5 +54,6 @@ public class ExportMaterialConfig implements Serializable {
     public static final String EXPORT_MATERIAL_CONFIG_CALL_BACK = "ExportMaterialConfig:";
     public static final Integer ATMEL = 0;
     public static final Integer IMEL = 1;
+    public static final Integer TEST_TIME = 2;
 }
 

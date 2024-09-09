@@ -104,8 +104,9 @@ public class ExportMaterialConfigServiceImpl implements ExportMaterialConfigServ
         if (!CollectionUtils.isEmpty(pns) && !Objects.equals(exportMaterialConfigs.size(), pns.size())) {
             return R.fail("物料编号不可重复");
         }
-        List<Integer> statusList = exportMaterialConfigs.stream().map(ExportMaterialConfig::getAssociationStatus).collect(Collectors.toList());
-        if (!Collections.isEmpty(statusList) && !Objects.equals(statusList.size(), statusList.stream().distinct().count())) {
+        List<Integer> statusList = exportMaterialConfigs.stream().filter(i -> Objects.nonNull(i.getAssociationStatus())).map(ExportMaterialConfig::getAssociationStatus)
+                .collect(Collectors.toList());
+        if (!Collections.isEmpty(statusList) && statusList.size() != statusList.stream().distinct().count()) {
             return R.fail("关联字段不可重复");
         }
         return null;

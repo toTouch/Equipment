@@ -95,6 +95,7 @@ import java.util.stream.Collectors;
 
 import static com.xiliulou.afterserver.entity.ExportMaterialConfig.ATMEL;
 import static com.xiliulou.afterserver.entity.ExportMaterialConfig.IMEL;
+import static com.xiliulou.afterserver.entity.ExportMaterialConfig.TEST_TIME;
 
 /**
  * (PointNew)表服务实现类
@@ -1042,9 +1043,15 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
                 if (CollectionUtils.isNotEmpty(materials)) {
                     materialHistoryVo.put("IMEI", materialGroup.get(pn).get(0).getImei()); //setImei(materialGroup.get(pn).get(0).getImei());
                 }
+            } else if (associationStatusCheck(materialGroup, exportMaterialConfig, TEST_TIME, pn)) {
+                List<Material> materials = materialGroup.get(pn).stream().filter(x -> Objects.equals(x.getProductNo(), no)).collect(Collectors.toList());
+                if (CollectionUtils.isNotEmpty(materials)) {
+                    materialHistoryVo.put("testTime", materialGroup.get(pn).get(0).getTestTime());
+                }
             } else {
                 materialHistoryVo.put("IMEI", "");
                 materialHistoryVo.put("AtmelID", "");
+                materialHistoryVo.put("testTime", "");
             }
         }
         
