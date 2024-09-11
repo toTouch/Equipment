@@ -1427,11 +1427,13 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         for (String no : compression.getNoList()) {
             ProductNew productOld = this.queryByNo(no);
             if (Objects.isNull(productOld)) {
+                log.info("productOld 未查询到资产编码信息:{}", no);
                 continue;
             }
             
             ProductNew product = productNewMapper.queryByNo(no);
             if (Objects.isNull(product)) {
+                log.info("product 未查询到资产编码信息:{}", no);
                 continue;
             }
             
@@ -1445,6 +1447,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             
             CompressionRecord compressionRecord = compressionRecordMapper.queryCompressionByPid(product.getId());
             if (Objects.isNull(compressionRecord)) {
+                log.error("{} Tested Success/Failure Non-Testing Status", no);
                 continue;
             }
             compressionRecord.setTestFile(compression.getCompressionFile());
