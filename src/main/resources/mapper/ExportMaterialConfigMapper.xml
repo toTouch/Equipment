@@ -173,12 +173,12 @@
         update t_export_material_config
         <set>
             <if test="materialId != null">
-                materialId = #{materialId},
+                material_id = #{materialId},
             </if>
             <if test="pn != null and pn != ''">
                 pn = #{pn},
             </if>
-            <if test="materialAlias != null and materialAlias != ''">
+            <if test="materialAlias != null">
                 material_alias = #{materialAlias},
             </if>
             <if test="materialAssociation != null">
@@ -191,7 +191,7 @@
                 supplier_id = #{supplierId},
             </if>
         </set>
-        where materialId = #{materialId}
+        where material_id = #{materialId}
     </update>
     
     <!--通过主键删除-->
