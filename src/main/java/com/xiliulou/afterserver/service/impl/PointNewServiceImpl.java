@@ -40,6 +40,7 @@ import com.xiliulou.afterserver.mapper.SupplierMapper;
 import com.xiliulou.afterserver.service.BatchService;
 import com.xiliulou.afterserver.service.CityService;
 import com.xiliulou.afterserver.service.CustomerService;
+import com.xiliulou.afterserver.service.ExportMaterialConfigService;
 import com.xiliulou.afterserver.service.FileService;
 import com.xiliulou.afterserver.service.MaintenanceUserNotifyConfigService;
 import com.xiliulou.afterserver.service.PointNewAuditRecordService;
@@ -168,7 +169,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     private SupplierMapper supplierMapper;
     
     @Autowired
-    private ExportMaterialConfigMapper exportMaterialConfigMapper;
+    private ExportMaterialConfigService exportMaterialConfigService;
     
     
     /**
@@ -887,7 +888,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             return R.failMsg("物料导出配置编辑中，请稍后再试");
         }
         
-        List<ExportMaterialConfig> exportMaterialConfigs = exportMaterialConfigMapper.selectPage(new ExportMaterialConfig(), 0L, 20L);
+        List<ExportMaterialConfig> exportMaterialConfigs = exportMaterialConfigService.listByLimit(new ExportMaterialConfig(), 0L, 20L);
         if (CollectionUtils.isEmpty(exportMaterialConfigs)) {
             return R.failMsg("请先配置物料导出顺序");
         }
@@ -947,7 +948,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             return R.failMsg("物料导出配置编辑中，请稍后再试");
         }
         
-        List<ExportMaterialConfig> exportMaterialConfigs = exportMaterialConfigMapper.selectPage(new ExportMaterialConfig(), 0L, 20L);
+        List<ExportMaterialConfig> exportMaterialConfigs = exportMaterialConfigService.listByLimit(new ExportMaterialConfig(), 0L, 20L);
         if (CollectionUtils.isEmpty(exportMaterialConfigs)) {
             return R.failMsg("请先配置物料导出顺序");
         }
@@ -1034,28 +1035,38 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
                 if (CollectionUtils.isNotEmpty(materials)) {
                     materialHistoryVo.put("AtmelID", materials.get(0).getAtmelID());// setAtmelID(materials.get(0).getAtmelID());
                 }
-            } else if (associationStatusCheck(materialGroup, exportMaterialConfig, IMEL, pn)) {
+            }
+            
+            if (associationStatusCheck(materialGroup, exportMaterialConfig, IMEL, pn)) {
                 List<Material> materials = materialGroup.get(pn).stream().filter(x -> Objects.equals(x.getProductNo(), no)).collect(Collectors.toList());
                 if (CollectionUtils.isNotEmpty(materials)) {
                     materialHistoryVo.put("IMEI", materialGroup.get(pn).get(0).getImei()); //setImei(materialGroup.get(pn).get(0).getImei());
                 }
-            } else if (associationStatusCheck(materialGroup, exportMaterialConfig, TEST_TIME, pn)) {
+            }
+            
+            if (associationStatusCheck(materialGroup, exportMaterialConfig, TEST_TIME, pn)) {
                 List<Material> materials = materialGroup.get(pn).stream().filter(x -> Objects.equals(x.getProductNo(), no)).collect(Collectors.toList());
                 if (CollectionUtils.isNotEmpty(materials)) {
                     materialHistoryVo.put("testTime", materialGroup.get(pn).get(0).getTestTime());
                 }
-            } else {
-                materialHistoryVo.put("IMEI", "");
-                materialHistoryVo.put("AtmelID", "");
-                materialHistoryVo.put("testTime", "");
             }
+        }
+        
+        if (!materialHistoryVo.containsKey("AtmelID")) {
+            materialHistoryVo.put("AtmelID", "");
+        }
+        if (!materialHistoryVo.containsKey("IMEI")) {
+            materialHistoryVo.put("IMEI", "");
+        }
+        if (!materialHistoryVo.containsKey("testTime")) {
+            materialHistoryVo.put("testTime", "");
         }
         
     }
     
     private static boolean associationStatusCheck(Map<String, List<Material>> materialGroup, ExportMaterialConfig exportMaterialConfig, Integer associationStatus, String pn) {
-        return CollectionUtils.isNotEmpty(materialGroup) && Objects.equals(exportMaterialConfig.getAssociationStatus(), associationStatus) && CollectionUtils.isNotEmpty(
-                materialGroup.get(pn));
+        return CollectionUtils.isNotEmpty(materialGroup) && CollectionUtils.isNotEmpty(exportMaterialConfig.getAssociationStatus()) && exportMaterialConfig.getAssociationStatus()
+                .contains(associationStatus) && CollectionUtils.isNotEmpty(materialGroup.get(pn));
     }
     
     private static List<MaterialCellVo> getMaterialCellVos(String materialAlias, String name) {
@@ -1072,7 +1083,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         List<MaterialCellVo> materialCellVos = new ArrayList<>();
         // 物料分组或物料列表为空时 设置默认值
         if (CollectionUtils.isEmpty(materialGroup) || CollectionUtils.isEmpty(materialGroup.get(sn))) {
-            return getMaterialCellVos(materialAlias,name);
+            return getMaterialCellVos(materialAlias, name);
         }
         materialGroup.get(sn).forEach(tp -> {
             if (Objects.equals(no, tp.getProductNo())) {

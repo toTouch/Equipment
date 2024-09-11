@@ -1,10 +1,12 @@
 package com.xiliulou.afterserver.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -20,6 +22,11 @@ public class ExportMaterialConfig implements Serializable {
     private static final long serialVersionUID = 224791474276661788L;
     
     private Integer id;
+    
+    /**
+     * 物料种类ID
+     */
+    private Long materialId;
     
     /**
      * 物料种类SN(PN)
@@ -39,7 +46,11 @@ public class ExportMaterialConfig implements Serializable {
     /**
      * 关联状态(0：Atmel  1：IMEL code)
      */
-    private Integer associationStatus;
+    @TableField(exist = false)
+    private List<Integer> associationStatus;
+    
+    @TableField("association_status")
+    private String materialAssociation;
     
     /**
      * 顺序

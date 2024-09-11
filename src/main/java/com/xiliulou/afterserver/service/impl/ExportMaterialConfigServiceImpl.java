@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.xiliulou.afterserver.entity.ExportMaterialConfig;
 import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.mapper.ExportMaterialConfigMapper;
@@ -48,6 +49,11 @@ public class ExportMaterialConfigServiceImpl implements ExportMaterialConfigServ
         return this.exportMaterialConfigMapper.selectById(id);
     }
     
+    @Override
+    public Integer updateByMaterialId(ExportMaterialConfig exportMaterialConfig) {
+        return this.exportMaterialConfigMapper.updateByMaterialId(exportMaterialConfig);
+    }
+    
     /**
      * 分页查询
      *
@@ -58,7 +64,17 @@ public class ExportMaterialConfigServiceImpl implements ExportMaterialConfigServ
      */
     @Override
     public List<ExportMaterialConfig> listByLimit(ExportMaterialConfig exportMaterialConfig, Long offset, Long size) {
-        return this.exportMaterialConfigMapper.selectPage(exportMaterialConfig, offset, size);
+        List<ExportMaterialConfig> exportMaterialConfigs = this.exportMaterialConfigMapper.selectPage(exportMaterialConfig, offset, size);
+        for (ExportMaterialConfig materialConfig : exportMaterialConfigs) {
+            String associationStatusStr = materialConfig.getMaterialAssociation();
+            if (associationStatusStr != null && !associationStatusStr.isEmpty()) {
+                List<Integer> integerList = JSONArray.parseArray(materialConfig.getMaterialAssociation(), Integer.class);
+                materialConfig.setAssociationStatus(integerList);
+            } else {
+                materialConfig.setAssociationStatus(List.of());
+            }
+        }
+        return exportMaterialConfigs;
     }
     
     /**
@@ -104,11 +120,14 @@ public class ExportMaterialConfigServiceImpl implements ExportMaterialConfigServ
         if (!CollectionUtils.isEmpty(pns) && !Objects.equals(exportMaterialConfigs.size(), pns.size())) {
             return R.fail("物料编号不可重复");
         }
-        List<Integer> statusList = exportMaterialConfigs.stream().filter(i -> Objects.nonNull(i.getAssociationStatus())).map(ExportMaterialConfig::getAssociationStatus)
+        List<Integer> statusList = exportMaterialConfigs.stream().filter(i -> !CollectionUtils.isEmpty(i.getAssociationStatus())).flatMap(i -> i.getAssociationStatus().stream())
                 .collect(Collectors.toList());
         if (!Collections.isEmpty(statusList) && statusList.size() != statusList.stream().distinct().count()) {
             return R.fail("关联字段不可重复");
         }
+        exportMaterialConfigs.forEach(exportMaterialConfig -> {
+            exportMaterialConfig.setMaterialAssociation(exportMaterialConfig.getAssociationStatus().toString());
+        });
         return null;
     }
     
@@ -120,18 +139,18 @@ public class ExportMaterialConfigServiceImpl implements ExportMaterialConfigServ
      */
     @Override
     public R update(List<ExportMaterialConfig> exportMaterialConfigs) {
-        User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
+        //        User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
         R<String> checkResult = dataCheck(exportMaterialConfigs);
         if (checkResult != null) {
             return checkResult;
         }
         
         // 导出会用到 此配置 故加锁保持一致性
-        redisService.set(ExportMaterialConfig.EXPORT_MATERIAL_CONFIG_CALL_BACK + userById.getThirdId(), String.valueOf(System.currentTimeMillis()));
+        //        redisService.set(ExportMaterialConfig.EXPORT_MATERIAL_CONFIG_CALL_BACK + userById.getThirdId(), String.valueOf(System.currentTimeMillis()));
         exportMaterialConfigMapper.deleteAll();
         R result = insert(exportMaterialConfigs);
         
-        redisService.delete(ExportMaterialConfig.EXPORT_MATERIAL_CONFIG_CALL_BACK + userById.getThirdId());
+        //        redisService.delete(ExportMaterialConfig.EXPORT_MATERIAL_CONFIG_CALL_BACK + userById.getThirdId());
         return result;
     }
     

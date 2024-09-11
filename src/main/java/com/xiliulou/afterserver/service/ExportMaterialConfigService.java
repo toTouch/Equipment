@@ -21,6 +21,8 @@ public interface ExportMaterialConfigService {
      */
     ExportMaterialConfig queryById(Integer id);
     
+    Integer updateByMaterialId(ExportMaterialConfig exportMaterialConfig);
+    
     /**
      * 分页查询
      *
