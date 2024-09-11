@@ -88,5 +88,9 @@ public interface ExportMaterialConfigMapper {
     int removeById(Integer id);
     
     int deleteAll();
+    
+    ExportMaterialConfig selectByPn(String pn);
+    
+    int updateByMaterialId(ExportMaterialConfig exportMaterialConfig);
 }
 

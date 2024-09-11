@@ -115,7 +115,7 @@
             <if test="sn != null and sn != ''">
                 sn = #{sn},
             </if>
-            <if test="materialAlias != null and materialAlias != ''">
+            <if test="materialAlias != null">
                 material_alias = #{materialAlias},
             </if>
             <if test="delFlag != null">

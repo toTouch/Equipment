@@ -4,9 +4,10 @@
     
     <resultMap type="com.xiliulou.afterserver.entity.ExportMaterialConfig" id="ExportMaterialConfigMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="materialId" column="material_id" jdbcType="INTEGER"/>
         <result property="pn" column="pn" jdbcType="VARCHAR"/>
         <result property="materialAlias" column="material_alias" jdbcType="VARCHAR"/>
-        <result property="associationStatus" column="association_status" jdbcType="INTEGER"/>
+        <result property="materialAssociation" column="association_status" jdbcType="VARCHAR"/>
         <result property="sort" column="sort" jdbcType="INTEGER"/>
         <result property="supplierId" column="supplier_id" jdbcType="INTEGER"/>
         <result property="name" column="name" jdbcType="VARCHAR"/>
@@ -14,7 +15,7 @@
     
     <!--查询单个-->
     <select id="selectById" resultMap="ExportMaterialConfigMap">
-        select id,
+        select id,material_id,
                pn,
                material_alias,
                association_status,
@@ -24,10 +25,20 @@
         where id = #{id}
     </select>
     
+    <select id="selectByPn" resultType="com.xiliulou.afterserver.entity.ExportMaterialConfig">
+        select id,material_id,
+               pn,
+               material_alias,
+               association_status,
+               sort,
+               supplier_id
+        from t_export_material_config
+        where pn = #{pn}
+    </select>
     <!--查询指定行数据-->
     <select id="selectPage" resultMap="ExportMaterialConfigMap">
         select
-        temc.id, temc.pn, temc.material_alias, temc.association_status, temc.sort, temc.supplier_id,tp.name
+        temc.id,temc.material_id, temc.pn, temc.material_alias, temc.association_status, temc.sort, temc.supplier_id,tp.name
         from t_export_material_config temc
         left join t_parts tp on tp.sn = temc.pn
         <where>
@@ -40,8 +51,8 @@
             <if test="entity.materialAlias != null and entity.materialAlias != ''">
                 and temc.material_alias = #{entity.materialAlias}
             </if>
-            <if test="entity.associationStatus != null">
-                and temc.association_status = #{entity.associationStatus}
+            <if test="entity.materialAssociation != null and entity.materialAssociation != ''">
+                and temc.association_status = #{entity.materialAssociation}
             </if>
             <if test="entity.sort != null">
                 and temc.sort = #{entity.sort}
@@ -67,8 +78,8 @@
             <if test="materialAlias != null and materialAlias != ''">
                 and material_alias = #{materialAlias}
             </if>
-            <if test="associationStatus != null">
-                and association_status = #{associationStatus}
+            <if test="materialAssociation != null and materialAssociation != ''">
+                and association_status = #{materialAssociation}
             </if>
             <if test="sort != null">
                 and sort = #{sort}
@@ -81,23 +92,23 @@
     
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into t_export_material_config(pn, material_alias, association_status, sort, supplier_id)
-        values (#{pn}, #{materialAlias}, #{associationStatus}, #{sort}, #{supplierId})
+        insert into t_export_material_config(material_id, pn, material_alias, association_status, sort, supplier_id)
+        values (#{materialId}, #{pn}, #{materialAlias}, #{materialAssociation}, #{sort}, #{supplierId})
     </insert>
     
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into t_export_material_config(pn, material_alias, association_status, sort, supplier_id)
+        insert into t_export_material_config(material_id,pn, material_alias, association_status, sort, supplier_id)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.pn}, #{entity.materialAlias}, #{entity.associationStatus}, #{entity.sort}, #{entity.supplierId})
+            (#{entity.materialId},#{entity.pn}, #{entity.materialAlias}, #{entity.materialAssociation}, #{entity.sort}, #{entity.supplierId})
         </foreach>
     </insert>
     
     <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into t_export_material_config(pn, material_alias, association_status, sort, supplier_id)
+        insert into t_export_material_config(material_id,pn, material_alias, association_status, sort, supplier_id)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.pn}, #{entity.materialAlias}, #{entity.associationStatus}, #{entity.sort}, #{entity.supplierId})
+            (#{entity.materialId},#{entity.pn}, #{entity.materialAlias}, #{entity.materialAssociation}, #{entity.sort}, #{entity.supplierId})
         </foreach>
         on duplicate key update
         pn = values(pn),
@@ -111,14 +122,17 @@
     <update id="update">
         update t_export_material_config
         <set>
+            <if test="materialId != null">
+                material_id = #{materialId},
+            </if>
             <if test="pn != null and pn != ''">
                 pn = #{pn},
             </if>
             <if test="materialAlias != null and materialAlias != ''">
                 material_alias = #{materialAlias},
             </if>
-            <if test="associationStatus != null">
-                association_status = #{associationStatus},
+            <if test="materialAssociation != null and materialAssociation != ''">
+                association_status = #{materialAssociation},
             </if>
             <if test="sort != null">
                 sort = #{sort},
@@ -134,14 +148,17 @@
     <update id="removeById">
         update t_export_material_config
         <set>
+            <if test="materialId != null">
+                material_id = #{materialId},
+            </if>
             <if test="pn != null and pn != ''">
                 pn = #{pn},
             </if>
             <if test="materialAlias != null and materialAlias != ''">
                 material_alias = #{materialAlias},
             </if>
-            <if test="associationStatus != null">
-                association_status = #{associationStatus},
+            <if test="materialAssociation != null">
+                association_status = #{materialAssociation},
             </if>
             <if test="sort != null">
                 sort = #{sort},
@@ -151,6 +168,30 @@
             </if>
         </set>
         where id = #{id}
+    </update>
+    <update id="updateByMaterialId">
+        update t_export_material_config
+        <set>
+            <if test="materialId != null">
+                materialId = #{materialId},
+            </if>
+            <if test="pn != null and pn != ''">
+                pn = #{pn},
+            </if>
+            <if test="materialAlias != null and materialAlias != ''">
+                material_alias = #{materialAlias},
+            </if>
+            <if test="materialAssociation != null">
+                association_status = #{materialAssociation},
+            </if>
+            <if test="sort != null">
+                sort = #{sort},
+            </if>
+            <if test="supplierId != null">
+                supplier_id = #{supplierId},
+            </if>
+        </set>
+        where materialId = #{materialId}
     </update>
     
     <!--通过主键删除-->

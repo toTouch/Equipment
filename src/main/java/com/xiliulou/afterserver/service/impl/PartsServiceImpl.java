@@ -2,10 +2,12 @@ package com.xiliulou.afterserver.service.impl;
 
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiliulou.afterserver.entity.ExportMaterialConfig;
 import com.xiliulou.afterserver.entity.MaterialBatch;
 import com.xiliulou.afterserver.entity.Parts;
 import com.xiliulou.afterserver.mapper.MaterialBatchMapper;
 import com.xiliulou.afterserver.mapper.PartsMapper;
+import com.xiliulou.afterserver.service.ExportMaterialConfigService;
 import com.xiliulou.afterserver.service.PartsService;
 import com.xiliulou.afterserver.vo.PartsExcelVo;
 import com.xiliulou.afterserver.web.query.PartsQuery;
@@ -22,6 +24,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +47,9 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     
     @Resource
     private MaterialBatchMapper materialBatchMapper;
+
+    @Autowired
+    private ExportMaterialConfigService exportMaterialConfigService;
 
     /**
      * 通过ID查询单条数据从DB
@@ -230,6 +236,12 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         BeanUtils.copyProperties(partsQuery, updateParts);
         parts.setUpdateTime(System.currentTimeMillis());
         this.partsMapper.update(updateParts);
+        ExportMaterialConfig exportMaterialConfig = new ExportMaterialConfig();
+        exportMaterialConfig.setMaterialId(updateParts.getId());
+        exportMaterialConfig.setPn(updateParts.getSn());
+        exportMaterialConfig.setName(updateParts.getName());
+        exportMaterialConfig.setMaterialAlias(updateParts.getMaterialAlias());
+        exportMaterialConfigService.updateByMaterialId(exportMaterialConfig);
         return R.ok();
     }
 
