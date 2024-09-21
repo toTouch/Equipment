@@ -1040,14 +1040,14 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             if (associationStatusCheck(materialGroup, exportMaterialConfig, IMEL, pn)) {
                 List<Material> materials = materialGroup.get(pn).stream().filter(x -> Objects.equals(x.getProductNo(), no)).collect(Collectors.toList());
                 if (CollectionUtils.isNotEmpty(materials)) {
-                    materialHistoryVo.put("IMEI", materialGroup.get(pn).get(0).getImei()); //setImei(materialGroup.get(pn).get(0).getImei());
+                    materialHistoryVo.put("IMEI", materials.get(0).getImei()); //setImei(materialGroup.get(pn).get(0).getImei());
                 }
             }
             
             if (associationStatusCheck(materialGroup, exportMaterialConfig, TEST_TIME, pn)) {
                 List<Material> materials = materialGroup.get(pn).stream().filter(x -> Objects.equals(x.getProductNo(), no)).collect(Collectors.toList());
                 if (CollectionUtils.isNotEmpty(materials)) {
-                    materialHistoryVo.put("testTime", materialGroup.get(pn).get(0).getTestTime());
+                    materialHistoryVo.put("testTime", materials.get(0).getTestTime());
                 }
             }
         }
