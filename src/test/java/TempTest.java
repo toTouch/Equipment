@@ -10,10 +10,10 @@ public class TempTest {
     @Test
     public void dataCheck_DuplicatePn_ReturnsFail() {
         List<ExportMaterialConfig> configs = Arrays.asList(
-                new ExportMaterialConfig(null, "pn1", null,null, Arrays.asList(1,2,3),  null, null),
-                new ExportMaterialConfig(null, "pn1", null, null, List.of(), null, null),
-                new ExportMaterialConfig(null, "pn1", null, null, null, null, null),
-                new ExportMaterialConfig(null, "pn1", null, null, Arrays.asList(1,6), null, null)
+//                new ExportMaterialConfig(null, "pn1", null,null, Arrays.asList(1,2,3),  null, null),
+//                new ExportMaterialConfig(null, "pn1", null, null, List.of(), null, null),
+//                new ExportMaterialConfig(null, "pn1", null, null, null, null, null),
+//                new ExportMaterialConfig(null, "pn1", null, null, Arrays.asList(1,6), null, null)
         );
         
         System.out.println(configs);

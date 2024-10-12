@@ -54,10 +54,11 @@ import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.service.UserService;
 import com.xiliulou.afterserver.service.WarehouseService;
-import com.xiliulou.afterserver.util.DeviceSolutionUtil;
+import com.xiliulou.afterserver.util.device.registration.HWDeviceSolutionUtil;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
+import com.xiliulou.afterserver.util.device.registration.SaasTCPDeviceSolutionUtil;
 import com.xiliulou.afterserver.web.query.ApiRequestQuery;
 import com.xiliulou.afterserver.web.query.CabinetCompressionQuery;
 import com.xiliulou.afterserver.web.query.CompressionQuery;
@@ -118,7 +119,10 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     public static final int MAX_BYTES_ERROR_MESSAGE = 190;
     
     @Autowired
-    private DeviceSolutionUtil deviceSolutionUtil;
+    private HWDeviceSolutionUtil hwDeviceSolutionUtil;
+    
+    @Autowired
+    private SaasTCPDeviceSolutionUtil saasTCPDeviceSolutionUtil;
     
     @Autowired
     private RegisterDeviceService registerDeviceService;
@@ -1786,9 +1790,20 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             queryDeviceDetailResult = registerDeviceService.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
             return queryDeviceDetailResult.getDeviceSecret();
         }
+        if (TCP_ELECTRIC_SWAP_CABINET.equals(batch.getBatteryReplacementCabinetType())) {
+            ShowDeviceResponse showDeviceResponse =null;// saasTCPDeviceSolutionUtil.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
+            String secret = "";
+            
+            if (Objects.nonNull(showDeviceResponse) && Objects.nonNull(showDeviceResponse.getAuthInfo())) {
+                secret = showDeviceResponse.getAuthInfo().getSecret();
+            } else {
+                secret = null;
+            }
+            return secret;
+        }
         
         if (HUAWEI_CLOUD_SaaS.equals(batch.getBatteryReplacementCabinetType())) {
-            ShowDeviceResponse showDeviceResponse = deviceSolutionUtil.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
+            ShowDeviceResponse showDeviceResponse = hwDeviceSolutionUtil.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
             String secret = "";
             
             if (Objects.nonNull(showDeviceResponse) && Objects.nonNull(showDeviceResponse.getAuthInfo())) {
@@ -1821,7 +1836,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         if (Objects.isNull(batch)) {
             return R.fail("批次号选择有误，请检查");
         }
-        // 查询 华为云/阿里云/TCP ds
+        // 查询 华为云/阿里云/阿里TCP/TCP ds
         String secret = getGetDeviceSecret(batch, deviceMessageVo);
         
         deviceMessageVo.setDeviceSecret(secret);

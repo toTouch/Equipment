@@ -1,4 +1,4 @@
-package com.xiliulou.afterserver.util;
+package com.xiliulou.afterserver.util.device.registration;
 
 import com.google.common.util.concurrent.RateLimiter;
 import com.huaweicloud.sdk.core.auth.AbstractCredentials;
@@ -29,7 +29,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Component
-public class DeviceSolutionUtil {
+public class HWDeviceSolutionUtil {
     
     @Autowired
     private ProductConfig productConfig;
