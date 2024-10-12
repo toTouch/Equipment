@@ -54,6 +54,7 @@ import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.service.UserService;
 import com.xiliulou.afterserver.service.WarehouseService;
+import com.xiliulou.afterserver.util.device.DeviceBase;
 import com.xiliulou.afterserver.util.device.registration.HWDeviceSolutionUtil;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
@@ -1791,11 +1792,11 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             return queryDeviceDetailResult.getDeviceSecret();
         }
         if (TCP_ELECTRIC_SWAP_CABINET.equals(batch.getBatteryReplacementCabinetType())) {
-            ShowDeviceResponse showDeviceResponse =null;// saasTCPDeviceSolutionUtil.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
+            DeviceBase showDeviceResponse = saasTCPDeviceSolutionUtil.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
             String secret = "";
             
-            if (Objects.nonNull(showDeviceResponse) && Objects.nonNull(showDeviceResponse.getAuthInfo())) {
-                secret = showDeviceResponse.getAuthInfo().getSecret();
+            if (Objects.nonNull(showDeviceResponse)) {
+                secret = showDeviceResponse.getDeviceSecret();
             } else {
                 secret = null;
             }
