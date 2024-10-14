@@ -17,6 +17,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -77,7 +78,7 @@ public class SaasTCPDeviceSolutionUtil {
             if (execute.isSuccessful()) {
                 log.info("request success, response: {}", execute.body());
                 if ((Objects.isNull(execute) || Objects.isNull(execute.body()))) {
-                    return null;
+                    return new DeviceBase();
                 }
                 
                 R result = (R) execute.body();
@@ -95,7 +96,7 @@ public class SaasTCPDeviceSolutionUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        return new DeviceBase();
     }
     
     /**
@@ -105,7 +106,7 @@ public class SaasTCPDeviceSolutionUtil {
         // 设备是否存在校验
         SaasTCPDeviceSolutionService client = getIoTDAClient();
         Triple<Boolean, Object, String> booleanObjectStringTriple = devicePresenceVerification(deviceNames, client);
-        if (!booleanObjectStringTriple.getLeft()) {
+        if (booleanObjectStringTriple.getLeft()) {
             return Pair.of(false, booleanObjectStringTriple.getMiddle() + "设备已存在");
         }
         
@@ -134,15 +135,13 @@ public class SaasTCPDeviceSolutionUtil {
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
                     t.printStackTrace();
+                    throw new RuntimeException("注册三元组失败，请重新生成批次");
                 }
             });
-            System.out.println("================ response =================");
-        } catch (ConnectionException e) {
+            TOKEN_BUCKET_50.acquire();
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (RequestTimeoutException e) {
-            e.printStackTrace();
-        } catch (ServiceResponseException e) {
-            e.printStackTrace();
+            return Pair.of(false, "注册三元组失败，请重新生成批次");
         }
         return Pair.of(true, null);
     }
@@ -156,7 +155,7 @@ public class SaasTCPDeviceSolutionUtil {
      */
     public Triple<Boolean, Object, String> devicePresenceVerification(Set<String> deviceNames, SaasTCPDeviceSolutionService client) {
         
-        EleDeviceCodeRegisterQuery data = new EleDeviceCodeRegisterQuery("202012091412", "a1QqoBrbcT1", deviceNames);
+        EleDeviceCodeRegisterQuery data = new EleDeviceCodeRegisterQuery(System.currentTimeMillis() + "", "a1QqoBrbcT1", deviceNames);
         log.info("deviceInfo request parameters: {}", data);
         
         Call<R> call = client.getDeviceInfos(data);
@@ -169,7 +168,10 @@ public class SaasTCPDeviceSolutionUtil {
                 if (result.getData() instanceof List) {
                     List<Map<String, Object>> resultData = (List<Map<String, Object>>) result.getData();
                     List<String> collected = resultData.stream().map(e -> e.get("deviceName") == null ? "" : e.get("deviceName").toString()).collect(Collectors.toList());
-                    log.info("resultData: {}", collected);
+                    log.info("DATA ALREADY EXISTS: {}", collected);
+                    if (CollectionUtils.isEmpty(collected)) {
+                        return Triple.of(false, null, null);
+                    }
                     return Triple.of(true, collected, null);
                 }
             }

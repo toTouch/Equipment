@@ -177,6 +177,7 @@ public class HWDeviceSolutionUtil {
             System.out.println(e.getRequestId());
             System.out.println(e.getErrorCode());
             System.out.println(e.getErrorMsg());
+            return Pair.of(false, "注册三元组失败，请重新生成批次");
         }
         return Pair.of(true, null);
     }

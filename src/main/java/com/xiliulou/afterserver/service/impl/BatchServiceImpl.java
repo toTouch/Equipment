@@ -352,6 +352,8 @@ public class BatchServiceImpl implements BatchService {
             Pair<Boolean, String> booleanStringPair = hwDeviceSolutionUtil.batchRegisterDevice(deviceNames, key);
             log.info("HW IOT batch register finished:result={} applyId={} ", booleanStringPair.getLeft(), key);
             if (!booleanStringPair.getLeft()) {
+                batch.setRemarks(booleanStringPair.getRight());
+                batchMapper.update(batch);
                 throw new CustomBusinessException(booleanStringPair.getRight());
             }
             return R.ok();
@@ -363,6 +365,8 @@ public class BatchServiceImpl implements BatchService {
             Pair<Boolean, String> booleanStringPair = saasTCPDeviceSolutionUtil.batchRegisterDevice(deviceNames, key);
             log.info("Saas TCP batch register finished:result={} applyId={} ", booleanStringPair.getLeft(), key);
             if (!booleanStringPair.getLeft()) {
+                batch.setRemarks(booleanStringPair.getRight());
+                batchMapper.update(batch);
                 throw new CustomBusinessException(booleanStringPair.getRight());
             }
             return R.ok();
@@ -388,6 +392,8 @@ public class BatchServiceImpl implements BatchService {
                 log.info("batch register finished:result={} applyId={} ", b, applyId);
                 // 注册失败则提示
                 if (!b) {
+                    batch.setRemarks("注册三元组失败，请重新生成批次");
+                    batchMapper.update(batch);
                     throw new CustomBusinessException("注册三元组失败，请重新生成批次");
                 }
                 return R.ok();
