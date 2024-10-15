@@ -1,9 +1,6 @@
 package com.xiliulou.afterserver.util.device.registration;
 
 import com.google.common.util.concurrent.RateLimiter;
-import com.huaweicloud.sdk.core.exception.ConnectionException;
-import com.huaweicloud.sdk.core.exception.RequestTimeoutException;
-import com.huaweicloud.sdk.core.exception.ServiceResponseException;
 import com.xiliulou.afterserver.config.ProductConfig;
 import com.xiliulou.afterserver.service.retrofit.SaasTCPDeviceSolutionService;
 import com.xiliulou.afterserver.util.R;
@@ -24,6 +21,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +45,12 @@ public class SaasTCPDeviceSolutionUtil {
      *
      * @link <a href="https://support.huaweicloud.com/devg-apisign/api-sign-provide-aksk.html"> 获取ak、sk实例 </a>
      */
-    private SaasTCPDeviceSolutionService getIoTDAClient() {
+    public SaasTCPDeviceSolutionService getIoTDAClient() {
+        Retrofit retrofit = init();
+        return retrofit.create(SaasTCPDeviceSolutionService.class);
+    }
+    @PostConstruct
+    private Retrofit init() {
         //声明日志类
         HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
         //设定日志级别
@@ -59,9 +62,8 @@ public class SaasTCPDeviceSolutionUtil {
         okHttpClient.addInterceptor(httpLoggingInterceptor);
         
         //创建并指定自定义的OkHttpClient
-        Retrofit retrofit = new Retrofit.Builder().baseUrl("https://ele.xiliulou.com/electricityCabinet/").addConverterFactory(GsonConverterFactory.create())
+        return new Retrofit.Builder().baseUrl("https://ele.xiliulou.com/electricityCabinet/").addConverterFactory(GsonConverterFactory.create())
                 .client(okHttpClient.build()).build();
-        return retrofit.create(SaasTCPDeviceSolutionService.class);
     }
     
     /**

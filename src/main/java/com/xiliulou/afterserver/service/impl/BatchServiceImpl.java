@@ -25,6 +25,7 @@ import com.xiliulou.afterserver.service.ProductNewService;
 import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.service.UserService;
+import com.xiliulou.afterserver.service.retrofit.SaasTCPDeviceSolutionService;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
@@ -35,6 +36,7 @@ import com.xiliulou.iot.entity.response.QueryDeviceDetailResult;
 import com.xiliulou.iot.service.RegisterDeviceService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -238,6 +240,7 @@ public class BatchServiceImpl implements BatchService {
             String deviceName = customDeviceNameList.get(i);
             customDeviceNameList.set(i, deviceName.trim());
         }
+        
         deduplicationAndVerificationDeviceNames(batch, customDeviceNameList, product, key);
         
         Set<String> deviceNames = new HashSet<String>();
@@ -352,8 +355,8 @@ public class BatchServiceImpl implements BatchService {
             Pair<Boolean, String> booleanStringPair = hwDeviceSolutionUtil.batchRegisterDevice(deviceNames, key);
             log.info("HW IOT batch register finished:result={} applyId={} ", booleanStringPair.getLeft(), key);
             if (!booleanStringPair.getLeft()) {
-                batch.setRemarks(booleanStringPair.getRight());
-                batchMapper.update(batch);
+//                batch.setRemarks(booleanStringPair.getRight());
+//                batchMapper.update(batch);
                 throw new CustomBusinessException(booleanStringPair.getRight());
             }
             return R.ok();
@@ -365,8 +368,8 @@ public class BatchServiceImpl implements BatchService {
             Pair<Boolean, String> booleanStringPair = saasTCPDeviceSolutionUtil.batchRegisterDevice(deviceNames, key);
             log.info("Saas TCP batch register finished:result={} applyId={} ", booleanStringPair.getLeft(), key);
             if (!booleanStringPair.getLeft()) {
-                batch.setRemarks(booleanStringPair.getRight());
-                batchMapper.update(batch);
+//                batch.setRemarks(booleanStringPair.getRight());
+//                batchMapper.update(batch);
                 throw new CustomBusinessException(booleanStringPair.getRight());
             }
             return R.ok();
@@ -392,8 +395,8 @@ public class BatchServiceImpl implements BatchService {
                 log.info("batch register finished:result={} applyId={} ", b, applyId);
                 // 注册失败则提示
                 if (!b) {
-                    batch.setRemarks("注册三元组失败，请重新生成批次");
-                    batchMapper.update(batch);
+//                    batch.setRemarks("注册三元组失败，请重新生成批次");
+//                    batchMapper.update(batch);
                     throw new CustomBusinessException("注册三元组失败，请重新生成批次");
                 }
                 return R.ok();
@@ -424,6 +427,12 @@ public class BatchServiceImpl implements BatchService {
             }
             if (customDeviceNameList.size() != customDeviceNameDisList.size()) {
                 throw new CustomBusinessException("deviceName有重复");
+            }
+            SaasTCPDeviceSolutionService client = saasTCPDeviceSolutionUtil.getIoTDAClient();
+            Set<String> customDeviceNameSet = new HashSet<>(customDeviceNameList);
+            Triple<Boolean, Object, String> booleanObjectStringTriple = saasTCPDeviceSolutionUtil.devicePresenceVerification(customDeviceNameSet, client);
+            if (booleanObjectStringTriple.getLeft()) {
+                throw new CustomBusinessException(booleanObjectStringTriple.getMiddle() + "设备已存在");
             }
             
             for (int i = 0; i < customDeviceNameList.size(); i++) {
