@@ -105,6 +105,7 @@ import static com.xiliulou.afterserver.constant.ProductNewStatusSortConstants.ST
 import static com.xiliulou.afterserver.entity.Batch.ALIYUN_SaaS_ELECTRIC_SWAP_CABINET;
 import static com.xiliulou.afterserver.entity.Batch.API_ELECTRIC_SWAP_CABINET;
 import static com.xiliulou.afterserver.entity.Batch.HUAWEI_CLOUD_SaaS;
+import static com.xiliulou.afterserver.entity.Batch.SAAS_TCP_ELECTRIC_SWAP_CABINET;
 import static com.xiliulou.afterserver.entity.Batch.TCP_ELECTRIC_SWAP_CABINET;
 
 /**
@@ -1791,8 +1792,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             queryDeviceDetailResult = registerDeviceService.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
             return queryDeviceDetailResult.getDeviceSecret();
         }
-        if (TCP_ELECTRIC_SWAP_CABINET.equals(batch.getBatteryReplacementCabinetType())) {
-            DeviceBase showDeviceResponse = saasTCPDeviceSolutionUtil.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
+        if (SAAS_TCP_ELECTRIC_SWAP_CABINET.equals(batch.getBatteryReplacementCabinetType())) {
+            DeviceBase showDeviceResponse = saasTCPDeviceSolutionUtil.queryDeviceDetail(deviceMessageVo.getDeviceName(),deviceMessageVo.getProductKey());
             String secret = "";
             
             if (Objects.nonNull(showDeviceResponse)) {
