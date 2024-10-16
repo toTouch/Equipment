@@ -235,10 +235,12 @@ public class BatchServiceImpl implements BatchService {
         String key = obtainTheCabinetType(batch);
         
         // 去重并校验deviceNames
-        List<String> customDeviceNameList = batch.getCustomDeviceNameList();
-        for (int i = 0; i < customDeviceNameList.size(); i++) {
-            String deviceName = customDeviceNameList.get(i);
-            customDeviceNameList.set(i, deviceName.trim());
+        List<String> customDeviceNameList = new ArrayList<String>();
+        for (int i = 0; i < batch.getCustomDeviceNameList().size(); i++) {
+            String deviceName = batch.getCustomDeviceNameList().get(i);
+            if (StringUtils.isNotBlank(deviceName)) {
+                customDeviceNameList.add(deviceName.trim());
+            }
         }
         
         deduplicationAndVerificationDeviceNames(batch, customDeviceNameList, product, key);
@@ -355,8 +357,8 @@ public class BatchServiceImpl implements BatchService {
             Pair<Boolean, String> booleanStringPair = hwDeviceSolutionUtil.batchRegisterDevice(deviceNames, key);
             log.info("HW IOT batch register finished:result={} applyId={} ", booleanStringPair.getLeft(), key);
             if (!booleanStringPair.getLeft()) {
-//                batch.setRemarks(booleanStringPair.getRight());
-//                batchMapper.update(batch);
+                //                batch.setRemarks(booleanStringPair.getRight());
+                //                batchMapper.update(batch);
                 throw new CustomBusinessException(booleanStringPair.getRight());
             }
             return R.ok();
@@ -368,8 +370,8 @@ public class BatchServiceImpl implements BatchService {
             Pair<Boolean, String> booleanStringPair = saasTCPDeviceSolutionUtil.batchRegisterDevice(deviceNames, key);
             log.info("Saas TCP batch register finished:result={} applyId={} ", booleanStringPair.getLeft(), key);
             if (!booleanStringPair.getLeft()) {
-//                batch.setRemarks(booleanStringPair.getRight());
-//                batchMapper.update(batch);
+                //                batch.setRemarks(booleanStringPair.getRight());
+                //                batchMapper.update(batch);
                 throw new CustomBusinessException(booleanStringPair.getRight());
             }
             return R.ok();
@@ -395,8 +397,8 @@ public class BatchServiceImpl implements BatchService {
                 log.info("batch register finished:result={} applyId={} ", b, applyId);
                 // 注册失败则提示
                 if (!b) {
-//                    batch.setRemarks("注册三元组失败，请重新生成批次");
-//                    batchMapper.update(batch);
+                    //                    batch.setRemarks("注册三元组失败，请重新生成批次");
+                    //                    batchMapper.update(batch);
                     throw new CustomBusinessException("注册三元组失败，请重新生成批次");
                 }
                 return R.ok();
@@ -420,7 +422,6 @@ public class BatchServiceImpl implements BatchService {
      */
     private void deduplicationAndVerificationDeviceNames(Batch batch, List<String> customDeviceNameList, Product product, String key) {
         if (CollectionUtils.isNotEmpty(customDeviceNameList) && Objects.equals(product.getProductSeries(), BATTERY_REPLACEMENT_CABINET)) {
-            customDeviceNameList = customDeviceNameList.stream().filter(StringUtils::isNotBlank).collect(Collectors.toList());
             List<String> customDeviceNameDisList = customDeviceNameList.stream().distinct().collect(Collectors.toList());
             if (customDeviceNameList.size() != batch.getProductNum()) {
                 throw new CustomBusinessException("deviceName数量与产品数量不匹配");
