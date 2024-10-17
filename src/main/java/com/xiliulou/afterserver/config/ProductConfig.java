@@ -16,5 +16,7 @@ public class ProductConfig {
     private String huaweiAccessKey;
     private String huaweiAccessSecret;
     private String endpoint;
+    private String saaUrl;
+    
 
 }

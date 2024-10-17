@@ -199,8 +199,8 @@ public class Example01 {
     public void test() throws IOException {
         SaasTCPDeviceSolutionUtil solutionUtil = new SaasTCPDeviceSolutionUtil();
         System.out.println("================= 创建 ===================");
-//        Pair<Boolean, String> booleanStringPair = solutionUtil.batchRegisterDevice(new HashSet<>(Arrays.asList("test004", "test005", "test006")), "a1QqoBrbcT1");
-//        System.out.println(booleanStringPair);
+        Pair<Boolean, String> booleanStringPair = solutionUtil.batchRegisterDevice(new HashSet<>(Arrays.asList("test004", "test005", "test006")), "a1QqoBrbcT1");
+        System.out.println(booleanStringPair);
         System.out.println("============= 查询 =============");
         System.out.println("====== test000         " + solutionUtil.queryDeviceDetail("test000", "a1QqoBrbcT1"));
         System.out.println("====== test004         " + solutionUtil.queryDeviceDetail("test004", "a1QqoBrbcT1"));

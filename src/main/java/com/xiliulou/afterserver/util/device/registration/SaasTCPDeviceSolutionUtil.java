@@ -62,7 +62,7 @@ public class SaasTCPDeviceSolutionUtil {
         okHttpClient.addInterceptor(httpLoggingInterceptor);
         
         //创建并指定自定义的OkHttpClient
-        return new Retrofit.Builder().baseUrl("https://ele.xiliulou.com/electricityCabinet/").addConverterFactory(GsonConverterFactory.create())
+        return new Retrofit.Builder().baseUrl(productConfig.getSaaUrl()).addConverterFactory(GsonConverterFactory.create())
                 .client(okHttpClient.build()).build();
     }
     

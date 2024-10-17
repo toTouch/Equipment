@@ -157,7 +157,17 @@ product-config:
   key: a1mqS72fHNi
   Apikey: a1Tm4CuXmXz
   tcpKey: a1tX3cGp9kQa
+  saasTcpKey: a1QqoBrbcT1
+  saaUrl: https://pre-exchange.xiliulou.com:6443/electricityCabinet/
   huaweiKey: a1mqS72fHNi
   huaweiAccessKey: JBNJ2QSPGIQ7QFNTWWJS
   huaweiAccessSecret: taNpnKa1fRcmruUYMQgnIHQjlsuKkcTPpULcUMcX
   endpoint: 835db6b12b.st1.iotda-app.cn-north-4.myhuaweicloud.com
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: "*"
+        exclude: httptrace
