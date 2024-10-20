@@ -236,12 +236,15 @@ public class BatchServiceImpl implements BatchService {
         
         // 去重并校验deviceNames
         List<String> customDeviceNameList = new ArrayList<String>();
-        for (int i = 0; i < batch.getCustomDeviceNameList().size(); i++) {
-            String deviceName = batch.getCustomDeviceNameList().get(i);
-            if (StringUtils.isNotBlank(deviceName)) {
-                customDeviceNameList.add(deviceName.trim());
+        if (CollectionUtils.isNotEmpty(batch.getCustomDeviceNameList())) {
+            for (int i = 0; i < batch.getCustomDeviceNameList().size(); i++) {
+                String deviceName = batch.getCustomDeviceNameList().get(i);
+                if (StringUtils.isNotBlank(deviceName)) {
+                    customDeviceNameList.add(deviceName.trim());
+                }
             }
         }
+       
         
         deduplicationAndVerificationDeviceNames(batch, customDeviceNameList, product, key);
         
@@ -423,6 +426,7 @@ public class BatchServiceImpl implements BatchService {
     private void deduplicationAndVerificationDeviceNames(Batch batch, List<String> customDeviceNameList, Product product, String key) {
         if (CollectionUtils.isNotEmpty(customDeviceNameList) && Objects.equals(product.getProductSeries(), BATTERY_REPLACEMENT_CABINET)) {
             List<String> customDeviceNameDisList = customDeviceNameList.stream().distinct().collect(Collectors.toList());
+         
             if (customDeviceNameList.size() != batch.getProductNum()) {
                 throw new CustomBusinessException("deviceName数量与产品数量不匹配");
             }
@@ -539,7 +543,10 @@ public class BatchServiceImpl implements BatchService {
         if (Objects.isNull(batch.getProductNum()) || batch.getProductNum() <= 0) {
             return R.fail("请传入正确的产品数量");
         }
-        
+        // 数量校验 500
+        if (batch.getProductNum() > 500) {
+            throw new CustomBusinessException("deviceName数量不能超过500");
+        }
         // 供应商校验
         if (Objects.isNull(supplier)) {
             return R.fail("供应商选择有误，请检查");

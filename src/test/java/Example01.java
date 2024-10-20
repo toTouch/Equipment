@@ -196,34 +196,40 @@ public class Example01 {
     }
     
     @Test
-    public void test() throws IOException {
+    public void test() throws IOException, InterruptedException {
         SaasTCPDeviceSolutionUtil solutionUtil = new SaasTCPDeviceSolutionUtil();
+        HashSet<String> strings = new HashSet<>();
+        for (int i = 0; i < 501; i++) {
+            strings.add("zbztest" + i);
+        }
+        
         System.out.println("================= 创建 ===================");
-        Pair<Boolean, String> booleanStringPair = solutionUtil.batchRegisterDevice(new HashSet<>(Arrays.asList("test004", "test005", "test006")), "a1QqoBrbcT1");
-        System.out.println(booleanStringPair);
-        System.out.println("============= 查询 =============");
-        System.out.println("====== test000         " + solutionUtil.queryDeviceDetail("test000", "a1QqoBrbcT1"));
-        System.out.println("====== test004         " + solutionUtil.queryDeviceDetail("test004", "a1QqoBrbcT1"));
-        System.out.println("====== test005         " + solutionUtil.queryDeviceDetail("test005", "a1QqoBrbcT1"));
-        
-        //声明日志类
-        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
-        //设定日志级别
-        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        
-        //自定义OkHttpClient
-        OkHttpClient.Builder okHttpClient = new OkHttpClient.Builder();
-        //添加拦截器
-//        okHttpClient.addInterceptor(httpLoggingInterceptor);
-        
-        //创建并指定自定义的OkHttpClient
-        Retrofit retrofit = new Retrofit.Builder().baseUrl("https://ele.xiliulou.com/electricityCabinet/").addConverterFactory(GsonConverterFactory.create())
-                .client(okHttpClient.build()).build();
-        System.out.println("================= 校验 ===================");
-        System.out.println(
-                solutionUtil.devicePresenceVerification(new HashSet<>(Arrays.asList("test004", "test005", "test006")), retrofit.create(SaasTCPDeviceSolutionService.class)));
-        
-        
+        Pair<Boolean, String> booleanStringPair = solutionUtil.batchRegisterDevice(strings, "a1QqoBrbcT1");
+        sleep(3000);
+//        System.out.println(booleanStringPair);
+//        System.out.println("============= 查询 =============");
+//        System.out.println("====== test000         " + solutionUtil.queryDeviceDetail("test000", "a1QqoBrbcT1"));
+//        System.out.println("====== test004         " + solutionUtil.queryDeviceDetail("test004", "a1QqoBrbcT1"));
+//        System.out.println("====== test005         " + solutionUtil.queryDeviceDetail("test005", "a1QqoBrbcT1"));
+//
+//        //声明日志类
+//        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
+//        //设定日志级别
+//        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+//
+//        //自定义OkHttpClient
+//        OkHttpClient.Builder okHttpClient = new OkHttpClient.Builder();
+//        //添加拦截器
+////        okHttpClient.addInterceptor(httpLoggingInterceptor);
+//
+//        //创建并指定自定义的OkHttpClient
+//        Retrofit retrofit = new Retrofit.Builder().baseUrl("https://ele.xiliulou.com/electricityCabinet/").addConverterFactory(GsonConverterFactory.create())
+//                .client(okHttpClient.build()).build();
+//        System.out.println("================= 校验 ===================");
+//        System.out.println(
+//                solutionUtil.devicePresenceVerification(new HashSet<>(Arrays.asList("test004", "test005", "test006")), retrofit.create(SaasTCPDeviceSolutionService.class)));
+//
+    
     }
     
     public static void main(String[] args) throws IOException {

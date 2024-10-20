@@ -130,6 +130,7 @@ public class SaasTCPDeviceSolutionUtil {
                     try {
                         log.info("response: {}", response.body().string());
                     } catch (IOException e) {
+                        log.error("request failed: {}", e);
                         e.printStackTrace();
                     }
                 }
