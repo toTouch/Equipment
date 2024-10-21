@@ -1,4 +1,4 @@
-package com.xiliulou.afterserver.util;
+package com.xiliulou.afterserver.util.device.registration;
 
 import com.google.common.util.concurrent.RateLimiter;
 import com.huaweicloud.sdk.core.auth.AbstractCredentials;
@@ -29,7 +29,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Component
-public class DeviceSolutionUtil {
+public class HWDeviceSolutionUtil {
     
     @Autowired
     private ProductConfig productConfig;
@@ -177,6 +177,7 @@ public class DeviceSolutionUtil {
             System.out.println(e.getRequestId());
             System.out.println(e.getErrorCode());
             System.out.println(e.getErrorMsg());
+            return Pair.of(false, "注册三元组失败，请重新生成批次");
         }
         return Pair.of(true, null);
     }

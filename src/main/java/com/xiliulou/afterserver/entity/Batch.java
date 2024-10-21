@@ -119,10 +119,14 @@ public class Batch {
     // API形式的换电柜服务
     public static final Integer API_ELECTRIC_SWAP_CABINET = 1;
     
+    //Saas TCP 柜机
+    public static final Integer SAAS_TCP_ELECTRIC_SWAP_CABINET = 2;
     // 华为云的SaaS服务
     public static final Integer HUAWEI_CLOUD_SaaS = 3;
     // TCP 柜机
     public static final Integer TCP_ELECTRIC_SWAP_CABINET = 4;
+    
+   
     
     public static final Integer TRUE = 1;
     
