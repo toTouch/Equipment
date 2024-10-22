@@ -220,7 +220,7 @@
     
     <!--通过主键删除-->
     <select id="queryDeviceMessage" resultType="com.xiliulou.afterserver.web.vo.DeviceMessageVo">
-        select t.id as product_id, t.product_key, t.device_name,t.cabinet_sn, t.is_use, pr.box_number
+        select t.id as product_id, t.product_key, t.device_name, t.cabinet_sn, t.is_use, pr.box_number,t.cpu_serial_num
         from t_product_new t
                  left join product pr on t.model_id = pr.id
         where t.del_flag = 0
@@ -230,9 +230,12 @@
     <select id="updateUsedStatusByNo" resultType="java.lang.Integer">
         update t_product_new
         set is_use=0,
-            update_time= #{updateTime}
+        <if test="cpuSerialNum != null and cpuSerialNum != ''">
+            cpu_serial_num=#{cpuSerialNum},
+        </if>
+        update_time= #{updateTime}
         where no = #{no}
-          and del_flag = 0
+        and del_flag = 0
     </select>
     
     <select id="selectListByProductId" resultType="com.xiliulou.afterserver.entity.ProductNew">
@@ -426,17 +429,26 @@
     </update>
     <update id="updateTestResultFromBatch">
         update t_product_new
-        set  test_result = #{testResult}
+        set test_result = #{testResult}
         where id in
         <foreach close=")" collection="ids" item="c" open="(" separator=",">
             #{c}
         </foreach>
-
+    
     </update>
     <update id="clearTestResult">
         UPDATE `xiliulou_crm`.`t_product_new` SET `status` = 0, `test_result` = NULL, `is_use` = 1 WHERE no in
         <foreach close=")" collection="ids" item="c" open="(" separator=",">
             #{c}
         </foreach>
+    </update>
+    
+    <update id="unbundledUsedStatus">
+        update t_product_new
+        set is_use=0,
+        cpu_serial_num= null,
+        update_time= #{updateTime}
+        where no = #{no}
+        and del_flag = 0
     </update>
 </mapper>

@@ -42,6 +42,12 @@ public class DeviceMessageVo {
      * 格挡数量
      */
     private Integer boxNumber;
+    
+    
+    /**
+     * CPU 序列号
+     */
+    private String cpuSerialNum;
     //三元组已使用
     public static final Integer IS_USE =0;
     //三元组未使用

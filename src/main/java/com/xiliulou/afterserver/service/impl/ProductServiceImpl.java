@@ -358,15 +358,15 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         BeanUtil.copyProperties(productSerialNumber, productSerialNumberVo);
         
         if (Objects.nonNull(productSerialNumber)) {
-            if (productSerialNumberVo.getStatus().equals(ProductSerialNumber.PRODUCTION.toString()) || productSerialNumberVo.getStatus()
-                    .equals(ProductSerialNumber.TO_BE_REPAIRED.toString())) {
+            if (productSerialNumberVo.getStatus().equals(ProductSerialNumber.PRODUCTION) || productSerialNumberVo.getStatus()
+                    .equals(ProductSerialNumber.TO_BE_REPAIRED)) {
                 WareHouse wareHouse = warehouseService.getById(productSerialNumber.getPointId());
                 if (Objects.nonNull(wareHouse)) {
                     productSerialNumberVo.setAddr(wareHouse);
                 }
             }
             
-            if (productSerialNumberVo.getStatus().equals(ProductSerialNumber.IN_USE.toString())) {
+            if (productSerialNumberVo.getStatus().equals(ProductSerialNumber.IN_USE)) {
                 Point point = pointService.getById(productSerialNumberVo.getPointId());
                 if (Objects.nonNull(point)) {
                     productSerialNumberVo.setAddr(point);

@@ -85,6 +85,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -197,10 +198,11 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         if (Objects.isNull(str)) {
             return str;
         }
-        byte[] bytes = str.getBytes();
+        byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
         if (bytes.length > MAX_BYTES_ERROR_MESSAGE) {
             byte[] subBytes = Arrays.copyOfRange(bytes, 0, MAX_BYTES_ERROR_MESSAGE); // 截取前190个字节
-            str = new String(subBytes);
+            str = new String(subBytes, StandardCharsets.UTF_8);
+            
         }
         return str;
     }
@@ -396,7 +398,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
                     if (Objects.equals(destinationType, 2)) {
                         WareHouse wareHouse = warehouseService.getBaseMapper().selectOne(new QueryWrapper<WareHouse>().eq("ware_houses", deliver.getDestination()));
                         if (Objects.nonNull(wareHouse)) {
-                            this.bindPoint(query.getId(), new Long(wareHouse.getId()), 2);
+                            this.bindPoint(query.getId(), Long.valueOf(wareHouse.getId()), 2);
+                            
                         }
                     }
                     if (Objects.equals(destinationType, 3)) {
@@ -923,7 +926,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         deliverVo.setStatus(flag ? ProductNewProcessInfoVo.STATUS_FINISHED : ProductNewProcessInfoVo.STATUS_UN_FINISHED);
         voList.add(deliverVo);
         
-        if (Objects.equals(preAuditProcessVo, AuditProcessVo.STATUS_FINISHED) && Objects.equals(testAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED) && !Objects.equals(
+        if (Objects.equals(preAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED) && Objects.equals(testAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED) && !Objects.equals(
                 postAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED)) {
             postAuditProcessVo.setStatus(AuditProcessVo.STATUS_EXECUTING);
         }
@@ -1038,7 +1041,10 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         return R.ok(vo);
     }
     
-    private String queryCustomerName(@Nullable Deliver deliver) {
+    private String queryCustomerName(Deliver deliver) {
+        if (Objects.isNull(deliver)) {
+            return null;
+        }
         if (Objects.equals(deliver.getDestinationType(), Deliver.DESTINATION_TYPE_FACTORY) || Objects.equals(deliver.getDestinationType(), Deliver.DESTINATION_TYPE_WAREHOUSE)) {
             return deliver.getDestination();
         }
@@ -1255,6 +1261,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             case 8:
                 statusName = "后置检验合格";
                 break;
+            default:
+                statusName = "";
         }
         return statusName;
     }
@@ -1765,9 +1773,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         if (StringUtils.isBlank(deviceMessageVo.getDeviceName()) || StringUtils.isBlank(deviceMessageVo.getProductKey())) {
             return R.fail(null, "00000", "资产编码对应的三元组信息不全");
         }
-        if (Objects.equals(deviceMessageVo.getIsUse(), ProductNew.IS_USE)) {
-            return R.fail(null, "00000", "柜机对应三元组已使用");
-        }
+      
         ProductNew productNew = productNewMapper.selectById(deviceMessageVo.getProductId());
         Batch batch = batchService.queryByIdFromDB(productNew.getBatchId());
         if (Objects.isNull(batch)) {
@@ -1781,9 +1787,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     }
     
     private String getGetDeviceSecret(Batch batch, DeviceMessageVo deviceMessageVo) {
-        QueryDeviceDetailResult queryDeviceDetailResult = new QueryDeviceDetailResult();
         if (ALIYUN_SaaS_ELECTRIC_SWAP_CABINET.equals(batch.getBatteryReplacementCabinetType()) || API_ELECTRIC_SWAP_CABINET.equals(batch.getBatteryReplacementCabinetType())) {
-            queryDeviceDetailResult = registerDeviceService.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
+            QueryDeviceDetailResult queryDeviceDetailResult = registerDeviceService.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
             return queryDeviceDetailResult.getDeviceSecret();
         }
         
@@ -1830,7 +1835,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     
     
     @Override
-    public R updateUsedStatus(String no) {
+    public R updateUsedStatus(String no, String cpuSerialNum) {
         DeviceMessageVo deviceMessageVo = productNewMapper.queryDeviceMessage(no);
         if (Objects.isNull(deviceMessageVo)) {
             return R.fail(null, "00000", "柜机资产编码不存在，请核对");
@@ -1841,7 +1846,10 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         if (Objects.equals(deviceMessageVo.getIsUse(), ProductNew.IS_USE)) {
             return R.fail(null, "00000", "柜机对应三元组已使用");
         }
-        return R.ok(productNewMapper.updateUsedStatusByNo(no, System.currentTimeMillis()));
+        if (StringUtils.isNotEmpty(deviceMessageVo.getCpuSerialNum()) && !Objects.equals(deviceMessageVo.getCpuSerialNum(), cpuSerialNum)) {
+            return R.fail(null, "00000", "拉取测试项失败，资产编码对应三元已绑定其他工控机");
+        }
+        return R.ok(productNewMapper.updateUsedStatusByNo(no, cpuSerialNum, System.currentTimeMillis()));
     }
     
     @Override
@@ -1901,5 +1909,20 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         }
         
         return null;
+    }
+    
+    @Override
+    public R unbundledUsedStatus(String sn) {
+        DeviceMessageVo deviceMessageVo = productNewMapper.queryDeviceMessage(sn);
+        if (Objects.isNull(deviceMessageVo)) {
+            return R.fail(null, "00000", "柜机资产编码不存在，请核对");
+        }
+        if (StringUtils.isBlank(deviceMessageVo.getDeviceName()) || StringUtils.isBlank(deviceMessageVo.getProductKey())) {
+            return R.fail(null, "00000", "资产编码对应的三元组信息不全");
+        }
+        if (!Objects.equals(deviceMessageVo.getIsUse(), ProductNew.IS_USE)) {
+            return R.ok();
+        }
+        return R.ok(productNewMapper.unbundledUsedStatus(sn, System.currentTimeMillis()));
     }
 }

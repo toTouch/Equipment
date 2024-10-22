@@ -31,10 +31,28 @@ public class JsonAppDeviceController {
     public R getDeviceMessage(@RequestParam(value = "sn", required = true)String sn){
         return productNewService.getDeviceMessage(sn);
     }
-
+    
+    /**
+     * 绑定设备使用状态
+     *
+     * @param sn
+     * @param cpuSerialNum
+     * @return
+     */
     @GetMapping("/notifyUsed")
-    public R notifyUsed(@RequestParam(value = "sn", required = true)String sn){
-        return productNewService.updateUsedStatus(sn);
+    public R notifyUsed(@RequestParam(value = "sn", required = true)String sn, @RequestParam(value = "cpuSerialNum", required = false)String cpuSerialNum){
+        return productNewService.updateUsedStatus(sn, cpuSerialNum);
+    }
+    
+    /**
+     * 解绑设备使用状态
+     * 更改三元、cpu 序列号绑定情况
+     * @param sn
+     * @return
+     */
+    @GetMapping("/unbundled")
+    public R unbundled(@RequestParam(value = "sn", required = true)String sn){
+        return productNewService.unbundledUsedStatus(sn);
     }
     
     @GetMapping("/page")
