@@ -79,6 +79,5 @@ public interface MaterialCoreConfigMapper {
      */
     int deleteById(Integer id);
     
-    int updateOrInsert(String substance);
 }
 

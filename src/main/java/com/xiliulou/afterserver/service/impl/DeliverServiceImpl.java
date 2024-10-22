@@ -420,7 +420,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             }
             
             // productAndNum
-            if (!StrUtil.isEmpty(d.getProduct()) && d.getProduct().matches("\\[.*\\]") && !StrUtil.isEmpty(d.getQuantity()) && !d.getQuantity().equals("[null]") && d.getQuantity()
+            if (!StrUtil.isEmpty(d.getProduct()) && d.getProduct().matches("\\[.*\\]") && !StrUtil.isEmpty(d.getQuantity()) && !"[null]".equals(d.getQuantity()) && d.getQuantity()
                     .matches("\\[.*\\]")) {
                 
                 ArrayList<Integer> products = JSON.parseObject(d.getProduct(), ArrayList.class);
@@ -458,7 +458,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
             response.setHeader("content-Type", "application/vnd.ms-excel");
             // 下载文件的默认名称
             response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
-            EasyExcelFactory.getWriter(outputStream).write1(list, sheet, table).finish();
+            EasyExcelFactory.getWriter(outputStream).write(list, sheet, table).finish();
             // EasyExcel.write(outputStream, DeliverExportExcelVo.class).sheet("sheet").doWrite(deliverExcelVoList);
             return;
         } catch (IOException e) {
@@ -1024,6 +1024,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         return statusStr;
     }
     
+    @Override
     public Deliver getDeliverInfo(String sn) {
         if (StringUtils.isBlank(sn)) {
             return null;
