@@ -54,11 +54,11 @@ import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.service.UserService;
 import com.xiliulou.afterserver.service.WarehouseService;
-import com.xiliulou.afterserver.util.device.DeviceBase;
-import com.xiliulou.afterserver.util.device.registration.HWDeviceSolutionUtil;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
+import com.xiliulou.afterserver.util.device.DeviceBase;
+import com.xiliulou.afterserver.util.device.registration.HWDeviceSolutionUtil;
 import com.xiliulou.afterserver.util.device.registration.SaasTCPDeviceSolutionUtil;
 import com.xiliulou.afterserver.web.query.ApiRequestQuery;
 import com.xiliulou.afterserver.web.query.CabinetCompressionQuery;
@@ -77,6 +77,7 @@ import com.xiliulou.iot.entity.response.QueryDeviceDetailResult;
 import com.xiliulou.iot.service.RegisterDeviceService;
 import com.xiliulou.storage.config.StorageConfig;
 import com.xiliulou.storage.service.impl.AliyunOssService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,7 +85,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
@@ -199,6 +199,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     private ProductMapper productMapper;
     
     
+    @SuppressFBWarnings({"DM_DEFAULT_ENCODING", "DM_DEFAULT_ENCODING"})
     public static String subStringByBytes(String str) {
         if (Objects.isNull(str)) {
             return str;
@@ -402,7 +403,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
                     if (Objects.equals(destinationType, 2)) {
                         WareHouse wareHouse = warehouseService.getBaseMapper().selectOne(new QueryWrapper<WareHouse>().eq("ware_houses", deliver.getDestination()));
                         if (Objects.nonNull(wareHouse)) {
-                            this.bindPoint(query.getId(), new Long(wareHouse.getId()), 2);
+                            this.bindPoint(query.getId(), Long.valueOf(wareHouse.getId()), 2);
                         }
                     }
                     if (Objects.equals(destinationType, 3)) {
@@ -929,8 +930,10 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         deliverVo.setStatus(flag ? ProductNewProcessInfoVo.STATUS_FINISHED : ProductNewProcessInfoVo.STATUS_UN_FINISHED);
         voList.add(deliverVo);
         
-        if (Objects.equals(preAuditProcessVo, AuditProcessVo.STATUS_FINISHED) && Objects.equals(testAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED) && !Objects.equals(
-                postAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED)) {
+        if (postAuditProcessVo != null && preAuditProcessVo != null
+                && Objects.equals(preAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED)
+                && Objects.equals(testAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED)
+                && !Objects.equals(postAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED)) {
             postAuditProcessVo.setStatus(AuditProcessVo.STATUS_EXECUTING);
         }
         return R.ok(vo);
@@ -1044,7 +1047,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         return R.ok(vo);
     }
     
-    private String queryCustomerName(@Nullable Deliver deliver) {
+    private String queryCustomerName(Deliver deliver) {
         if (Objects.equals(deliver.getDestinationType(), Deliver.DESTINATION_TYPE_FACTORY) || Objects.equals(deliver.getDestinationType(), Deliver.DESTINATION_TYPE_WAREHOUSE)) {
             return deliver.getDestination();
         }
@@ -1260,6 +1263,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
                 break;
             case 8:
                 statusName = "后置检验合格";
+                break;
+            default:
                 break;
         }
         return statusName;
@@ -1783,17 +1788,18 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         String secret = getGetDeviceSecret(batch, deviceMessageVo);
         
         deviceMessageVo.setDeviceSecret(secret);
+        deviceMessageVo.setBatteryReplacementCabinetType(batch.getBatteryReplacementCabinetType());
         return R.ok(deviceMessageVo);
     }
     
     private String getGetDeviceSecret(Batch batch, DeviceMessageVo deviceMessageVo) {
-        QueryDeviceDetailResult queryDeviceDetailResult = new QueryDeviceDetailResult();
+        QueryDeviceDetailResult queryDeviceDetailResult;
         if (ALIYUN_SaaS_ELECTRIC_SWAP_CABINET.equals(batch.getBatteryReplacementCabinetType()) || API_ELECTRIC_SWAP_CABINET.equals(batch.getBatteryReplacementCabinetType())) {
             queryDeviceDetailResult = registerDeviceService.queryDeviceDetail(deviceMessageVo.getProductKey(), deviceMessageVo.getDeviceName());
             return queryDeviceDetailResult.getDeviceSecret();
         }
         if (SAAS_TCP_ELECTRIC_SWAP_CABINET.equals(batch.getBatteryReplacementCabinetType())) {
-            DeviceBase showDeviceResponse = saasTCPDeviceSolutionUtil.queryDeviceDetail(deviceMessageVo.getDeviceName(),deviceMessageVo.getProductKey());
+            DeviceBase showDeviceResponse = saasTCPDeviceSolutionUtil.queryDeviceDetail(deviceMessageVo.getDeviceName(), deviceMessageVo.getProductKey());
             String secret = "";
             
             if (Objects.nonNull(showDeviceResponse)) {
@@ -1911,9 +1917,9 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         if (Objects.equals(updateProductNew.getStatus(), STATUS_PRODUCTION)) {
             productNewMapper.clearTestResult(ids, productNewQuery.getStatus());
             return R.ok(productNewMapper.updateByConditions(updateProductNew));
-        }else if (Objects.equals(updateProductNew.getStatus(), STATUS_TESTED)){
+        } else if (Objects.equals(updateProductNew.getStatus(), STATUS_TESTED)) {
             productNewMapper.updateTestResultFromBatch(ids, productNewQuery.getStatus());
-        }else{
+        } else {
             return R.fail("SYSTEM.0002", "参数不合法");
         }
         
