@@ -1848,6 +1848,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         String secret = getGetDeviceSecret(batch, deviceMessageVo);
         
         deviceMessageVo.setDeviceSecret(secret);
+        deviceMessageVo.setBatteryReplacementCabinetType(batch.getBatteryReplacementCabinetType());
         return R.ok(deviceMessageVo);
     }
     
