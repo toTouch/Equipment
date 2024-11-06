@@ -18,6 +18,7 @@ import com.xiliulou.afterserver.constant.ProductNewStatusSortConstants;
 import com.xiliulou.afterserver.entity.AuditProcess;
 import com.xiliulou.afterserver.entity.AuditValue;
 import com.xiliulou.afterserver.entity.Batch;
+import com.xiliulou.afterserver.entity.CommonOperationRecord;
 import com.xiliulou.afterserver.entity.CompressionRecord;
 import com.xiliulou.afterserver.entity.Customer;
 import com.xiliulou.afterserver.entity.Deliver;
@@ -43,6 +44,8 @@ import com.xiliulou.afterserver.service.AuditValueService;
 import com.xiliulou.afterserver.service.BatchService;
 import com.xiliulou.afterserver.service.CameraService;
 import com.xiliulou.afterserver.service.ColorCardService;
+import com.xiliulou.afterserver.service.CommonOperationRecordService;
+import com.xiliulou.afterserver.service.CompressionRecordService;
 import com.xiliulou.afterserver.service.CustomerService;
 import com.xiliulou.afterserver.service.DeliverLogService;
 import com.xiliulou.afterserver.service.DeliverService;
@@ -116,6 +119,7 @@ import static com.xiliulou.afterserver.entity.Batch.API_ELECTRIC_SWAP_CABINET;
 import static com.xiliulou.afterserver.entity.Batch.HUAWEI_CLOUD_SaaS;
 import static com.xiliulou.afterserver.entity.Batch.SAAS_TCP_ELECTRIC_SWAP_CABINET;
 import static com.xiliulou.afterserver.entity.Batch.TCP_ELECTRIC_SWAP_CABINET;
+import static com.xiliulou.afterserver.entity.CommonOperationRecord.PRODUCT_NEW_OPERATION;
 import static com.xiliulou.afterserver.entity.Deliver.STATUS_SHIPPED;
 
 /**
@@ -207,6 +211,9 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     
     @Autowired
     private ProductMapper productMapper;
+    
+    @Autowired
+    private CommonOperationRecordService commonOperationRecordService;
     
     @Autowired
     private SysPageConstantService syspageConstantService;
@@ -1933,6 +1940,9 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     
     @Override
     public R updateProductNewStatus(ProductNewQuery productNewQuery) {
+        // todo 权限校验 通过前端配置实现
+        User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
+        
         
         if (CollUtil.isEmpty(productNewQuery.getNos())) {
             return R.fail("SYSTEM.0002", "参数不合法");
@@ -1983,6 +1993,15 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         Integer i = productNewMapper.updateTestResultFromBatch((List<Long>) values, productNewQuery.getStatus());
         String msg = "清除" + i + "条，失败" + (productNewQuery.getNos().size() - i) + "条";
         resultMap.put("msg", msg);
+        
+        CommonOperationRecord commonOperationRecord = new CommonOperationRecord();
+        commonOperationRecord.setRecordType(PRODUCT_NEW_OPERATION);
+        commonOperationRecord.setOperationTime(System.currentTimeMillis());
+        String content = "将资产编码状态改为生产中" + noToIdMap.keySet();
+        commonOperationRecord.setOperationContent(content);
+        commonOperationRecord.setRemarks(productNewQuery.getRemarks());
+        commonOperationRecord.setOperationAccount(userById.getUserName());
+        commonOperationRecordService.insert(commonOperationRecord);
         return R.ok(resultMap);
         
     }

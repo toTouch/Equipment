@@ -42,7 +42,7 @@ public class SysPageConstantController {
     /**
      * 编辑数据
      *
-     * @param sysPageConstant 实体
+     * @param sysPageConstantQuery 实体
      * @return 编辑结果
      */
     @PutMapping

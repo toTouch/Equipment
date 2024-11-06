@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiliulou.afterserver.mapper.CommonOperationRecordMapper">
+    
+    <resultMap type="com.xiliulou.afterserver.entity.CommonOperationRecord" id="CommonOperationRecordMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="recordType" column="record_type" jdbcType="VARCHAR"/>
+        <result property="remarks" column="remarks" jdbcType="VARCHAR"/>
+        <result property="operationTime" column="operation_time" jdbcType="INTEGER"/>
+        <result property="operationContent" column="operation_content" jdbcType="VARCHAR"/>
+        <result property="operationAccount" column="operation_account" jdbcType="VARCHAR"/>
+    </resultMap>
+    
+    <!--查询单个-->
+    <select id="selectById" resultMap="CommonOperationRecordMap">
+        select id,
+               record_type,
+               remarks,
+               operation_time,
+               operation_content,
+               operation_account
+        from t_common_operation_record
+        where id = #{id}
+    </select>
+    
+    <!--查询指定行数据-->
+    <select id="selectPage" resultMap="CommonOperationRecordMap">
+        select
+        id, record_type, remarks, operation_time, operation_content, operation_account
+        from t_common_operation_record
+        <where>
+            <if test="entity.id != null">
+                and id = #{entity.id}
+            </if>
+            <if test="entity.recordType != null and entity.recordType != ''">
+                and record_type = #{entity.recordType}
+            </if>
+            <if test="entity.remarks != null">
+                and remarks = #{entity.remarks}
+            </if>
+            <if test="entity.operationTime != null">
+                and operation_time = #{entity.operationTime}
+            </if>
+            <if test="entity.operationContent != null and entity.operationContent != ''">
+                and operation_content = #{entity.operationContent}
+            </if>
+            <if test="entity.operationAccount != null and entity.operationAccount != ''">
+                and operation_account = #{entity.operationAccount}
+            </if>
+        </where>
+        limit #{offset}, #{size}
+    </select>
+    
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from t_common_operation_record
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="recordType != null and recordType != ''">
+                and record_type = #{recordType}
+            </if>
+            <if test="remarks != null">
+                and remarks = #{remarks}
+            </if>
+            <if test="operationTime != null">
+                and operation_time = #{operationTime}
+            </if>
+            <if test="operationContent != null and operationContent != ''">
+                and operation_content = #{operationContent}
+            </if>
+            <if test="operationAccount != null and operationAccount != ''">
+                and operation_account = #{operationAccount}
+            </if>
+        </where>
+    </select>
+    
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into t_common_operation_record(record_type, remarks, operation_time, operation_content, operation_account)
+        values (#{recordType}, #{remarks}, #{operationTime}, #{operationContent}, #{operationAccount})
+    </insert>
+    
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into t_common_operation_record(record_type, remarks, operation_time, operation_content, operation_account)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.recordType}, #{entity.remarks}, #{entity.operationTime}, #{entity.operationContent}, #{entity.operationAccount})
+        </foreach>
+    </insert>
+    
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into t_common_operation_record(record_type, remarks, operation_time, operation_content, operation_account)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.recordType}, #{entity.remarks}, #{entity.operationTime}, #{entity.operationContent}, #{entity.operationAccount})
+        </foreach>
+        on duplicate key update
+        record_type = values(record_type),
+        remarks = values(remarks),
+        operation_time = values(operation_time),
+        operation_content = values(operation_content),
+        operation_account = values(operation_account)
+    </insert>
+    
+    <!--通过主键修改数据-->
+    <update id="update">
+        update t_common_operation_record
+        <set>
+            <if test="recordType != null and recordType != ''">
+                record_type = #{recordType},
+            </if>
+            <if test="remarks != null">
+                remarks = #{remarks},
+            </if>
+            <if test="operationTime != null">
+                operation_time = #{operationTime},
+            </if>
+            <if test="operationContent != null and operationContent != ''">
+                operation_content = #{operationContent},
+            </if>
+            <if test="operationAccount != null and operationAccount != ''">
+                operation_account = #{operationAccount},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    
+    <!--逻辑删除数据-->
+    <update id="removeById">
+        update t_common_operation_record
+        <set>
+            <if test="recordType != null and recordType != ''">
+                record_type = #{recordType},
+            </if>
+            <if test="remarks != null">
+                remarks = #{remarks},
+            </if>
+            <if test="operationTime != null">
+                operation_time = #{operationTime},
+            </if>
+            <if test="operationContent != null and operationContent != ''">
+                operation_content = #{operationContent},
+            </if>
+            <if test="operationAccount != null and operationAccount != ''">
+                operation_account = #{operationAccount},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from t_common_operation_record
+        where id = #{id}
+    </delete>
+
+</mapper>
