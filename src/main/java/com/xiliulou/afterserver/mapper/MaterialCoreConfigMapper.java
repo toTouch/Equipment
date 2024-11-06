@@ -78,7 +78,5 @@ public interface MaterialCoreConfigMapper {
      * @return 影响行数
      */
     int deleteById(Integer id);
-    
-    int updateOrInsert(String substance);
 }
 

@@ -48,6 +48,12 @@ public class SysPageConstantController {
     @PutMapping
     public R edit(@RequestBody SysPageConstantQuery sysPageConstantQuery) {
         List<String> cabinetAppVersions = sysPageConstantQuery.getCabinetAppVersions();
+        if (cabinetAppVersions == null || cabinetAppVersions.isEmpty()) {
+            return R.failMsg("参数错误");
+        }
+        if (cabinetAppVersions.size() > 3) {
+            return R.failMsg("最多可配置3个版本");
+        }
         SysPageConstant sysPageConstant = new SysPageConstant();
         sysPageConstant.setConstantKey(SysPageConstants.CABINET_APP_VERSION);
         sysPageConstant.setConstantType(SysPageConstants.CABINET_APP_VERSION);

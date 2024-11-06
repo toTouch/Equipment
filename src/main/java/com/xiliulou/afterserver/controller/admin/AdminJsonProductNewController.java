@@ -37,34 +37,12 @@ public class AdminJsonProductNewController {
     @Autowired
     private ProductNewService productNewService;
     
-    //    @Autowired
-    //    private ProductService productService;
-    //    @Autowired
-    //    private BatchService batchService;
-    //    @Autowired
-    //    private PointProductBindService pointProductBindService;
-    //    @Autowired
-    //    private PointNewService pointNewService;
-    //    @Autowired
-    //    private SupplierService supplierService;
-    //    @Autowired
-    //    private WarehouseService warehouseService;
-    //    @Autowired
-    //    private IotCardService iotCardService;
-    //    @Autowired
-    //    private CameraService cameraService;
     @Autowired
     private AliyunOssService aliyunOssService;
     
     @Autowired
     private StorageConfig StorageConfig;
-    //    @Autowired
-    //    private ColorCardService colorCardService;
-    
-    //@PostMapping("/admin/productNew")
-    //    public R saveAdminPointNew(@RequestBody ProductNew productNew){
-    //        return productNewService.saveAdminProductNew(productNew);
-    //    }
+ 
     
     @PutMapping("/admin/productNew")
     public R putAdminPointNew(@RequestBody ProductNewQuery query) {
@@ -84,14 +62,14 @@ public class AdminJsonProductNewController {
      *
      * @param offset    查询起始位置
      * @param limit     条数
-     * @param no        产品编号
-     * @param modelId   产品型号
-     * @param pointId   产品位置
-     * @param pointType 产品位置类型
-     * @param startTime 开始时间
-     * @param endTime   结束时间
-     * @param testType  测试类型
-     * @return
+     * @ no        产品编号
+     * @ modelId   产品型号
+     * @ pointId   产品位置
+     * @ pointType 产品位置类型
+     * @ startTime 开始时间
+     * @ endTime   结束时间
+     * @ testType  测试类型
+     *
      */
     
     @GetMapping("/admin/productNew/list")
@@ -185,7 +163,7 @@ public class AdminJsonProductNewController {
      * @return
      */
     @PostMapping("/admin/productNew/update")
-    public R updateProductNewStatus(ProductNewQuery productNewQuery) {
+    public R updateProductNewStatus(@RequestBody ProductNewQuery productNewQuery) {
         return productNewService.updateProductNewStatus(productNewQuery);
     }
 }

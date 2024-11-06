@@ -1023,7 +1023,7 @@ public class DeliverServiceImpl extends ServiceImpl<DeliverMapper, Deliver> impl
         }
         return statusStr;
     }
-    
+    @Override
     public Deliver getDeliverInfo(String sn) {
         if (StringUtils.isBlank(sn)) {
             return null;

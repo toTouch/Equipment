@@ -1989,8 +1989,10 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         if (CollectionUtils.isNotEmpty(subtract)) {
             resultMap.put("资产编码不存在",String.valueOf(subtract));
         }
-        Collection<Long> values = noToIdMap.values();
-        Integer i = productNewMapper.updateTestResultFromBatch((List<Long>) values, productNewQuery.getStatus());
+        
+        List<Long> values = new ArrayList<>(noToIdMap.values());
+        
+        Integer i = productNewMapper.updateTestResultFromBatch(values, productNewQuery.getStatus());
         String msg = "清除" + i + "条，失败" + (productNewQuery.getNos().size() - i) + "条";
         resultMap.put("msg", msg);
         

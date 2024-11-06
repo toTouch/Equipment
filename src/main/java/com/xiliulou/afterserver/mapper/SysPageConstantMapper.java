@@ -89,6 +89,6 @@ public interface SysPageConstantMapper {
      */
     int removeById(String constantKey);
     
-    SysPageConstant selectOne(SysPageConstant sysPageConstant);
+    SysPageConstant selectOne(@Param("entity") SysPageConstant sysPageConstant);
 }
 
