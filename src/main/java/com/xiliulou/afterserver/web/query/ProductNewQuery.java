@@ -2,6 +2,8 @@ package com.xiliulou.afterserver.web.query;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author Hardy
  * @date 2022/2/17 14:53
@@ -30,23 +32,8 @@ public class ProductNewQuery {
     /**
      * nos
      */
-    private String nos;
-    ///**
-    // * 外观
-    // */
-    //private Integer surface;
-    ///**
-    // * 颜色
-    // */
-    //private Integer color;
-    ///**
-    // * 物联网卡id
-    // */
-    //private Long iotCardId;
-    ///**
-    // * 摄像头物联网卡id
-    // */
-    //private Long cameraCardId;
+    private List<String>  nos;
+ 
     /**
      * 备注
      */

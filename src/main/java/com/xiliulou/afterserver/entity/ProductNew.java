@@ -200,6 +200,11 @@ public class ProductNew {
      * 物联网deviceName
      */
     private String deviceName;
+    
+    /**
+     * CPU 序列号
+     */
+    private String cpuSerialNum ;
 
 
     /**

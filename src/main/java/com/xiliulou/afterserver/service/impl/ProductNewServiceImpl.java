@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
@@ -52,6 +53,7 @@ import com.xiliulou.afterserver.service.ProductNewService;
 import com.xiliulou.afterserver.service.ProductNewTestContentService;
 import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.service.SupplierService;
+import com.xiliulou.afterserver.service.SysPageConstantService;
 import com.xiliulou.afterserver.service.UserService;
 import com.xiliulou.afterserver.service.WarehouseService;
 import com.xiliulou.afterserver.util.PageUtil;
@@ -79,6 +81,7 @@ import com.xiliulou.storage.config.StorageConfig;
 import com.xiliulou.storage.service.impl.AliyunOssService;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.ListUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -90,6 +93,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -100,13 +104,19 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.xiliulou.afterserver.constant.ProductNewStatusSortConstants.STATUS_DISMANTLE;
 import static com.xiliulou.afterserver.constant.ProductNewStatusSortConstants.STATUS_PRODUCTION;
+import static com.xiliulou.afterserver.constant.ProductNewStatusSortConstants.STATUS_RECEIVED;
+import static com.xiliulou.afterserver.constant.ProductNewStatusSortConstants.STATUS_SCRAPPED;
 import static com.xiliulou.afterserver.constant.ProductNewStatusSortConstants.STATUS_TESTED;
+import static com.xiliulou.afterserver.constant.ProductNewStatusSortConstants.STATUS_USE;
+import static com.xiliulou.afterserver.constant.ProductNewStatusSortConstants.acquireStatusName;
 import static com.xiliulou.afterserver.entity.Batch.ALIYUN_SaaS_ELECTRIC_SWAP_CABINET;
 import static com.xiliulou.afterserver.entity.Batch.API_ELECTRIC_SWAP_CABINET;
 import static com.xiliulou.afterserver.entity.Batch.HUAWEI_CLOUD_SaaS;
 import static com.xiliulou.afterserver.entity.Batch.SAAS_TCP_ELECTRIC_SWAP_CABINET;
 import static com.xiliulou.afterserver.entity.Batch.TCP_ELECTRIC_SWAP_CABINET;
+import static com.xiliulou.afterserver.entity.Deliver.STATUS_SHIPPED;
 
 /**
  * (ProductNew)表服务实现类
@@ -198,6 +208,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     @Autowired
     private ProductMapper productMapper;
     
+    @Autowired
+    private SysPageConstantService syspageConstantService;
     
     @SuppressFBWarnings({"DM_DEFAULT_ENCODING", "DM_DEFAULT_ENCODING"})
     public static String subStringByBytes(String str) {
@@ -930,10 +942,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         deliverVo.setStatus(flag ? ProductNewProcessInfoVo.STATUS_FINISHED : ProductNewProcessInfoVo.STATUS_UN_FINISHED);
         voList.add(deliverVo);
         
-        if (postAuditProcessVo != null && preAuditProcessVo != null
-                && Objects.equals(preAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED)
-                && Objects.equals(testAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED)
-                && !Objects.equals(postAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED)) {
+        if (postAuditProcessVo != null && preAuditProcessVo != null && Objects.equals(preAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED) && Objects.equals(
+                testAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED) && !Objects.equals(postAuditProcessVo.getStatus(), AuditProcessVo.STATUS_FINISHED)) {
             postAuditProcessVo.setStatus(AuditProcessVo.STATUS_EXECUTING);
         }
         return R.ok(vo);
@@ -1854,7 +1864,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     
     
     @Override
-    public R updateUsedStatus(String no) {
+    public R updateUsedStatus(String no, String cpuSerialNum, String appVersion) {
         DeviceMessageVo deviceMessageVo = productNewMapper.queryDeviceMessage(no);
         if (Objects.isNull(deviceMessageVo)) {
             return R.fail(null, "00000", "柜机资产编码不存在，请核对");
@@ -1862,10 +1872,37 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         if (StringUtils.isBlank(deviceMessageVo.getDeviceName()) || StringUtils.isBlank(deviceMessageVo.getProductKey())) {
             return R.fail(null, "00000", "资产编码对应的三元组信息不全");
         }
-        if (Objects.equals(deviceMessageVo.getIsUse(), ProductNew.IS_USE)) {
+        
+        if (Objects.equals(deviceMessageVo.getIsUse(), ProductNew.IS_USE) &&StringUtils.isNotBlank(deviceMessageVo.getCpuSerialNum())) {
             return R.fail(null, "00000", "柜机对应三元组已使用");
         }
-        return R.ok(productNewMapper.updateUsedStatusByNo(no, System.currentTimeMillis()));
+        
+        Batch batch = batchService.queryByIdFromDB(deviceMessageVo.getBatchId());
+        if (Objects.isNull(batch)) {
+            return R.fail("批次号选择有误，请检查");
+        }
+        
+        // 老版本兼容处理
+        if (Objects.equals(batch.getBatteryReplacementCabinetType(), TCP_ELECTRIC_SWAP_CABINET)
+                || Objects.equals(batch.getBatteryReplacementCabinetType(),
+                SAAS_TCP_ELECTRIC_SWAP_CABINET)
+                || StringUtils.isBlank(cpuSerialNum) || StringUtils.isBlank(appVersion)) {
+            return R.ok(productNewMapper.updateUsedStatusByNo(no, cpuSerialNum, System.currentTimeMillis()));
+        }
+        
+        List<String> listCabinetAppVersion = syspageConstantService.selectListCabinetAppVersion();
+        if (!listCabinetAppVersion.contains(appVersion)) {
+            return R.fail(null, "00000", "拉取测试项失败，柜机App版本号不符合要求");
+        }
+        
+        if (StringUtils.isNotBlank(deviceMessageVo.getCpuSerialNum()) && Objects.equals(deviceMessageVo.getCpuSerialNum(), cpuSerialNum)) {
+            return R.ok();
+        } else if(StringUtils.isNotBlank(deviceMessageVo.getCpuSerialNum()) && !Objects.equals(deviceMessageVo.getCpuSerialNum(), cpuSerialNum)) {
+            return R.fail("拉取测试项失败，资产编码对应三元已绑定其他工控机");
+        }
+        
+        return R.ok(productNewMapper.updateUsedStatusByNo(no, cpuSerialNum, System.currentTimeMillis()));
+        
     }
     
     @Override
@@ -1897,33 +1934,67 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     @Override
     public R updateProductNewStatus(ProductNewQuery productNewQuery) {
         
-        List<String> sns = StrUtil.split(productNewQuery.getNos(), "\\r?\\n", 0, true, true);
-        if (CollectionUtil.isEmpty(sns)) {
+        if (CollUtil.isEmpty(productNewQuery.getNos())) {
             return R.fail("SYSTEM.0002", "参数不合法");
         }
-        if (sns.size() > 20) {
-            return R.fail("SYSTEM.0002", "柜机编码数不能超过20个");
+        if (productNewQuery.getNos().size() > 50) {
+            return R.fail("SYSTEM.0002", "柜机编码数不能超过50个");
         }
+        // 修改前
         List<ProductNew> beforeModification = productNewMapper.selectList(
-                new LambdaQueryWrapper<ProductNew>().in(ProductNew::getNo, sns).eq(ProductNew::getDelFlag, ProductNew.DEL_NORMAL));
-        List<Long> ids = beforeModification.stream().map(ProductNew::getId).collect(Collectors.toList());
+                new LambdaQueryWrapper<ProductNew>().in(ProductNew::getNo, productNewQuery.getNos()).eq(ProductNew::getDelFlag, ProductNew.DEL_NORMAL));
+        List<Long> ids = new ArrayList<>();
+        List<String> nos = new ArrayList<>();
+        // 根据状态分组为map
+        Map<Integer, List<String>> statusMap = new HashMap<>();
+        Map<String, Long> noToIdMap = new HashMap<>();
+        for (ProductNew productNew : beforeModification) {
+            ids.add(productNew.getId());
+            nos.add(productNew.getNo());
+            statusMap.computeIfAbsent(productNew.getStatus(), k -> new ArrayList<>()).add(productNew.getNo());
+            noToIdMap.put(productNew.getNo(), productNew.getId());
+        }
         if (CollectionUtils.isEmpty(ids)) {
             return R.fail("SYSTEM.0002", "参数不合法");
         }
+      
+        Map<String, String> resultMap = new HashMap<>();
+        // 已发货、已收货、使用中、拆柜机、已报废不能修改
+        statusMap.forEach((k,v)->{
+            if (Objects.equals(k, STATUS_SHIPPED)
+                || Objects.equals(k, STATUS_RECEIVED)
+                || Objects.equals(k, STATUS_USE)
+                || Objects.equals(k, STATUS_DISMANTLE)
+                || Objects.equals(k, STATUS_SCRAPPED)) {
+                resultMap.put("资产编码"+acquireStatusName(k), String.valueOf(v));
+                // 批量删除key
+                for (String no : v) {
+                    noToIdMap.remove(no);
+                }
+                
+            }
+        });
         
-        ProductNew updateProductNew = new ProductNew();
-        updateProductNew.setStatus(productNewQuery.getStatus());
-        updateProductNew.setUpdateTime(System.currentTimeMillis());
-        
-        if (Objects.equals(updateProductNew.getStatus(), STATUS_PRODUCTION)) {
-            productNewMapper.clearTestResult(ids, productNewQuery.getStatus());
-            return R.ok(productNewMapper.updateByConditions(updateProductNew));
-        } else if (Objects.equals(updateProductNew.getStatus(), STATUS_TESTED)) {
-            productNewMapper.updateTestResultFromBatch(ids, productNewQuery.getStatus());
-        } else {
-            return R.fail("SYSTEM.0002", "参数不合法");
+        List subtract = ListUtils.subtract(productNewQuery.getNos(), nos);
+        if (CollectionUtils.isNotEmpty(subtract)) {
+            resultMap.put("资产编码不存在",String.valueOf(subtract));
         }
+        Collection<Long> values = noToIdMap.values();
+        Integer i = productNewMapper.updateTestResultFromBatch((List<Long>) values, productNewQuery.getStatus());
+        String msg = "清除" + i + "条，失败" + (productNewQuery.getNos().size() - i) + "条";
+        resultMap.put("msg", msg);
+        return R.ok(resultMap);
         
-        return null;
+    }
+    
+    @Override
+    public R unbundled(String no) {
+        // 查询用户类型
+        if (!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)) {
+            return R.fail("登陆用户非工厂类型");
+        }
+   
+        productNewMapper.unbundledCpuSerialNum(no, System.currentTimeMillis());
+        return R.ok();
     }
 }

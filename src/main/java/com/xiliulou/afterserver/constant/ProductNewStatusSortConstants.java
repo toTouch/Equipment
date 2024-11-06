@@ -14,6 +14,7 @@ public class ProductNewStatusSortConstants {
      * 映射
      */
     private static final Map<Integer, Double> STATUS_VALUE_MAPS = Maps.newHashMap();
+    private static final Map<Integer, String> STATUS_NAME_MAPS = Maps.newHashMap();
     /**
      * 生产中
      */
@@ -70,9 +71,22 @@ public class ProductNewStatusSortConstants {
         STATUS_VALUE_MAPS.put(STATUS_TESTED, STATUS_TESTED_VALUE);
         STATUS_VALUE_MAPS.put(STATUS_PRE_DETECTION, STATUS_PRE_DETECTION_VALUE);
         STATUS_VALUE_MAPS.put(STATUS_POST_DETECTION, STATUS_POST_DETECTION_VALUE);
+        
+        STATUS_NAME_MAPS.put(STATUS_PRODUCTION, "生产中");
+        STATUS_NAME_MAPS.put(STATUS_SHIPPED, "已发货");
+        STATUS_NAME_MAPS.put(STATUS_RECEIVED, "已收货");
+        STATUS_NAME_MAPS.put(STATUS_USE, "使用中");
+        STATUS_NAME_MAPS.put(STATUS_DISMANTLE, "拆机柜");
+        STATUS_NAME_MAPS.put(STATUS_SCRAPPED, "已报废");
+        STATUS_NAME_MAPS.put(STATUS_TESTED, "已测试");
+        STATUS_NAME_MAPS.put(STATUS_PRE_DETECTION, "前置检验合格");
+        STATUS_NAME_MAPS.put(STATUS_POST_DETECTION, "后置检验合格");
     }
 
     public static Double acquireStatusValue(Integer status) {
         return STATUS_VALUE_MAPS.get(status);
+    }
+    public static String acquireStatusName(Integer status) {
+        return STATUS_NAME_MAPS.get(status);
     }
 }

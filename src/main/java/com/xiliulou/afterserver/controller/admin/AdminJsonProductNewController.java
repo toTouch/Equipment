@@ -179,7 +179,11 @@ public class AdminJsonProductNewController {
         return R.ok(result);
     }
     
-    
+    /**
+     * 柜机状态修改
+     * @param productNewQuery
+     * @return
+     */
     @PostMapping("/admin/productNew/update")
     public R updateProductNewStatus(ProductNewQuery productNewQuery) {
         return productNewService.updateProductNewStatus(productNewQuery);

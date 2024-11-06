@@ -33,8 +33,13 @@ public class JsonAppDeviceController {
     }
 
     @GetMapping("/notifyUsed")
-    public R notifyUsed(@RequestParam(value = "sn", required = true)String sn){
-        return productNewService.updateUsedStatus(sn);
+    public R notifyUsed(@RequestParam(value = "sn", required = true)String sn,@RequestParam(value = "cpuSerialNum", required = false)String cpuSerialNum, @RequestParam(value = "appVersion", required = false)String appVersion){
+        return productNewService.updateUsedStatus(sn, cpuSerialNum, appVersion);
+    }
+    
+    @GetMapping("/unbundled")
+    public R unbundled(@RequestParam(value = "sn", required = true)String sn){
+        return productNewService.unbundled(sn);
     }
     
     @GetMapping("/page")

@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiliulou.afterserver.mapper.SysPageConstantMapper">
+    
+    <resultMap type="com.xiliulou.afterserver.entity.SysPageConstant" id="SysPageConstantMap">
+        <result property="constantKey" column="constant_key" jdbcType="VARCHAR"/>
+        <result property="constantName" column="constant_name" jdbcType="VARCHAR"/>
+        <result property="constantType" column="constant_type" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="VARCHAR"/>
+        <result property="orderby" column="orderby" jdbcType="INTEGER"/>
+        <result property="comment" column="comment" jdbcType="VARCHAR"/>
+    </resultMap>
+    
+    <!--查询单个-->
+    <select id="selectById" resultMap="SysPageConstantMap">
+        select constant_key,
+               constant_name,
+               constant_type,
+               status,
+               orderby,
+               comment
+        from t_sys_page_constant
+        where constant_key = #{constantKey}
+    </select>
+    
+    <!--查询指定行数据-->
+    <select id="selectList" resultMap="SysPageConstantMap">
+        select
+        constant_key, constant_name, constant_type, status, orderby, comment
+        from t_sys_page_constant
+        <where>
+            <if test="entity.constantKey != null and entity.constantKey != ''">
+                and constant_key = #{entity.constantKey}
+            </if>
+            <if test="entity.constantName != null and entity.constantName != ''">
+                and constant_name = #{entity.constantName}
+            </if>
+            <if test="entity.constantType != null and entity.constantType != ''">
+                and constant_type = #{entity.constantType}
+            </if>
+            <if test="entity.status != null and entity.status != ''">
+                and status = #{entity.status}
+            </if>
+            <if test="entity.orderby != null">
+                and orderby = #{entity.orderby}
+            </if>
+            <if test="entity.comment != null and entity.comment != ''">
+                and comment = #{entity.comment}
+            </if>
+        </where>
+        limit #{offset}, #{size}
+    </select>
+    
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from t_sys_page_constant
+        <where>
+            <if test="constantKey != null and constantKey != ''">
+                and constant_key = #{constantKey}
+            </if>
+            <if test="constantName != null and constantName != ''">
+                and constant_name = #{constantName}
+            </if>
+            <if test="constantType != null and constantType != ''">
+                and constant_type = #{constantType}
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+            <if test="orderby != null">
+                and orderby = #{orderby}
+            </if>
+            <if test="comment != null and comment != ''">
+                and comment = #{comment}
+            </if>
+        </where>
+    </select>
+    <select id="selectOne" resultType="com.xiliulou.afterserver.entity.SysPageConstant">
+        select constant_key, constant_name, constant_type, status, orderby, comment
+        from t_sys_page_constant
+        <where>
+            <if test="entity.constantKey != null and entity.constantKey != ''">
+                and constant_key = #{entity.constantKey}
+            </if>
+            <if test="entity.constantName != null and entity.constantName != ''">
+                and constant_name = #{entity.constantName}
+            </if>
+            <if test="entity.constantType != null and entity.constantType != ''">
+                and constant_type = #{entity.constantType}
+            </if>
+            <if test="entity.status != null and entity.status != ''">
+                and status = #{entity.status}
+            </if>
+            <if test="entity.orderby != null">
+                and orderby = #{entity.orderby}
+            </if>
+            <if test="entity.comment != null and entity.comment != ''">
+                and comment = #{entity.comment}
+            </if>
+        </where>
+        limit 1
+    </select>
+    
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="constantKey" useGeneratedKeys="true">
+        insert into t_sys_page_constant(constant_name, status, orderby, comment)
+        values (#{constantName}, #{status}, #{orderby}, #{comment})
+    </insert>
+    
+    <insert id="insertBatch" keyProperty="constantKey" useGeneratedKeys="true">
+        insert into t_sys_page_constant(constant_name, status, orderby, comment)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.constantName}, #{entity.status}, #{entity.orderby}, #{entity.comment})
+        </foreach>
+    </insert>
+    
+    <insert id="insertOrUpdateBatch" keyProperty="constantKey" useGeneratedKeys="true">
+        insert into t_sys_page_constant(constant_name, status, orderby, comment)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.constantName}, #{entity.status}, #{entity.orderby}, #{entity.comment})
+        </foreach>
+        on duplicate key update
+        constant_name = values(constant_name),
+        status = values(status),
+        orderby = values(orderby),
+        comment = values(comment)
+    </insert>
+    
+    <!--通过主键修改数据-->
+    <update id="updateByconstantTypeAndName">
+        update t_sys_page_constant
+        <set>
+            <if test="sysPageConstant.constantName != null">
+                constant_name = #{sysPageConstant.constantName},
+            </if>
+            <if test="sysPageConstant.status != null and sysPageConstant.status != ''">
+                status = #{sysPageConstant.status},
+            </if>
+            <if test="sysPageConstant.orderby != null">
+                orderby = #{sysPageConstant.orderby},
+            </if>
+            <if test="sysPageConstant.comment != null and sysPageConstant.comment != ''">
+                comment = #{sysPageConstant.comment},
+            </if>
+        </set>
+        where constant_key = #{constantKey} and constant_type = #{constantType}
+    </update>
+    
+    <!--逻辑删除数据-->
+    <update id="removeById">
+        update t_sys_page_constant
+        <set>
+            <if test="constantName != null and constantName != ''">
+                constant_name = #{constantName},
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status},
+            </if>
+            <if test="orderby != null">
+                orderby = #{orderby},
+            </if>
+            <if test="comment != null and comment != ''">
+                comment = #{comment},
+            </if>
+        </set>
+        where constant_key = #{constantKey}
+    </update>
+    
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from t_sys_page_constant
+        where constant_key = #{constantKey}
+    </delete>
+
+</mapper>

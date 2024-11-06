@@ -109,7 +109,7 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
     
     DeviceMessageVo queryDeviceMessage(@Param("no") String no);
     
-    Integer updateUsedStatusByNo(@Param("no") String no, @Param("updateTime") Long updateTime);
+    Integer updateUsedStatusByNo(@Param("no") String no, @Param("cpuSerialNum") String cpuSerialNum, @Param("updateTime") Long updateTime);
     
     List<ProductNew> selectListByProductId(Long productId);
     
@@ -121,4 +121,6 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
     Integer updateTestResultFromBatch(@Param("ids") List<Long> ids, @Param("testResult") Integer testResult);
     
     Integer clearTestResult(List<Long> ids, Integer status);
+    
+    Integer unbundledCpuSerialNum(String no, long l);
 }

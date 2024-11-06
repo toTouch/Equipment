@@ -70,4 +70,5 @@ public class SteamTest {
         System.out.println(张);
         String 张1 = list.stream().filter(t -> t.startsWith("张1")).findFirst().get();
     }
+    
 }

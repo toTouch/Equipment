@@ -21,6 +21,16 @@ public class DeviceMessageVo {
     private String deviceName;
     
     /**
+     * CPU 序列号
+     */
+    private String cpuSerialNum;
+    
+    /**
+     * 产品批次ID
+     */
+    private Long batchId;
+    
+    /**
      * 产品编码 sn
      */
     private String cabinetSn;
@@ -46,7 +56,7 @@ public class DeviceMessageVo {
      */
     private Integer boxNumber;
     
-    // 换电柜类型(0:阿里云SaaS换电柜,1:api换电柜,3:华为云saas, 4: TCP柜机)
+    // 换电柜类型(0:阿里云SaaS换电柜, 1:api换电柜,2:阿里云TCPSaas,3:华为云saas, 4: TCP柜机)
     private Integer batteryReplacementCabinetType;
     
     //三元组已使用

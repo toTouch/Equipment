@@ -220,7 +220,7 @@
     
     <!--通过主键删除-->
     <select id="queryDeviceMessage" resultType="com.xiliulou.afterserver.web.vo.DeviceMessageVo">
-        select t.id as product_id, t.product_key, t.device_name,t.cabinet_sn, t.is_use, pr.box_number
+        select t.id as product_id, t.product_key, t.device_name,t.cabinet_sn, t.is_use, pr.box_number,t.cpu_serial_num,t.batch_id
         from t_product_new t
                  left join product pr on t.model_id = pr.id
         where t.del_flag = 0
@@ -231,6 +231,9 @@
         update t_product_new
         set is_use=0,
             update_time= #{updateTime}
+        <if test="cpuSerialNum != null">
+            and cpu_serial_num = #{cpuSerialNum}
+        </if>
         where no = #{no}
           and del_flag = 0
     </select>
@@ -438,5 +441,14 @@
         <foreach close=")" collection="ids" item="c" open="(" separator=",">
             #{c}
         </foreach>
+    </update>
+    <update id="unbundledCpuSerialNum">
+         update t_product_new  set is_use=1,
+        update_time= #{updateTime}
+        <if test="cpuSerialNum != null">
+            and cpu_serial_num = null
+        </if>
+        where no = #{no}
+        and del_flag = 0
     </update>
 </mapper>
