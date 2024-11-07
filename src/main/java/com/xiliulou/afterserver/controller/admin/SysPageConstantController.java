@@ -48,11 +48,17 @@ public class SysPageConstantController {
     @PutMapping
     public R edit(@RequestBody SysPageConstantQuery sysPageConstantQuery) {
         List<String> cabinetAppVersions = sysPageConstantQuery.getCabinetAppVersions();
-        if (cabinetAppVersions == null || cabinetAppVersions.isEmpty()) {
+        if (cabinetAppVersions == null) {
             return R.failMsg("参数错误");
         }
         if (cabinetAppVersions.size() > 3) {
             return R.failMsg("最多可配置3个版本");
+        }
+        for (String cabinetAppVersion : cabinetAppVersions) {
+            // 长度大于 10
+            if (cabinetAppVersion.length() > 10) {
+                return R.failMsg("版本号长度不能超过8位");
+            }
         }
         SysPageConstant sysPageConstant = new SysPageConstant();
         sysPageConstant.setConstantKey(SysPageConstants.CABINET_APP_VERSION);

@@ -24,8 +24,8 @@ public class JsonAppDeviceController {
     
     
     @GetMapping("/pullDeviceMessage")
-    public R pullDeviceMessage(@RequestParam(value = "sn", required = true)String sn){
-        return productNewService.queryDeviceMessage(sn);
+    public R pullDeviceMessage(@RequestParam(value = "sn", required = true)String sn,@RequestParam(value = "appVersion", required = false)String appVersion){
+        return productNewService.queryDeviceMessage(sn,appVersion);
     }
     @GetMapping("/getDeviceMessage")
     public R getDeviceMessage(@RequestParam(value = "sn", required = true)String sn){
@@ -37,10 +37,6 @@ public class JsonAppDeviceController {
         return productNewService.updateUsedStatus(sn, cpuSerialNum, appVersion);
     }
     
-    @GetMapping("/unbundled")
-    public R unbundled(@RequestParam(value = "sn", required = true)String sn){
-        return productNewService.unbundled(sn);
-    }
     
     @GetMapping("/page")
     public R getPage(@RequestParam("offset") Long offset, @RequestParam("size") Long size, DeliverQuery deliver) {

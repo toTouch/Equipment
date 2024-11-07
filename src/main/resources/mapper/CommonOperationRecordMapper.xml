@@ -38,9 +38,14 @@
             <if test="entity.remarks != null">
                 and remarks = #{entity.remarks}
             </if>
-            <if test="entity.operationTime != null">
-                and operation_time = #{entity.operationTime}
+          
+            <if test="entity.startTime != null">
+                and operation_time &gt; #{entity.startTime}
             </if>
+            <if test="entity.endTime != null">
+                and operation_time &lt; #{entity.endTime}
+            </if>
+        
             <if test="entity.operationContent != null and entity.operationContent != ''">
                 and operation_content = #{entity.operationContent}
             </if>

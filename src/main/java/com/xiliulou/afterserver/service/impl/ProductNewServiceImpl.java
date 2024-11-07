@@ -1,8 +1,6 @@
 package com.xiliulou.afterserver.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -45,7 +43,6 @@ import com.xiliulou.afterserver.service.BatchService;
 import com.xiliulou.afterserver.service.CameraService;
 import com.xiliulou.afterserver.service.ColorCardService;
 import com.xiliulou.afterserver.service.CommonOperationRecordService;
-import com.xiliulou.afterserver.service.CompressionRecordService;
 import com.xiliulou.afterserver.service.CustomerService;
 import com.xiliulou.afterserver.service.DeliverLogService;
 import com.xiliulou.afterserver.service.DeliverService;
@@ -65,6 +62,7 @@ import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.afterserver.util.device.DeviceBase;
 import com.xiliulou.afterserver.util.device.registration.HWDeviceSolutionUtil;
 import com.xiliulou.afterserver.util.device.registration.SaasTCPDeviceSolutionUtil;
+import com.xiliulou.afterserver.vo.PointNewUpdateStatusVO;
 import com.xiliulou.afterserver.web.query.ApiRequestQuery;
 import com.xiliulou.afterserver.web.query.CabinetCompressionQuery;
 import com.xiliulou.afterserver.web.query.CompressionQuery;
@@ -96,7 +94,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -105,8 +102,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
+import static com.xiliulou.afterserver.constant.ProductNewStatusSortConstants.PRODUCT_NOT_EXIST;
 import static com.xiliulou.afterserver.constant.ProductNewStatusSortConstants.STATUS_DISMANTLE;
 import static com.xiliulou.afterserver.constant.ProductNewStatusSortConstants.STATUS_PRODUCTION;
 import static com.xiliulou.afterserver.constant.ProductNewStatusSortConstants.STATUS_RECEIVED;
@@ -1586,6 +1583,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             
             CompressionRecord compressionRecord = compressionRecordMapper.queryEleByPid(product.getId());
             if (Objects.isNull(compressionRecord)) {
+                log.error("{} Tested Success/Failure Non-Testing Status", no);
                 continue;
             }
             // compressionRecord.setTestFile(compression.getCompressionFile());
@@ -1785,7 +1783,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
     }
     
     @Override
-    public R queryDeviceMessage(String no) {
+    public R queryDeviceMessage(String no, String appVersion) {
         DeviceMessageVo deviceMessageVo = productNewMapper.queryDeviceMessage(no);
         if (Objects.isNull(deviceMessageVo)) {
             return R.fail(null, "00000", "柜机资产编码不存在，请核对");
@@ -1793,7 +1791,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         if (StringUtils.isBlank(deviceMessageVo.getDeviceName()) || StringUtils.isBlank(deviceMessageVo.getProductKey())) {
             return R.fail(null, "00000", "资产编码对应的三元组信息不全");
         }
-        if (Objects.equals(deviceMessageVo.getIsUse(), ProductNew.IS_USE)) {
+        
+        if (StringUtils.isBlank(appVersion) && Objects.equals(deviceMessageVo.getIsUse(), ProductNew.IS_USE)) {
             return R.fail(null, "00000", "柜机对应三元组已使用");
         }
         ProductNew productNew = productNewMapper.selectById(deviceMessageVo.getProductId());
@@ -1880,7 +1879,8 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
             return R.fail(null, "00000", "资产编码对应的三元组信息不全");
         }
         
-        if (Objects.equals(deviceMessageVo.getIsUse(), ProductNew.IS_USE) &&StringUtils.isNotBlank(deviceMessageVo.getCpuSerialNum())) {
+        if (Objects.equals(deviceMessageVo.getIsUse(), ProductNew.IS_USE)
+                &&StringUtils.isBlank(cpuSerialNum)) {
             return R.fail(null, "00000", "柜机对应三元组已使用");
         }
         
@@ -1890,17 +1890,16 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         }
         
         // 老版本兼容处理
+        List<String> listCabinetAppVersion = syspageConstantService.selectListCabinetAppVersion();
         if (Objects.equals(batch.getBatteryReplacementCabinetType(), TCP_ELECTRIC_SWAP_CABINET)
-                || Objects.equals(batch.getBatteryReplacementCabinetType(),
-                SAAS_TCP_ELECTRIC_SWAP_CABINET)
+                || CollectionUtils.isEmpty(listCabinetAppVersion)
                 || StringUtils.isBlank(cpuSerialNum) || StringUtils.isBlank(appVersion)) {
             return R.ok(productNewMapper.updateUsedStatusByNo(no, cpuSerialNum, System.currentTimeMillis()));
         }
-        
-        List<String> listCabinetAppVersion = syspageConstantService.selectListCabinetAppVersion();
         if (!listCabinetAppVersion.contains(appVersion)) {
             return R.fail(null, "00000", "拉取测试项失败，柜机App版本号不符合要求");
         }
+        
         
         if (StringUtils.isNotBlank(deviceMessageVo.getCpuSerialNum()) && Objects.equals(deviceMessageVo.getCpuSerialNum(), cpuSerialNum)) {
             return R.ok();
@@ -1953,22 +1952,18 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         // 修改前
         List<ProductNew> beforeModification = productNewMapper.selectList(
                 new LambdaQueryWrapper<ProductNew>().in(ProductNew::getNo, productNewQuery.getNos()).eq(ProductNew::getDelFlag, ProductNew.DEL_NORMAL));
-        List<Long> ids = new ArrayList<>();
+        
         List<String> nos = new ArrayList<>();
         // 根据状态分组为map
         Map<Integer, List<String>> statusMap = new HashMap<>();
         Map<String, Long> noToIdMap = new HashMap<>();
         for (ProductNew productNew : beforeModification) {
-            ids.add(productNew.getId());
             nos.add(productNew.getNo());
             statusMap.computeIfAbsent(productNew.getStatus(), k -> new ArrayList<>()).add(productNew.getNo());
             noToIdMap.put(productNew.getNo(), productNew.getId());
         }
-        if (CollectionUtils.isEmpty(ids)) {
-            return R.fail("SYSTEM.0002", "参数不合法");
-        }
-      
-        Map<String, String> resultMap = new HashMap<>();
+        
+        ArrayList<PointNewUpdateStatusVO> resultList = new ArrayList<>();
         // 已发货、已收货、使用中、拆柜机、已报废不能修改
         statusMap.forEach((k,v)->{
             if (Objects.equals(k, STATUS_SHIPPED)
@@ -1976,9 +1971,12 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
                 || Objects.equals(k, STATUS_USE)
                 || Objects.equals(k, STATUS_DISMANTLE)
                 || Objects.equals(k, STATUS_SCRAPPED)) {
-                resultMap.put("资产编码"+acquireStatusName(k), String.valueOf(v));
                 // 批量删除key
                 for (String no : v) {
+                    PointNewUpdateStatusVO pointNewUpdateStatusVO = new PointNewUpdateStatusVO();
+                    pointNewUpdateStatusVO.setNo(no);
+                    pointNewUpdateStatusVO.setStatus(acquireStatusName(k));
+                    resultList.add(pointNewUpdateStatusVO);
                     noToIdMap.remove(no);
                 }
                 
@@ -1987,14 +1985,21 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         
         List subtract = ListUtils.subtract(productNewQuery.getNos(), nos);
         if (CollectionUtils.isNotEmpty(subtract)) {
-            resultMap.put("资产编码不存在",String.valueOf(subtract));
+            for (Object no : subtract) {
+                PointNewUpdateStatusVO pointNewUpdateStatusVO = new PointNewUpdateStatusVO();
+                pointNewUpdateStatusVO.setNo((String) no);
+                pointNewUpdateStatusVO.setStatus(acquireStatusName(PRODUCT_NOT_EXIST));
+                resultList.add(pointNewUpdateStatusVO);
+                noToIdMap.remove(no);
+            }
         }
         
         List<Long> values = new ArrayList<>(noToIdMap.values());
+        if (CollectionUtils.isEmpty(values)) {
+            return R.ok(resultList);
+        }
         
-        Integer i = productNewMapper.updateTestResultFromBatch(values, productNewQuery.getStatus());
-        String msg = "清除" + i + "条，失败" + (productNewQuery.getNos().size() - i) + "条";
-        resultMap.put("msg", msg);
+        Integer i = productNewMapper.clearTestResult(values, STATUS_PRODUCTION);
         
         CommonOperationRecord commonOperationRecord = new CommonOperationRecord();
         commonOperationRecord.setRecordType(PRODUCT_NEW_OPERATION);
@@ -2004,7 +2009,7 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         commonOperationRecord.setRemarks(productNewQuery.getRemarks());
         commonOperationRecord.setOperationAccount(userById.getUserName());
         commonOperationRecordService.insert(commonOperationRecord);
-        return R.ok(resultMap);
+        return R.ok(resultList);
         
     }
     
@@ -2014,7 +2019,6 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         if (!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)) {
             return R.fail("登陆用户非工厂类型");
         }
-   
         productNewMapper.unbundledCpuSerialNum(no, System.currentTimeMillis());
         return R.ok();
     }

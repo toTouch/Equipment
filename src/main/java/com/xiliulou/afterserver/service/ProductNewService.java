@@ -131,7 +131,7 @@ public interface ProductNewService extends IService<ProductNew> {
 
     R compressionEnd(ApiRequestQuery apiRequestQuery);
 
-    R queryDeviceMessage(String no);
+    R queryDeviceMessage(String no, String appVersion);
     R getDeviceMessage(String no);
 
     R updateUsedStatus(String sn, String cpuSerialNum, String no );

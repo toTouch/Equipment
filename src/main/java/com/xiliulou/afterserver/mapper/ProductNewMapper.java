@@ -120,7 +120,7 @@ public interface ProductNewMapper extends BaseMapper<ProductNew> {
     
     Integer updateTestResultFromBatch(@Param("ids") List<Long> ids, @Param("testResult") Integer testResult);
     
-    Integer clearTestResult(List<Long> ids, Integer status);
+    Integer clearTestResult(@Param("ids") List<Long> ids, @Param("status") Integer status);
     
-    Integer unbundledCpuSerialNum(String no, long l);
+    Integer unbundledCpuSerialNum(@Param("no") String no, @Param("updateTime") long updateTime);
 }

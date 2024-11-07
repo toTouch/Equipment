@@ -232,7 +232,7 @@
         set is_use=0,
             update_time= #{updateTime}
         <if test="cpuSerialNum != null">
-            and cpu_serial_num = #{cpuSerialNum}
+            ,cpu_serial_num = #{cpuSerialNum}
         </if>
         where no = #{no}
           and del_flag = 0
@@ -437,18 +437,17 @@
 
     </update>
     <update id="clearTestResult">
-        UPDATE `xiliulou_crm`.`t_product_new` SET `status` = 0, `test_result` = NULL, `is_use` = 1 WHERE no in
+        UPDATE `xiliulou_crm`.`t_product_new` SET `status` = 0, `test_result` = NULL, `is_use` = 1 WHERE id in
         <foreach close=")" collection="ids" item="c" open="(" separator=",">
             #{c}
         </foreach>
     </update>
     <update id="unbundledCpuSerialNum">
-         update t_product_new  set is_use=1,
-        update_time= #{updateTime}
-        <if test="cpuSerialNum != null">
-            and cpu_serial_num = null
-        </if>
+        update t_product_new
+        set is_use=1,
+            update_time= #{updateTime},
+            cpu_serial_num = null
         where no = #{no}
-        and del_flag = 0
+          and del_flag = 0
     </update>
 </mapper>
