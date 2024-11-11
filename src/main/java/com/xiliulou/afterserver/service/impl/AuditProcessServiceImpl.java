@@ -259,6 +259,7 @@ public class AuditProcessServiceImpl extends ServiceImpl<AuditProcessMapper, Aud
         return R.ok(keyProcessVo);
     }
     
+    @Override
     public R putKeyProcess(KeyProcessQuery keyProcessQuery) {
         AuditGroup groupById = auditGroupService.getById(keyProcessQuery.getGroupId());
         if (Objects.isNull(groupById)) {

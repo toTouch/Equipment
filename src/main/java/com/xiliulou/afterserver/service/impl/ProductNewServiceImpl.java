@@ -1966,11 +1966,11 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         ArrayList<PointNewUpdateStatusVO> resultList = new ArrayList<>();
         // 已发货、已收货、使用中、拆柜机、已报废不能修改
         statusMap.forEach((k,v)->{
-            if (Objects.equals(k, STATUS_SHIPPED)
-                || Objects.equals(k, STATUS_RECEIVED)
-                || Objects.equals(k, STATUS_USE)
-                || Objects.equals(k, STATUS_DISMANTLE)
-                || Objects.equals(k, STATUS_SCRAPPED)) {
+            if (Objects.equals(k, ProductNewStatusSortConstants.STATUS_SHIPPED)
+                || Objects.equals(k, ProductNewStatusSortConstants.STATUS_RECEIVED)
+                || Objects.equals(k, ProductNewStatusSortConstants.STATUS_USE)
+                || Objects.equals(k, ProductNewStatusSortConstants.STATUS_DISMANTLE)
+                || Objects.equals(k, ProductNewStatusSortConstants.STATUS_SCRAPPED)) {
                 // 批量删除key
                 for (String no : v) {
                     PointNewUpdateStatusVO pointNewUpdateStatusVO = new PointNewUpdateStatusVO();
