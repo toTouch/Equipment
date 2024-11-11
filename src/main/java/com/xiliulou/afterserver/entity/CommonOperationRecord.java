@@ -51,7 +51,7 @@ import java.io.Serializable;
     /**
      * 操作账号
      */
-    @ExcelProperty("操作账号")
+    @ExcelProperty("操作人")
     private String operationAccount;
     
     /**

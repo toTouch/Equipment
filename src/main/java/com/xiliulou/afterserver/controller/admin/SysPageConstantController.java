@@ -56,7 +56,7 @@ public class SysPageConstantController {
         }
         for (String cabinetAppVersion : cabinetAppVersions) {
             // 长度大于 10
-            if (cabinetAppVersion.length() > 10) {
+            if (cabinetAppVersion.length() > 8) {
                 return R.failMsg("版本号长度不能超过8位");
             }
         }

@@ -102,6 +102,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.xiliulou.afterserver.constant.ProductNewStatusSortConstants.PRODUCT_NOT_EXIST;
 import static com.xiliulou.afterserver.constant.ProductNewStatusSortConstants.STATUS_DISMANTLE;
@@ -1906,7 +1907,12 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         } else if(StringUtils.isNotBlank(deviceMessageVo.getCpuSerialNum()) && !Objects.equals(deviceMessageVo.getCpuSerialNum(), cpuSerialNum)) {
             return R.fail("拉取测试项失败，资产编码对应三元已绑定其他工控机");
         }
-        
+        List<ProductNew> productNews = productNewMapper.selectList(new LambdaQueryWrapper<ProductNew>().eq(ProductNew::getCpuSerialNum, cpuSerialNum));
+        // 非空获取 no
+        if (CollectionUtils.isNotEmpty(productNews)) {
+            List<String> collected = productNews.stream().map(ProductNew::getNo).collect(Collectors.toList());
+            return R.fail("00000","拉取测试项失败，工控机已绑定其他资产编码"+collected);
+        }
         return R.ok(productNewMapper.updateUsedStatusByNo(no, cpuSerialNum, System.currentTimeMillis()));
         
     }
@@ -2004,14 +2010,51 @@ public class ProductNewServiceImpl extends ServiceImpl<ProductNewMapper, Product
         CommonOperationRecord commonOperationRecord = new CommonOperationRecord();
         commonOperationRecord.setRecordType(PRODUCT_NEW_OPERATION);
         commonOperationRecord.setOperationTime(System.currentTimeMillis());
-        String content = "将资产编码状态改为生产中" + noToIdMap.keySet();
-        commonOperationRecord.setOperationContent(content);
         commonOperationRecord.setRemarks(productNewQuery.getRemarks());
         commonOperationRecord.setOperationAccount(userById.getUserName());
-        commonOperationRecordService.insert(commonOperationRecord);
+        
+        // 将集合拆分为每组字符数小于 1000 字符的多组集合
+        List<Set<String>> resultSets = splitSetIntoSubsets(noToIdMap.keySet(), 900);
+        for (Set<String> resultSet : resultSets) {
+            String content = "将资产编码状态改为生产中：";
+            content = content + resultSet;
+            commonOperationRecord.setOperationContent(content);
+            log.error("lllllllllllllllllllllllllll content: {}", content);
+            commonOperationRecordService.insert(commonOperationRecord);
+        }
         return R.ok(resultList);
         
     }
+    
+    public static List<Set<String>> splitSetIntoSubsets(Set<String> set, int maxCharsPerSubset) {
+        List<Set<String>> subsets = new ArrayList<>();
+        Set<String> currentSubset = new HashSet<>();
+        int currentLength = 0;
+        
+        // 遍历集合中的每个元素
+        for (String element : set) {
+            int elementLength = element.length();
+            
+            // 如果当前子集加上当前元素的长度超过最大限制，则创建新的子集
+            if (currentLength + elementLength > maxCharsPerSubset) {
+                subsets.add(currentSubset);
+                currentSubset = new HashSet<>();
+                currentLength = 0;
+            }
+            
+            // 将当前元素添加到当前子集中
+            currentSubset.add(element);
+            currentLength += elementLength;
+        }
+        
+        // 添加最后一个子集
+        if (!currentSubset.isEmpty()) {
+            subsets.add(currentSubset);
+        }
+        
+        return subsets;
+    }
+    
     
     @Override
     public R unbundled(String no) {
