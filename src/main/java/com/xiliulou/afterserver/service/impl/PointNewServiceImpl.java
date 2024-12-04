@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 import com.xiliulou.afterserver.constant.MqConstant;
 import com.xiliulou.afterserver.constant.cache.WorkOrderConstant;
 import com.xiliulou.afterserver.entity.Batch;
+import com.xiliulou.afterserver.entity.BatchPurchaseOrder;
 import com.xiliulou.afterserver.entity.City;
 import com.xiliulou.afterserver.entity.Customer;
 import com.xiliulou.afterserver.entity.ExportMaterialConfig;
@@ -31,7 +32,7 @@ import com.xiliulou.afterserver.entity.Supplier;
 import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.entity.mq.notify.MqNotifyCommon;
 import com.xiliulou.afterserver.entity.mq.notify.MqPointNewAuditNotify;
-import com.xiliulou.afterserver.mapper.ExportMaterialConfigMapper;
+import com.xiliulou.afterserver.mapper.BatchPurchaseOrderMapper;
 import com.xiliulou.afterserver.mapper.MaterialTraceabilityMapper;
 import com.xiliulou.afterserver.mapper.PointNewMapper;
 import com.xiliulou.afterserver.mapper.PointProductBindMapper;
@@ -167,6 +168,9 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     
     @Autowired
     private SupplierMapper supplierMapper;
+    
+    @Autowired
+    private BatchPurchaseOrderMapper batchPurchaseOrderMapper;
     
     @Autowired
     private ExportMaterialConfigService exportMaterialConfigService;
@@ -915,6 +919,10 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             materialGroup = materialByIds.stream().collect(Collectors.groupingBy(Material::getSn));
         }
         
+        List<Integer> batchIds = productNewDeliverVos.stream().map(ProductNewDeliverVo::getBatchId).collect(Collectors.toList());
+        List<BatchPurchaseOrder> batchList = batchPurchaseOrderMapper.selectList(new LambdaQueryWrapper<BatchPurchaseOrder>().in(BatchPurchaseOrder::getBatchId, batchIds));
+        Map<Long, BatchPurchaseOrder> batchPurchaseOrderMap = batchList.stream().collect(Collectors.toMap(BatchPurchaseOrder::getBatchId, Function.identity(), (oldValue, newValue) -> newValue));
+        
         for (ProductNewDeliverVo temp : productNewDeliverVos) {
             MaterialHistoryVo materialHistoryVo = new MaterialHistoryVo();
             materialHistoryVo.setCabinetSn(temp.getCabinetSn());
@@ -927,6 +935,15 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             }
             materialHistoryVo.setProductionTime(temp.getCreateTime());
             
+            // 采购单
+            if(Objects.nonNull(temp.getBatchId())){
+                BatchPurchaseOrder batchPurchaseOrder = batchPurchaseOrderMap.get(temp.getBatchId());
+                if (Objects.nonNull(batchPurchaseOrder)) {
+                    materialHistoryVo.setPurchaseOrder(batchPurchaseOrder.getPurchaseOrder());
+                    materialHistoryVo.setItem(batchPurchaseOrder.getItem());
+                    materialHistoryVo.setMaterialNo(batchPurchaseOrder.getMaterialNo());
+                }
+            }
             // materialHistoryVo 转 Map
             String jsonBean = new Gson().toJson(materialHistoryVo);
             LinkedHashMap materialHistoryMap = new Gson().fromJson(jsonBean, LinkedHashMap.class);
@@ -969,6 +986,10 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         List<Supplier> supplierList = supplierMapper.selectList(new LambdaQueryWrapper<Supplier>().in(Supplier::getId, collectSupplierIds));
         Map<Long, Supplier> longSupplierMap = supplierList.stream().collect(Collectors.toMap(Supplier::getId, Function.identity(), (oldValue, newValue) -> newValue));
         
+        List<Integer> batchIds = productNewDeliverVos.stream().map(ProductNewDeliverVo::getBatchId).collect(Collectors.toList());
+        List<BatchPurchaseOrder> batchList = batchPurchaseOrderMapper.selectList(new LambdaQueryWrapper<BatchPurchaseOrder>().in(BatchPurchaseOrder::getBatchId, batchIds));
+        Map<Long, BatchPurchaseOrder> batchPurchaseOrderMap = batchList.stream().collect(Collectors.toMap(BatchPurchaseOrder::getBatchId, Function.identity(), (oldValue, newValue) -> newValue));
+        
         // 根据物料编号分组
         Map<String, List<Material>> materialGroup = new HashMap<>();
         if (CollectionUtils.isNotEmpty(materialByIds)) {
@@ -988,7 +1009,15 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             if (Objects.nonNull(temp.getSupplierId())) {
                 materialHistoryVo.setSupplierName(longSupplierMap.get(temp.getSupplierId()).getName());
             }
-            
+            // 采购单
+            if(Objects.nonNull(temp.getBatchId())){
+                BatchPurchaseOrder batchPurchaseOrder = batchPurchaseOrderMap.get(temp.getBatchId());
+                if (Objects.nonNull(batchPurchaseOrder)) {
+                    materialHistoryVo.setPurchaseOrder(batchPurchaseOrder.getPurchaseOrder());
+                    materialHistoryVo.setItem(batchPurchaseOrder.getItem());
+                    materialHistoryVo.setMaterialNo(batchPurchaseOrder.getMaterialNo());
+                }
+            }
             ExportMaterialConfig exportMaterialConfig = exportMaterialConfigs.stream().filter(e -> {
                 return Objects.equals(e.getPn(), "Y5030011");
             }).findFirst().orElse(null);

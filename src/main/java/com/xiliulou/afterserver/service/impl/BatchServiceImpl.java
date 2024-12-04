@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiliulou.afterserver.config.ProductConfig;
 import com.xiliulou.afterserver.entity.Batch;
+import com.xiliulou.afterserver.entity.BatchPurchaseOrder;
 import com.xiliulou.afterserver.entity.DeviceApplyCounter;
 import com.xiliulou.afterserver.entity.PointProductBind;
 import com.xiliulou.afterserver.entity.Product;
@@ -16,6 +17,7 @@ import com.xiliulou.afterserver.entity.Supplier;
 import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.BatchMapper;
+import com.xiliulou.afterserver.mapper.BatchPurchaseOrderMapper;
 import com.xiliulou.afterserver.mapper.DeviceApplyCounterMapper;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
@@ -95,6 +97,9 @@ public class BatchServiceImpl implements BatchService {
     
     @Autowired
     private ProductFileMapper productFileMapper;
+    
+    @Autowired
+    private BatchPurchaseOrderMapper batchPurchaseOrderMapper;
     
     @Autowired
     private ProductNewMapper productNewMapper;
@@ -496,6 +501,14 @@ public class BatchServiceImpl implements BatchService {
         batch.setUpdateTime(System.currentTimeMillis());
         batch.setNotShipped(batch.getProductNum());
         Batch insert = this.insert(batch);
+        
+        BatchPurchaseOrder batchPurchaseOrder = new BatchPurchaseOrder();
+        batchPurchaseOrder.setBatchId(insert.getId());
+        batchPurchaseOrder.setPurchaseOrder(batch.getPurchaseOrder());
+        batchPurchaseOrder.setItem(batch.getItem());
+        batchPurchaseOrder.setMaterialNo(batch.getMaterialNo());
+        batchPurchaseOrderMapper.insert(batchPurchaseOrder);
+        
         // 附件上传
         ProductFile productFile = new ProductFile();
         productFile.setProductId(insert.getId());

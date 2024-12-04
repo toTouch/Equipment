@@ -3,12 +3,13 @@ package com.xiliulou.afterserver.controller.admin;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.xiliulou.afterserver.entity.Batch;
+import com.xiliulou.afterserver.entity.BatchPurchaseOrder;
 import com.xiliulou.afterserver.entity.Product;
 import com.xiliulou.afterserver.entity.ProductFile;
 import com.xiliulou.afterserver.entity.Supplier;
+import com.xiliulou.afterserver.mapper.BatchPurchaseOrderMapper;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.mapper.ProductMapper;
-import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.mapper.SupplierMapper;
 import com.xiliulou.afterserver.service.BatchService;
 import com.xiliulou.afterserver.service.ProductService;
@@ -51,7 +52,7 @@ public class AdminJsonBatchController {
     @Autowired
     SupplierService supplierService;
     @Autowired
-    ProductNewMapper productNewMapper;
+    BatchPurchaseOrderMapper batchPurchaseOrderMapper;
     @Autowired
     SupplierMapper supplierMapper;
     @Autowired
@@ -105,6 +106,14 @@ public class AdminJsonBatchController {
             productFile.setFileStr(batch.getFileStr());
             productFile.setProductFileName(batch.getProductFileName());
             productFileMapper.updateById(productFile);
+        }
+        if (Objects.nonNull(batch.getPurchaseId())) {
+            BatchPurchaseOrder batchPurchaseOrder = new BatchPurchaseOrder();
+            batchPurchaseOrder.setId(batch.getPurchaseId());
+            batchPurchaseOrder.setPurchaseOrder(batch.getPurchaseOrder());
+            batchPurchaseOrder.setItem(batch.getItem());
+            batchPurchaseOrder.setMaterialNo(batch.getMaterialNo());
+            batchPurchaseOrderMapper.updateById(batchPurchaseOrder);
         }
         return R.ok();
     }

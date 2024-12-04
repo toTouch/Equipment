@@ -30,10 +30,12 @@
     </select>
     
     <!--查询指定行数据-->
-    <select id="queryAllByLimit" resultMap="BatchMap">
+    <select id="queryAllByLimit" resultType="com.xiliulou.afterserver.entity.Batch">
         select
-        id, batch_no, remarks, create_time, type, model_id, product_type, product_num, supplier_id, not_shipped, update_time
-        from t_batch
+        tb.id, batch_no, remarks, create_time, type, model_id, product_type, product_num, supplier_id, not_shipped, update_time,battery_replacement_cabinet_type,
+        tbpo.id purchaseId,tbpo.purchase_order, tbpo.item, tbpo.material_no
+        from t_batch tb
+        left join t_batch_purchase_order tbpo on tbpo.batch_id=tb.id
         <where>
             <if test="batchNo != null and batchNo != '' ">
                 and batch_no like concat('%',#{batchNo},'%')
@@ -55,7 +57,7 @@
                 and not_shipped = 0
             </if>
             <if test="remarks != null and remarks != ''">
-               and remarks like concat('%',#{remarks},'%')
+                and remarks like concat('%',#{remarks},'%')
             </if>
         </where>
         order by create_time desc
