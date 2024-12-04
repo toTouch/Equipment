@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.controller.admin;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.xiliulou.afterserver.entity.Batch;
@@ -110,9 +111,9 @@ public class AdminJsonBatchController {
         if (Objects.nonNull(batch.getPurchaseId())) {
             BatchPurchaseOrder batchPurchaseOrder = new BatchPurchaseOrder();
             batchPurchaseOrder.setId(batch.getPurchaseId());
-            batchPurchaseOrder.setPurchaseOrder(batch.getPurchaseOrder());
-            batchPurchaseOrder.setItem(batch.getItem());
-            batchPurchaseOrder.setMaterialNo(batch.getMaterialNo());
+            batchPurchaseOrder.setPurchaseOrder(StrUtil.trim(batch.getPurchaseOrder()));
+            batchPurchaseOrder.setItem(StrUtil.trim(batch.getItem()));
+            batchPurchaseOrder.setMaterialNo(StrUtil.trim(batch.getMaterialNo()));
             batchPurchaseOrderMapper.updateById(batchPurchaseOrder);
         }
         return R.ok();

@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -285,6 +286,13 @@ public class BatchServiceImpl implements BatchService {
         if (ok != null) {
             return ok;
         }
+        
+        BatchPurchaseOrder batchPurchaseOrder = new BatchPurchaseOrder();
+        batchPurchaseOrder.setBatchId(batch.getId());
+        batchPurchaseOrder.setPurchaseOrder(StrUtil.trim(batch.getPurchaseOrder()));
+        batchPurchaseOrder.setItem(StrUtil.trim(batch.getItem()));
+        batchPurchaseOrder.setMaterialNo(StrUtil.trim(batch.getMaterialNo()));
+        batchPurchaseOrderMapper.insert(batchPurchaseOrder);
         return R.ok();
     }
     
@@ -501,13 +509,6 @@ public class BatchServiceImpl implements BatchService {
         batch.setUpdateTime(System.currentTimeMillis());
         batch.setNotShipped(batch.getProductNum());
         Batch insert = this.insert(batch);
-        
-        BatchPurchaseOrder batchPurchaseOrder = new BatchPurchaseOrder();
-        batchPurchaseOrder.setBatchId(insert.getId());
-        batchPurchaseOrder.setPurchaseOrder(batch.getPurchaseOrder());
-        batchPurchaseOrder.setItem(batch.getItem());
-        batchPurchaseOrder.setMaterialNo(batch.getMaterialNo());
-        batchPurchaseOrderMapper.insert(batchPurchaseOrder);
         
         // 附件上传
         ProductFile productFile = new ProductFile();

@@ -1,20 +1,22 @@
 package com.xiliulou.afterserver.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 /**
  * (BatchPurchaseOrder)实体类
  *
  * @author zhangbozhi
  * @since 2024-12-03 16:29:46
- */ public class BatchPurchaseOrder implements Serializable {
+ */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@TableName("t_batch_purchase_order")
+public class BatchPurchaseOrder implements Serializable {
     
     private static final long serialVersionUID = -35596153172167192L;
     
