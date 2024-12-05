@@ -167,6 +167,7 @@ public class AdminJsonBatchController {
                 Product product = longProductNewMap.get(item.getModelId());
                 if(Objects.nonNull(product)){
                     item.setModelName(product.getName());
+                    item.setProductSeries(product.getProductSeries());
                 }
                 // 工厂名
                 Supplier supplier = longSupplierMap.get(item.getSupplierId());

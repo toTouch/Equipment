@@ -886,7 +886,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     public R productNewDeliverMaterialHistoryExportExcel(Long[] ids) {
         ArrayList<Map> materialHistoryVos = new ArrayList<>();
         
-        User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
+//        User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
         // 暂时没有做工厂级别权限控制       if (redisService.hasKey(ExportMaterialConfig.EXPORT_MATERIAL_CONFIG_CALL_BACK + userById.getThirdId())) {
         if (redisService.hasKey(ExportMaterialConfig.EXPORT_MATERIAL_CONFIG_CALL_BACK)) {
             return R.failMsg("物料导出配置编辑中，请稍后再试");
@@ -919,7 +919,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             materialGroup = materialByIds.stream().collect(Collectors.groupingBy(Material::getSn));
         }
         
-        List<Integer> batchIds = productNewDeliverVos.stream().map(ProductNewDeliverVo::getBatchId).collect(Collectors.toList());
+        List<Long> batchIds = productNewDeliverVos.stream().map(ProductNewDeliverVo::getBatchId).collect(Collectors.toList());
         List<BatchPurchaseOrder> batchList = batchPurchaseOrderMapper.selectList(new LambdaQueryWrapper<BatchPurchaseOrder>().in(BatchPurchaseOrder::getBatchId, batchIds));
         Map<Long, BatchPurchaseOrder> batchPurchaseOrderMap = batchList.stream().collect(Collectors.toMap(BatchPurchaseOrder::getBatchId, Function.identity(), (oldValue, newValue) -> newValue));
         
@@ -958,7 +958,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     
     @Override
     public R productNewDeliverMaterialPanelExportExcel(Long[] ids) {
-        User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
+//        User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
         
         // 暂时没有做工厂级别权限控制       if (redisService.hasKey(ExportMaterialConfig.EXPORT_MATERIAL_CONFIG_CALL_BACK + userById.getThirdId())) {
         if (redisService.hasKey(ExportMaterialConfig.EXPORT_MATERIAL_CONFIG_CALL_BACK)) {
@@ -986,7 +986,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         List<Supplier> supplierList = supplierMapper.selectList(new LambdaQueryWrapper<Supplier>().in(Supplier::getId, collectSupplierIds));
         Map<Long, Supplier> longSupplierMap = supplierList.stream().collect(Collectors.toMap(Supplier::getId, Function.identity(), (oldValue, newValue) -> newValue));
         
-        List<Integer> batchIds = productNewDeliverVos.stream().map(ProductNewDeliverVo::getBatchId).collect(Collectors.toList());
+        List<Long> batchIds = productNewDeliverVos.stream().map(ProductNewDeliverVo::getBatchId).collect(Collectors.toList());
         List<BatchPurchaseOrder> batchList = batchPurchaseOrderMapper.selectList(new LambdaQueryWrapper<BatchPurchaseOrder>().in(BatchPurchaseOrder::getBatchId, batchIds));
         Map<Long, BatchPurchaseOrder> batchPurchaseOrderMap = batchList.stream().collect(Collectors.toMap(BatchPurchaseOrder::getBatchId, Function.identity(), (oldValue, newValue) -> newValue));
         

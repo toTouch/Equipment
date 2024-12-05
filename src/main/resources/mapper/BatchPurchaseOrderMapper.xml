@@ -100,13 +100,13 @@
     <update id="updateById">
         update t_batch_purchase_order
         <set>
-            <if test="purchaseOrder != null and purchaseOrder != ''">
+            <if test="purchaseOrder != null">
                 purchase_order = #{purchaseOrder},
             </if>
-            <if test="item != null and item != ''">
+            <if test="item != null">
                 item = #{item},
             </if>
-            <if test="materialNo != null and materialNo != ''">
+            <if test="materialNo != null">
                 material_no = #{materialNo},
             </if>
             <if test="batchId != null">

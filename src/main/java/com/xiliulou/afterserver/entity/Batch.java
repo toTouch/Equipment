@@ -162,4 +162,9 @@ public class Batch {
     // 自定义设备名称
     @TableField(exist = false)
     private List<String> customDeviceNameList;
+    
+    // 产品系列
+    // 取餐柜 1、餐厅柜 2、换电柜 3、充电柜 4、寄存柜 5、生鲜柜 6
+    @TableField(exist = false)
+    private Integer productSeries;
 }

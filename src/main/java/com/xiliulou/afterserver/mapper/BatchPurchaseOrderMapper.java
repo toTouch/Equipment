@@ -44,6 +44,7 @@ public interface BatchPurchaseOrderMapper extends BaseMapper<BatchPurchaseOrder>
      * @param batchPurchaseOrder 实例对象
      * @return 影响行数
      */
+    @Override
     int insert(BatchPurchaseOrder batchPurchaseOrder);
 
     /**
@@ -69,6 +70,7 @@ public interface BatchPurchaseOrderMapper extends BaseMapper<BatchPurchaseOrder>
      * @param batchPurchaseOrder 实例对象
      * @return 影响行数
      */
+    @Override
     int updateById(BatchPurchaseOrder batchPurchaseOrder);
 
     /**

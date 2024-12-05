@@ -283,16 +283,15 @@ public class BatchServiceImpl implements BatchService {
         
         // 批量注册设备
         R<Object> ok = deviceEnrollment(batch, deviceNames, key);
-        if (ok != null) {
-            return ok;
-        }
-        
         BatchPurchaseOrder batchPurchaseOrder = new BatchPurchaseOrder();
         batchPurchaseOrder.setBatchId(batch.getId());
         batchPurchaseOrder.setPurchaseOrder(StrUtil.trim(batch.getPurchaseOrder()));
         batchPurchaseOrder.setItem(StrUtil.trim(batch.getItem()));
         batchPurchaseOrder.setMaterialNo(StrUtil.trim(batch.getMaterialNo()));
         batchPurchaseOrderMapper.insert(batchPurchaseOrder);
+        if (ok != null) {
+            return ok;
+        }
         return R.ok();
     }
     

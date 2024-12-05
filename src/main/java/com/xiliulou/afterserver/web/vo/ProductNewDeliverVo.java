@@ -17,7 +17,7 @@ public class ProductNewDeliverVo {
     /**
      * 产品批次id
      */
-    private Integer batchId;
+    private Long batchId;
     /**
      * 产品批次no
      */
