@@ -50,8 +50,6 @@ public class Batch {
      */
     private String productType;
     
-    ;
-    
     /**
      * 产品数量
      */
@@ -111,6 +109,30 @@ public class Batch {
     private Integer syncCabinetSn;
     
     /**
+     * 采购单id
+     */
+    @TableField(exist = false)
+    private Integer purchaseId;
+    
+    /**
+     * 采购单
+     */
+    @TableField(exist = false)
+    private String purchaseOrder;
+    
+    /**
+     * 项次
+     */
+    @TableField(exist = false)
+    private String item;
+    
+    /**
+     * 成品料号
+     */
+    @TableField(exist = false)
+    private String materialNo;
+    
+    /**
      *  换电柜类型(0:阿里云SaaS换电柜, 1:api换电柜,2:阿里云TCPSaas,3:华为云saas, 4: TCP柜机)*/
     private Integer batteryReplacementCabinetType;
     
@@ -140,4 +162,9 @@ public class Batch {
     // 自定义设备名称
     @TableField(exist = false)
     private List<String> customDeviceNameList;
+    
+    // 产品系列
+    // 取餐柜 1、餐厅柜 2、换电柜 3、充电柜 4、寄存柜 5、生鲜柜 6
+    @TableField(exist = false)
+    private Integer productSeries;
 }

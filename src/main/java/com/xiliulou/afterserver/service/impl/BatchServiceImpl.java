@@ -1,5 +1,6 @@
 package com.xiliulou.afterserver.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -7,6 +8,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiliulou.afterserver.config.ProductConfig;
 import com.xiliulou.afterserver.entity.Batch;
+import com.xiliulou.afterserver.entity.BatchPurchaseOrder;
 import com.xiliulou.afterserver.entity.DeviceApplyCounter;
 import com.xiliulou.afterserver.entity.PointProductBind;
 import com.xiliulou.afterserver.entity.Product;
@@ -16,6 +18,7 @@ import com.xiliulou.afterserver.entity.Supplier;
 import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.BatchMapper;
+import com.xiliulou.afterserver.mapper.BatchPurchaseOrderMapper;
 import com.xiliulou.afterserver.mapper.DeviceApplyCounterMapper;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
@@ -95,6 +98,9 @@ public class BatchServiceImpl implements BatchService {
     
     @Autowired
     private ProductFileMapper productFileMapper;
+    
+    @Autowired
+    private BatchPurchaseOrderMapper batchPurchaseOrderMapper;
     
     @Autowired
     private ProductNewMapper productNewMapper;
@@ -277,6 +283,12 @@ public class BatchServiceImpl implements BatchService {
         
         // 批量注册设备
         R<Object> ok = deviceEnrollment(batch, deviceNames, key);
+        BatchPurchaseOrder batchPurchaseOrder = new BatchPurchaseOrder();
+        batchPurchaseOrder.setBatchId(batch.getId());
+        batchPurchaseOrder.setPurchaseOrder(StrUtil.trim(batch.getPurchaseOrder()));
+        batchPurchaseOrder.setItem(StrUtil.trim(batch.getItem()));
+        batchPurchaseOrder.setMaterialNo(StrUtil.trim(batch.getMaterialNo()));
+        batchPurchaseOrderMapper.insert(batchPurchaseOrder);
         if (ok != null) {
             return ok;
         }
@@ -496,6 +508,7 @@ public class BatchServiceImpl implements BatchService {
         batch.setUpdateTime(System.currentTimeMillis());
         batch.setNotShipped(batch.getProductNum());
         Batch insert = this.insert(batch);
+        
         // 附件上传
         ProductFile productFile = new ProductFile();
         productFile.setProductId(insert.getId());

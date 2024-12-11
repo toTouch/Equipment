@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiliulou.afterserver.mapper.BatchPurchaseOrderMapper">
+    
+    <resultMap type="com.xiliulou.afterserver.entity.BatchPurchaseOrder" id="BatchPurchaseOrderMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="purchaseOrder" column="purchase_order" jdbcType="VARCHAR"/>
+        <result property="item" column="item" jdbcType="VARCHAR"/>
+        <result property="materialNo" column="material_no" jdbcType="VARCHAR"/>
+        <result property="batchId" column="batch_id" jdbcType="INTEGER"/>
+    </resultMap>
+    
+    <!--查询单个-->
+    <select id="selectById" resultMap="BatchPurchaseOrderMap">
+        select id,
+               purchase_order,
+               item,
+               material_no,
+               batch_id
+        from t_batch_purchase_order
+        where id = #{id}
+    </select>
+    
+    <!--查询指定行数据-->
+    <select id="selectPage" resultMap="BatchPurchaseOrderMap">
+        select
+        id, purchase_order, item, material_no, batch_id
+        from t_batch_purchase_order
+        <where>
+            <if test="entity.id != null">
+                and id = #{entity.id}
+            </if>
+            <if test="entity.purchaseOrder != null and entity.purchaseOrder != ''">
+                and purchase_order = #{entity.purchaseOrder}
+            </if>
+            <if test="entity.item != null and entity.item != ''">
+                and item = #{entity.item}
+            </if>
+            <if test="entity.materialNo != null and entity.materialNo != ''">
+                and material_no = #{entity.materialNo}
+            </if>
+            <if test="entity.batchId != null">
+                and batch_id = #{entity.batchId}
+            </if>
+        </where>
+        limit #{offset}, #{size}
+    </select>
+    
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from t_batch_purchase_order
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="purchaseOrder != null and purchaseOrder != ''">
+                and purchase_order = #{purchaseOrder}
+            </if>
+            <if test="item != null and item != ''">
+                and item = #{item}
+            </if>
+            <if test="materialNo != null and materialNo != ''">
+                and material_no = #{materialNo}
+            </if>
+            <if test="batchId != null">
+                and batch_id = #{batchId}
+            </if>
+        </where>
+    </select>
+    
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into t_batch_purchase_order(purchase_order, item, material_no, batch_id)
+        values (#{purchaseOrder}, #{item}, #{materialNo}, #{batchId})
+    </insert>
+    
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into t_batch_purchase_order(purchase_order, item, material_no, batch_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.purchaseOrder}, #{entity.item}, #{entity.materialNo}, #{entity.batchId})
+        </foreach>
+    </insert>
+    
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into t_batch_purchase_order(purchase_order, item, material_no, batch_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.purchaseOrder}, #{entity.item}, #{entity.materialNo}, #{entity.batchId})
+        </foreach>
+        on duplicate key update
+        purchase_order = values(purchase_order),
+        item = values(item),
+        material_no = values(material_no),
+        batch_id = values(batch_id)
+    </insert>
+    
+    <!--通过主键修改数据-->
+    <update id="updateById">
+        update t_batch_purchase_order
+        <set>
+            <if test="purchaseOrder != null">
+                purchase_order = #{purchaseOrder},
+            </if>
+            <if test="item != null">
+                item = #{item},
+            </if>
+            <if test="materialNo != null">
+                material_no = #{materialNo},
+            </if>
+            <if test="batchId != null">
+                batch_id = #{batchId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    
+    <!--逻辑删除数据-->
+    <update id="removeById">
+        update t_batch_purchase_order
+        <set>
+            <if test="purchaseOrder != null and purchaseOrder != ''">
+                purchase_order = #{purchaseOrder},
+            </if>
+            <if test="item != null and item != ''">
+                item = #{item},
+            </if>
+            <if test="materialNo != null and materialNo != ''">
+                material_no = #{materialNo},
+            </if>
+            <if test="batchId != null">
+                batch_id = #{batchId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from t_batch_purchase_order
+        where id = #{id}
+    </delete>
+
+</mapper>
