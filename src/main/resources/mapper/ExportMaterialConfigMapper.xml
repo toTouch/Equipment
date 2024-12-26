@@ -104,7 +104,7 @@
         insert into t_export_material_config(material_id,pn, material_alias, association_status, sort, supplier_id,stencil_ids)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.materialId},#{entity.pn}, #{entity.materialAlias}, #{entity.materialAssociation}, #{entity.sort}, #{entity.supplierId},#{stencil_ids})
+            (#{entity.materialId},#{entity.pn}, #{entity.materialAlias}, #{entity.materialAssociation}, #{entity.sort}, #{entity.supplierId},#{entity.stencilIds})
         </foreach>
     </insert>
     
@@ -112,7 +112,7 @@
         insert into t_export_material_config(material_id,pn, material_alias, association_status, sort, supplier_id,stencil_ids)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.materialId},#{entity.pn}, #{entity.materialAlias}, #{entity.materialAssociation}, #{entity.sort}, #{entity.supplierId},#{stencilIds})
+            (#{entity.materialId},#{entity.pn}, #{entity.materialAlias}, #{entity.materialAssociation}, #{entity.sort}, #{entity.supplierId},#{entity.stencilIds})
         </foreach>
         on duplicate key update
         pn = values(pn),
