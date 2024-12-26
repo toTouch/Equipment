@@ -244,7 +244,7 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
                 return R.failMsg("资产编码不存在，请检查");
             }
             
-            if (!Objects.equals(userById.getUserType(), User.AFTER_USER_ROLE) && !Objects.equals(thirdId, productNew.getSupplierId())) {
+            if (!(Objects.equals(userById.getUserType(), User.TYPE_AFTER_SALE)||Objects.equals(userById.getUserType(), User.TYPE_SUPPER_ADMIN)) && !Objects.equals(thirdId, productNew.getSupplierId())) {
                 return R.failMsg("当前柜机无权限操作");
             }
             
@@ -365,10 +365,17 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
         if (Objects.isNull(byParameter)) {
             return R.failMsg("物料不存在");
         }
+        if (StringUtils.isBlank(materialQuery.getRemark())) {
+            return R.failMsg("备注不能为空");
+        }
+        if (materialQuery.getRemark().length()>50) {
+            return R.failMsg("备注长度不能大于50");
+        }
         
         Material updateMaterial = new Material();
         updateMaterial.setBindingStatus(UN_BINDING);
         updateMaterial.setId(materialQuery.getId());
+        updateMaterial.setRemark(materialQuery.getRemark());
         updateMaterial.setUpdateTime(System.currentTimeMillis());
         updateMaterial.setProductNo("");
         
@@ -385,7 +392,7 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
             return R.failMsg("物料解绑失败，请重试");
         }
         
-        byParameter.setRemark(null);
+        byParameter.setRemark(updateMaterial.getRemark());
         byParameter.setMaterialState(null);
         record(byParameter, updateMaterial);
         return R.ok("物料解绑成功");
