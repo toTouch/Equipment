@@ -65,6 +65,7 @@ public class ExportMaterialConfig implements Serializable {
     /**
      * 模版类型(1：模版1  2：模版2)
      */
+    @TableField("stencil_ids")
     private String stencilIds;
     
     @TableField(exist = false)
