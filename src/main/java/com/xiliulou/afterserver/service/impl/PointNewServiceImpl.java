@@ -888,14 +888,14 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     public R productNewDeliverMaterialHistoryExportExcel(Long[] ids) {
         ArrayList<Map> materialHistoryVos = new ArrayList<>();
         
-//        User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
+        //        User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
         // 暂时没有做工厂级别权限控制       if (redisService.hasKey(ExportMaterialConfig.EXPORT_MATERIAL_CONFIG_CALL_BACK + userById.getThirdId())) {
         if (redisService.hasKey(ExportMaterialConfig.EXPORT_MATERIAL_CONFIG_CALL_BACK)) {
             return R.failMsg("物料导出配置编辑中，请稍后再试");
         }
         
         List<ExportMaterialConfig> exportMaterialConfigs = exportMaterialConfigService.listByLimit(new ExportMaterialConfig(), 0L, 20L);
-     
+        
         if (CollectionUtils.isEmpty(exportMaterialConfigs)) {
             return R.failMsg("请先配置物料导出顺序");
         }
@@ -924,7 +924,8 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         
         List<Long> batchIds = productNewDeliverVos.stream().map(ProductNewDeliverVo::getBatchId).collect(Collectors.toList());
         List<BatchPurchaseOrder> batchList = batchPurchaseOrderMapper.selectList(new LambdaQueryWrapper<BatchPurchaseOrder>().in(BatchPurchaseOrder::getBatchId, batchIds));
-        Map<Long, BatchPurchaseOrder> batchPurchaseOrderMap = batchList.stream().collect(Collectors.toMap(BatchPurchaseOrder::getBatchId, Function.identity(), (oldValue, newValue) -> newValue));
+        Map<Long, BatchPurchaseOrder> batchPurchaseOrderMap = batchList.stream()
+                .collect(Collectors.toMap(BatchPurchaseOrder::getBatchId, Function.identity(), (oldValue, newValue) -> newValue));
         
         for (ProductNewDeliverVo temp : productNewDeliverVos) {
             MaterialHistoryVo materialHistoryVo = new MaterialHistoryVo();
@@ -939,7 +940,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             materialHistoryVo.setProductionTime(temp.getCreateTime());
             
             // 采购单
-            if(Objects.nonNull(temp.getBatchId())){
+            if (Objects.nonNull(temp.getBatchId())) {
                 BatchPurchaseOrder batchPurchaseOrder = batchPurchaseOrderMap.get(temp.getBatchId());
                 if (Objects.nonNull(batchPurchaseOrder)) {
                     materialHistoryVo.setPurchaseOrder(batchPurchaseOrder.getPurchaseOrder());
@@ -964,7 +965,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
     
     @Override
     public R productNewDeliverMaterialPanelExportExcel(Long[] ids) {
-//        User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
+        //        User userById = userService.getUserById(SecurityUtils.getUserInfo().getUid());
         
         // 暂时没有做工厂级别权限控制       if (redisService.hasKey(ExportMaterialConfig.EXPORT_MATERIAL_CONFIG_CALL_BACK + userById.getThirdId())) {
         if (redisService.hasKey(ExportMaterialConfig.EXPORT_MATERIAL_CONFIG_CALL_BACK)) {
@@ -994,7 +995,8 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
         
         List<Long> batchIds = productNewDeliverVos.stream().map(ProductNewDeliverVo::getBatchId).collect(Collectors.toList());
         List<BatchPurchaseOrder> batchList = batchPurchaseOrderMapper.selectList(new LambdaQueryWrapper<BatchPurchaseOrder>().in(BatchPurchaseOrder::getBatchId, batchIds));
-        Map<Long, BatchPurchaseOrder> batchPurchaseOrderMap = batchList.stream().collect(Collectors.toMap(BatchPurchaseOrder::getBatchId, Function.identity(), (oldValue, newValue) -> newValue));
+        Map<Long, BatchPurchaseOrder> batchPurchaseOrderMap = batchList.stream()
+                .collect(Collectors.toMap(BatchPurchaseOrder::getBatchId, Function.identity(), (oldValue, newValue) -> newValue));
         
         // 根据物料编号分组
         Map<String, List<Material>> materialGroup = new HashMap<>();
@@ -1016,7 +1018,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
                 materialHistoryVo.setSupplierName(longSupplierMap.get(temp.getSupplierId()).getName());
             }
             // 采购单
-            if(Objects.nonNull(temp.getBatchId())){
+            if (Objects.nonNull(temp.getBatchId())) {
                 BatchPurchaseOrder batchPurchaseOrder = batchPurchaseOrderMap.get(temp.getBatchId());
                 if (Objects.nonNull(batchPurchaseOrder)) {
                     materialHistoryVo.setPurchaseOrder(batchPurchaseOrder.getPurchaseOrder());
@@ -1027,9 +1029,9 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             
             List<ExportMaterialConfig> materialConfigs = exportMaterialConfigs.stream().filter(exportMaterialConfig -> exportMaterialConfig.getStencilIds().contains(STENCIL_TWO))
                     .collect(Collectors.toList());
-//            ExportMaterialConfig exportMaterialConfig = exportMaterialConfigs.stream().filter(e -> {
-//                return Objects.equals(e.getPn(), "Y5030011");
-//            }).findFirst().orElse(null);
+            //            ExportMaterialConfig exportMaterialConfig = exportMaterialConfigs.stream().filter(e -> {
+            //                return Objects.equals(e.getPn(), "Y5030011");
+            //            }).findFirst().orElse(null);
             // 判空
             if (Objects.isNull(materialConfigs)) {
                 return R.failMsg("物料配置缺失");
@@ -1040,7 +1042,7 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
             String jsonBean = new Gson().toJson(materialHistoryVo);
             materialHistoryMap = new Gson().fromJson(jsonBean, LinkedHashMap.class);
             
-            fillMaterialHistory(temp.getNo(), materialGroup, materialHistoryMap, materialConfigs,STENCIL_TWO);
+            fillMaterialHistory(temp.getNo(), materialGroup, materialHistoryMap, materialConfigs, STENCIL_TWO);
             productNewDeliverVoResult.add(materialHistoryMap);
             
         }
@@ -1062,10 +1064,11 @@ public class PointNewServiceImpl extends ServiceImpl<PointNewMapper, PointNew> i
                 List<Material> materials = materialGroup.get(pn).stream().filter(x -> Objects.equals(x.getProductNo(), no)).collect(Collectors.toList());
                 if (CollectionUtils.isNotEmpty(materials)) {
                     materialHistoryVo.put("AtmelID", materials.get(0).getAtmelID());// setAtmelID(materials.get(0).getAtmelID());
+                    if (STENCIL_TWO.equals(stencilType)) {
+                        materialHistoryVo.put("productionTime", materials.get(0).getTestTime());
+                    }
                 }
-                if (STENCIL_TWO.equals(stencilType)) {
-                    materialHistoryVo.put("productionTime", materials.get(0).getTestTime());
-                }
+                
             }
             
             if (associationStatusCheck(materialGroup, exportMaterialConfig, IMEL, pn)) {
