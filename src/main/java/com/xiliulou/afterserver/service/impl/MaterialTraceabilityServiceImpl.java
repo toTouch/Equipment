@@ -417,6 +417,12 @@ public class MaterialTraceabilityServiceImpl implements MaterialTraceabilityServ
             materialTraceabilityVO.setMaterialSn(materialInfo.getMaterialSn());
             materialTraceabilityVO.setProductNo(materialInfo.getProductNo());
             materialTraceabilityVO.setCreateTime(DataUtil.getDate(materialInfo.getCreateTime()));
+            
+            materialTraceabilityVO.setName(materialInfo.getName());
+            materialTraceabilityVO.setSn(materialInfo.getSn());
+            materialTraceabilityVO.setMaterialBatchNo(materialInfo.getMaterialBatchNo());
+            materialTraceabilityVO.setMaterialState(PASSING.equals(materialInfo.getMaterialState())?"合格":"不合格");
+            
             materialTraceabilityVOS.add(materialTraceabilityVO);
         });
         

@@ -52,8 +52,7 @@ public class MaterialTraceabilityVO implements Serializable {
     
     @FieldCompare(chineseName = "物料状态", properties = "0:不合格，1:合格")
     @ExcelProperty(value = "物料状态")
-    
-    private Integer materialState;
+    private String materialState;
     /**
      * 创建时间
      */
