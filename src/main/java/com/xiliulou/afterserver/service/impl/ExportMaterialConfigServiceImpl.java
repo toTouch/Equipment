@@ -10,6 +10,7 @@ import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import com.xiliulou.cache.redis.RedisService;
 import io.jsonwebtoken.lang.Collections;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -68,10 +69,18 @@ public class ExportMaterialConfigServiceImpl implements ExportMaterialConfigServ
         for (ExportMaterialConfig materialConfig : exportMaterialConfigs) {
             String associationStatusStr = materialConfig.getMaterialAssociation();
             if (associationStatusStr != null && !associationStatusStr.isEmpty()) {
-                List<Integer> integerList = JSONArray.parseArray(materialConfig.getMaterialAssociation(), Integer.class);
+                List<Integer> integerList = JSONArray.parseArray(associationStatusStr, Integer.class);
                 materialConfig.setAssociationStatus(integerList);
             } else {
                 materialConfig.setAssociationStatus(List.of());
+            }
+            
+            String stencilIds = materialConfig.getStencilIds();
+            if (!StringUtils.isBlank(stencilIds)) {
+                List<Integer> integerList = JSONArray.parseArray(stencilIds, Integer.class);
+                materialConfig.setStencilIdList(integerList);
+            } else {
+                materialConfig.setStencilIdList(List.of());
             }
         }
         return exportMaterialConfigs;
@@ -127,6 +136,7 @@ public class ExportMaterialConfigServiceImpl implements ExportMaterialConfigServ
         }
         exportMaterialConfigs.forEach(exportMaterialConfig -> {
             exportMaterialConfig.setMaterialAssociation(exportMaterialConfig.getAssociationStatus().toString());
+            exportMaterialConfig.setStencilIds(exportMaterialConfig.getStencilIdList().toString());
         });
         return null;
     }
