@@ -1,0 +1,173 @@
+server:
+  port: 9899
+  servlet:
+    context-path: /after-service
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      username: root
+      password: y%d*IWrh1KKfQD!E
+      url: jdbc:mysql://192.168.0.236:3306/xiliulou_crm?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&allowMultiQueries=true
+
+  redis:
+    lettuce:
+      pool:
+        max-active: 1
+        max-idle: 1
+        min-idle: 1
+    host:  ${REDIS-HOST:xiliulou-redis}
+    database: 2
+
+  klock:
+    address: ${REDIS-HOST:xiliulou-redis}:6379
+    wait-time: 20
+    lease-time: 20
+    database: 15
+
+  servlet:
+    multipart:
+      # 文件最大限制
+      max-file-size: 100MB
+      # 请求最大限制
+      max-request-size: 100MB
+      enabled: true
+      # 设置文件缓存的临界点,超过则先保存到临时目录,默认为0,所有文件都会进行缓存
+      file-size-threshold: 0
+      location: ${java.io.tmpdir}
+  profiles:
+    active: prod
+logging:
+  config: classpath:logback-spring-prod.xml
+  level:
+    com.xiliulou.afterserver.mapper: debug
+
+
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*Mapper.xml
+  global-config:
+    banner: true
+    db-config:
+      id-type: auto
+      field-strategy: NOT_NULL
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+
+xiliulou:
+  urls:
+    - /auth/**
+    - /outer/**
+    - /actuator/**
+    - /error/**
+  token:
+    infos:
+      0:
+        maxTokenCnt: 10
+        expiryTimeMillis: 7776000000
+        maxExpiryTimeMillis: 7776000000
+      1:
+        maxTokenCnt: 10
+        expiryTimeMillis: 7776000000
+        maxExpiryTimeMillis: 7776000000
+      2:
+        maxTokenCnt: 10
+        expiryTimeMillis: 7776000000
+        maxExpiryTimeMillis: 7776000000
+      3:
+        maxTokenCnt: 20
+        expiryTimeMillis: 7776000000
+        maxExpiryTimeMillis: 7776000000
+      4:
+        maxTokenCnt: 10
+        expiryTimeMillis: 7776000000
+        maxExpiryTimeMillis: 7776000000
+      5:
+        maxTokenCnt: 10
+        expiryTimeMillis: 7776000000
+        maxExpiryTimeMillis: 7776000000
+
+jwt:
+  #secret: A0B1C2D3E4F5G6H7I8J9KALBMCNDOEPFQ0R1S2T3U4V5W6X7Y8Z8
+  secret: 20e5@cda38da811*27ed6fa.d226&8
+  expire: 1296000
+
+  #minio:
+  #endpoint: http://192.168.0.236
+  #port: 9000
+  #accessKey: LUS0FLKBY835V0QLADFP
+  #secretKey: 9SyT5fhNSwaZCRv1MiKTc3JKLiEvTjxuIXDBB+XR
+  #secure: false
+  #bucketName: test
+
+
+
+storage:
+  ### oss:oss-cn-beijing.aliyuncs.com minio:http://172.26.20.230:9000
+  ossEndpoint: oss-cn-beijing.aliyuncs.com
+  minioEndpoint: http://172.26.20.230:9000
+  accessKeyId: SuoR5L5r9lJKzNiO
+  accessKeySecret: WsCM0f7upVDgOSLWpTr0HPLgjeCEoc
+  ### minio:by-xiliulou
+  accessKey: by-xiliulou
+  ### minio:by123456
+  secretKey: by123456
+  ### oss:liubiqi minio:after-service
+  bucketName: xiliulou-strawberry
+  minioBucketName: after-service
+  ### ossTestFileBucketName:ZgeTest
+  ossTestFileBucketName: meituan-pressure
+  ossVidioBucketName: xiliulou-strawberry
+  ### oss:img.wm.xiliulou.com
+  urlPrefix:
+  dir: img/
+  secure: false
+  #testFileDir:
+  vidioDir: video/
+  ### oss:0 minio:1
+  isUseOSS: 0
+
+userrole:
+  unShow: [1,2,3,4]
+  userRole: [2]
+
+app-config:
+  username: compression
+  password: xiliulou
+  appId: after_v96s3love7
+  appSecret: B/1aF4XecFWalszX3Uytf+G9ce+OGNsswsnASDc6Clc=
+
+rocketmq:
+  name-server: xiliulou-rocketmq:9876
+  producer:
+    group: cupboard-producer
+  consumer:
+    group: cupboard-consumer
+
+iot:
+  accessKey: SuoR5L5r9lJKzNiO
+  accessSecret: WsCM0f7upVDgOSLWpTr0HPLgjeCEoc
+  regionId: cn-shanghai
+  domain: iot.cn-shanghai.aliyuncs.com
+  product: iot
+  iotInstance: iot-060a4jn3
+
+product-config:
+  key: a1mqS72fHNi
+  Apikey: a1Tm4CuXmXz
+  tcpKey: a1tX3cGp9kQa
+  saasTcpKey: a1mqS72fHNi
+  saaUrl: https://prod-exchange.xiliulou.com/electricityCabinet/
+  huaweiKey: a1mqS72fHNi
+  huaweiAccessKey: JBNJ2QSPGIQ7QFNTWWJS
+  huaweiAccessSecret: taNpnKa1fRcmruUYMQgnIHQjlsuKkcTPpULcUMcX
+  endpoint: 835db6b12b.st1.iotda-app.cn-north-4.myhuaweicloud.com
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: "*"
+        exclude: httptrace
