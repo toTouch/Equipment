@@ -148,6 +148,11 @@ public class ProductNew {
      * 柜机编码
      */
     private String cabinetSn;
+    
+    /**
+     * CPU 序列号
+     */
+    private String cpuSerialNum;
 
     public static final String TYPE_M = "M";
     public static final String TYPE_V = "V";
@@ -200,11 +205,6 @@ public class ProductNew {
      * 物联网deviceName
      */
     private String deviceName;
-    
-    /**
-     * CPU 序列号
-     */
-    private String cpuSerialNum ;
 
 
     /**

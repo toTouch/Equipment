@@ -15,10 +15,6 @@ public class ProductNewDeliverVo {
      */
     private String productName;
     /**
-     * 产品批次id
-     */
-    private Long batchId;
-    /**
      * 产品批次no
      */
     private String batchNo;

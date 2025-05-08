@@ -47,12 +47,13 @@ public class MaterialTraceabilityVO implements Serializable {
     /**
      * 产品编号/资产编码
      */
-    @ExcelProperty(value = "资产编码")
+    @ExcelProperty(value = "产品编号")
     private String productNo;
     
     @FieldCompare(chineseName = "物料状态", properties = "0:不合格，1:合格")
     @ExcelProperty(value = "物料状态")
-    private String materialState;
+    
+    private Integer materialState;
     /**
      * 创建时间
      */

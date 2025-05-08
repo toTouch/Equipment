@@ -62,22 +62,9 @@ public class ExportMaterialConfig implements Serializable {
      */
     private Long supplierId;
     
-    /**
-     * 模版类型(1：模版1  2：模版2)
-     */
-    @TableField("stencil_ids")
-    private String stencilIds;
-    
-    @TableField(exist = false)
-    private List<Integer> stencilIdList;
-    
-    
     public static final String EXPORT_MATERIAL_CONFIG_CALL_BACK = "ExportMaterialConfig:";
     public static final Integer ATMEL = 0;
     public static final Integer IMEL = 1;
     public static final Integer TEST_TIME = 2;
-    
-    public static final String STENCIL_ONE  = "1";
-    public static final String STENCIL_TWO = "2";
 }
 

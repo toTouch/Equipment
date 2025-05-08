@@ -1,16 +1,14 @@
 package com.xiliulou.afterserver.controller.admin;
 
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.xiliulou.afterserver.entity.Batch;
-import com.xiliulou.afterserver.entity.BatchPurchaseOrder;
 import com.xiliulou.afterserver.entity.Product;
 import com.xiliulou.afterserver.entity.ProductFile;
 import com.xiliulou.afterserver.entity.Supplier;
-import com.xiliulou.afterserver.mapper.BatchPurchaseOrderMapper;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.mapper.ProductMapper;
+import com.xiliulou.afterserver.mapper.ProductNewMapper;
 import com.xiliulou.afterserver.mapper.SupplierMapper;
 import com.xiliulou.afterserver.service.BatchService;
 import com.xiliulou.afterserver.service.ProductService;
@@ -53,7 +51,7 @@ public class AdminJsonBatchController {
     @Autowired
     SupplierService supplierService;
     @Autowired
-    BatchPurchaseOrderMapper batchPurchaseOrderMapper;
+    ProductNewMapper productNewMapper;
     @Autowired
     SupplierMapper supplierMapper;
     @Autowired
@@ -108,14 +106,6 @@ public class AdminJsonBatchController {
             productFile.setProductFileName(batch.getProductFileName());
             productFileMapper.updateById(productFile);
         }
-        if (Objects.nonNull(batch.getPurchaseId())) {
-            BatchPurchaseOrder batchPurchaseOrder = new BatchPurchaseOrder();
-            batchPurchaseOrder.setId(batch.getPurchaseId());
-            batchPurchaseOrder.setPurchaseOrder(StrUtil.trim(batch.getPurchaseOrder()));
-            batchPurchaseOrder.setItem(StrUtil.trim(batch.getItem()));
-            batchPurchaseOrder.setMaterialNo(StrUtil.trim(batch.getMaterialNo()));
-            batchPurchaseOrderMapper.updateById(batchPurchaseOrder);
-        }
         return R.ok();
     }
     
@@ -167,7 +157,6 @@ public class AdminJsonBatchController {
                 Product product = longProductNewMap.get(item.getModelId());
                 if(Objects.nonNull(product)){
                     item.setModelName(product.getName());
-                    item.setProductSeries(product.getProductSeries());
                 }
                 // 工厂名
                 Supplier supplier = longSupplierMap.get(item.getSupplierId());

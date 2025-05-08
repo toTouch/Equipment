@@ -1,14 +1,12 @@
 package com.xiliulou.afterserver.controller.factory;
 
 import com.xiliulou.afterserver.entity.User;
-import com.xiliulou.afterserver.service.ProductNewService;
 import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Objects;
@@ -24,21 +22,12 @@ public class JsonAdminUserController {
 
     @Autowired
     SupplierService supplierService;
-    
-    @Autowired
-    private ProductNewService productNewService;
-    
-    
+
     @GetMapping("/user/info")
     public R getUserInfo(){
         if(!Objects.equals(SecurityUtils.getUserInfo().getType(), User.TYPE_FACTORY)){
             return R.fail("请使用工厂用户登录");
         }
         return supplierService.getUserInfo();
-    }
-    
-    @GetMapping("/unbundled")
-    public R unbundled(@RequestParam(value = "sn", required = true)String sn){
-        return productNewService.unbundled(sn);
     }
 }

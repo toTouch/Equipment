@@ -131,10 +131,10 @@ public interface ProductNewService extends IService<ProductNew> {
 
     R compressionEnd(ApiRequestQuery apiRequestQuery);
 
-    R queryDeviceMessage(String no, String appVersion);
+    R queryDeviceMessage(String no);
     R getDeviceMessage(String no);
 
-    R updateUsedStatus(String sn, String cpuSerialNum, String no );
+    R updateUsedStatus(String no, String cpuSerialNum);
     R runFullLoadTest2(ApiRequestQuery apiRequestQuery);
     R compressionEnd2(ApiRequestQuery apiRequestQuery);
     
@@ -142,5 +142,5 @@ public interface ProductNewService extends IService<ProductNew> {
     
     R updateProductNewStatus(ProductNewQuery productNewQuery);
     
-    R unbundled(String sn);
+    R unbundledUsedStatus(String sn);
 }

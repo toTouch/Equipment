@@ -41,6 +41,6 @@ public class SecurityUtils {
     }
 
     public static boolean isAdmin() {
-        return Objects.equals(getUid(), 1) || Objects.equals(getUid(), 2);
+        return Objects.equals(getUid(), 1L) || Objects.equals(getUid(), 2L);
     }
 }

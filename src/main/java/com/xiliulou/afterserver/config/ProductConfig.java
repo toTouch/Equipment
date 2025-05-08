@@ -10,13 +10,10 @@ import org.springframework.context.annotation.Configuration;
 public class ProductConfig {
     private String key;
     private String apiKey;
-    private String saasTcpKey;
     private String huaweiKey;
     private String tcpKey;
     private String huaweiAccessKey;
     private String huaweiAccessSecret;
     private String endpoint;
-    private String saaUrl;
-    
 
 }

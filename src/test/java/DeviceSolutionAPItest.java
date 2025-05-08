@@ -12,7 +12,7 @@ import com.huaweicloud.sdk.iotda.v5.model.ShowDeviceRequest;
 import com.huaweicloud.sdk.iotda.v5.model.ShowDeviceResponse;
 import com.xiliulou.afterserver.AfterServerApplication;
 import com.xiliulou.afterserver.config.ProductConfig;
-import com.xiliulou.afterserver.util.device.registration.HWDeviceSolutionUtil;
+import com.xiliulou.afterserver.util.DeviceSolutionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
@@ -46,7 +46,7 @@ public class DeviceSolutionAPItest {
     */
     
     @Autowired
-    HWDeviceSolutionUtil HWDeviceSolutionUtil;
+    DeviceSolutionUtil deviceSolutionUtil;
     
     @Autowired
     private ProductConfig productConfig;
@@ -59,7 +59,7 @@ public class DeviceSolutionAPItest {
         Set<String> strings = new HashSet<>();
         strings.add("zbzcssss001");
         // strings.add("11ABC123456780");
-        Pair<Boolean, String> booleanStringPair = HWDeviceSolutionUtil.batchRegisterDevice(strings, productConfig.getHuaweiKey());
+        Pair<Boolean, String> booleanStringPair = deviceSolutionUtil.batchRegisterDevice(strings, productConfig.getHuaweiKey());
         System.out.println(booleanStringPair);
     }
     

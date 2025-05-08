@@ -1,6 +1,5 @@
 package com.xiliulou.afterserver.service.impl;
 
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -8,7 +7,6 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiliulou.afterserver.config.ProductConfig;
 import com.xiliulou.afterserver.entity.Batch;
-import com.xiliulou.afterserver.entity.BatchPurchaseOrder;
 import com.xiliulou.afterserver.entity.DeviceApplyCounter;
 import com.xiliulou.afterserver.entity.PointProductBind;
 import com.xiliulou.afterserver.entity.Product;
@@ -18,7 +16,6 @@ import com.xiliulou.afterserver.entity.Supplier;
 import com.xiliulou.afterserver.entity.User;
 import com.xiliulou.afterserver.exception.CustomBusinessException;
 import com.xiliulou.afterserver.mapper.BatchMapper;
-import com.xiliulou.afterserver.mapper.BatchPurchaseOrderMapper;
 import com.xiliulou.afterserver.mapper.DeviceApplyCounterMapper;
 import com.xiliulou.afterserver.mapper.ProductFileMapper;
 import com.xiliulou.afterserver.mapper.ProductNewMapper;
@@ -28,18 +25,15 @@ import com.xiliulou.afterserver.service.ProductNewService;
 import com.xiliulou.afterserver.service.ProductService;
 import com.xiliulou.afterserver.service.SupplierService;
 import com.xiliulou.afterserver.service.UserService;
-import com.xiliulou.afterserver.service.retrofit.SaasTCPDeviceSolutionService;
+import com.xiliulou.afterserver.util.DeviceSolutionUtil;
 import com.xiliulou.afterserver.util.PageUtil;
 import com.xiliulou.afterserver.util.R;
 import com.xiliulou.afterserver.util.SecurityUtils;
-import com.xiliulou.afterserver.util.device.registration.HWDeviceSolutionUtil;
-import com.xiliulou.afterserver.util.device.registration.SaasTCPDeviceSolutionUtil;
 import com.xiliulou.afterserver.web.vo.OrderBatchVo;
 import com.xiliulou.iot.entity.response.QueryDeviceDetailResult;
 import com.xiliulou.iot.service.RegisterDeviceService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,7 +55,6 @@ import java.util.stream.Collectors;
 import static com.xiliulou.afterserver.entity.Batch.ALIYUN_SaaS_ELECTRIC_SWAP_CABINET;
 import static com.xiliulou.afterserver.entity.Batch.API_ELECTRIC_SWAP_CABINET;
 import static com.xiliulou.afterserver.entity.Batch.HUAWEI_CLOUD_SaaS;
-import static com.xiliulou.afterserver.entity.Batch.SAAS_TCP_ELECTRIC_SWAP_CABINET;
 import static com.xiliulou.afterserver.entity.Batch.TCP_ELECTRIC_SWAP_CABINET;
 import static com.xiliulou.afterserver.entity.Batch.TRUE;
 import static com.xiliulou.afterserver.entity.Product.BATTERY_REPLACEMENT_CABINET;
@@ -79,10 +72,7 @@ public class BatchServiceImpl implements BatchService {
     static final Pattern ALPHANUMERIC = Pattern.compile("[^a-zA-Z0-9]");
     
     @Autowired
-    private HWDeviceSolutionUtil hwDeviceSolutionUtil;
-    
-    @Autowired
-    private SaasTCPDeviceSolutionUtil saasTCPDeviceSolutionUtil;
+    private DeviceSolutionUtil deviceSolutionUtil;
     
     @Resource
     private BatchMapper batchMapper;
@@ -98,9 +88,6 @@ public class BatchServiceImpl implements BatchService {
     
     @Autowired
     private ProductFileMapper productFileMapper;
-    
-    @Autowired
-    private BatchPurchaseOrderMapper batchPurchaseOrderMapper;
     
     @Autowired
     private ProductNewMapper productNewMapper;
@@ -241,17 +228,11 @@ public class BatchServiceImpl implements BatchService {
         String key = obtainTheCabinetType(batch);
         
         // 去重并校验deviceNames
-        List<String> customDeviceNameList = new ArrayList<String>();
-        if (CollectionUtils.isNotEmpty(batch.getCustomDeviceNameList())) {
-            for (int i = 0; i < batch.getCustomDeviceNameList().size(); i++) {
-                String deviceName = batch.getCustomDeviceNameList().get(i);
-                if (StringUtils.isNotBlank(deviceName)) {
-                    customDeviceNameList.add(deviceName.trim());
-                }
-            }
+        List<String> customDeviceNameList = batch.getCustomDeviceNameList();
+        for (int i = 0; i < customDeviceNameList.size(); i++) {
+            String deviceName = customDeviceNameList.get(i);
+            customDeviceNameList.set(i, deviceName.trim());
         }
-       
-        
         deduplicationAndVerificationDeviceNames(batch, customDeviceNameList, product, key);
         
         Set<String> deviceNames = new HashSet<String>();
@@ -283,12 +264,6 @@ public class BatchServiceImpl implements BatchService {
         
         // 批量注册设备
         R<Object> ok = deviceEnrollment(batch, deviceNames, key);
-        BatchPurchaseOrder batchPurchaseOrder = new BatchPurchaseOrder();
-        batchPurchaseOrder.setBatchId(batch.getId());
-        batchPurchaseOrder.setPurchaseOrder(StrUtil.trim(batch.getPurchaseOrder()));
-        batchPurchaseOrder.setItem(StrUtil.trim(batch.getItem()));
-        batchPurchaseOrder.setMaterialNo(StrUtil.trim(batch.getMaterialNo()));
-        batchPurchaseOrderMapper.insert(batchPurchaseOrder);
         if (ok != null) {
             return ok;
         }
@@ -369,39 +344,15 @@ public class BatchServiceImpl implements BatchService {
         // 20240314 华为云IOT注册限制每秒50次请求
         if (HUAWEI_CLOUD_SaaS.equals(batch.getBatteryReplacementCabinetType())) {
             // 20240314 华为云IOT注册限制每秒50次请求 此接口超时时间为30秒
-            Pair<Boolean, String> booleanStringPair = hwDeviceSolutionUtil.batchRegisterDevice(deviceNames, key);
-            log.info("HW IOT batch register finished:result={} applyId={} ", booleanStringPair.getLeft(), key);
+            Pair<Boolean, String> booleanStringPair = deviceSolutionUtil.batchRegisterDevice(deviceNames, key);
+            log.info("batch register finished:result={} applyId={} ", booleanStringPair.getLeft(), key);
             if (!booleanStringPair.getLeft()) {
-                //                batch.setRemarks(booleanStringPair.getRight());
-                //                batchMapper.update(batch);
-                throw new CustomBusinessException(booleanStringPair.getRight());
-            }
-            return R.ok();
-        }
-        
-        // 20241011 Saas TCP注册限制每秒50次请求
-        if (SAAS_TCP_ELECTRIC_SWAP_CABINET.equals(batch.getBatteryReplacementCabinetType())) {
-            // 20240314 华为云IOT注册限制每秒50次请求 此接口超时时间为30秒
-            Pair<Boolean, String> booleanStringPair = saasTCPDeviceSolutionUtil.batchRegisterDevice(deviceNames, key);
-            log.info("Saas TCP batch register finished:result={} applyId={} ", booleanStringPair.getLeft(), key);
-            if (!booleanStringPair.getLeft()) {
-                //                batch.setRemarks(booleanStringPair.getRight());
-                //                batchMapper.update(batch);
                 throw new CustomBusinessException(booleanStringPair.getRight());
             }
             return R.ok();
         }
         
         // 阿里云iot 注册
-        R<Object> ok = alibabaCloudIotRegistration(batch, deviceNames, key);
-        if (ok != null) {
-            return ok;
-        }
-        return null;
-    }
-    
-    // 阿里云iot 注册
-    private R<Object> alibabaCloudIotRegistration(Batch batch, Set<String> deviceNames, String key) {
         if (ALIYUN_SaaS_ELECTRIC_SWAP_CABINET.equals(batch.getBatteryReplacementCabinetType()) || API_ELECTRIC_SWAP_CABINET.equals(batch.getBatteryReplacementCabinetType())) {
             // 是换电柜则自动维护三元组  批量检查自定义设备名称的合法性
             Long applyId = registerDeviceService.batchCheckDeviceNames(key, deviceNames);
@@ -412,8 +363,6 @@ public class BatchServiceImpl implements BatchService {
                 log.info("batch register finished:result={} applyId={} ", b, applyId);
                 // 注册失败则提示
                 if (!b) {
-                    //                    batch.setRemarks("注册三元组失败，请重新生成批次");
-                    //                    batchMapper.update(batch);
                     throw new CustomBusinessException("注册三元组失败，请重新生成批次");
                 }
                 return R.ok();
@@ -437,19 +386,13 @@ public class BatchServiceImpl implements BatchService {
      */
     private void deduplicationAndVerificationDeviceNames(Batch batch, List<String> customDeviceNameList, Product product, String key) {
         if (CollectionUtils.isNotEmpty(customDeviceNameList) && Objects.equals(product.getProductSeries(), BATTERY_REPLACEMENT_CABINET)) {
+            customDeviceNameList = customDeviceNameList.stream().filter(StringUtils::isNotBlank).collect(Collectors.toList());
             List<String> customDeviceNameDisList = customDeviceNameList.stream().distinct().collect(Collectors.toList());
-         
             if (customDeviceNameList.size() != batch.getProductNum()) {
                 throw new CustomBusinessException("deviceName数量与产品数量不匹配");
             }
             if (customDeviceNameList.size() != customDeviceNameDisList.size()) {
                 throw new CustomBusinessException("deviceName有重复");
-            }
-            SaasTCPDeviceSolutionService client = saasTCPDeviceSolutionUtil.getIoTDAClient();
-            Set<String> customDeviceNameSet = new HashSet<>(customDeviceNameList);
-            Triple<Boolean, Object, String> booleanObjectStringTriple = saasTCPDeviceSolutionUtil.devicePresenceVerification(customDeviceNameSet, client);
-            if (booleanObjectStringTriple.getLeft()) {
-                throw new CustomBusinessException(booleanObjectStringTriple.getMiddle() + "设备已存在");
             }
             
             for (int i = 0; i < customDeviceNameList.size(); i++) {
@@ -486,14 +429,12 @@ public class BatchServiceImpl implements BatchService {
     }
     
     private String obtainTheCabinetType(Batch batch) {
-        // 获取换电柜机柜类型 0:阿里SaaS换电柜 1:api换电柜 0:阿里SaaS TCP换电柜  3:华为saas换电柜
+        // 获取换电柜机柜类型 0:阿里SaaS换电柜 1:api换电柜 3:华为saas换电柜
         switch (batch.getBatteryReplacementCabinetType()) {
             case 0:
                 return productConfig.getKey();
             case 1:
                 return productConfig.getApiKey();
-            case 2:
-                return productConfig.getSaasTcpKey();
             case 3:
                 return productConfig.getHuaweiKey();
             case 4:
@@ -508,7 +449,6 @@ public class BatchServiceImpl implements BatchService {
         batch.setUpdateTime(System.currentTimeMillis());
         batch.setNotShipped(batch.getProductNum());
         Batch insert = this.insert(batch);
-        
         // 附件上传
         ProductFile productFile = new ProductFile();
         productFile.setProductId(insert.getId());
@@ -556,10 +496,7 @@ public class BatchServiceImpl implements BatchService {
         if (Objects.isNull(batch.getProductNum()) || batch.getProductNum() <= 0) {
             return R.fail("请传入正确的产品数量");
         }
-        // 数量校验 500
-        if (batch.getProductNum() > 500) {
-            throw new CustomBusinessException("deviceName数量不能超过500");
-        }
+        
         // 供应商校验
         if (Objects.isNull(supplier)) {
             return R.fail("供应商选择有误，请检查");

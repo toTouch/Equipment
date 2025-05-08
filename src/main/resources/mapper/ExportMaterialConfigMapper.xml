@@ -10,7 +10,6 @@
         <result property="materialAssociation" column="association_status" jdbcType="VARCHAR"/>
         <result property="sort" column="sort" jdbcType="INTEGER"/>
         <result property="supplierId" column="supplier_id" jdbcType="INTEGER"/>
-        <result property="stencilIds" column="stencil_ids" jdbcType="VARCHAR"/>
         <result property="name" column="name" jdbcType="VARCHAR"/>
     </resultMap>
     
@@ -21,8 +20,7 @@
                material_alias,
                association_status,
                sort,
-               supplier_id,
-               stencil_ids
+               supplier_id
         from t_export_material_config
         where id = #{id}
     </select>
@@ -33,16 +31,14 @@
                material_alias,
                association_status,
                sort,
-               supplier_id,
-               stencil_ids
+               supplier_id
         from t_export_material_config
         where pn = #{pn}
     </select>
     <!--查询指定行数据-->
     <select id="selectPage" resultMap="ExportMaterialConfigMap">
         select
-        temc.id,temc.material_id, temc.pn, temc.material_alias, temc.association_status, temc.sort, temc.supplier_id,tp.name,
-        temc.stencil_ids
+        temc.id,temc.material_id, temc.pn, temc.material_alias, temc.association_status, temc.sort, temc.supplier_id,tp.name
         from t_export_material_config temc
         left join t_parts tp on tp.sn = temc.pn
         <where>
@@ -96,23 +92,23 @@
     
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into t_export_material_config(material_id, pn, material_alias, association_status, sort, supplier_id,stencil_ids)
-        values (#{materialId}, #{pn}, #{materialAlias}, #{materialAssociation}, #{sort}, #{supplierId},#{stencilIds})
+        insert into t_export_material_config(material_id, pn, material_alias, association_status, sort, supplier_id)
+        values (#{materialId}, #{pn}, #{materialAlias}, #{materialAssociation}, #{sort}, #{supplierId})
     </insert>
     
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into t_export_material_config(material_id,pn, material_alias, association_status, sort, supplier_id,stencil_ids)
+        insert into t_export_material_config(material_id,pn, material_alias, association_status, sort, supplier_id)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.materialId},#{entity.pn}, #{entity.materialAlias}, #{entity.materialAssociation}, #{entity.sort}, #{entity.supplierId},#{entity.stencilIds})
+            (#{entity.materialId},#{entity.pn}, #{entity.materialAlias}, #{entity.materialAssociation}, #{entity.sort}, #{entity.supplierId})
         </foreach>
     </insert>
     
     <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into t_export_material_config(material_id,pn, material_alias, association_status, sort, supplier_id,stencil_ids)
+        insert into t_export_material_config(material_id,pn, material_alias, association_status, sort, supplier_id)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.materialId},#{entity.pn}, #{entity.materialAlias}, #{entity.materialAssociation}, #{entity.sort}, #{entity.supplierId},#{entity.stencilIds})
+            (#{entity.materialId},#{entity.pn}, #{entity.materialAlias}, #{entity.materialAssociation}, #{entity.sort}, #{entity.supplierId})
         </foreach>
         on duplicate key update
         pn = values(pn),
@@ -144,9 +140,6 @@
             <if test="supplierId != null">
                 supplier_id = #{supplierId},
             </if>
-            <if test="stencilIds != null">
-                stencil_ids = #{stencilIds},
-            </if>
         </set>
         where id = #{id}
     </update>
@@ -173,9 +166,6 @@
             <if test="supplierId != null">
                 supplier_id = #{supplierId},
             </if>
-            <if test="stencilIds != null">
-                stencil_ids = #{stencilIds},
-            </if>
         </set>
         where id = #{id}
     </update>
@@ -199,9 +189,6 @@
             </if>
             <if test="supplierId != null">
                 supplier_id = #{supplierId},
-            </if>
-            <if test="stencilIds != null">
-                stencil_ids = #{stencilIds},
             </if>
         </set>
         where material_id = #{materialId}

@@ -80,25 +80,4 @@ public class MaterialHistoryVo {
     
     private String imei;
     
-    
-    /**
-     * 采购单
-     */
-    private String purchaseOrder;
-    
-    /**
-     * 项次
-     */
-    private String item;
-    
-    /**
-     * 成品料号
-     */
-    private String materialNo;
-    
-    /**
-     * 批次号
-     */
-    private Long batchId;
-    
 }

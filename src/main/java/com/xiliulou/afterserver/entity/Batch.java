@@ -50,6 +50,8 @@ public class Batch {
      */
     private String productType;
     
+    ;
+    
     /**
      * 产品数量
      */
@@ -108,53 +110,19 @@ public class Batch {
     @TableField(exist = false)
     private Integer syncCabinetSn;
     
-    /**
-     * 采购单id
-     */
-    @TableField(exist = false)
-    private Integer purchaseId;
-    
-    /**
-     * 采购单
-     */
-    @TableField(exist = false)
-    private String purchaseOrder;
-    
-    /**
-     * 项次
-     */
-    @TableField(exist = false)
-    private String item;
-    
-    /**
-     * 成品料号
-     */
-    @TableField(exist = false)
-    private String materialNo;
-    
-    /**
-     *  换电柜类型(0:阿里云SaaS换电柜, 1:api换电柜,2:阿里云TCPSaas,3:华为云saas, 4: TCP柜机)*/
+    // 换电柜类型(0:阿里云SaaS换电柜,1:api换电柜,3:华为云saas, 4: TCP柜机)
     private Integer batteryReplacementCabinetType;
     
-    /**
-     * 阿里云的SaaS换电柜服务类型*/
+    // 阿里云的SaaS换电柜服务类型
     public static final Integer ALIYUN_SaaS_ELECTRIC_SWAP_CABINET = 0;
     
-    /**
-     * API形式的换电柜服务*/
+    // API形式的换电柜服务
     public static final Integer API_ELECTRIC_SWAP_CABINET = 1;
     
-    /**
-     * Saas TCP 柜机*/
-    public static final Integer SAAS_TCP_ELECTRIC_SWAP_CABINET = 2;
-    /**
-     * 华为云的SaaS服务*/
+    // 华为云的SaaS服务
     public static final Integer HUAWEI_CLOUD_SaaS = 3;
-    /**
-     * TCP 柜机*/
+    // TCP 柜机
     public static final Integer TCP_ELECTRIC_SWAP_CABINET = 4;
-    
-   
     
     public static final Integer TRUE = 1;
     
@@ -162,9 +130,4 @@ public class Batch {
     // 自定义设备名称
     @TableField(exist = false)
     private List<String> customDeviceNameList;
-    
-    // 产品系列
-    // 取餐柜 1、餐厅柜 2、换电柜 3、充电柜 4、寄存柜 5、生鲜柜 6
-    @TableField(exist = false)
-    private Integer productSeries;
 }

@@ -7,11 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @author zgw
@@ -21,33 +17,19 @@ import java.util.TreeMap;
 @UtilityClass
 @Slf4j
 public class SignUtils {
-    
     final String ALGORITHM = "HmacSHA256";
-    
-    
+
+
     public String getSignature(ApiRequestQuery dto, String appSecret) throws Exception {
         Map<String, Object> map = new HashMap<>();
         map.put("appId", dto.getAppId());
         map.put("requestTime", dto.getRequestTime());
         map.put("data", dto.getData());
-        
-        return initSignature(appSecret, map);
-    }
-    
-    public String getSaasSignature(String requestId, String appId, Long requestTime, String version, String appSecret) throws Exception {
-        Map<String, Object> map = new HashMap<>();
-        map.put("appId", appId);
-        map.put("requestTime", requestTime);
-        map.put("requestId", requestId);
-        map.put("version", version);
-        return initSignature(appSecret, map);
-    }
-    
-    private String initSignature(String appSecret, Map<String, Object> map) throws Exception {
+
         // 先将参数以其参数名的字典序升序进行排序
         Map<String, Object> sortedParams = new TreeMap<>(map);
         Set<Map.Entry<String, Object>> entrySet = sortedParams.entrySet();
-        
+
         // 遍历排序后的字典，将所有参数按"key=value"格式拼接在一起
         StringBuilder stringToSign = new StringBuilder();
         for (Map.Entry<String, Object> param : entrySet) {
@@ -56,8 +38,8 @@ public class SignUtils {
         stringToSign.deleteCharAt(stringToSign.length() - 1);
         return calSignature(appSecret, stringToSign.toString());
     }
-    
-    
+
+
     private String calSignature(String appSecret, String dataToSign) throws Exception {
         SecretKeySpec secretKeySpec = new SecretKeySpec(appSecret.getBytes(StandardCharsets.UTF_8), ALGORITHM);
         Mac sha256HMAC = Mac.getInstance(ALGORITHM);

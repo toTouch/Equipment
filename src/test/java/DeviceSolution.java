@@ -18,9 +18,10 @@ import com.huaweicloud.sdk.iotda.v5.model.SearchDevicesResponse;
 import com.huaweicloud.sdk.iotda.v5.model.SearchSql;
 import com.huaweicloud.sdk.iotda.v5.model.ShowDeviceRequest;
 import com.huaweicloud.sdk.iotda.v5.model.ShowDeviceResponse;
+import com.huaweicloud.sdk.iotda.v5.region.IoTDARegion;
 import com.xiliulou.afterserver.AfterServerApplication;
 import com.xiliulou.afterserver.config.ProductConfig;
-import com.xiliulou.afterserver.util.device.registration.HWDeviceSolutionUtil;
+import com.xiliulou.afterserver.util.DeviceSolutionUtil;
 import com.xiliulou.iot.entity.response.QueryDeviceDetailResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -31,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -59,7 +61,7 @@ public class DeviceSolution {
     */
     
     @Autowired
-    HWDeviceSolutionUtil HWDeviceSolutionUtil;
+    DeviceSolutionUtil deviceSolutionUtil;
     
     @Autowired
     private ProductConfig productConfig;
@@ -72,7 +74,7 @@ public class DeviceSolution {
         Set<String> strings = new HashSet<>();
         strings.add("zbzcssss001");
         // strings.add("11ABC123456780");
-        Pair<Boolean, String> booleanStringPair = HWDeviceSolutionUtil.batchRegisterDevice(strings, productConfig.getHuaweiKey());
+        Pair<Boolean, String> booleanStringPair = deviceSolutionUtil.batchRegisterDevice(strings, productConfig.getHuaweiKey());
         System.out.println(booleanStringPair);
     }
     
